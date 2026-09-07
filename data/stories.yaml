@@ -336,3 +336,82 @@ stories:
           Black Summer fires. The map stops where the driver's influence
           stops; what came next was the legacy of a dry year.
         sources: [doi_2020, wang_cai_2020]
+
+  - id: negative_nao_2009_10
+    title: "The winter of 2009–10: a record negative NAO"
+    intro: >
+      The most strongly negative North Atlantic Oscillation winter since
+      records began in the 1820s. Follow it from a frozen Britain to
+      record snow in Washington, floods in southern Spain and a mild
+      Greenland, and see why one winter is never the work of one driver
+      alone: an El Niño was under way in the Pacific at the same time.
+    driver: nao
+    phase: negative
+    start_month: 12
+    start_year: 2009
+    steps:
+      - month: 0
+        focus: nao
+        text: >
+          In December 2009 the pressure difference between Iceland and the
+          Azores collapsed and stayed collapsed. Averaged over December to
+          February it was the lowest in a record going back to 1823. A high
+          pressure "block" parked itself near Greenland and the mild
+          westerlies that normally cross the Atlantic in winter stopped
+          arriving.
+        sources: [osborn_2011, cattiaux_2010]
+
+      - month: 0
+        focus: northern_europe_winter
+        text: >
+          Snow fell across Britain, Germany and Poland from mid-December and
+          the cold held on into February. The winter was the coldest in the
+          UK since 1978–79. One study made a point that belongs on this map:
+          given how weak the westerlies were, the winter was actually milder
+          than the same pattern would have produced fifty years earlier.
+          The tendency was textbook; the warming climate changed the
+          baseline it acted on.
+        sources: [cattiaux_2010, osborn_2011]
+
+      - month: 1
+        focus: mediterranean_winter_rainfall
+        text: >
+          With the storm track pushed south, Atlantic depressions ran into
+          Portugal and Spain one after another. December to February was
+          the wettest winter in southern Iberia for decades; the
+          Guadalquivir flooded, and reservoirs that had been low for years
+          filled in a season. This is the wet side of the seesaw that dries
+          Iberia in positive winters.
+        sources: [vicente_serrano_2011, trigo_2004]
+
+      - month: 2
+        focus: eastern_north_america_winter
+        text: >
+          In February 2010 back-to-back snowstorms buried Washington,
+          Baltimore and Philadelphia, breaking seasonal snowfall records.
+          The negative NAO steered the cold air south, but a study of the
+          winter credits the El Niño in the Pacific with supplying the
+          moisture. Two drivers, one snowstorm: the map shows them one at a
+          time, so switch to ENSO and El Niño to see the other half.
+        sources: [seager_2010]
+
+      - month: 2
+        focus: greenland_winter
+        text: >
+          While Europe and the eastern United States shivered, west
+          Greenland and the Canadian Arctic had a remarkably mild winter,
+          with temperatures far above normal for the season. That is the
+          Greenland–Europe seesaw noticed two centuries ago, and it is the
+          clearest sign that the whole pattern is one thing, not a set of
+          separate cold snaps.
+        sources: [osborn_2011, seager_2010, van_loon_rogers_1978]
+
+      - month: 3
+        focus: nao
+        text: >
+          The pattern stayed negative into March and eased in spring. The
+          following winter, 2010–11, opened with another strongly negative
+          December, and then the index swung positive: this driver keeps
+          no calendar. A run of negative winters says little about the next
+          one, which is why the map calls its timescale "weeks to months".
+        sources: [osborn_2011, hurrell_2003]

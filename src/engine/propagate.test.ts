@@ -6,7 +6,7 @@ function graphWith(links: Partial<Link>[]): Graph {
   return {
     nodes: [
       {
-        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'warm', label: 'Warm', color: '#000000', summary: '' }, { id: 'cool', label: 'Cool', color: '#000000', summary: '' }],
       },
       { id: 'a', name: 'A', kind: 'outcome', axis: 'wet_dry', labels: { plus: '', zero: '', minus: '' }, global: false, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [] },

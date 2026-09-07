@@ -149,18 +149,97 @@ describe('acceptance: negative IOD, June start', () => {
   });
 });
 
+// ---------------------------------------------------------------- M9: third driver (North Atlantic Oscillation)
+// The NAO is a winter pattern, so its scenarios start in December.
+function runNao(phaseId: string): Timeline {
+  return propagate(graph, { driverId: 'nao', phaseId, startMonth: 12, horizonMonths: HORIZON });
+}
+
+const POSITIVE_NAO: Array<[string, Value, string]> = [
+  ['northern_europe_winter', 1, 'northern Europe mild'],
+  ['scandinavia_winter_rainfall', 1, 'Norway and Scotland wet'],
+  ['mediterranean_winter_rainfall', -1, 'Iberia and the Mediterranean dry'],
+  ['eastern_north_america_winter', 1, 'eastern North America mild'],
+  ['greenland_winter', -1, 'Greenland cold'],
+];
+
+describe('acceptance: positive NAO, December start', () => {
+  const tl = runNao('positive');
+  for (const [id, sign, label] of POSITIVE_NAO) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the Greenland–Europe seesaw is applied from month 0 (December) with no lag', () => {
+    expect(tl.months[0].calendarMonth).toBe(12);
+    expect(tl.months[0].nodes.northern_europe_winter.value).toBe(1);
+    expect(tl.months[0].nodes.greenland_winter.value).toBe(-1);
+  });
+  it('is a winter pattern: nothing is applied from April to October', () => {
+    for (const m of tl.months) {
+      if (m.calendarMonth < 4 || m.calendarMonth > 10) continue;
+      for (const st of Object.values(m.nodes)) expect(st.viaLinkIds, `month ${m.index} (calendar ${m.calendarMonth})`).toHaveLength(0);
+    }
+    // ...but the winter links are pending, not gone, in the summer months.
+    const july = tl.months.find((m) => m.calendarMonth === 7)!;
+    expect(july.nodes.northern_europe_winter.pendingLinkIds.length).toBeGreaterThan(0);
+  });
+  it('ENSO and IOD regions stay hollow: the map does not fake an NAO effect', () => {
+    for (const id of ['peru_coast_rainfall', 'indonesia_rainfall', 'southeast_australia_rainfall', 'east_africa_short_rains']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: negative NAO, December start', () => {
+  const tl = runNao('negative');
+  it('reverses the positive phase wherever a negative link exists, and never copies its sign', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'nao' && l.when === 'negative').map((l) => l.to));
+    expect(targets.size).toBeGreaterThan(0);
+    for (const [id, sign] of POSITIVE_NAO) {
+      if (!targets.has(id)) continue;
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the positive phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the positive sign`).toHaveLength(0);
+    }
+  });
+  it('regions with no negative link stay untouched (no faked symmetry)', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'nao' && l.when === 'negative').map((l) => l.to));
+    for (const node of graph.nodes) {
+      if (node.kind !== 'outcome' || targets.has(node.id)) continue;
+      for (const m of tl.months) {
+        expect(m.nodes[node.id].value, `${node.id} at month ${m.index}`).toBe(0);
+        expect(m.nodes[node.id].viaLinkIds).toHaveLength(0);
+      }
+    }
+  });
+});
+
 describe('acceptance: drivers', () => {
-  it('ships ENSO and the IOD as drivers, each with a neutral phase and an onset hint', () => {
+  const DRIVERS = ['enso', 'iod', 'nao'];
+  it('ships ENSO, the IOD and the NAO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
-    expect(drivers.map((d) => d.id).sort()).toEqual(['enso', 'iod']);
+    expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
       if (d.kind !== 'driver') continue;
       expect(d.phases.some((p) => p.id === 'neutral')).toBe(true);
       expect(d.onset_hint.length).toBeGreaterThan(20);
+      expect(d.default_start_month).toBeGreaterThanOrEqual(1);
+      expect(d.default_start_month).toBeLessThanOrEqual(12);
     }
   });
+  it('the NAO defaults to a winter start; ENSO and the IOD to June', () => {
+    const byId = new Map(graph.nodes.map((n) => [n.id, n]));
+    const start = (id: string) => { const d = byId.get(id)!; return d.kind === 'driver' ? d.default_start_month : NaN; };
+    expect(start('enso')).toBe(6);
+    expect(start('iod')).toBe(6);
+    expect(start('nao')).toBe(12);
+  });
   it('a neutral phase applies nothing', () => {
-    for (const driverId of ['enso', 'iod']) {
+    for (const driverId of DRIVERS) {
       const tl = propagate(graph, { driverId, phaseId: 'neutral', startMonth: 6, horizonMonths: HORIZON });
       for (const m of tl.months) for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
     }

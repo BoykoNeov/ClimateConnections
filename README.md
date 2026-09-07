@@ -1,14 +1,15 @@
 # Climate Connections
 
 An interactive teaching map of how the big climate oscillations affect
-weather around the world. Pick a driver (ENSO or the Indian Ocean Dipole) and
-a phase (El Niño, La Niña, positive or negative dipole), press play, and watch
-the known consequences arrive across a Pacific-centered world map over twelve
+weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole or
+the North Atlantic Oscillation) and a phase (El Niño or La Niña, a positive
+or negative dipole, a positive or negative NAO), press play, and watch the
+known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds two drivers, 24 outcome regions, 52 cited links and
-three guided stories. Each scenario is one driver in one phase; the two
+The map currently holds three drivers, 30 outcome regions, 64 cited links
+and four guided stories. Each scenario is one driver in one phase; the
 drivers are not yet combined (see the roadmap in `docs/PLAN.md`).
 
 ## What it is
@@ -60,14 +61,17 @@ any static file server.
 
 ## Use it
 
-- **Driver** (top left) picks the phenomenon: ENSO or the Indian Ocean
-  Dipole. The other driver's marker turns grey; its card says it is not part
-  of the scenario.
+- **Driver** (top left) picks the phenomenon: ENSO, the Indian Ocean
+  Dipole or the North Atlantic Oscillation. The other drivers' markers turn
+  grey; their cards say they are not part of the scenario.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
-  Niña; positive, neutral or negative dipole.
-- **Event begins in** picks the calendar month of onset. June is the default
-  because both ENSO and dipole events usually start to develop in late
-  boreal spring or summer; the note under the control comes from the data.
+  Niña; positive, neutral or negative dipole; positive, neutral or negative
+  NAO.
+- **Event begins in** picks the calendar month of onset. Picking a driver
+  moves it to that driver's usual start: June for ENSO and the dipole, which
+  develop in late boreal spring or summer, and December for the NAO, which
+  is a winter pattern. Both the default and the note under the control come
+  from the data.
 - **Show connections** filters by confidence. Hidden links stay on the map as
   faint grey lines so you can see what was left out.
 - **Timeline** (bottom) scrubs from month 0 to month 12. Play advances one
@@ -120,9 +124,16 @@ drawn muted. Opposite pushes on the same node are flagged as conflicting.
 Nothing else happens: there is no feedback, no chaining beyond one hop, and
 no randomness.
 
-Climate facts live only in `data/`. Nothing in `src/` knows what El Niño or
-the Indian Ocean Dipole does to anyone; even the "events usually begin in"
-note under the month control is a field on the driver node.
+Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
+the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;
+even the "events usually begin in" note under the month control and the
+month it defaults to are fields on the driver node.
+
+One drawing rule is worth knowing. The map is Pacific-centered, so the
+Atlantic is split at the edges and the NAO's marker sits right beside the
+split. Its arrows to Europe leave the map at one edge and arrive from the
+other, the same way the coastlines do, rather than sweeping across the
+Pacific as a curve.
 
 ## Confidence tiers
 
@@ -142,7 +153,7 @@ note under the month control is a field on the driver node.
 
    ```yaml
    - id: el_nino_example_region       # unique, permanent
-     from: enso                        # a driver id (enso or iod)
+     from: enso                        # a driver id (enso, iod or nao)
      when: el_nino                     # a phase id of that driver
      to: example_region                # a node id
      effect: -1                        # +1 or -1 on the target's axis

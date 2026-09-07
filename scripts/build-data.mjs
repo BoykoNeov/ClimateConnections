@@ -41,6 +41,8 @@ const DriverNode = NodeBase.extend({
   kind: z.literal('driver'),
   /** one plain sentence shown under the start-month control: when events usually begin */
   onset_hint: z.string().min(20),
+  /** calendar month the start-month control jumps to when this driver is picked */
+  default_start_month: Month,
   phases: z.array(Phase).min(2),
 }).strict();
 

@@ -63,12 +63,15 @@ export class ControlsView {
       for (const d of drivers) {
         const o = document.createElement('option');
         o.value = d.id;
-        o.textContent = d.name;
+        // Drop the "(ENSO)"-style abbreviation so long names fit the dropdown.
+        o.textContent = d.name.replace(/\s*\(.*\)$/, '');
         sel.append(o);
       }
       sel.addEventListener('change', () => {
+        // A new driver starts in its first phase and in the month its events
+        // usually begin (a winter pattern should not start in June).
         const d = this.driverById(sel.value);
-        this.update({ driverId: d.id, phaseId: d.phases[0].id });
+        this.update({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month });
       });
       container.append(sel);
       this.driverSelect = sel;

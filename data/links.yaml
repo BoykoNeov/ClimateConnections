@@ -963,6 +963,255 @@ links:
       Niña, which often comes with them, also acts on this season.
     sources: [zubair_2003, kripalani_kumar_2004]
 
+  # ================================================================ POSITIVE NAO
+  # The NAO is a winter pattern of the atmosphere: no lag, and nothing outside
+  # the cold season. Positive and negative links are both listed because the
+  # sources describe the pattern as a see-saw that works in both directions.
+  - id: positive_nao_northern_europe
+    from: nao
+    when: positive
+    to: northern_europe_winter
+    effect: 1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      A strong Icelandic low and Azores high drive strong westerly winds that
+      carry mild, moist Atlantic air deep into Europe, so winters from
+      Ireland to the Baltic tend to be mild, wet and windy.
+    caveat: >
+      The pattern can flip within a week, so a winter that leans positive on
+      average can still hold a cold, snowy fortnight. The effect fades with
+      distance from the Atlantic and is weaker in the Alps and the south.
+    evidence_note: >
+      Hurrell found the pattern accounts for roughly a third of the
+      winter-to-winter temperature swings across northern Europe, more than
+      any other single influence; the mild winters of the early 1990s were
+      strongly positive years.
+    sources: [hurrell_1995, hurrell_2003]
+
+  - id: positive_nao_scandinavia_rain
+    from: nao
+    when: positive
+    to: scandinavia_winter_rainfall
+    effect: 1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      The storm track runs northeast toward Scotland and Norway, so one
+      Atlantic depression after another unloads rain and snow on the
+      mountains facing the ocean.
+    caveat: >
+      The extra precipitation is concentrated on the windward western slopes;
+      the sheltered east of Norway and Sweden see much less of it and can
+      even be drier.
+    sources: [hurrell_1995, uvo_2003]
+
+  - id: positive_nao_mediterranean
+    from: nao
+    when: positive
+    to: mediterranean_winter_rainfall
+    effect: -1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      With the Azores high strong and the storm track held far to the north,
+      few Atlantic depressions reach Iberia and the western Mediterranean,
+      so the winter rains that supply most of the year's water fall short.
+    caveat: >
+      Local storms in the Mediterranean itself can still bring heavy rain
+      in a positive winter, and the effect weakens eastward from Portugal
+      toward Italy.
+    evidence_note: >
+      In Portugal and western Spain the pattern explains around half of the
+      winter-to-winter change in rainfall and river flow, one of the
+      strongest teleconnections on this map; it is the reason a run of
+      positive winters in the late 1980s and early 1990s left Iberian
+      reservoirs low.
+    sources: [hurrell_1995, trigo_2004]
+
+  - id: positive_nao_eastern_north_america
+    from: nao
+    when: positive
+    to: eastern_north_america_winter
+    effect: 1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      A strong Icelandic low pulls mild southerly air up the eastern
+      seaboard and keeps the Arctic air bottled up to the north, so eastern
+      winters tend to be milder with less snow along the coast.
+    caveat: >
+      The effect is weaker than in Europe and is often overridden by the
+      Pacific: ENSO and the Pacific–North American pattern have as much or
+      more say over an eastern US winter.
+    sources: [hurrell_2003, seager_2010]
+
+  - id: positive_nao_greenland
+    from: nao
+    when: positive
+    to: greenland_winter
+    effect: -1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      The strong Icelandic low draws cold northerly air down its western
+      flank over Greenland and the Labrador Sea, so winters there tend to be
+      colder while northern Europe is mild.
+    caveat: >
+      Greenland's east coast and its interior respond less than the west
+      coast and Labrador, and the Arctic has warmed enough in recent decades
+      that a "cold" positive winter can still be milder than the past.
+    evidence_note: >
+      This Greenland–Europe seesaw is the oldest documented part of the
+      pattern; van Loon and Rogers traced it through two centuries of
+      records.
+    sources: [van_loon_rogers_1978, hurrell_1995]
+
+  - id: positive_nao_middle_east
+    from: nao
+    when: positive
+    to: middle_east_winter_rainfall
+    effect: -1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      Storms that would normally cross the Mediterranean and end over
+      Turkey and the Middle East are held to the north, so winters there
+      tend to be drier and the Tigris and Euphrates carry less water.
+    caveat: >
+      The connection is weaker and less steady than in Iberia. Some studies
+      find it clearly in river flows and rainfall over Turkey; others find
+      it only in some decades or not at all, and local Mediterranean storms
+      can dominate a winter.
+    sources: [cullen_demenocal_2000, turkes_erlat_2003]
+
+  # ================================================================ NEGATIVE NAO
+  - id: negative_nao_northern_europe
+    from: nao
+    when: negative
+    to: northern_europe_winter
+    effect: -1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      With the Icelandic low and Azores high both weak, the westerlies
+      slacken and often stall behind a blocking high near Greenland, so
+      cold air from Scandinavia and Russia spreads west and winters tend to
+      be cold, calm and snowy.
+    caveat: >
+      Blocking highs come and go within a winter, so even a strongly
+      negative season alternates cold snaps with milder spells. The cold is
+      most marked in the British Isles and the North Sea countries.
+    evidence_note: >
+      The winter of 2009–10, the most negative on record, was the coldest in
+      Britain since 1978–79; studies noted it would have been colder still
+      without the warming of recent decades.
+    sources: [hurrell_1995, cattiaux_2010, osborn_2011]
+
+  - id: negative_nao_scandinavia_rain
+    from: nao
+    when: negative
+    to: scandinavia_winter_rainfall
+    effect: -1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      The storm track shifts south toward Iberia and fewer Atlantic
+      depressions reach Norway and Scotland, so the mountains facing the
+      ocean have a drier winter than usual.
+    caveat: >
+      Snowfall can still be heavy from cold easterly winds off the Baltic,
+      and the sheltered east of Scandinavia does not follow the west.
+    sources: [hurrell_1995, uvo_2003]
+
+  - id: negative_nao_mediterranean
+    from: nao
+    when: negative
+    to: mediterranean_winter_rainfall
+    effect: 1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      With the Azores high weak, Atlantic depressions run south into Iberia
+      and the western Mediterranean one after another, so winters tend to
+      be wet, sometimes with flooding in Portugal, Spain and Morocco.
+    caveat: >
+      A wet winter needs the storms to actually arrive; a negative winter
+      dominated by a stationary block can leave Iberia dry and cold instead.
+    evidence_note: >
+      The winter of 2009–10 brought the wettest season in decades to
+      southern Iberia, with flooding in Andalusia and Portugal, the
+      textbook negative-phase footprint.
+    sources: [hurrell_1995, trigo_2004, vicente_serrano_2011]
+
+  - id: negative_nao_eastern_north_america
+    from: nao
+    when: negative
+    to: eastern_north_america_winter
+    effect: -1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      A weak Icelandic low and a blocking high over Greenland steer Arctic
+      air south into the eastern United States, and coastal storms running
+      up against the cold air tend to bring heavy snow to the big eastern
+      cities.
+    caveat: >
+      The Pacific often has more say: whether a negative winter is snowy or
+      merely cold depends on the moisture that El Niño or La Niña sends
+      across the continent.
+    evidence_note: >
+      The record snows of February 2010 in Washington, Baltimore and
+      Philadelphia came in a winter that combined a strongly negative NAO
+      with an El Niño; studies credit the NAO for the cold and El Niño for
+      the moisture.
+    sources: [hurrell_2003, seager_2010]
+
+  - id: negative_nao_greenland
+    from: nao
+    when: negative
+    to: greenland_winter
+    effect: 1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      With the Icelandic low weak and a high sitting near Greenland, mild
+      air is drawn north over the Labrador Sea and west Greenland, so
+      winters there tend to be much milder than usual.
+    caveat: >
+      The warmth is largest over west Greenland and Baffin Bay; the east
+      coast, facing the Greenland Sea, shows less of it.
+    sources: [van_loon_rogers_1978, hurrell_1995]
+
+  - id: negative_nao_middle_east
+    from: nao
+    when: negative
+    to: middle_east_winter_rainfall
+    effect: 1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      Storms that cross a wet Mediterranean tend to continue east and bring
+      more rain and snow to Turkey and the headwaters of the Tigris and
+      Euphrates.
+    caveat: >
+      The connection is weaker and less steady than in Iberia and some
+      studies do not find it at all; a wet winter here can just as well come
+      from a local Mediterranean low.
+    sources: [cullen_demenocal_2000, turkes_erlat_2003]
+
 # ================================================================== SOURCES
 sources:
   - key: ropelewski_halpert_1986
@@ -1107,3 +1356,40 @@ sources:
   - key: wainwright_2021
     citation: "Wainwright, C. M., Finney, D. L., Kilavi, M., Black, E., & Marsham, J. H. (2021). Extreme rainfall in East Africa, October 2019–January 2020 and context under future climate change. Weather, 76(1), 26–31."
     url: https://doi.org/10.1002/wea.3824
+  # ---- North Atlantic Oscillation
+  - key: hurrell_1995
+    citation: "Hurrell, J. W. (1995). Decadal trends in the North Atlantic Oscillation: Regional temperatures and precipitation. Science, 269(5224), 676–679."
+    url: https://doi.org/10.1126/science.269.5224.676
+  - key: hurrell_2003
+    citation: "Hurrell, J. W., Kushnir, Y., Ottersen, G., & Visbeck, M. (2003). An overview of the North Atlantic Oscillation. In The North Atlantic Oscillation: Climatic Significance and Environmental Impact, Geophysical Monograph 134, 1–35. American Geophysical Union."
+    url: https://doi.org/10.1029/134GM01
+  - key: van_loon_rogers_1978
+    citation: "van Loon, H., & Rogers, J. C. (1978). The seesaw in winter temperatures between Greenland and northern Europe. Part I: General description. Monthly Weather Review, 106(3), 296–310."
+    url: https://doi.org/10.1175/1520-0493(1978)106<0296:TSIWTB>2.0.CO;2
+  - key: trigo_2004
+    citation: "Trigo, R. M., Pozo-Vázquez, D., Osborn, T. J., Castro-Díez, Y., Gámiz-Fortis, S., & Esteban-Parra, M. J. (2004). North Atlantic Oscillation influence on precipitation, river flow and water resources in the Iberian Peninsula. International Journal of Climatology, 24(8), 925–944."
+    url: https://doi.org/10.1002/joc.1048
+  - key: uvo_2003
+    citation: "Uvo, C. B. (2003). Analysis and regionalization of northern European winter precipitation based on its relationship with the North Atlantic Oscillation. International Journal of Climatology, 23(10), 1185–1194."
+    url: https://doi.org/10.1002/joc.930
+  - key: cullen_demenocal_2000
+    citation: "Cullen, H. M., & deMenocal, P. B. (2000). North Atlantic influence on Tigris–Euphrates streamflow. International Journal of Climatology, 20(8), 853–863."
+    url: https://doi.org/10.1002/1097-0088(20000630)20:8<853::AID-JOC497>3.0.CO;2-M
+  - key: turkes_erlat_2003
+    citation: "Türkeş, M., & Erlat, E. (2003). Precipitation changes and variability in Turkey linked to the North Atlantic Oscillation during the period 1930–2000. International Journal of Climatology, 23(14), 1771–1796."
+    url: https://doi.org/10.1002/joc.962
+  - key: seager_2010
+    citation: "Seager, R., Kushnir, Y., Nakamura, J., Ting, M., & Naik, N. (2010). Northern Hemisphere winter snow anomalies: ENSO, NAO and the winter of 2009/10. Geophysical Research Letters, 37, L14703."
+    url: https://doi.org/10.1029/2010GL043830
+  - key: cattiaux_2010
+    citation: "Cattiaux, J., Vautard, R., Cassou, C., Yiou, P., Masson-Delmotte, V., & Codron, F. (2010). Winter 2010 in Europe: A cold extreme in a warming climate. Geophysical Research Letters, 37, L20704."
+    url: https://doi.org/10.1029/2010GL044613
+  - key: osborn_2011
+    citation: "Osborn, T. J. (2011). Winter 2009/2010 temperatures and a record-breaking North Atlantic Oscillation index. Weather, 66(1), 19–21."
+    url: https://doi.org/10.1002/wea.660
+  - key: vicente_serrano_2011
+    citation: "Vicente-Serrano, S. M., Trigo, R. M., López-Moreno, J. I., Liberato, M. L. R., Lorenzo-Lacruz, J., Beguería, S., Morán-Tejeda, E., & El Kenawy, A. (2011). Extreme winter precipitation in the Iberian Peninsula in 2010: anomalies, driving mechanisms and future projections. Climate Research, 46(1), 51–65."
+    url: https://doi.org/10.3354/cr00977
+  - key: ncar_nao_guide
+    citation: "National Center for Atmospheric Research, Climate Data Guide. Hurrell North Atlantic Oscillation (NAO) index (station-based)."
+    url: https://climatedataguide.ucar.edu/climate-data/hurrell-north-atlantic-oscillation-nao-index-station-based

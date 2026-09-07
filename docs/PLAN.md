@@ -2,8 +2,8 @@
 
 A teaching tool that draws known climate teleconnections on a world map. The user
 picks a driver phenomenon (ENSO in version 1; the Indian Ocean Dipole was added
-in M8), sets its phase, and watches the consequences ripple outward across the
-map over a twelve-month timeline.
+in M8 and the North Atlantic Oscillation in M9), sets its phase, and watches the
+consequences ripple outward across the map over a twelve-month timeline.
 
 This is **not** a climate simulator. Nothing is computed from physics. Every
 effect shown comes from a hand-written, cited knowledge base. The app is a
@@ -153,6 +153,8 @@ A list of nodes under a top-level `nodes:` key. Each node:
   region: Tropical Pacific     # short human label for the card
   timescale: 2–7 years         # free text, shown on card
   # drivers only:
+  onset_hint: ...              # one sentence under the start-month control (M8)
+  default_start_month: 6       # month the start-month control jumps to for this driver (M9)
   phases:
     - id: el_nino
       label: El Niño
@@ -319,6 +321,12 @@ and lowest-confidence selection.
   students. Detect the crossing (a large jump between consecutive projected
   sample points) and fall back to a gently bowed quadratic curve in screen
   space for that arrow only.
+- Short-hop exception (M9): the North Atlantic sits on the seam, so an arrow
+  from the NAO marker to Europe crosses it after a few degrees. For a
+  crossing arc shorter than a quarter of the globe the bowed curve would
+  sweep across the whole map, which is worse than the wrap; draw the
+  great circle as the seam splits it (a stub leaving one edge, the rest
+  arriving from the other), the same way the coastlines are split.
 - Markers use the node's optional `label` field (short text) and fall back
   to `name`.
 - Stroke by confidence: established = solid, 2.5px; probable = dashed, 2px;
@@ -434,6 +442,36 @@ is fully green.
 - Not in M8 (later v2 items): driver-to-driver links, multi-driver scenarios
   with conflict flags, compare mode.
 
+### M9 — Third driver: North Atlantic Oscillation (signed off 2026-09-07)
+- Data: `nao` driver node with positive / neutral / negative phases; six new
+  outcome nodes (northern Europe winter temperature, Norway and Scotland
+  winter precipitation, Iberia and Mediterranean winter rainfall, eastern
+  North America winter temperature, Greenland and Labrador winter
+  temperature, Turkey and Middle East winter rainfall); twelve cited links,
+  six per phase, all with zero lag and a winter-only season, because the
+  sources describe a see-saw that works in both directions (established for
+  the Europe–Greenland–Iberia core, probable for eastern North America,
+  contested for the Middle East); one story (the record negative winter of
+  2009–10).
+- Schema: drivers carry `default_start_month`. Picking a driver moves the
+  start-month control to it (ENSO and IOD: June; NAO: December), so a
+  winter pattern is not shown starting in June and the "June" default
+  leaves `src/`.
+- Rendering: the short-hop seam exception in section 5.3, so the NAO's
+  European arrows are not drawn as curves across the Pacific.
+- Honesty note carried in the data: the NAO swings within weeks, so a
+  twelve-month scenario "holding" a phase is a simplification of a winter
+  that leans one way on average. The driver summary, the onset hint and the
+  story's last step all say so, and the summer months show every NAO link
+  as pending rather than applied.
+- Engine: unchanged.
+- Tests: acceptance block for positive and negative NAO (December start),
+  nothing applied April–October, ENSO/IOD regions stay hollow, the default
+  start months, neutral applies nothing for all three drivers.
+- Not in M9 (later v2 items): driver-to-driver links (the NAO–ENSO winter
+  interplay in the 2009–10 story is told in text, not drawn), multi-driver
+  scenarios with conflict flags, compare mode.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -514,9 +552,9 @@ writing mechanism text):
 
 ## 10. Roadmap beyond version 1 (do not start without sign-off)
 
-- **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation as
-  drivers; driver-to-driver links; season dial; compare mode (two maps side
-  by side); multi-driver scenarios with conflict flags; spreadsheet-to-YAML
-  importer if outside contributors join.
+- **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation
+  (done, M9) as drivers; driver-to-driver links; season dial; compare mode
+  (two maps side by side); multi-driver scenarios with conflict flags;
+  spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

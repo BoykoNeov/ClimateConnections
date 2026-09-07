@@ -27,6 +27,8 @@ nodes:
     sources: [key, key]        # optional; keys from links.yaml `sources`
     onset_hint: >              # drivers only: one plain sentence shown under the
       ...                      # "Event begins in" control, saying when events usually start
+    default_start_month: 6     # drivers only, 1–12: the month "Event begins in" jumps to
+                               # when this driver is picked (ENSO and IOD June, NAO December)
     phases:                    # drivers only, at least 2
       - id: el_nino
         label: El Niño
@@ -46,8 +48,8 @@ nodes:
 ```
 
 Rules enforced by the validator:
-- Drivers have `phases` and `onset_hint` and no `axis`/`labels`; outcomes
-  have `axis` and `labels` and no `phases`.
+- Drivers have `phases`, `onset_hint` and `default_start_month` and no
+  `axis`/`labels`; outcomes have `axis` and `labels` and no `phases`.
 - Any number of drivers is allowed. The app offers a driver dropdown when
   there is more than one; a scenario is always one driver in one phase.
 - `lat` in [-90, 90], `lon` in [-180, 180].
@@ -143,8 +145,9 @@ card for every node shows a "How sure are we?" block built from
 
 ## Month indexing
 
-Month index 0 is the month the driver phase begins (the app defaults to
-June, when ENSO events typically start to develop). A link with
+Month index 0 is the month the driver phase begins (the app starts at the
+driver's `default_start_month`: June for ENSO and the IOD, December for the
+NAO). A link with
 `lag_months: [4, 8]` becomes available at index 4. It is drawn as applied in
 any month at or after index 4 whose calendar month is in `season`, and as
 pending (muted) in months where it is available but out of season.

@@ -1,6 +1,6 @@
 // Map view: Pacific-centered projection, base map, node markers, link arrows.
 
-import { geoNaturalEarth1, geoPath, geoGraticule10, geoInterpolate, geoArea } from 'd3-geo';
+import { geoNaturalEarth1, geoPath, geoGraticule10, geoInterpolate, geoArea, geoDistance } from 'd3-geo';
 import type { GeoPermissibleObjects } from 'd3-geo';
 import { select } from 'd3-selection';
 import type { Selection } from 'd3-selection';
@@ -152,7 +152,10 @@ export class MapView {
    * Arrow path from driver to target. Great circle by default; if the great
    * circle would cross the projection seam (and so wrap around the map edge),
    * fall back to a gently bowed curve in screen space so the arrow stays
-   * inside the map. See docs/PLAN.md §5.3.
+   * inside the map. Exception: a short hop across the seam (under a quarter
+   * of the globe, e.g. from the North Atlantic to Europe) is drawn as the
+   * seam splits it, leaving one edge and re-entering at the other, because
+   * a bowed curve would sweep across the whole map. See docs/PLAN.md §5.3.
    */
   private arcPath(from: GraphNode, to: GraphNode): string {
     const interp = geoInterpolate([from.lon, from.lat], [to.lon, to.lat]);
@@ -167,7 +170,8 @@ export class MapView {
       if (p && prev && Math.hypot(p[0] - prev[0], p[1] - prev[1]) > this.width / 4) crossesSeam = true;
       if (p) prev = p;
     }
-    if (!crossesSeam) {
+    const shortHop = geoDistance([from.lon, from.lat], [to.lon, to.lat]) < Math.PI / 4;
+    if (!crossesSeam || shortHop) {
       return this.path({ type: 'LineString', coordinates: coords } as GeoPermissibleObjects) ?? '';
     }
     const a = this.projection([from.lon, from.lat]);
