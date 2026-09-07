@@ -17,7 +17,7 @@ async function main(): Promise<void> {
   const driver = graph.nodes.find((n): n is DriverNode => n.kind === 'driver');
   if (!driver) throw new Error('graph has no driver node');
 
-  const controls: ControlState = { phaseId: driver.phases[0].id, startMonth: 6, filter: 'all' };
+  const controls: ControlState = { phaseId: driver.phases[0].id, startMonth: 6, filter: 'all', showAreas: true };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let timeline: Timeline;
@@ -48,7 +48,7 @@ async function main(): Promise<void> {
     const arrivals = new Set([...applied].filter((id) => !prevApplied.has(id)));
     prevApplied = applied;
     const phase = driver!.phases.find((p) => p.id === controls.phaseId)!;
-    map.render(month, { phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId });
+    map.render(month, { phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId, showAreas: controls.showAreas });
     monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
     renderCard(cardEl, graph, node, month, controls.phaseId);

@@ -1,6 +1,6 @@
 // Map view: Pacific-centered projection, base map, node markers, link arrows.
 
-import { geoNaturalEarth1, geoPath, geoGraticule10, geoInterpolate } from 'd3-geo';
+import { geoNaturalEarth1, geoPath, geoGraticule10, geoInterpolate, geoArea } from 'd3-geo';
 import type { GeoPermissibleObjects } from 'd3-geo';
 import { select } from 'd3-selection';
 import type { Selection } from 'd3-selection';
@@ -30,6 +30,38 @@ export interface RenderOptions {
   /** link ids that first became applied this month (animate) */
   arrivals: Set<string>;
   selectedNodeId: string | null;
+  /** draw each node's rough affected area under the arrows */
+  showAreas: boolean;
+}
+
+/**
+ * Turn a list of [lon, lat] corners into a spherical polygon. Edges are
+ * densified in lon/lat space (so a constant-latitude edge follows the
+ * parallel), longitudes take the shorter way round, and the ring is wound so
+ * that d3 treats the small side as the interior.
+ */
+export function areaPolygon(ring: [number, number][]): GeoJSON.Polygon {
+  const out: [number, number][] = [];
+  for (let i = 0; i < ring.length; i++) {
+    const [lon0, lat0] = ring[i];
+    const [lon1, lat1] = ring[(i + 1) % ring.length];
+    let dlon = lon1 - lon0;
+    if (dlon > 180) dlon -= 360;
+    if (dlon < -180) dlon += 360;
+    const dlat = lat1 - lat0;
+    const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dlon), Math.abs(dlat)) / 2));
+    for (let s = 0; s < steps; s++) {
+      const t = s / steps;
+      let lon = lon0 + dlon * t;
+      if (lon > 180) lon -= 360;
+      if (lon < -180) lon += 360;
+      out.push([lon, lat0 + dlat * t]);
+    }
+  }
+  out.push(out[0]);
+  const poly: GeoJSON.Polygon = { type: 'Polygon', coordinates: [out] };
+  if (geoArea(poly) > 2 * Math.PI) poly.coordinates[0].reverse();
+  return poly;
 }
 
 interface ArrowDatum {
@@ -43,7 +75,9 @@ interface ArrowDatum {
 export class MapView {
   private svg: Selection<SVGSVGElement, unknown, null, undefined>;
   private gBase: Selection<SVGGElement, unknown, null, undefined>;
+  private gAreas: Selection<SVGGElement, unknown, null, undefined>;
   private gLinks: Selection<SVGGElement, unknown, null, undefined>;
+  private areas: Map<string, GeoJSON.Polygon>;
   private gNodes: Selection<SVGGElement, unknown, null, undefined>;
   private projection = geoNaturalEarth1().rotate([-160, 0]);
   private path = geoPath(this.projection);
@@ -55,6 +89,7 @@ export class MapView {
 
   constructor(private container: HTMLElement, private graph: Graph) {
     this.nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+    this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
     this.svg = select(container).append('svg').attr('role', 'img').attr('aria-label', 'World map of climate connections');
     const defs = this.svg.append('defs');
     for (const [id, color] of this.markerColors()) {
@@ -64,6 +99,7 @@ export class MapView {
         .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', color);
     }
     this.gBase = this.svg.append('g').attr('class', 'base');
+    this.gAreas = this.svg.append('g').attr('class', 'areas');
     this.gLinks = this.svg.append('g').attr('class', 'links');
     this.gNodes = this.svg.append('g').attr('class', 'nodes');
     this.drawBase();
@@ -101,18 +137,76 @@ export class MapView {
     if (this.lastState) this.render(this.lastState.month, { ...this.lastState.opts, arrivals: new Set() });
   }
 
-  private arc(from: GraphNode, to: GraphNode): GeoPermissibleObjects {
+  /**
+   * Arrow path from driver to target. Great circle by default; if the great
+   * circle would cross the projection seam (and so wrap around the map edge),
+   * fall back to a gently bowed curve in screen space so the arrow stays
+   * inside the map. See docs/PLAN.md §5.3.
+   */
+  private arcPath(from: GraphNode, to: GraphNode): string {
     const interp = geoInterpolate([from.lon, from.lat], [to.lon, to.lat]);
     const n = 48;
     const coords: [number, number][] = [];
-    for (let i = 0; i <= n; i++) coords.push(interp(i / n));
-    return { type: 'LineString', coordinates: coords };
+    let prev: [number, number] | null = null;
+    let crossesSeam = false;
+    for (let i = 0; i <= n; i++) {
+      const c = interp(i / n);
+      coords.push(c);
+      const p = this.projection(c);
+      if (p && prev && Math.hypot(p[0] - prev[0], p[1] - prev[1]) > this.width / 4) crossesSeam = true;
+      if (p) prev = p;
+    }
+    if (!crossesSeam) {
+      return this.path({ type: 'LineString', coordinates: coords } as GeoPermissibleObjects) ?? '';
+    }
+    const a = this.projection([from.lon, from.lat]);
+    const b = this.projection([to.lon, to.lat]);
+    if (!a || !b) return '';
+    const mx = (a[0] + b[0]) / 2;
+    const my = (a[1] + b[1]) / 2;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const len = Math.hypot(dx, dy) || 1;
+    // Bow away from the equator so the curve does not pile onto the driver's row.
+    const sign = my < this.height / 2 ? -1 : 1;
+    const bow = 0.18 * len * sign;
+    const cx = mx + (-dy / len) * bow * (dx < 0 ? -1 : 1);
+    const cy = my + (dx / len) * bow * (dx < 0 ? -1 : 1);
+    return `M${a[0]},${a[1]} Q${cx},${cy} ${b[0]},${b[1]}`;
   }
 
   render(month: MonthState, opts: RenderOptions): void {
     this.lastState = { month, opts };
     const driver = this.graph.nodes.find((n) => n.kind === 'driver');
     if (!driver) return;
+
+    // ---- affected areas (under the arrows, same colour/state as the marker)
+    const areaNodes = opts.showAreas ? this.graph.nodes.filter((n) => this.areas.has(n.id)) : [];
+    const areaSel = this.gAreas.selectAll<SVGPathElement, GraphNode>('path.area').data(areaNodes, (d) => d.id);
+    areaSel.exit().remove();
+    areaSel.enter().append('path')
+      .on('click', (_e, d) => this.onNodeClick(d.id))
+      .merge(areaSel)
+      .attr('class', (d) => {
+        const st = month.nodes[d.id];
+        const cls = ['area'];
+        if (d.kind === 'outcome') {
+          if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) cls.push('inactive');
+          else if (st.viaLinkIds.length === 0) cls.push('pending');
+          if (st.conflicting) cls.push('conflicting');
+        }
+        if (opts.selectedNodeId === d.id) cls.push('selected');
+        return cls.join(' ');
+      })
+      .attr('fill', (d) => this.nodeColor(d, month, opts.phaseColor))
+      .attr('stroke', (d) => this.nodeColor(d, month, opts.phaseColor))
+      .attr('d', (d) => this.path(this.areas.get(d.id)!));
+    // Global outcomes (no area) tint the edge of the whole map instead.
+    const globalNode = this.graph.nodes.find((n) => n.kind === 'outcome' && n.global);
+    const globalState = globalNode ? month.nodes[globalNode.id] : null;
+    this.gBase.select('path.sphere')
+      .attr('stroke', globalNode && globalState && opts.showAreas && globalState.value !== 0 ? stateColor(globalNode, globalState.value) : null)
+      .attr('stroke-width', globalNode && globalState && opts.showAreas && globalState.value !== 0 ? 4 : null);
 
     // ---- arrows
     const arrows: ArrowDatum[] = [];
@@ -141,7 +235,7 @@ export class MapView {
       .attr('class', (d) => `link ${d.confidence} ${d.kind}`)
       .attr('stroke', (d) => d.color)
       .attr('marker-end', (d) => `url(#arrow-${this.markerId(d.target, d.link.effect, d.kind)})`)
-      .attr('d', (d) => this.path(this.arc(driver, d.target)));
+      .attr('d', (d) => this.arcPath(driver, d.target));
 
     // Arrival animation: fade in, and for solid lines draw along the path.
     merged.filter((d) => opts.arrivals.has(d.link.id) && d.kind === 'applied').each(function (d) {
@@ -180,25 +274,25 @@ export class MapView {
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
       });
     nMerged.select('circle')
-      .attr('fill', (d) => {
-        if (d.kind === 'driver') return opts.phaseColor;
-        const st = month.nodes[d.id];
-        if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) {
-          const pendingLink = this.graph.links.find((l) => l.id === st.pendingLinkIds[0])!;
-          return stateColor(d, pendingLink.effect);
-        }
-        return stateColor(d, st.value);
-      })
+      .attr('fill', (d) => this.nodeColor(d, month, opts.phaseColor))
       .attr('stroke', (d) => (d.kind === 'driver' ? '#ffffff' : stateColor(d, month.nodes[d.id].value === 0 ? 1 : month.nodes[d.id].value)))
       .attr('stroke-opacity', (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6));
     nMerged.select('text')
       .attr('x', (d) => (d.kind === 'driver' ? 0 : 10))
       .attr('y', (d) => (d.kind === 'driver' ? 24 : 0))
       .attr('text-anchor', (d) => (d.kind === 'driver' ? 'middle' : 'start'))
-      .text((d) => (d.kind === 'driver' ? d.name.replace(/\s*\(.*\)$/, '') : shortName(d)));
+      .text((d) => d.label ?? d.name);
   }
-}
 
-function shortName(n: GraphNode): string {
-  return n.name.length > 26 ? n.name.slice(0, 24).replace(/\s+\S*$/, '') + '…' : n.name;
+  /** Marker/area colour for a node in a month: phase colour for the driver,
+   *  state colour for outcomes, and the expected colour for pending ones. */
+  private nodeColor(d: GraphNode, month: MonthState, phaseColor: string): string {
+    if (d.kind === 'driver') return phaseColor;
+    const st = month.nodes[d.id];
+    if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) {
+      const pendingLink = this.graph.links.find((l) => l.id === st.pendingLinkIds[0])!;
+      return stateColor(d, pendingLink.effect);
+    }
+    return stateColor(d, st.value);
+  }
 }

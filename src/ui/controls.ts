@@ -10,6 +10,7 @@ export interface ControlState {
   phaseId: string;
   startMonth: number;
   filter: ConfidenceFilter;
+  showAreas: boolean;
 }
 
 export class ControlsView {
@@ -70,6 +71,22 @@ export class ControlsView {
     hint2.className = 'hint';
     hint2.textContent = 'Hidden connections stay on the map as faint grey lines, so you can see what was left out.';
     container.append(hint2);
+
+    const h35 = document.createElement('h2');
+    h35.textContent = 'Map';
+    container.append(h35);
+    const areaLabel = document.createElement('label');
+    areaLabel.className = 'check';
+    const areaBox = document.createElement('input');
+    areaBox.type = 'checkbox';
+    areaBox.checked = state.showAreas;
+    areaBox.addEventListener('change', () => this.update({ showAreas: areaBox.checked }));
+    areaLabel.append(areaBox, document.createTextNode(' Show affected areas'));
+    container.append(areaLabel);
+    const hint3 = document.createElement('p');
+    hint3.className = 'hint';
+    hint3.textContent = 'Rough outlines of the region each point stands for. Illustrative, not exact boundaries.';
+    container.append(hint3);
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';

@@ -16,6 +16,10 @@ export interface Phase {
 interface NodeBase {
   id: string;
   name: string;
+  /** short label for the map marker; falls back to name */
+  label?: string;
+  /** rough outline of the affected region as [lon, lat] corners (illustrative) */
+  area?: [number, number][];
   lat: number;
   lon: number;
   region: string;

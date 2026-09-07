@@ -145,8 +145,10 @@ A list of nodes under a top-level `nodes:` key. Each node:
 - id: enso                     # lowercase, snake_case, unique, stable (never rename)
   name: El Niño–Southern Oscillation
   kind: driver                 # driver | outcome
+  label: ENSO                  # optional short map label (max 24 chars)
   lat: -2                      # marker position, decimal degrees
-  lon: -140
+  lon: -125
+  area: [[-175, 8], [-85, 8], [-85, -8], [-175, -8]]   # optional rough outline, [lon, lat] corners
   region: Tropical Pacific     # short human label for the card
   timescale: 2–7 years         # free text, shown on card
   # drivers only:
@@ -310,6 +312,14 @@ and lowest-confidence selection.
   path: build a GeoJSON `LineString` from `d3.geoInterpolate` samples (about
   40 points) and run it through `geoPath`, so the projection handles wrap
   and clipping. Do not draw straight screen-space lines.
+- Seam rule: with the Pacific centred, the projection seam runs through the
+  Atlantic (about 20°W). A great circle from the tropical Pacific to Africa
+  crosses that seam and would wrap around the map edge, which confuses
+  students. Detect the crossing (a large jump between consecutive projected
+  sample points) and fall back to a gently bowed quadratic curve in screen
+  space for that arrow only.
+- Markers use the node's optional `label` field (short text) and fall back
+  to `name`.
 - Stroke by confidence: established = solid, 2.5px; probable = dashed, 2px;
   contested = dotted, 1.5px, 60% opacity.
 - Color by effect sign, matching the target's marker color.
@@ -339,7 +349,18 @@ phase description and the timescale.
 - A permanent one-line disclaimer under the title: "Shows historical
   tendencies from published research. Not a forecast, not a simulation."
 
-### 5.7 Accessibility and print
+### 5.7 Affected-areas layer
+A separate, toggleable layer drawn between the base map and the arrows.
+Each node may carry an `area` (rough polygon as [lon, lat] corners, see
+section 3.1). The polygon is filled and outlined in the same colour and
+state as the node's marker (translucent fill when active, faint dashed
+outline when pending, grey dotted outline when inactive). A `global`
+outcome has no polygon; instead the map's outer edge is tinted with its
+state colour. The layer never restyles points or arrows; it is additive,
+and the "Show affected areas" checkbox turns it off. Areas are
+illustrative outlines, not scientific boundaries, and the control says so.
+
+### 5.8 Accessibility and print
 - All colors must also be distinguishable by line style or shape.
 - The page must survive `Ctrl+P` as a legible one-page figure (add a print
   stylesheet that hides controls).

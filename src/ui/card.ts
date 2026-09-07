@@ -34,7 +34,7 @@ function sureBlock(link: Link): string {
 function linkBlock(link: Link, sources: Map<string, Source>, status: 'applied' | 'pending'): string {
   const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   return `<div class="link-block">
-    <h4>${status === 'pending' ? 'Out of season right now: ' : ''}${esc(link.mechanism.trim().split('. ')[0])}.</h4>
+    <h4>${status === 'pending' ? 'Expected, but out of season right now' : 'Why this happens'} <span class="badge ${link.confidence}">${link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
     <p class="hint">${esc(timing)}</p>
     ${sureBlock(link)}

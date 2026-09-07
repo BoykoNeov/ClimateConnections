@@ -11,9 +11,15 @@ validator wins and this document needs fixing.
 nodes:
   - id: enso                   # lowercase snake_case, unique, permanent
     name: El Niño–Southern Oscillation (ENSO)
+    label: ENSO                # optional short map label (max 24 chars); falls back to name
     kind: driver               # driver | outcome
     lat: -2                    # marker position, decimal degrees
-    lon: -140
+    lon: -125
+    area: [[-175, 8], [-85, 8], [-85, -8], [-175, -8]]
+                               # optional: rough outline of the region, 3+ [lon, lat] corners.
+                               # Edges follow straight lon/lat lines; longitudes take the
+                               # shorter way round, so crossing the date line is fine.
+                               # Illustrative only, shown in the toggleable areas layer.
     region: Tropical Pacific Ocean
     timescale: Events every 2–7 years
     summary: >                 # 1–3 sentences, plain language

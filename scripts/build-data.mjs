@@ -27,6 +27,8 @@ const Phase = z.object({
 const NodeBase = z.object({
   id: Id,
   name: z.string().min(1),
+  label: z.string().min(1).max(24).optional(),
+  area: z.array(z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)])).min(3).optional(),
   lat: z.number().min(-90).max(90),
   lon: z.number().min(-180).max(180),
   region: z.string().min(1),

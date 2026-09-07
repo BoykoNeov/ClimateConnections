@@ -1,14 +1,19 @@
 # Nodes: the phenomena on the map.
 # Schema: docs/DATA_FORMAT.md. Ids are permanent; change `name`, never `id`.
 # Positions are marker positions for the map, not precise scientific regions.
+# `area` is a rough outline of the region the node describes, as [lon, lat]
+# corners; edges follow straight lines in lon/lat. Illustrative, not a
+# scientific boundary.
 
 nodes:
   # ---------------------------------------------------------------- driver
   - id: enso
     name: El Niño–Southern Oscillation (ENSO)
+    label: ENSO
     kind: driver
     lat: -2
-    lon: -140
+    lon: -125
+    area: [[-175, 8], [-85, 8], [-85, -8], [-175, -8]]
     region: Tropical Pacific Ocean
     timescale: Events every 2–7 years, each lasting about 9–18 months
     summary: >
@@ -49,9 +54,11 @@ nodes:
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
+    label: Indian monsoon
     kind: outcome
     lat: 21
     lon: 78
+    area: [[68, 24], [72, 34], [80, 31], [89, 28], [92, 22], [88, 20], [80, 12], [77, 7], [72, 15]]
     region: India
     timescale: June–September each year
     axis: wet_dry
@@ -68,9 +75,11 @@ nodes:
 
   - id: indonesia_rainfall
     name: Indonesia and the Maritime Continent
+    label: Indonesia
     kind: outcome
     lat: -2
     lon: 115
+    area: [[95, 7], [150, 7], [150, -11], [95, -11]]
     region: Indonesia, Malaysia, Papua New Guinea
     timescale: Dry season roughly June–October
     axis: wet_dry
@@ -87,9 +96,11 @@ nodes:
 
   - id: east_australia_rainfall
     name: Eastern Australia rainfall
+    label: Eastern Australia
     kind: outcome
     lat: -28
     lon: 148
+    area: [[138, -10], [155, -10], [155, -39], [140, -39]]
     region: Queensland, New South Wales, Victoria
     timescale: Winter and spring (June–November) most affected
     axis: wet_dry
@@ -105,9 +116,11 @@ nodes:
 
   - id: peru_coast_rainfall
     name: Coastal Peru and Ecuador rainfall
+    label: Peru coast rain
     kind: outcome
     lat: -3.5
     lon: -80
+    area: [[-82, 2], [-78, 2], [-78, -8], [-82, -8]]
     region: Northern Peru, southern Ecuador
     timescale: December–April of the year after an event begins
     axis: wet_dry
@@ -123,9 +136,11 @@ nodes:
 
   - id: peru_fishery
     name: Peruvian anchoveta fishery
+    label: Peru fishery
     kind: outcome
     lat: -12
     lon: -79
+    area: [[-84, -4], [-79, -4], [-72, -18], [-78, -20]]
     region: Humboldt Current, offshore Peru
     timescale: Months to a year
     axis: active_quiet
@@ -142,9 +157,11 @@ nodes:
 
   - id: us_gulf_coast_winter
     name: US Gulf Coast and Florida winter rainfall
+    label: US Gulf Coast
     kind: outcome
     lat: 30
     lon: -88
+    area: [[-100, 33], [-80, 33], [-80, 25], [-98, 25]]
     region: Texas to Florida
     timescale: November–March
     axis: wet_dry
@@ -160,9 +177,11 @@ nodes:
 
   - id: california_winter
     name: California winter rainfall
+    label: California
     kind: outcome
     lat: 36
     lon: -120
+    area: [[-125, 42], [-120, 42], [-114, 32.5], [-118, 32.5], [-124, 38]]
     region: California
     timescale: December–March
     axis: wet_dry
@@ -179,9 +198,11 @@ nodes:
 
   - id: pacific_northwest_winter
     name: Pacific Northwest winter temperature
+    label: Pacific Northwest
     kind: outcome
     lat: 48
     lon: -122
+    area: [[-130, 54], [-114, 54], [-114, 42], [-125, 42]]
     region: Washington, Oregon, British Columbia
     timescale: December–February
     axis: warm_cool
@@ -198,9 +219,11 @@ nodes:
 
   - id: atlantic_hurricanes
     name: Atlantic hurricane season
+    label: Atlantic hurricanes
     kind: outcome
     lat: 15
     lon: -50
+    area: [[-90, 30], [-20, 30], [-20, 8], [-90, 8]]
     region: Tropical North Atlantic and Caribbean
     timescale: June–November
     axis: active_quiet
@@ -216,9 +239,11 @@ nodes:
 
   - id: east_pacific_hurricanes
     name: Eastern Pacific hurricane season
+    label: E. Pacific hurricanes
     kind: outcome
     lat: 14
     lon: -110
+    area: [[-125, 25], [-95, 25], [-90, 8], [-125, 8]]
     region: Off the Pacific coast of Mexico
     timescale: May–November
     axis: active_quiet
@@ -234,9 +259,11 @@ nodes:
 
   - id: east_africa_short_rains
     name: East Africa short rains
+    label: East Africa
     kind: outcome
     lat: 1
     lon: 38
+    area: [[33, 13], [48, 13], [51, 10], [42, -2], [33, -6]]
     region: Kenya, Somalia, Ethiopia, Tanzania
     timescale: October–December
     axis: wet_dry
@@ -253,9 +280,11 @@ nodes:
 
   - id: southern_africa_summer
     name: Southern Africa summer rainfall
+    label: Southern Africa
     kind: outcome
     lat: -22
     lon: 27
+    area: [[12, -15], [35, -15], [35, -35], [16, -35]]
     region: South Africa, Botswana, Zimbabwe, Mozambique
     timescale: December–March
     axis: wet_dry
@@ -271,9 +300,11 @@ nodes:
 
   - id: sahel_rainfall
     name: Sahel rainy season
+    label: Sahel
     kind: outcome
     lat: 14
     lon: 2
+    area: [[-17, 18], [38, 18], [38, 10], [-17, 10]]
     region: Senegal to Sudan
     timescale: July–September
     axis: wet_dry
@@ -289,9 +320,11 @@ nodes:
 
   - id: northeast_brazil
     name: Northeast Brazil rainy season
+    label: NE Brazil
     kind: outcome
     lat: -7
     lon: -40
+    area: [[-47, -2], [-35, -3], [-35, -12], [-44, -15]]
     region: Nordeste (Ceará, Pernambuco, Bahia)
     timescale: February–May of the year after an event begins
     axis: wet_dry
@@ -307,9 +340,11 @@ nodes:
 
   - id: southeast_south_america
     name: Southeast South America rainfall
+    label: SE South America
     kind: outcome
     lat: -31
     lon: -56
+    area: [[-64, -24], [-48, -24], [-48, -36], [-64, -36]]
     region: Uruguay, southern Brazil, northeast Argentina
     timescale: October–January
     axis: wet_dry
@@ -325,9 +360,11 @@ nodes:
 
   - id: central_chile_winter
     name: Central Chile winter rainfall
+    label: Central Chile
     kind: outcome
     lat: -34
     lon: -71
+    area: [[-74, -30], [-70, -30], [-70, -38], [-74, -38]]
     region: Santiago region
     timescale: June–September
     axis: wet_dry
@@ -343,9 +380,11 @@ nodes:
 
   - id: philippines_rainfall
     name: Philippines rainfall
+    label: Philippines
     kind: outcome
     lat: 12
     lon: 122
+    area: [[117, 20], [127, 20], [127, 5], [117, 5]]
     region: Philippines
     timescale: October–March most affected
     axis: wet_dry
@@ -362,9 +401,11 @@ nodes:
 
   - id: central_pacific_islands
     name: Central Pacific islands rainfall
+    label: Kiribati
     kind: outcome
     lat: 1.5
     lon: 173
+    area: [[170, 4], [-168, 4], [-168, -5], [170, -5]]
     region: Kiribati, Tuvalu, Nauru
     timescale: All year
     axis: wet_dry
@@ -380,9 +421,11 @@ nodes:
 
   - id: coral_bleaching_central_pacific
     name: Coral bleaching, central Pacific reefs
+    label: Coral bleaching
     kind: outcome
     lat: 3
     lon: -160
+    area: [[-163, 7], [-155, 7], [-155, -2], [-163, -2]]
     region: Line Islands, Phoenix Islands
     timescale: Months
     axis: high_low
@@ -399,6 +442,7 @@ nodes:
 
   - id: global_mean_temperature
     name: Global average temperature
+    label: Global temperature
     kind: outcome
     global: true
     lat: -50
@@ -419,9 +463,11 @@ nodes:
 
   - id: east_asia_winter
     name: East Asia winter temperature
+    label: East Asia
     kind: outcome
     lat: 33
     lon: 130
+    area: [[115, 40], [142, 40], [142, 30], [115, 30]]
     region: Japan, Korea, eastern China
     timescale: December–February
     axis: warm_cool
