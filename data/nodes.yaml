@@ -1,0 +1,436 @@
+# Nodes: the phenomena on the map.
+# Schema: docs/DATA_FORMAT.md. Ids are permanent; change `name`, never `id`.
+# Positions are marker positions for the map, not precise scientific regions.
+
+nodes:
+  # ---------------------------------------------------------------- driver
+  - id: enso
+    name: El Niño–Southern Oscillation (ENSO)
+    kind: driver
+    lat: -2
+    lon: -140
+    region: Tropical Pacific Ocean
+    timescale: Events every 2–7 years, each lasting about 9–18 months
+    summary: >
+      A see-saw in ocean temperature and air pressure across the tropical
+      Pacific. In El Niño the eastern and central Pacific turn unusually warm
+      and the trade winds weaken; in La Niña the same region turns unusually
+      cool and the trade winds strengthen. Because the tropical Pacific is so
+      large, this shifts where the heaviest tropical rain falls, which in
+      turn nudges weather patterns around the whole planet.
+    phases:
+      - id: el_nino
+        label: El Niño
+        color: "#d7301f"
+        summary: >
+          The warm phase. Surface water in the central and eastern tropical
+          Pacific is warmer than usual, the trade winds weaken, and the
+          heaviest rain moves east from Indonesia toward the central Pacific.
+          Events usually begin to develop around May–July, peak in
+          November–January, and fade by the following spring.
+      - id: neutral
+        label: Neutral
+        color: "#999999"
+        summary: >
+          Neither warm nor cool. Tropical Pacific temperatures are close to
+          their long-term average and none of the ENSO-related tendencies on
+          this map are expected. Other drivers still shape the weather.
+      - id: la_nina
+        label: La Niña
+        color: "#2b8cbe"
+        summary: >
+          The cool phase. Surface water in the central and eastern tropical
+          Pacific is cooler than usual, the trade winds strengthen, and the
+          heaviest rain piles up over Indonesia and the western Pacific.
+          La Niña often follows an El Niño and can persist for two or three
+          winters in a row.
+    sources: [noaa_climate_gov_enso, trenberth_1997]
+
+  # ---------------------------------------------------------------- outcomes
+  - id: indian_summer_monsoon
+    name: Indian summer monsoon
+    kind: outcome
+    lat: 21
+    lon: 78
+    region: India
+    timescale: June–September each year
+    axis: wet_dry
+    labels:
+      plus: Monsoon tends to be stronger than usual
+      zero: Monsoon near normal
+      minus: Monsoon tends to be weaker than usual
+    summary: >
+      The rains that fall on the Indian subcontinent from June to September
+      supply most of the year's water for over a billion people. Their
+      strength varies from year to year, and ENSO is the single largest known
+      influence on that variation.
+    sources: [rasmusson_carpenter_1983, kumar_1999]
+
+  - id: indonesia_rainfall
+    name: Indonesia and the Maritime Continent
+    kind: outcome
+    lat: -2
+    lon: 115
+    region: Indonesia, Malaysia, Papua New Guinea
+    timescale: Dry season roughly June–October
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual, with raised wildfire risk
+    summary: >
+      The islands between the Indian and Pacific Oceans normally sit under
+      the wettest air on Earth. When ENSO shifts that rain eastward, the dry
+      season here lengthens and peatland fires can spread; when it shifts
+      back west, floods become more likely.
+    sources: [ropelewski_halpert_1987, field_2009]
+
+  - id: east_australia_rainfall
+    name: Eastern Australia rainfall
+    kind: outcome
+    lat: -28
+    lon: 148
+    region: Queensland, New South Wales, Victoria
+    timescale: Winter and spring (June–November) most affected
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual, with raised flood risk
+      zero: Near normal
+      minus: Tends to be drier than usual, with raised drought and fire risk
+    summary: >
+      Eastern Australia's rainfall is strongly tied to the tropical Pacific.
+      Many of the country's worst droughts and some of its biggest floods
+      coincided with El Niño and La Niña respectively.
+    sources: [bom_enso_australia, ropelewski_halpert_1987]
+
+  - id: peru_coast_rainfall
+    name: Coastal Peru and Ecuador rainfall
+    kind: outcome
+    lat: -3.5
+    lon: -80
+    region: Northern Peru, southern Ecuador
+    timescale: December–April of the year after an event begins
+    axis: wet_dry
+    labels:
+      plus: Tends to be much wetter than usual, with flooding
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      Normally one of the driest coastlines in the world. When the ocean
+      just offshore warms in El Niño, thunderstorms form over the desert
+      and rivers that are usually dry can flood towns.
+    sources: [ropelewski_halpert_1987, lagos_2008]
+
+  - id: peru_fishery
+    name: Peruvian anchoveta fishery
+    kind: outcome
+    lat: -12
+    lon: -79
+    region: Humboldt Current, offshore Peru
+    timescale: Months to a year
+    axis: active_quiet
+    labels:
+      plus: Fishery tends to be more productive than usual
+      zero: Near normal
+      minus: Fishery tends to collapse as nutrient-rich upwelling shuts down
+    summary: >
+      Cold, nutrient-rich water rising along the Peruvian coast feeds the
+      largest single-species fishery on Earth. El Niño caps that upwelling
+      with warm water, and the fish disappear; the 1972 collapse is the
+      classic example.
+    sources: [barber_chavez_1983]
+
+  - id: us_gulf_coast_winter
+    name: US Gulf Coast and Florida winter rainfall
+    kind: outcome
+    lat: 30
+    lon: -88
+    region: Texas to Florida
+    timescale: November–March
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter and stormier than usual
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      In winter the jet stream over North America shifts with ENSO. A
+      stronger, more southerly storm track brings extra rain to the Gulf
+      Coast and Florida in El Niño years and starves them in La Niña years.
+    sources: [ropelewski_halpert_1986, noaa_cpc_north_america]
+
+  - id: california_winter
+    name: California winter rainfall
+    kind: outcome
+    lat: 36
+    lon: -120
+    region: California
+    timescale: December–March
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      California's link to ENSO is popular in the news but weaker than
+      people expect. Strong El Niño events have brought very wet winters to
+      southern California, yet several El Niño winters have been dry, and
+      northern California shows little consistent signal.
+    sources: [jong_2016]
+
+  - id: pacific_northwest_winter
+    name: Pacific Northwest winter temperature
+    kind: outcome
+    lat: 48
+    lon: -122
+    region: Washington, Oregon, British Columbia
+    timescale: December–February
+    axis: warm_cool
+    labels:
+      plus: Tends to be milder and drier than usual
+      zero: Near normal
+      minus: Tends to be cooler and wetter than usual, with more mountain snow
+    summary: >
+      The same jet-stream shift that wets the southern United States in El
+      Niño years steers storms away from the Northwest and lets mild Pacific
+      air dominate. La Niña winters do the opposite and are prized by ski
+      resorts.
+    sources: [halpert_ropelewski_1992, noaa_cpc_north_america]
+
+  - id: atlantic_hurricanes
+    name: Atlantic hurricane season
+    kind: outcome
+    lat: 15
+    lon: -50
+    region: Tropical North Atlantic and Caribbean
+    timescale: June–November
+    axis: active_quiet
+    labels:
+      plus: Season tends to be more active than usual
+      zero: Near normal activity
+      minus: Season tends to be quieter than usual
+    summary: >
+      Hurricanes need calm upper-level winds to grow. El Niño strengthens the
+      high-altitude winds over the Atlantic, shearing storms apart; La Niña
+      relaxes them. This is one of the most reliable ENSO effects known.
+    sources: [gray_1984, bell_2014]
+
+  - id: east_pacific_hurricanes
+    name: Eastern Pacific hurricane season
+    kind: outcome
+    lat: 14
+    lon: -110
+    region: Off the Pacific coast of Mexico
+    timescale: May–November
+    axis: active_quiet
+    labels:
+      plus: Season tends to be more active than usual
+      zero: Near normal activity
+      minus: Season tends to be quieter than usual
+    summary: >
+      The mirror image of the Atlantic. Warm water and weaker high-altitude
+      winds in El Niño years favour more and stronger hurricanes off Mexico,
+      some of which reach Hawaii.
+    sources: [bell_2014]
+
+  - id: east_africa_short_rains
+    name: East Africa short rains
+    kind: outcome
+    lat: 1
+    lon: 38
+    region: Kenya, Somalia, Ethiopia, Tanzania
+    timescale: October–December
+    axis: wet_dry
+    labels:
+      plus: Short rains tend to be heavier than usual, with flooding
+      zero: Near normal
+      minus: Short rains tend to fail, with drought risk
+    summary: >
+      The Horn of Africa has two rainy seasons. The shorter one in
+      October–December is closely tied to the tropical oceans: El Niño years
+      such as 1997 brought severe floods, while La Niña years such as 2010
+      brought famine-level drought.
+    sources: [indeje_2000, nicholson_kim_1997]
+
+  - id: southern_africa_summer
+    name: Southern Africa summer rainfall
+    kind: outcome
+    lat: -22
+    lon: 27
+    region: South Africa, Botswana, Zimbabwe, Mozambique
+    timescale: December–March
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual, with drought risk
+    summary: >
+      Most of southern Africa gets its rain in the southern summer. El Niño
+      years tend to weaken those rains and have coincided with several
+      damaging regional droughts.
+    sources: [lindesay_1988, nicholson_kim_1997]
+
+  - id: sahel_rainfall
+    name: Sahel rainy season
+    kind: outcome
+    lat: 14
+    lon: 2
+    region: Senegal to Sudan
+    timescale: July–September
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      The strip of semi-arid land south of the Sahara depends on a short
+      summer rainy season. ENSO is one of several ocean influences on it,
+      and its importance has changed from decade to decade.
+    sources: [janicot_1996, nicholson_kim_1997]
+
+  - id: northeast_brazil
+    name: Northeast Brazil rainy season
+    kind: outcome
+    lat: -7
+    lon: -40
+    region: Nordeste (Ceará, Pernambuco, Bahia)
+    timescale: February–May of the year after an event begins
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual, with drought risk
+    summary: >
+      A drought-prone region whose brief rainy season depends on the
+      position of the tropical rain belt over the Atlantic. El Niño years
+      tend to push that belt north and leave the Nordeste dry.
+    sources: [ropelewski_halpert_1987, hastenrath_heller_1977]
+
+  - id: southeast_south_america
+    name: Southeast South America rainfall
+    kind: outcome
+    lat: -31
+    lon: -56
+    region: Uruguay, southern Brazil, northeast Argentina
+    timescale: October–January
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual, with flooding on the Paraná and Uruguay rivers
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      One of the clearest ENSO signals outside the tropics. El Niño springs
+      and early summers bring heavy rain and river floods to the Río de la
+      Plata basin.
+    sources: [grimm_2000, ropelewski_halpert_1987]
+
+  - id: central_chile_winter
+    name: Central Chile winter rainfall
+    kind: outcome
+    lat: -34
+    lon: -71
+    region: Santiago region
+    timescale: June–September
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      Central Chile has a Mediterranean climate with winter rain. During El
+      Niño the winter storm track tends to reach further north, giving
+      Santiago wetter winters; La Niña years lean dry.
+    sources: [montecinos_aceituno_2003]
+
+  - id: philippines_rainfall
+    name: Philippines rainfall
+    kind: outcome
+    lat: 12
+    lon: 122
+    region: Philippines
+    timescale: October–March most affected
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual, with drought risk
+    summary: >
+      The Philippines feel El Niño as a drought that sets in late in the
+      year and lasts into the following spring. Curiously, the first months
+      of a developing El Niño can be wetter than usual before the drying
+      begins.
+    sources: [lyon_camargo_2009]
+
+  - id: central_pacific_islands
+    name: Central Pacific islands rainfall
+    kind: outcome
+    lat: 1.5
+    lon: 173
+    region: Kiribati, Tuvalu, Nauru
+    timescale: All year
+    axis: wet_dry
+    labels:
+      plus: Tends to be much wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual, with drought and water shortages
+    summary: >
+      Low atolls near the date line sit right under the region where ENSO
+      moves the rain. El Niño brings heavy rain; La Niña can leave them in
+      drought for a year or more, straining freshwater supplies.
+    sources: [ropelewski_halpert_1987, noaa_climate_gov_enso]
+
+  - id: coral_bleaching_central_pacific
+    name: Coral bleaching, central Pacific reefs
+    kind: outcome
+    lat: 3
+    lon: -160
+    region: Line Islands, Phoenix Islands
+    timescale: Months
+    axis: high_low
+    labels:
+      plus: Bleaching risk tends to be high
+      zero: Near normal
+      minus: Bleaching risk tends to be low
+    summary: >
+      Corals bleach when the water stays unusually warm for weeks. The warm
+      pool of an El Niño sits directly over the reefs of the central
+      Pacific, which have suffered mass bleaching in 1982–83, 1997–98 and
+      2015–16.
+    sources: [glynn_1984, eakin_2019]
+
+  - id: global_mean_temperature
+    name: Global average temperature
+    kind: outcome
+    global: true
+    lat: -50
+    lon: -100
+    region: Whole planet
+    timescale: Peaks a few months after the ENSO peak
+    axis: warm_cool
+    labels:
+      plus: Global average tends to run warmer than the years around it
+      zero: Near the underlying trend
+      minus: Global average tends to run cooler than the years around it
+    summary: >
+      El Niño releases heat from the ocean into the air, so the year after a
+      big El Niño is usually a record-warm year; La Niña does the reverse.
+      This is a short-lived wobble of a tenth or two of a degree on top of
+      the long-term warming trend, not a change in the trend itself.
+    sources: [trenberth_2002]
+
+  - id: east_asia_winter
+    name: East Asia winter temperature
+    kind: outcome
+    lat: 33
+    lon: 130
+    region: Japan, Korea, eastern China
+    timescale: December–February
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual
+    summary: >
+      El Niño weakens the East Asian winter monsoon, the cold outflow from
+      Siberia, so winters in Japan and eastern China tend to be milder. The
+      effect is real but modest and often overridden by other patterns.
+    sources: [wang_2000]

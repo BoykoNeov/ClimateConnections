@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Climate Connections</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="header">
+        <div>
+          <h1>Climate Connections</h1>
+          <p class="disclaimer">Shows historical tendencies from published research. Not a forecast, not a simulation.</p>
+        </div>
+        <div id="month-display" aria-live="polite"></div>
+      </header>
+      <aside id="controls"></aside>
+      <main id="map-container"></main>
+      <aside id="card"></aside>
+      <footer id="timeline"></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

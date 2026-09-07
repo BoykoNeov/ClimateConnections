@@ -1,0 +1,35 @@
+{
+  "name": "climate-connections",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Teaching map of climate teleconnections (ENSO in v1): a cited causal graph drawn on a Pacific-centered world map.",
+  "license": "MIT",
+  "scripts": {
+    "build:data": "node scripts/build-data.mjs",
+    "dev": "vite",
+    "build": "npm run build:data && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "d3-selection": "^3.0.0",
+    "d3-transition": "^3.0.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-transition": "^3.0.9",
+    "@types/geojson": "^7946.0.16",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
+    "js-yaml": "^4.1.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0",
+    "zod": "^3.24.0"
+  }
+}
