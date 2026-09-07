@@ -29,6 +29,7 @@ async function main(): Promise<void> {
   const mapEl = document.getElementById('map-container')!;
   const cardEl = document.getElementById('card')!;
   const monthEl = document.getElementById('month-display')!;
+  const captionEl = document.getElementById('print-caption')!;
 
   const map = new MapView(mapEl, graph);
   const tl = new TimelineView(document.getElementById('timeline')!, HORIZON, controls.startMonth);
@@ -53,6 +54,7 @@ async function main(): Promise<void> {
     const phase = driver!.phases.find((p) => p.id === controls.phaseId)!;
     map.render(month, { phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
     monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
+    captionEl.textContent = printCaption(phase.label, month.index, month.calendarMonth);
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
     renderCard(cardEl, graph, node, month, controls.phaseId);
   }
@@ -96,6 +98,30 @@ async function main(): Promise<void> {
     ctl.setStory(null);
     draw();
   };
+
+  // Keyboard: arrows and Space drive the scrubber; while a story plays the
+  // arrows step the story instead and Escape leaves it. Form fields keep
+  // their own keys.
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target;
+    if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
+    let used = false;
+    if (story.active) {
+      if (e.key === 'ArrowRight') { story.next(); used = true; }
+      else if (e.key === 'ArrowLeft') { story.prev(); used = true; }
+      else if (e.key === 'Escape') { story.exit(); used = true; }
+    }
+    if (!used) used = tl.handleKey(e);
+    if (used) e.preventDefault();
+  });
+
+  function printCaption(phaseLabel: string, index: number, calendarMonth: number): string {
+    const filterText = { all: 'all connections, including contested ones', probable: 'probable and established connections', established: 'established connections only' }[controls.filter];
+    return `${phaseLabel}, event beginning in ${MONTH_NAMES[controls.startMonth - 1]}. ` +
+      `Shown: ${MONTH_NAMES[calendarMonth - 1]}, month ${index} after onset. Showing ${filterText}. ` +
+      `Printed from Climate Connections, ${location.origin}${location.pathname}`;
+  }
 
   recompute();
   draw();

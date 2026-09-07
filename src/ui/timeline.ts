@@ -17,6 +17,7 @@ export class TimelineView {
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.textContent = '▶ Play';
+    this.button.setAttribute('aria-label', 'Play or pause the twelve-month animation');
     this.button.addEventListener('click', () => (this.timer ? this.pause() : this.play()));
     const scrub = document.createElement('div');
     scrub.className = 'scrubber';
@@ -27,21 +28,43 @@ export class TimelineView {
     this.input.step = '1';
     this.input.value = '0';
     this.input.setAttribute('aria-label', 'Month since onset');
+    this.input.setAttribute('aria-valuemin', '0');
+    this.input.setAttribute('aria-valuemax', String(horizon));
     this.input.addEventListener('input', () => {
       this.pause();
+      this.input.setAttribute('aria-valuetext', this.valueText(this.index));
       this.onChange(this.index);
+    });
+    // The range input handles arrow keys natively; keep Space consistent
+    // with the rest of the page while it has focus.
+    this.input.addEventListener('keydown', (e) => {
+      if (e.key === ' ') { e.preventDefault(); this.timer ? this.pause() : this.play(); }
     });
     this.ticks = document.createElement('div');
     this.ticks.className = 'ticks';
     scrub.append(this.input, this.ticks);
+    const hint = document.createElement('p');
+    hint.className = 'key-hint';
+    hint.innerHTML = '<kbd>←</kbd><kbd>→</kbd> step a month &nbsp; <kbd>Space</kbd> play / pause &nbsp; <kbd>Home</kbd><kbd>End</kbd> first / last month';
+    scrub.append(hint);
     container.append(this.button, scrub);
     this.renderTicks();
-    document.addEventListener('keydown', (e) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
-      if (e.key === 'ArrowRight') this.set(Math.min(this.horizon, this.index + 1));
-      else if (e.key === 'ArrowLeft') this.set(Math.max(0, this.index - 1));
-      else if (e.key === ' ') { e.preventDefault(); this.timer ? this.pause() : this.play(); }
-    });
+  }
+
+  /**
+   * Keyboard control of the scrubber. Returns true when the key was used.
+   * The page installs the document-level listener so it can decide who gets
+   * the keys (a playing story takes the arrows for its own steps).
+   */
+  handleKey(e: KeyboardEvent): boolean {
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowUp': this.pause(); this.set(Math.min(this.horizon, this.index + 1)); return true;
+      case 'ArrowLeft': case 'ArrowDown': this.pause(); this.set(Math.max(0, this.index - 1)); return true;
+      case 'Home': this.pause(); this.set(0); return true;
+      case 'End': this.pause(); this.set(this.horizon); return true;
+      case ' ': this.timer ? this.pause() : this.play(); return true;
+      default: return false;
+    }
   }
 
   get index(): number { return Number(this.input.value); }
@@ -49,6 +72,7 @@ export class TimelineView {
   setStartMonth(m: number): void {
     this.startMonth = m;
     this.renderTicks();
+    this.input.setAttribute('aria-valuetext', this.valueText(this.index));
   }
 
   private renderTicks(): void {
@@ -62,12 +86,18 @@ export class TimelineView {
 
   set(index: number): void {
     this.input.value = String(index);
+    this.input.setAttribute('aria-valuetext', this.valueText(index));
     this.onChange(index);
+  }
+
+  private valueText(index: number): string {
+    return `${MONTH_NAMES[calendarMonth(this.startMonth, index) - 1]}, month ${index} after onset`;
   }
 
   /** Move the scrubber without firing onChange (caller redraws). */
   setIndex(index: number): void {
     this.input.value = String(index);
+    this.input.setAttribute('aria-valuetext', this.valueText(index));
   }
 
   play(): void {

@@ -420,16 +420,20 @@ is fully green.
 
 ## 7. Version-1 acceptance checklist
 
-- [ ] Every link in `links.yaml` has a source that resolves and a caveat.
-- [ ] `npm run build:data`, `npm test`, `npm run build` all pass from a clean clone.
-- [ ] Map is Pacific-centered; no country is split at the screen edge in a way that hides a node.
-- [ ] El Niño, month 12, June start: Indonesia dry, eastern Australia dry, Peru coast wet, Gulf Coast wet, Atlantic hurricanes quiet, Indian monsoon weakened, East Africa short rains wet, southern Africa dry.
-- [ ] La Niña, month 12, June start: broadly the reverse where links exist; nodes with no La Niña link stay hollow (do not fake symmetry).
-- [ ] Out-of-season effects are visibly muted and their card says so.
+- [x] Every link in `links.yaml` has a source that resolves and a caveat.
+      (enforced by `npm run build:data`; re-checked by `src/engine/acceptance.test.ts`)
+- [x] `npm run build:data`, `npm test`, `npm run build` all pass from a clean clone.
+- [x] Map is Pacific-centered; no country is split at the screen edge in a way that hides a node.
+- [x] El Niño, month 12, June start: Indonesia dry, eastern Australia dry, Peru coast wet, Gulf Coast wet, Atlantic hurricanes quiet, Indian monsoon weakened, East Africa short rains wet, southern Africa dry.
+      Each effect appears with the right sign within the twelve months; the month-12 map is June again, so the winter effects (Peru coast, Gulf Coast, southern Africa, East Africa short rains) show as pending there, exactly as the season gate in section 4 says they should. Verified by `src/engine/acceptance.test.ts` and in the browser.
+- [x] La Niña, month 12, June start: broadly the reverse where links exist; nodes with no La Niña link stay hollow (do not fake symmetry).
+      Verified by `src/engine/acceptance.test.ts`.
+- [x] Out-of-season effects are visibly muted and their card says so.
 - [ ] Three confidence styles are visibly distinct on a projector at 3 m.
-- [ ] Two stories play end to end.
-- [ ] Disclaimer visible at all times.
-- [ ] Page prints legibly.
+      Distinct on screen and in print (solid / dashed / dotted, three widths). Not yet checked on a real projector.
+- [x] Two stories play end to end.
+- [x] Disclaimer visible at all times (header on screen, header on the printed page).
+- [x] Page prints legibly (landscape, one figure: title, disclaimer, map, caption, legend, open card).
 
 ---
 

@@ -117,8 +117,11 @@ export class ControlsView {
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';
+    h4.className = 'print-keep';
     container.append(h4);
-    container.append(renderLegend());
+    const legend = renderLegend();
+    legend.classList.add('print-keep');
+    container.append(legend);
 
     this.reflect();
   }

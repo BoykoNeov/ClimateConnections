@@ -86,10 +86,9 @@ export class MapView {
   private width = 0;
   private height = 0;
   private nodeById: Map<string, GraphNode>;
-  private lastState: { month: MonthState; opts: RenderOptions } | null = null;
   onNodeClick: (id: string) => void = () => {};
 
-  constructor(private container: HTMLElement, private graph: Graph) {
+  constructor(container: HTMLElement, private graph: Graph) {
     this.nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
     this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
     this.svg = select(container).append('svg').attr('role', 'img').attr('aria-label', 'World map of climate connections');
@@ -105,8 +104,7 @@ export class MapView {
     this.gLinks = this.svg.append('g').attr('class', 'links');
     this.gNodes = this.svg.append('g').attr('class', 'nodes');
     this.drawBase();
-    new ResizeObserver(() => this.resize()).observe(container);
-    this.resize();
+    this.fit();
   }
 
   private markerColors(): Array<[string, string]> {
@@ -129,14 +127,21 @@ export class MapView {
     this.gBase.append('path').attr('class', 'land').datum(countries);
   }
 
-  private resize(): void {
-    const rect = this.container.getBoundingClientRect();
-    this.width = Math.max(320, rect.width);
-    this.height = Math.max(240, rect.height);
-    this.svg.attr('viewBox', `0 0 ${this.width} ${this.height}`);
-    this.projection.fitExtent([[8, 8], [this.width - 8, this.height - 8]], { type: 'Sphere' });
+  /**
+   * The drawing box has the globe's own proportions and a fixed width; the
+   * SVG scales it to whatever box the container gives it (screen, projector
+   * or a printed page), so markers and labels stay proportional to the map.
+   */
+  private fit(): void {
+    const pad = 8;
+    this.width = 960;
+    this.projection.fitWidth(this.width - 2 * pad, { type: 'Sphere' });
+    const [[x0, y0], [, y1]] = this.path.bounds({ type: 'Sphere' } as GeoPermissibleObjects);
+    this.height = Math.ceil(y1 - y0 + 2 * pad);
+    const [tx, ty] = this.projection.translate();
+    this.projection.translate([tx + pad - x0, ty + pad - y0]);
+    this.svg.attr('viewBox', `0 0 ${this.width} ${this.height}`).attr('preserveAspectRatio', 'xMidYMid meet');
     this.gBase.selectAll<SVGPathElement, GeoPermissibleObjects>('path').attr('d', (d) => this.path(d));
-    if (this.lastState) this.render(this.lastState.month, { ...this.lastState.opts, arrivals: new Set() });
   }
 
   /**
@@ -178,7 +183,6 @@ export class MapView {
   }
 
   render(month: MonthState, opts: RenderOptions): void {
-    this.lastState = { month, opts };
     const driver = this.graph.nodes.find((n) => n.kind === 'driver');
     if (!driver) return;
 
@@ -255,7 +259,13 @@ export class MapView {
     // ---- nodes
     const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(this.graph.nodes, (d) => d.id);
     const nEnter = nodes.enter().append('g')
-      .on('click', (_e, d) => this.onNodeClick(d.id));
+      .attr('tabindex', 0)
+      .attr('role', 'button')
+      .attr('aria-label', (d) => d.name)
+      .on('click', (_e, d) => this.onNodeClick(d.id))
+      .on('keydown', (e: KeyboardEvent, d) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); this.onNodeClick(d.id); }
+      });
     nEnter.append('circle');
     nEnter.append('text').attr('dy', '0.35em');
     const nMerged = nEnter.merge(nodes);

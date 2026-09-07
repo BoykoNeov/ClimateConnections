@@ -172,11 +172,73 @@ html, body { margin: 0; height: 100%; }
 .scrubber input[type="range"] { width: 100%; }
 .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 .ticks span { width: 0; text-align: center; white-space: nowrap; }
+.key-hint { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
+.key-hint kbd {
+  display: inline-block; font: inherit; font-size: 10px; line-height: 1; padding: 2px 5px; margin-right: 2px;
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: #fafafa; color: var(--ink);
+}
+
+/* Keyboard focus must be visible on every control, including the scrubber. */
+button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+.print-only { display: none; }
+.noscript { padding: 20px; font-size: 14px; }
 
 @media print {
-  #controls, #timeline, #header #month-display { display: none; }
-  #app { grid-template-columns: 1fr 340px; grid-template-areas: "header header" "map card"; height: auto; }
-  .story-nav, .story-exit { display: none; }
-  .node.focus circle { animation: none; }
-  #map-container { height: 60vh; }
+  @page { size: landscape; margin: 10mm; }
+  :root { background: #ffffff; }
+  html, body { height: auto; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* One figure: title and disclaimer on top, the map, a caption, then the
+     legend beside whichever card is open. Interactive controls disappear. */
+  #app {
+    height: auto; display: grid;
+    grid-template-columns: 1fr 58mm;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "header header"
+      "map controls"
+      "caption caption"
+      "card card";
+    column-gap: 8mm;
+  }
+  #header { padding: 0 0 3mm; border-bottom: 1px solid #000; }
+  #header h1 { font-size: 16pt; }
+  .disclaimer { font-size: 9pt; color: #000; }
+  #month-display { font-size: 14pt; }
+  #month-display small { color: #333; }
+
+  #map-container { grid-area: map; height: 112mm; background: #ffffff; margin-top: 3mm; }
+  #map-container svg { width: 100%; height: 100%; overflow: visible; }
+  .sphere { fill: #f3f6f9; stroke: #666; }
+  .land { fill: #ffffff; stroke: #777; }
+  .graticule { stroke: #d0d4da; stroke-opacity: 1; }
+  .node text { font-size: 11px; }
+  .node.driver text { font-size: 13px; }
+  .node.focus circle { animation: none; stroke-width: 3; }
+
+  #print-caption { grid-area: caption; display: block; margin: 2mm 0 3mm; font-size: 9pt; color: #000; }
+
+  #controls { grid-area: controls; border: 0; padding: 0; overflow: visible; font-size: 8.5pt; margin-top: 3mm; }
+  #controls > :not(.print-keep) { display: none; }
+  #controls h2.print-keep { margin-top: 0; }
+  .legend-row { margin: 2px 0; }
+  .legend-note { font-size: 7.5pt; color: #333; margin-bottom: 4px; }
+
+  #card-panel { grid-area: card; border: 0; overflow: visible; font-size: 9.5pt; line-height: 1.35; }
+  #card { padding: 0; column-count: 2; column-gap: 8mm; }
+  #card h3, #card .region { column-span: all; }
+  .link-block, .sure, .state-line { break-inside: avoid; }
+  #card h3 { font-size: 12pt; }
+  .state-line.plus, .state-line.minus { color: #ffffff; }
+  .sure { background: #fff8e6; }
+  .sources a { color: #000; text-decoration: none; }
+  .sources a::after { content: " (" attr(href) ")"; font-size: 7.5pt; color: #444; word-break: break-all; }
+  #story { border-bottom: 1px solid #000; padding: 0 0 3mm; margin-bottom: 3mm; background: #ffffff; }
+  .story-nav, .story-exit, .story-kicker { display: none; }
+
+  #timeline, .key-hint, .noscript { display: none; }
 }
