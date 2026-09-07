@@ -1218,5 +1218,13 @@ writing mechanism text):
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
   Oscillation; M19: the Atlantic Niño);
   spreadsheet-to-YAML importer if outside contributors join.
-- **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
-  NAO); quiz mode ("predict the map, then reveal").
+- **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
+  (M20–M40): seven more drivers that fit the current design (Indian Ocean
+  Basin Mode, Atlantic and Pacific Meridional Modes, the QBO, two
+  contested Arctic precursors, tropical eruptions) and a third batch of
+  regions; region-first navigation, a sources page, an arrival window, a
+  second language; engine extensions for what does not fit today (phase
+  duration, any number of chosen drivers, a hand-curated table of real
+  years in place of the NOAA overlay, links that weaken other links, El
+  Niño flavours, impacts on people); then quiz mode, the globe view and
+  the importer. Each needs its own sign-off, as before.
