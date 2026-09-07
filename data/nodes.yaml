@@ -163,6 +163,65 @@ nodes:
           winter of 2009–10 was the most strongly negative on record.
     sources: [hurrell_1995, hurrell_2003, ncar_nao_guide]
 
+  - id: sam
+    name: Southern Annular Mode (SAM)
+    label: SAM
+    kind: driver
+    lat: -58
+    lon: 160
+    area: [[100, -42], [-140, -42], [-140, -66], [100, -66]]
+    region: Southern Ocean, the belt of westerly winds around Antarctica
+    timescale: Swings within weeks; a season tends to lean one way for months
+    summary: >
+      A see-saw in air pressure between Antarctica and the middle latitudes
+      near 40°S. In the positive phase pressure is low over Antarctica and
+      high in the middle latitudes, and the belt of westerly winds and storms
+      that circles the Southern Ocean tightens toward the pole: stronger,
+      and further south. In the negative phase the belt loosens and spreads
+      toward the equator, and its fronts reach further north into southern
+      Australia, New Zealand, southern South America and South Africa. It
+      matters in every season, but what it does differs by season. Like the
+      North Atlantic Oscillation it is a pattern of the atmosphere alone and
+      can flip within a week; the map holds one phase for a year, which is a
+      simplification of a season that leans one way. Since the 1970s it has
+      leaned positive in summer, largely because of the ozone hole.
+    onset_hint: The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones.
+    default_start_month: 6
+    phases:
+      - id: positive
+        value: 1
+        label: Positive SAM
+        color: "#c51b7d"
+        summary: >
+          Pressure is lower than usual over Antarctica and higher over the
+          middle latitudes, so the westerlies are strong and sit far south.
+          Winter cold fronts miss southern Australia and the Cape, southern
+          Chile dries, and warm air is pushed over the Antarctic Peninsula in
+          summer, while the southern east coast of Australia tends to be
+          wetter in summer. Positive summers have become more common since
+          the 1980s as the ozone hole cooled the stratosphere over the pole.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The westerly belt is close to its usual strength and position and
+          none of the Southern Annular Mode tendencies on this map are
+          expected. ENSO and the other drivers still shape the weather.
+      - id: negative
+        value: -1
+        label: Negative SAM
+        color: "#b8860b"
+        summary: >
+          Pressure is higher than usual over Antarctica and lower over the
+          middle latitudes, so the westerlies weaken and spread toward the
+          equator. Cold fronts reach further into southern Australia and the
+          Cape in winter, southern Chile is wetter, and in spring and summer
+          hot, dry northwesterlies cross eastern Australia. The spring of
+          2019, after a rare weakening of the stratospheric polar vortex, was
+          the most strongly negative on record.
+    sources: [thompson_wallace_2000, marshall_2003, gong_wang_1999, bom_sam]
+
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1127,3 +1186,95 @@ nodes:
       several degrees milder. In negative winters the westerlies falter and
       the Siberian cold spreads west instead.
     sources: [hurrell_1995, hurrell_1996, thompson_wallace_1998]
+
+  # ---------------------------------------------------------------- outcomes added with the Southern Annular Mode (M16)
+  - id: southwest_australia_winter_rainfall
+    name: Southwest Western Australia winter rainfall
+    label: SW Australia
+    kind: outcome
+    lat: -30
+    lon: 114
+    area: [[113, -28], [122, -28], [122, -35], [115, -35]]
+    region: Perth and the southwest corner of Western Australia
+    timescale: May–October
+    axis: wet_dry
+    labels:
+      plus: Winter tends to be wetter than usual
+      zero: Near normal
+      minus: Winter tends to be drier than usual
+    summary: >
+      The southwest corner of Western Australia gets nearly all its rain from
+      winter cold fronts that ride in on the westerlies. When the westerly
+      belt sits further south than usual fewer fronts reach the coast, and
+      when it spreads north more do. Winter rain here has declined since
+      the 1970s; the swing toward a positive Southern Annular Mode explains
+      part of that decline, but not all of it.
+    sources: [hendon_2007, meneghini_2007, bom_sam]
+
+  - id: patagonia_rainfall
+    name: Southern Chile and Patagonia rainfall
+    label: Patagonia
+    kind: outcome
+    lat: -44
+    lon: -72
+    area: [[-76, -40], [-66, -40], [-66, -54], [-76, -54]]
+    region: Southern Chile and Argentine Patagonia, south of about 40°S
+    timescale: All year
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier and warmer than usual
+    summary: >
+      The westerlies bring rain to the Chilean side of the Andes all year
+      round, and the Argentine side sits in their rain shadow. When the belt
+      of westerlies tightens toward the pole the region south of 40°S turns
+      drier and warmer; when it loosens more fronts arrive. Patagonia's
+      warming since the 1970s has been tied to the same shift.
+    sources: [gillett_2006, garreaud_2009, thompson_solomon_2002]
+
+  - id: antarctic_peninsula_summer
+    name: Antarctic Peninsula summer temperature
+    label: Antarctic Peninsula
+    kind: outcome
+    lat: -66
+    lon: -63
+    area: [[-70, -62], [-55, -62], [-55, -70], [-70, -70]]
+    region: The northern Antarctic Peninsula, especially its eastern side
+    timescale: December–February
+    axis: warm_cool
+    labels:
+      plus: Summer tends to be warmer than usual, most of all on the eastern side
+      zero: Near normal
+      minus: Summer tends to be cooler than usual
+    summary: >
+      The peninsula is a mountain wall across the westerlies. When they
+      strengthen, more mild, moist Pacific air is pushed over the spine and
+      descends on the eastern side as a warm, dry foehn wind, where the
+      Larsen ice shelves sit. The summer warming of the northeastern
+      peninsula since the 1960s, and the break-up of the northern Larsen
+      shelves, have been tied to the strengthening westerlies.
+    sources: [marshall_2006, thompson_solomon_2002, gillett_2006]
+
+  - id: western_cape_winter_rainfall
+    name: Western Cape winter rainfall
+    label: Western Cape
+    kind: outcome
+    lat: -33.5
+    lon: 19
+    area: [[17, -31], [24, -31], [24, -35], [17, -35]]
+    region: Cape Town and the winter-rainfall corner of South Africa
+    timescale: June–August, often carrying into spring
+    axis: wet_dry
+    labels:
+      plus: Winter tends to be wetter than usual
+      zero: Near normal
+      minus: Winter tends to be drier than usual
+    summary: >
+      Unlike the rest of South Africa, the Cape gets its rain in winter, from
+      cold fronts that sweep in off the South Atlantic. When the storm track
+      and the South Atlantic high shift south, fewer fronts reach the Cape:
+      most of the driest winters since 1948 came with a positive Southern
+      Annular Mode, and Cape Town's "Day Zero" drought of 2015–2017 came
+      with a poleward shift of the moisture corridor.
+    sources: [reason_rouault_2005, sousa_2018]

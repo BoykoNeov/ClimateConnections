@@ -182,6 +182,66 @@
       ]
     },
     {
+      "id": "sam",
+      "name": "Southern Annular Mode (SAM)",
+      "label": "SAM",
+      "area": [
+        [
+          100,
+          -42
+        ],
+        [
+          -140,
+          -42
+        ],
+        [
+          -140,
+          -66
+        ],
+        [
+          100,
+          -66
+        ]
+      ],
+      "lat": -58,
+      "lon": 160,
+      "region": "Southern Ocean, the belt of westerly winds around Antarctica",
+      "timescale": "Swings within weeks; a season tends to lean one way for months",
+      "summary": "A see-saw in air pressure between Antarctica and the middle latitudes near 40°S. In the positive phase pressure is low over Antarctica and high in the middle latitudes, and the belt of westerly winds and storms that circles the Southern Ocean tightens toward the pole: stronger, and further south. In the negative phase the belt loosens and spreads toward the equator, and its fronts reach further north into southern Australia, New Zealand, southern South America and South Africa. It matters in every season, but what it does differs by season. Like the North Atlantic Oscillation it is a pattern of the atmosphere alone and can flip within a week; the map holds one phase for a year, which is a simplification of a season that leans one way. Since the 1970s it has leaned positive in summer, largely because of the ozone hole.\n",
+      "sources": [
+        "thompson_wallace_2000",
+        "marshall_2003",
+        "gong_wang_1999",
+        "bom_sam"
+      ],
+      "kind": "driver",
+      "onset_hint": "The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones.",
+      "default_start_month": 6,
+      "phases": [
+        {
+          "id": "positive",
+          "label": "Positive SAM",
+          "color": "#c51b7d",
+          "summary": "Pressure is lower than usual over Antarctica and higher over the middle latitudes, so the westerlies are strong and sit far south. Winter cold fronts miss southern Australia and the Cape, southern Chile dries, and warm air is pushed over the Antarctic Peninsula in summer, while the southern east coast of Australia tends to be wetter in summer. Positive summers have become more common since the 1980s as the ozone hole cooled the stratosphere over the pole.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "The westerly belt is close to its usual strength and position and none of the Southern Annular Mode tendencies on this map are expected. ENSO and the other drivers still shape the weather.\n",
+          "value": 0
+        },
+        {
+          "id": "negative",
+          "label": "Negative SAM",
+          "color": "#b8860b",
+          "summary": "Pressure is higher than usual over Antarctica and lower over the middle latitudes, so the westerlies weaken and spread toward the equator. Cold fronts reach further into southern Australia and the Cape in winter, southern Chile is wetter, and in spring and summer hot, dry northwesterlies cross eastern Australia. The spring of 2019, after a rare weakening of the stratospheric polar vortex, was the most strongly negative on record.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -2004,6 +2064,169 @@
         "plus": "Winter tends to be milder than usual",
         "zero": "Near normal",
         "minus": "Winter tends to be colder than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "southwest_australia_winter_rainfall",
+      "name": "Southwest Western Australia winter rainfall",
+      "label": "SW Australia",
+      "area": [
+        [
+          113,
+          -28
+        ],
+        [
+          122,
+          -28
+        ],
+        [
+          122,
+          -35
+        ],
+        [
+          115,
+          -35
+        ]
+      ],
+      "lat": -30,
+      "lon": 114,
+      "region": "Perth and the southwest corner of Western Australia",
+      "timescale": "May–October",
+      "summary": "The southwest corner of Western Australia gets nearly all its rain from winter cold fronts that ride in on the westerlies. When the westerly belt sits further south than usual fewer fronts reach the coast, and when it spreads north more do. Winter rain here has declined since the 1970s; the swing toward a positive Southern Annular Mode explains part of that decline, but not all of it.\n",
+      "sources": [
+        "hendon_2007",
+        "meneghini_2007",
+        "bom_sam"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Winter tends to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Winter tends to be drier than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "patagonia_rainfall",
+      "name": "Southern Chile and Patagonia rainfall",
+      "label": "Patagonia",
+      "area": [
+        [
+          -76,
+          -40
+        ],
+        [
+          -66,
+          -40
+        ],
+        [
+          -66,
+          -54
+        ],
+        [
+          -76,
+          -54
+        ]
+      ],
+      "lat": -44,
+      "lon": -72,
+      "region": "Southern Chile and Argentine Patagonia, south of about 40°S",
+      "timescale": "All year",
+      "summary": "The westerlies bring rain to the Chilean side of the Andes all year round, and the Argentine side sits in their rain shadow. When the belt of westerlies tightens toward the pole the region south of 40°S turns drier and warmer; when it loosens more fronts arrive. Patagonia's warming since the 1970s has been tied to the same shift.\n",
+      "sources": [
+        "gillett_2006",
+        "garreaud_2009",
+        "thompson_solomon_2002"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Tends to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Tends to be drier and warmer than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "antarctic_peninsula_summer",
+      "name": "Antarctic Peninsula summer temperature",
+      "label": "Antarctic Peninsula",
+      "area": [
+        [
+          -70,
+          -62
+        ],
+        [
+          -55,
+          -62
+        ],
+        [
+          -55,
+          -70
+        ],
+        [
+          -70,
+          -70
+        ]
+      ],
+      "lat": -66,
+      "lon": -63,
+      "region": "The northern Antarctic Peninsula, especially its eastern side",
+      "timescale": "December–February",
+      "summary": "The peninsula is a mountain wall across the westerlies. When they strengthen, more mild, moist Pacific air is pushed over the spine and descends on the eastern side as a warm, dry foehn wind, where the Larsen ice shelves sit. The summer warming of the northeastern peninsula since the 1960s, and the break-up of the northern Larsen shelves, have been tied to the strengthening westerlies.\n",
+      "sources": [
+        "marshall_2006",
+        "thompson_solomon_2002",
+        "gillett_2006"
+      ],
+      "kind": "outcome",
+      "axis": "warm_cool",
+      "labels": {
+        "plus": "Summer tends to be warmer than usual, most of all on the eastern side",
+        "zero": "Near normal",
+        "minus": "Summer tends to be cooler than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "western_cape_winter_rainfall",
+      "name": "Western Cape winter rainfall",
+      "label": "Western Cape",
+      "area": [
+        [
+          17,
+          -31
+        ],
+        [
+          24,
+          -31
+        ],
+        [
+          24,
+          -35
+        ],
+        [
+          17,
+          -35
+        ]
+      ],
+      "lat": -33.5,
+      "lon": 19,
+      "region": "Cape Town and the winter-rainfall corner of South Africa",
+      "timescale": "June–August, often carrying into spring",
+      "summary": "Unlike the rest of South Africa, the Cape gets its rain in winter, from cold fronts that sweep in off the South Atlantic. When the storm track and the South Atlantic high shift south, fewer fronts reach the Cape: most of the driest winters since 1948 came with a positive Southern Annular Mode, and Cape Town's \"Day Zero\" drought of 2015–2017 came with a poleward shift of the moisture corridor.\n",
+      "sources": [
+        "reason_rouault_2005",
+        "sousa_2018"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Winter tends to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Winter tends to be drier than usual"
       },
       "global": false
     }
@@ -4452,6 +4675,451 @@
         "hurrell_1995",
         "hurrell_1996"
       ]
+    },
+    {
+      "id": "positive_sam_southwest_australia",
+      "from": "sam",
+      "when": "positive",
+      "to": "southwest_australia_winter_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "established",
+      "mechanism": "With the westerly belt tightened toward the pole, the winter cold fronts that bring the southwest its rain pass to the south of the coast instead of crossing it.\n",
+      "caveat": "The mode explains only part of the winter rainfall here, and it swings within weeks, so a winter that leans positive on average can still hold a few very wet fronts.\n",
+      "evidence_note": "Daily and seasonal studies agree on the sign, with the mode explaining up to about fifteen percent of the week-to-week rainfall variance in winter, comparable with ENSO. The region's long decline in winter rain since the 1970s is only partly explained by the mode's trend.\n",
+      "sources": [
+        "hendon_2007",
+        "meneghini_2007",
+        "bom_sam"
+      ]
+    },
+    {
+      "id": "negative_sam_southwest_australia",
+      "from": "sam",
+      "when": "negative",
+      "to": "southwest_australia_winter_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "established",
+      "mechanism": "With the westerly belt loosened and spread toward the equator, more winter cold fronts reach the southwest coast and the rain they carry falls there.\n",
+      "caveat": "A negative winter brings more fronts, not necessarily wetter ones; a dry winter is still possible if the fronts arrive weak, and the long-term decline in rain here continues under either phase.\n",
+      "sources": [
+        "hendon_2007",
+        "meneghini_2007",
+        "bom_sam"
+      ]
+    },
+    {
+      "id": "positive_sam_southeast_australia",
+      "from": "sam",
+      "when": "positive",
+      "to": "southeast_australia_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "established",
+      "mechanism": "In winter the southern coast, Victoria and Tasmania get their rain from westerly fronts; with the belt held to the south, fewer fronts cross the coast.\n",
+      "caveat": "The Indian Ocean Dipole and ENSO act on the same region in the same months and can outweigh the mode; and the same positive phase tends to bring the east coast more rain once summer comes.\n",
+      "evidence_note": "Found in daily rainfall for southern Victoria, South Australia and western Tasmania, and in seasonal totals; the winter signal is the most consistent of the mode's Australian effects.\n",
+      "sources": [
+        "hendon_2007",
+        "meneghini_2007"
+      ]
+    },
+    {
+      "id": "negative_sam_southeast_australia",
+      "from": "sam",
+      "when": "negative",
+      "to": "southeast_australia_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "established",
+      "mechanism": "With the westerly belt spread north, more winter fronts cross the southern coast, Victoria and Tasmania and bring their rain with them.\n",
+      "caveat": "A positive dipole or an El Niño in the same year tends to dry the same region and can cancel this; in spring the negative phase turns hot and dry over the east instead.\n",
+      "sources": [
+        "hendon_2007",
+        "meneghini_2007"
+      ]
+    },
+    {
+      "id": "positive_sam_east_australia_summer",
+      "from": "sam",
+      "when": "positive",
+      "to": "east_australia_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        11,
+        12,
+        1,
+        2,
+        3,
+        4
+      ],
+      "confidence": "probable",
+      "mechanism": "In summer the positive phase brings more onshore easterly winds to the southern east coast, feeding moist air into New South Wales and cooling the hot inland, so summer rain tends to increase there.\n",
+      "caveat": "The summer signal is weaker than the winter one, sits on the coast rather than inland, and can be swamped by ENSO; western Tasmania tends to dry at the same time.\n",
+      "evidence_note": "Reported for daily rainfall on the southern east coast, with lower maximum temperatures over most of subtropical eastern Australia; the mode's summer footprint has shifted over the decades.\n",
+      "sources": [
+        "hendon_2007",
+        "silvestri_vera_2009"
+      ]
+    },
+    {
+      "id": "negative_sam_east_australia_summer",
+      "from": "sam",
+      "when": "negative",
+      "to": "east_australia_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        11,
+        12,
+        1,
+        2,
+        3,
+        4
+      ],
+      "confidence": "probable",
+      "mechanism": "In spring and summer the negative phase weakens the onshore easterlies and lets hot, dry northwesterly winds from the interior cross eastern Australia, raising temperatures and fire danger and cutting rain.\n",
+      "caveat": "Weeks of negative mode, not a season of it, drive most of the damage, and a wet La Niña can override the tendency; the strongest cases came after rare weakenings of the stratospheric polar vortex.\n",
+      "evidence_note": "The spring of 2019, the most strongly negative on record, brought record heat and drought to subtropical eastern Australia ahead of the Black Summer fires; hot, dry springs have followed earlier vortex weakenings too.\n",
+      "sources": [
+        "lim_2019",
+        "lim_2021",
+        "hendon_2007"
+      ]
+    },
+    {
+      "id": "positive_sam_new_zealand",
+      "from": "sam",
+      "when": "positive",
+      "to": "new_zealand_summer",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        12,
+        1,
+        2,
+        3
+      ],
+      "confidence": "probable",
+      "mechanism": "In summer the positive phase weakens the westerlies over New Zealand as the belt contracts to the south; with less wind off the Southern Ocean the country tends to be warmer, and the western hills drier.\n",
+      "caveat": "The effect is a summer one; in winter the mode's footprint over New Zealand is patchy, and ENSO's own summer wind pattern can pull the other way.\n",
+      "evidence_note": "Station temperatures and rainfall follow the mode's summer wind change closely; the south of the country warms most, and the west coast dries.\n",
+      "sources": [
+        "kidston_2009",
+        "gillett_2006"
+      ]
+    },
+    {
+      "id": "negative_sam_new_zealand",
+      "from": "sam",
+      "when": "negative",
+      "to": "new_zealand_summer",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        12,
+        1,
+        2,
+        3
+      ],
+      "confidence": "probable",
+      "mechanism": "In summer the negative phase strengthens the westerlies over New Zealand as the belt spreads north, bringing more cool Southern Ocean air and more rain to the western hills.\n",
+      "caveat": "A warm La Niña summer can override the cooling, and the effect is on the summer average, not on any one week.\n",
+      "sources": [
+        "kidston_2009",
+        "gillett_2006"
+      ]
+    },
+    {
+      "id": "positive_sam_patagonia",
+      "from": "sam",
+      "when": "positive",
+      "to": "patagonia_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [],
+      "confidence": "established",
+      "mechanism": "The westerlies that water southern Chile tighten toward the pole and strengthen over the ocean, so fewer fronts and less rain reach the coast south of 40°S, and the region warms.\n",
+      "caveat": "The drying is clearest in the annual mean and on the windward Chilean side; ENSO adds its own swings in central Chile, further north, which can look like the mode's.\n",
+      "evidence_note": "Station records across southern South America show the drying and warming consistently, and the long-term warming of Patagonia has been traced to the mode's trend.\n",
+      "sources": [
+        "gillett_2006",
+        "garreaud_2009",
+        "thompson_solomon_2002"
+      ]
+    },
+    {
+      "id": "negative_sam_patagonia",
+      "from": "sam",
+      "when": "negative",
+      "to": "patagonia_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [],
+      "confidence": "established",
+      "mechanism": "With the westerly belt loosened, more fronts reach the Chilean coast south of 40°S and rainfall on the windward side of the Andes tends to increase.\n",
+      "caveat": "The Argentine side sits in the rain shadow and gains little; and a negative season is rarer than a positive one nowadays.\n",
+      "sources": [
+        "gillett_2006",
+        "garreaud_2009"
+      ]
+    },
+    {
+      "id": "positive_sam_antarctic_peninsula",
+      "from": "sam",
+      "when": "positive",
+      "to": "antarctic_peninsula_summer",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "established",
+      "mechanism": "Stronger summer westerlies push more air over the peninsula's mountain spine; it descends on the eastern side as a warm foehn wind, so the northeast of the peninsula warms sharply.\n",
+      "caveat": "The warming is three times larger on the eastern side than the western, and weak south of about 65°S; the western stations respond more to the sea ice and the ocean.\n",
+      "evidence_note": "The summer warming of the northeastern peninsula since the 1960s, and the loss of the northern Larsen ice shelves, are tied to the mode's summer trend; the relationship has shifted between decades.\n",
+      "sources": [
+        "marshall_2006",
+        "thompson_solomon_2002",
+        "silvestri_vera_2009"
+      ]
+    },
+    {
+      "id": "negative_sam_antarctic_peninsula",
+      "from": "sam",
+      "when": "negative",
+      "to": "antarctic_peninsula_summer",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "established",
+      "mechanism": "Weaker summer westerlies mean less air is forced over the peninsula and fewer warm foehn winds on its eastern side, so the summer tends to be cooler.\n",
+      "caveat": "The cooling is a tendency of the summer average on the northeastern coast; a single warm spell can still set records if the mode swings back for a week.\n",
+      "sources": [
+        "marshall_2006",
+        "gillett_2006"
+      ]
+    },
+    {
+      "id": "positive_sam_western_cape",
+      "from": "sam",
+      "when": "positive",
+      "to": "western_cape_winter_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "With the storm track and the South Atlantic high shifted south, fewer winter cold fronts reach the Cape and the moisture that feeds them passes to the south.\n",
+      "caveat": "Studies of the whole of South Africa, most of which has summer rain, find the opposite sign for the country as a whole; this link is for the winter-rainfall corner around Cape Town only.\n",
+      "evidence_note": "Six of the eight driest winters between 1948 and 2004 came with a positive mode, and the 2015–2017 \"Day Zero\" drought came with a poleward shift of the storm track and a positive mode; a hemisphere-wide station study finds wetter conditions over much of South Africa, so the sign depends on which part of the country is meant.\n",
+      "sources": [
+        "reason_rouault_2005",
+        "sousa_2018",
+        "gillett_2006"
+      ]
+    },
+    {
+      "id": "negative_sam_western_cape",
+      "from": "sam",
+      "when": "negative",
+      "to": "western_cape_winter_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "With the storm track spread north, more winter cold fronts reach the Cape, fed by moisture off the South Atlantic, and the winter tends to be wetter.\n",
+      "caveat": "Six of the seven wettest winters since 1948 came with a negative mode, but the sample is small and the mode flips within weeks, so the season average may hide a dry spell.\n",
+      "sources": [
+        "reason_rouault_2005"
+      ]
+    },
+    {
+      "id": "positive_sam_southeast_south_america",
+      "from": "sam",
+      "when": "positive",
+      "to": "southeast_south_america",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        10,
+        11
+      ],
+      "confidence": "contested",
+      "mechanism": "In spring the positive phase sets up a high-pressure anomaly over southern South America and the adjacent Atlantic that weakens the flow of moist air into Uruguay, southern Brazil and northeast Argentina.\n",
+      "caveat": "The sign of this link changed between the 1960s–70s and the 1980s–90s, and in winter it runs the other way; ENSO's spring effect on the same region is stronger and the mode mostly modulates it.\n",
+      "evidence_note": "Reported for spring from the 1980s onward; in the earlier decades the same phase brought more rain, so the link is shown as contested.\n",
+      "sources": [
+        "silvestri_vera_2003",
+        "silvestri_vera_2009"
+      ]
+    },
+    {
+      "id": "negative_sam_southeast_south_america",
+      "from": "sam",
+      "when": "negative",
+      "to": "southeast_south_america",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        10,
+        11
+      ],
+      "confidence": "contested",
+      "mechanism": "In spring the negative phase favours a low-pressure anomaly over southern South America that draws moist air into Uruguay, southern Brazil and northeast Argentina.\n",
+      "caveat": "Reported for recent decades only, with the opposite sign before the 1980s; La Niña tends to dry the same region in the same season and can override it.\n",
+      "sources": [
+        "silvestri_vera_2003",
+        "silvestri_vera_2009"
+      ]
+    },
+    {
+      "id": "el_nino_negative_sam",
+      "from": "enso",
+      "when": "el_nino",
+      "to": "sam",
+      "effect": -1,
+      "lag_months": [
+        4,
+        6
+      ],
+      "season": [
+        11,
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "El Niño warms the tropics and shifts the winds of the subtropics, which changes how weather systems are steered in the Southern Hemisphere and tends to weaken and spread the westerly belt in the austral summer: a negative mode.\n",
+      "caveat": "Roughly a quarter of the summer mode follows ENSO; the rest is the atmosphere's own noise, and the pairing has been strong in some decades and weak in others.\n",
+      "evidence_note": "Found for the austral summer in the reanalysis record, and in the 1990s in spring as well; in the 1980s the two patterns interfered rather than lining up, so the link is shown as probable rather than established.\n",
+      "sources": [
+        "lheureux_thompson_2006",
+        "fogt_bromwich_2006"
+      ]
+    },
+    {
+      "id": "la_nina_positive_sam",
+      "from": "enso",
+      "when": "la_nina",
+      "to": "sam",
+      "effect": 1,
+      "lag_months": [
+        4,
+        6
+      ],
+      "season": [
+        11,
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "La Niña cools the tropics and strengthens the subtropical winds, which tends to tighten the westerly belt toward the pole in the austral summer: a positive mode.\n",
+      "caveat": "The same quarter-share applies: most of the summer mode is not set by ENSO, and a La Niña summer can still lean negative for weeks.\n",
+      "evidence_note": "The same summer relationship as the El Niño link, read the other way; when the two line up, a wet La Niña summer on the east coast of Australia gets the mode's onshore winds on top.\n",
+      "sources": [
+        "lheureux_thompson_2006",
+        "fogt_bromwich_2006",
+        "hendon_2007"
+      ]
     }
   ],
   "sources": [
@@ -4973,6 +5641,101 @@
       "key": "thompson_wallace_1998",
       "citation": "Thompson, D. W. J., & Wallace, J. M. (1998). The Arctic Oscillation signature in the wintertime geopotential height and temperature fields. Geophysical Research Letters, 25(9), 1297–1300.",
       "url": "https://doi.org/10.1029/98GL00950"
+    },
+    {
+      "key": "thompson_wallace_2000",
+      "citation": "Thompson, D. W. J., & Wallace, J. M. (2000). Annular modes in the extratropical circulation. Part I: Month-to-month variability. Journal of Climate, 13(5), 1000–1016.",
+      "url": "https://doi.org/10.1175/1520-0442(2000)013<1000:AMITEC>2.0.CO;2"
+    },
+    {
+      "key": "marshall_2003",
+      "citation": "Marshall, G. J. (2003). Trends in the Southern Annular Mode from observations and reanalyses. Journal of Climate, 16(24), 4134–4143.",
+      "url": "https://doi.org/10.1175/1520-0442(2003)016<4134:TITSAM>2.0.CO;2"
+    },
+    {
+      "key": "gong_wang_1999",
+      "citation": "Gong, D., & Wang, S. (1999). Definition of Antarctic Oscillation index. Geophysical Research Letters, 26(4), 459–462.",
+      "url": "https://doi.org/10.1029/1999GL900003"
+    },
+    {
+      "key": "bom_sam",
+      "citation": "Australian Bureau of Meteorology. Southern Annular Mode (SAM): climate driver page and current index.",
+      "url": "https://www.bom.gov.au/climate/sam/"
+    },
+    {
+      "key": "gillett_2006",
+      "citation": "Gillett, N. P., Kell, T. D., & Jones, P. D. (2006). Regional climate impacts of the Southern Annular Mode. Geophysical Research Letters, 33, L23704.",
+      "url": "https://doi.org/10.1029/2006GL027721"
+    },
+    {
+      "key": "hendon_2007",
+      "citation": "Hendon, H. H., Thompson, D. W. J., & Wheeler, M. C. (2007). Australian rainfall and surface temperature variations associated with the Southern Hemisphere annular mode. Journal of Climate, 20(11), 2452–2467.",
+      "url": "https://doi.org/10.1175/JCLI4134.1"
+    },
+    {
+      "key": "meneghini_2007",
+      "citation": "Meneghini, B., Simmonds, I., & Smith, I. N. (2007). Association between Australian rainfall and the Southern Annular Mode. International Journal of Climatology, 27(1), 109–121.",
+      "url": "https://doi.org/10.1002/joc.1370"
+    },
+    {
+      "key": "kidston_2009",
+      "citation": "Kidston, J., Renwick, J. A., & McGregor, J. (2009). Hemispheric-scale seasonality of the Southern Annular Mode and impacts on the climate of New Zealand. Journal of Climate, 22(18), 4759–4770.",
+      "url": "https://doi.org/10.1175/2009JCLI2640.1"
+    },
+    {
+      "key": "silvestri_vera_2003",
+      "citation": "Silvestri, G. E., & Vera, C. S. (2003). Antarctic Oscillation signal on precipitation anomalies over southeastern South America. Geophysical Research Letters, 30(21), 2115.",
+      "url": "https://doi.org/10.1029/2003GL018277"
+    },
+    {
+      "key": "silvestri_vera_2009",
+      "citation": "Silvestri, G., & Vera, C. (2009). Nonstationary impacts of the Southern Annular Mode on Southern Hemisphere climate. Journal of Climate, 22(22), 6142–6148.",
+      "url": "https://doi.org/10.1175/2009JCLI3036.1"
+    },
+    {
+      "key": "garreaud_2009",
+      "citation": "Garreaud, R. D., Vuille, M., Compagnucci, R., & Marengo, J. (2009). Present-day South American climate. Palaeogeography, Palaeoclimatology, Palaeoecology, 281(3–4), 180–195.",
+      "url": "https://doi.org/10.1016/j.palaeo.2007.10.032"
+    },
+    {
+      "key": "marshall_2006",
+      "citation": "Marshall, G. J., Orr, A., van Lipzig, N. P. M., & King, J. C. (2006). The impact of a changing Southern Hemisphere Annular Mode on Antarctic Peninsula summer temperatures. Journal of Climate, 19(20), 5388–5404.",
+      "url": "https://doi.org/10.1175/JCLI3844.1"
+    },
+    {
+      "key": "thompson_solomon_2002",
+      "citation": "Thompson, D. W. J., & Solomon, S. (2002). Interpretation of recent Southern Hemisphere climate change. Science, 296(5569), 895–899.",
+      "url": "https://doi.org/10.1126/science.1069270"
+    },
+    {
+      "key": "fogt_bromwich_2006",
+      "citation": "Fogt, R. L., & Bromwich, D. H. (2006). Decadal variability of the ENSO teleconnection to the high-latitude South Pacific governed by coupling with the Southern Annular Mode. Journal of Climate, 19(6), 979–997.",
+      "url": "https://doi.org/10.1175/JCLI3671.1"
+    },
+    {
+      "key": "lheureux_thompson_2006",
+      "citation": "L'Heureux, M. L., & Thompson, D. W. J. (2006). Observed relationships between the El Niño–Southern Oscillation and the extratropical zonal-mean circulation. Journal of Climate, 19(2), 276–287.",
+      "url": "https://doi.org/10.1175/JCLI3617.1"
+    },
+    {
+      "key": "reason_rouault_2005",
+      "citation": "Reason, C. J. C., & Rouault, M. (2005). Links between the Antarctic Oscillation and winter rainfall over western South Africa. Geophysical Research Letters, 32, L07705.",
+      "url": "https://doi.org/10.1029/2005GL022419"
+    },
+    {
+      "key": "sousa_2018",
+      "citation": "Sousa, P. M., Blamey, R. C., Reason, C. J. C., Ramos, A. M., & Trigo, R. M. (2018). The 'Day Zero' Cape Town drought and the poleward migration of moisture corridors. Environmental Research Letters, 13(12), 124025.",
+      "url": "https://doi.org/10.1088/1748-9326/aaebc7"
+    },
+    {
+      "key": "lim_2019",
+      "citation": "Lim, E.-P., Hendon, H. H., Boschat, G., Hudson, D., Thompson, D. W. J., Dowdy, A. J., & Arblaster, J. M. (2019). Australian hot and dry extremes induced by weakenings of the stratospheric polar vortex. Nature Geoscience, 12, 896–901.",
+      "url": "https://doi.org/10.1038/s41561-019-0456-x"
+    },
+    {
+      "key": "lim_2021",
+      "citation": "Lim, E.-P., Hendon, H. H., Butler, A. H., Thompson, D. W. J., et al. (2021). The 2019 Southern Hemisphere stratospheric polar vortex weakening and its impacts. Bulletin of the American Meteorological Society, 102(6), E1150–E1171.",
+      "url": "https://doi.org/10.1175/BAMS-D-20-0112.1"
     }
   ],
   "stories": [
@@ -5569,6 +6332,75 @@
           "sources": [
             "noaa_cpc_oni",
             "noaa_climate_gov_enso"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "negative_sam_2019_black_summer",
+      "title": "2019: a broken polar vortex, a negative SAM and the Black Summer",
+      "intro": "In late August 2019 the stratospheric polar vortex over Antarctica weakened suddenly, something seen only once before, in 2002. Through October the effect worked its way down to the surface and swung the Southern Annular Mode to its most negative on record. A positive Indian Ocean Dipole had already been drying Australia since the winter. The year shown begins in November 2019 with the mode negative; the dipole is set to begin \"before the first driver\", in June. Watch eastern Australia, where the two arrows point the same way.\n",
+      "driver": "sam",
+      "phase": "negative",
+      "start_month": 11,
+      "start_year": 2019,
+      "second_driver": "iod",
+      "second_phase": "positive",
+      "second_start_month": 6,
+      "second_starts_before": true,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "sam",
+          "text": "Between late August and mid-September 2019 the westerly jet high in the stratosphere over Antarctica slowed abruptly and the polar stratosphere warmed by a record amount. From mid-October to December the weakened winds reached the surface and pushed the mode to a record negative: high pressure over Antarctica, the westerly belt loosened and spread north. Forecast systems had seen it coming from late July. The map holds the negative phase for a year; the real swing lasted about three months.\n",
+          "sources": [
+            "lim_2021",
+            "lim_2019"
+          ]
+        },
+        {
+          "month": 0,
+          "focus": "iod",
+          "text": "Already in phase from the first frame, and five months old. The dipole grew from June 2019 into one of the strongest positive events on record and dried the winter and spring across most of Australia before the mode swung. Its lags are counted from June, so nothing of it is still waiting when the year shown begins.\n",
+          "sources": [
+            "bom_iod",
+            "doi_2020",
+            "wang_cai_2020"
+          ]
+        },
+        {
+          "month": 0,
+          "focus": "east_australia_rainfall",
+          "text": "Two arrows, the same way. The dipole's dry arrow is here from the winter; the negative mode's summer link starts in November and adds hot, dry northwesterly winds crossing New South Wales and southern Queensland. November 2019 brought record heat and dryness to subtropical eastern Australia, and severe fires burned through the late spring. The ENSO marker is grey: there was no El Niño that year, which is the point of this story.\n",
+          "sources": [
+            "lim_2021",
+            "lim_2019"
+          ]
+        },
+        {
+          "month": 0,
+          "focus": "southeast_australia_rainfall",
+          "text": "Dry from the dipole alone. The mode's own link to Victoria and South Australia is the winter one, and in November it is out of season, so the marker shows one arrow, not two. Both arrows leave in December: the dipole's season ends, and the real dipole collapsed then as well, when the monsoon winds reversed.\n",
+          "sources": [
+            "doi_2020",
+            "hendon_2007"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "east_australia_rainfall",
+          "text": "The map still shows eastern Australia dry from the mode; the dipole's arrow has gone. The fires peaked around the New Year. In reality the mode had already let go: the record negative phase ran from mid-October to December. From here on the map and the season part ways. That is the gap between a tendency held for a year and a swing that lasted three months; the mode's card says so.\n",
+          "sources": [
+            "lim_2021"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "enso",
+          "text": "A postscript. The dipole's contested link to the following year counts eleven months from June 2019, so in May 2020 the map nudges the Pacific toward La Niña, drawn dotted and one tier down. A La Niña did form in the second half of 2020. Whether the dipole helped it along, or the Pacific was heading there anyway, is exactly what the dotted line is for.\n",
+          "sources": [
+            "izumo_2010",
+            "noaa_cpc_oni"
           ]
         }
       ]

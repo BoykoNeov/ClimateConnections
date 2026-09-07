@@ -711,3 +711,90 @@ stories:
           The dipole marker has now held one phase for sixteen months, which
           is why its card warns that real events do not last that long.
         sources: [noaa_cpc_oni, noaa_climate_gov_enso]
+
+  - id: negative_sam_2019_black_summer
+    title: "2019: a broken polar vortex, a negative SAM and the Black Summer"
+    intro: >
+      In late August 2019 the stratospheric polar vortex over Antarctica
+      weakened suddenly, something seen only once before, in 2002. Through
+      October the effect worked its way down to the surface and swung the
+      Southern Annular Mode to its most negative on record. A positive Indian
+      Ocean Dipole had already been drying Australia since the winter. The
+      year shown begins in November 2019 with the mode negative; the dipole
+      is set to begin "before the first driver", in June. Watch eastern
+      Australia, where the two arrows point the same way.
+    driver: sam
+    phase: negative
+    second_driver: iod
+    second_phase: positive
+    second_start_month: 6
+    second_starts_before: true
+    start_month: 11
+    start_year: 2019
+    steps:
+      - month: 0
+        focus: sam
+        text: >
+          Between late August and mid-September 2019 the westerly jet high in
+          the stratosphere over Antarctica slowed abruptly and the polar
+          stratosphere warmed by a record amount. From mid-October to
+          December the weakened winds reached the surface and pushed the mode
+          to a record negative: high pressure over Antarctica, the westerly
+          belt loosened and spread north. Forecast systems had seen it coming
+          from late July. The map holds the negative phase for a year; the
+          real swing lasted about three months.
+        sources: [lim_2021, lim_2019]
+
+      - month: 0
+        focus: iod
+        text: >
+          Already in phase from the first frame, and five months old. The
+          dipole grew from June 2019 into one of the strongest positive events
+          on record and dried the winter and spring across most of Australia
+          before the mode swung. Its lags are counted from June, so nothing of
+          it is still waiting when the year shown begins.
+        sources: [bom_iod, doi_2020, wang_cai_2020]
+
+      - month: 0
+        focus: east_australia_rainfall
+        text: >
+          Two arrows, the same way. The dipole's dry arrow is here from the
+          winter; the negative mode's summer link starts in November and adds
+          hot, dry northwesterly winds crossing New South Wales and southern
+          Queensland. November 2019 brought record heat and dryness to
+          subtropical eastern Australia, and severe fires burned through the
+          late spring. The ENSO marker is grey:
+          there was no El Niño that year, which is the point of this story.
+        sources: [lim_2021, lim_2019]
+
+      - month: 0
+        focus: southeast_australia_rainfall
+        text: >
+          Dry from the dipole alone. The mode's own link to Victoria and
+          South Australia is the winter one, and in November it is out of
+          season, so the marker shows one arrow, not two. Both arrows leave
+          in December: the dipole's season ends, and the real dipole
+          collapsed then as well, when the monsoon winds reversed.
+        sources: [doi_2020, hendon_2007]
+
+      - month: 2
+        focus: east_australia_rainfall
+        text: >
+          The map still shows eastern Australia dry from the mode; the
+          dipole's arrow has gone. The fires peaked around the New Year. In
+          reality the mode had already let go: the record negative phase ran
+          from mid-October to December. From here on the map and the season
+          part ways. That is the gap between a tendency held for a year and
+          a swing that lasted three months; the mode's card says so.
+        sources: [lim_2021]
+
+      - month: 6
+        focus: enso
+        text: >
+          A postscript. The dipole's contested link to the following year
+          counts eleven months from June 2019, so in May 2020 the map nudges
+          the Pacific toward La Niña, drawn dotted and one tier down. A La
+          Niña did form in the second half of 2020. Whether the dipole
+          helped it along, or the Pacific was heading there anyway, is
+          exactly what the dotted line is for.
+        sources: [izumo_2010, noaa_cpc_oni]

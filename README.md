@@ -1,15 +1,16 @@
 # Climate Connections
 
 An interactive teaching map of how the big climate oscillations affect
-weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole or
-the North Atlantic Oscillation) and a phase (El Niño or La Niña, a positive
-or negative dipole, a positive or negative NAO), press play, and watch the
+weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole,
+the North Atlantic Oscillation or the Southern Annular Mode) and a phase
+(El Niño or La Niña, a positive or negative dipole, a positive or negative
+NAO or SAM), press play, and watch the
 known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds three drivers, 45 outcome regions, 99 cited links
-(six of them between the drivers) and seven guided stories. A scenario is
+The map currently holds four drivers, 49 outcome regions, 117 cited links
+(eight of them between the drivers) and eight guided stories. A scenario is
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -66,11 +67,13 @@ any static file server.
 ## Use it
 
 - **Driver** (top left) picks the phenomenon: ENSO, the Indian Ocean
-  Dipole or the North Atlantic Oscillation. The other drivers' markers turn
-  grey; their cards say they are not part of the scenario.
+  Dipole, the North Atlantic Oscillation or the Southern Annular Mode (the
+  see-saw that tightens or loosens the belt of westerly winds around
+  Antarctica). The other drivers' markers turn grey; their cards say they
+  are not part of the scenario.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
   Niña; positive, neutral or negative dipole; positive, neutral or negative
-  NAO.
+  NAO or SAM.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
@@ -92,9 +95,10 @@ any static file server.
 - **Event begins in** (labelled **First driver begins in** while a second
   driver is chosen) picks the calendar month of onset. Picking a driver
   moves it to that driver's usual start: June for ENSO and the dipole, which
-  develop in late boreal spring or summer, and December for the NAO, which
-  is a winter pattern. Both the default and the note under the control come
-  from the data.
+  develop in late boreal spring or summer, December for the NAO, which
+  is a winter pattern, and June for the SAM, whose winter rain effects come
+  first. Both the default and the note under the control come from the
+  data.
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase

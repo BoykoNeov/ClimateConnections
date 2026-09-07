@@ -865,6 +865,59 @@ is fully green.
   dipole; compare mode with "before" on one side only.
 - Not in M15: the spreadsheet importer (only if outside contributors join).
 
+### M16 — Fourth driver: Southern Annular Mode (signed off 2026-09-07)
+- Data: `sam` driver node with positive / neutral / negative phases (marker
+  in the Southern Ocean at 58°S, area band across the Pacific sector;
+  `default_start_month` 6); four new outcome nodes (southwest Western
+  Australia winter rainfall, southern Chile and Patagonia rainfall,
+  Antarctic Peninsula summer temperature, Western Cape winter rainfall);
+  sixteen outcome links, eight per phase, on those four and on four
+  existing nodes (southeast Australia winter rainfall, eastern Australia
+  summer rainfall, New Zealand summer temperature, southeast South America
+  spring rainfall). The sources describe regressions and composites that
+  run both ways, so every target has a link per phase; seasons follow
+  Hendon et al. (extended winter May–October, extended summer
+  November–April), so the same region can lean one way in winter and the
+  other in summer. Tiers: established for the Australian winter rain, the
+  Cape's neighbour Patagonia and the Peninsula; probable for the east
+  coast in summer, New Zealand and the Western Cape (whole-country studies
+  find the opposite sign for South Africa); contested for southeast South
+  America, whose sign changed between decades. Two driver-to-driver links,
+  ENSO to the SAM in the austral summer (El Niño toward negative, La Niña
+  toward positive; probable, lag 4–6, November–February), so El Niño with
+  the chain on cools New Zealand twice over, same sign, one tier down.
+  Nineteen sources, every one resolved on Crossref before use. One story,
+  "2019: a broken polar vortex, a negative SAM and the Black Summer" (SAM
+  negative from November 2019, the dipole positive since June with
+  `second_starts_before`), six steps ending with a postscript in May 2020
+  where the dipole's contested next-year link pushes the Pacific toward
+  the La Niña that did form.
+- Honesty note carried in the data, as for the NAO: the mode swings within
+  weeks, so a phase held for a year is a simplification of a season that
+  leans one way; the driver summary, the onset hint and the story's last
+  step all say so.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for positive SAM from June (winter links from
+  month 0 and Patagonia all year, summer links pending in winter and
+  applied in January with the winter ones pending in turn, the same region
+  leaning both ways by season, tiers and their notes, other drivers'
+  regions hollow), negative SAM (every target reversed, eastern Australia
+  dry from November), El Niño pushing the SAM negative from November with
+  its summer links one tier down and its winter links only ever pending,
+  La Niña plus the pushed SAM on eastern Australia, and the 2019 scenario
+  (dipole onset -5, eastern Australia through both without conflict,
+  southeast Australia hollow in December, ENSO pushed toward La Niña at
+  month 6, the shipped story's fields). Existing expectations updated: four
+  drivers, eight driver-to-driver links, and the 2010–11 story's January
+  eastern Australia now also carries the pushed SAM.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m16.mjs`): the five
+  new markers placed with no label overlap (Patagonia moved to 44°S to
+  clear the global-temperature label), the driver dropdown and phase
+  buttons, positive SAM in June and January, a card, the negative
+  reversal, El Niño pushing the SAM (induced marker, arrows, card), the
+  2019 story stepped to its end, the print caption.
+- Not in M16: the Pacific Decadal Oscillation (M17).
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -938,6 +991,18 @@ every link cited and caveated as above, asymmetric where the literature is):
 | alpine_snow | The Alps | high_low | NAO | positive scarce (−), probable | negative deep (+), probable |
 | western_russia_winter | European Russia / W Siberia | warm_cool | NAO | positive mild (+), established | negative cold (−), probable |
 
+Outcome nodes added with the Southern Annular Mode (M16); the SAM also acts
+on southeast_australia_rainfall (winter, −/+, established),
+east_australia_rainfall (summer, +/−, probable), new_zealand_summer (+/−,
+probable) and southeast_south_america (spring, −/+, contested):
+
+| id | region | axis | driver | main + phase tendency | main − phase tendency |
+|---|---|---|---|---|---|
+| southwest_australia_winter_rainfall | Perth / SW Western Australia | wet_dry | SAM | positive dry winter (−), established | negative wet winter (+), established |
+| patagonia_rainfall | Southern Chile / Patagonia | wet_dry | SAM | positive dry, warm (−), established | negative wet (+), established |
+| antarctic_peninsula_summer | Northern Antarctic Peninsula | warm_cool | SAM | positive warm summer (+), established | negative cool summer (−), established |
+| western_cape_winter_rainfall | Cape Town / Western Cape | wet_dry | SAM | positive dry winter (−), probable | negative wet winter (+), probable |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -971,6 +1036,7 @@ writing mechanism text):
   scenarios with conflict flags (done, M11: two chosen drivers; M12: the
   second driver's own start month; M15: a second driver that begins before
   the first); season dial (done, M13); compare mode (done, M14: two maps
-  side by side); spreadsheet-to-YAML importer if outside contributors join.
+  side by side); more drivers (done, M16: the Southern Annular Mode);
+  spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

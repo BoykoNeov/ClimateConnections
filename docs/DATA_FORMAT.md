@@ -28,7 +28,7 @@ nodes:
     onset_hint: >              # drivers only: one plain sentence shown under the
       ...                      # "Event begins in" control, saying when events usually start
     default_start_month: 6     # drivers only, 1–12: the month "Event begins in" jumps to
-                               # when this driver is picked (ENSO and IOD June, NAO December)
+                               # when this driver is picked (ENSO, IOD and SAM June, NAO December)
     phases:                    # drivers only, at least 2
       - id: el_nino
         label: El Niño
@@ -174,8 +174,8 @@ card for every node shows a "How sure are we?" block built from
 ## Month indexing
 
 Month index 0 is the month the driver phase begins (the app starts at the
-driver's `default_start_month`: June for ENSO and the IOD, December for the
-NAO). A link with
+driver's `default_start_month`: June for ENSO, the IOD and the SAM, December
+for the NAO). A link with
 `lag_months: [4, 8]` becomes available at index 4. It is drawn as applied in
 any month at or after index 4 whose calendar month is in `season`, and as
 pending (muted) in months where it is available but out of season.

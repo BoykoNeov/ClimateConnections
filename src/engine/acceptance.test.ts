@@ -221,8 +221,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['enso', 'iod', 'nao'];
-  it('ships ENSO, the IOD and the NAO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['enso', 'iod', 'nao', 'sam'];
+  it('ships ENSO, the IOD, the NAO and the SAM as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -239,6 +239,7 @@ describe('acceptance: drivers', () => {
     expect(start('enso')).toBe(6);
     expect(start('iod')).toBe(6);
     expect(start('nao')).toBe(12);
+    expect(start('sam')).toBe(6);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -379,9 +380,9 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships six driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships eight driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'el_nino_negative_nao', 'el_nino_positive_iod', 'la_nina_negative_iod', 'la_nina_positive_nao',
+      'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'la_nina_negative_iod', 'la_nina_positive_nao', 'la_nina_positive_sam',
       'negative_iod_el_nino_next_year', 'positive_iod_la_nina_next_year',
     ]);
     for (const l of d2d) {
@@ -466,13 +467,14 @@ describe('acceptance: La Niña with a negative dipole (the 2010–11 story, June
     expect(st.conflicting).toBe(false);
     expect(st.confidence).toBe('probable');
   });
-  it('southeast Australia is wet through the dipole in spring; eastern Australia wet through La Niña alone in January', () => {
+  it('southeast Australia is wet through the dipole in spring; eastern Australia wet through La Niña in January, with the pushed SAM (M16) on top', () => {
     expect(tl.months[3].nodes.southeast_australia_rainfall.value).toBe(1);
     expect(tl.months[3].nodes.southeast_australia_rainfall.viaLinkIds).toEqual(['negative_iod_southeast_australia']);
     const jan = tl.months[7].nodes.east_australia_rainfall;
     expect(jan.value).toBe(1);
-    expect(jan.viaLinkIds).toEqual(['la_nina_east_australia']);
-    expect(tl.months[7].nodes.southeast_australia_rainfall.pendingLinkIds).toEqual(['negative_iod_southeast_australia']);
+    expect([...jan.viaLinkIds].sort()).toEqual(['la_nina_east_australia', 'positive_sam_east_australia_summer']);
+    expect(jan.conflicting).toBe(false);
+    expect([...tl.months[7].nodes.southeast_australia_rainfall.pendingLinkIds].sort()).toEqual(['negative_iod_southeast_australia', 'positive_sam_southeast_australia']);
   });
   it('the chosen dipole holds its phase in February, where the chain would have dropped it', () => {
     expect(tl.months[8].nodes.iod.value).toBe(-1);
@@ -764,5 +766,161 @@ describe('acceptance: a second driver that begins before the first, in general',
       if (s.second_starts_before === undefined) continue;
       expect(s.second_driver).toBeDefined();
     }
+  });
+});
+
+// ---------------------------------------------------------------- M16: fourth driver (Southern Annular Mode)
+// The SAM matters in every season; its scenarios start in June (winter rain
+// first) and its summer links arrive from November.
+function runSam(phaseId: string, startMonth = 6): Timeline {
+  return propagate(graph, { driverId: 'sam', phaseId, startMonth, horizonMonths: HORIZON });
+}
+
+const POSITIVE_SAM: Array<[string, Value, string]> = [
+  ['southwest_australia_winter_rainfall', -1, 'southwest Australia dry in winter'],
+  ['southeast_australia_rainfall', -1, 'southern Victoria and Tasmania dry in winter'],
+  ['east_australia_rainfall', 1, 'the southern east coast wet in summer'],
+  ['new_zealand_summer', 1, 'New Zealand warm in summer'],
+  ['patagonia_rainfall', -1, 'southern Chile and Patagonia dry'],
+  ['antarctic_peninsula_summer', 1, 'the Antarctic Peninsula warm in summer'],
+  ['western_cape_winter_rainfall', -1, 'the Western Cape dry in winter'],
+  ['southeast_south_america', -1, 'southeast South America dry in spring'],
+];
+
+describe('acceptance: positive SAM, June start', () => {
+  const tl = runSam('positive');
+  for (const [id, sign, label] of POSITIVE_SAM) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the winter rain links are applied from month 0 (June) and Patagonia all year', () => {
+    expect(tl.months[0].calendarMonth).toBe(6);
+    expect(tl.months[0].nodes.southwest_australia_winter_rainfall.value).toBe(-1);
+    expect(tl.months[0].nodes.southeast_australia_rainfall.value).toBe(-1);
+    expect(tl.months[0].nodes.western_cape_winter_rainfall.value).toBe(-1);
+    for (const m of tl.months) expect(m.nodes.patagonia_rainfall.value, `month ${m.index}`).toBe(-1);
+  });
+  it('the summer links wait for November: pending in winter, applied in January', () => {
+    const july = tl.months.find((m) => m.calendarMonth === 7)!;
+    expect(july.nodes.east_australia_rainfall.value).toBe(0);
+    expect(july.nodes.east_australia_rainfall.pendingLinkIds).toEqual(['positive_sam_east_australia_summer']);
+    expect(july.nodes.antarctic_peninsula_summer.value).toBe(0);
+    const jan = tl.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.nodes.east_australia_rainfall.value).toBe(1);
+    expect(jan.nodes.new_zealand_summer.value).toBe(1);
+    expect(jan.nodes.antarctic_peninsula_summer.value).toBe(1);
+    // ...and the winter links are pending in January, not gone.
+    expect(jan.nodes.southwest_australia_winter_rainfall.value).toBe(0);
+    expect(jan.nodes.southwest_australia_winter_rainfall.pendingLinkIds).toEqual(['positive_sam_southwest_australia']);
+  });
+  it('the same region can lean both ways by season: southeast Australia dry in winter is not eastern Australia wet in summer', () => {
+    const aug = tl.months.find((m) => m.calendarMonth === 8)!;
+    expect(aug.nodes.southeast_australia_rainfall.value).toBe(-1);
+    expect(aug.nodes.east_australia_rainfall.value).toBe(0);
+    const feb = tl.months.find((m) => m.calendarMonth === 2)!;
+    expect(feb.nodes.southeast_australia_rainfall.value).toBe(0);
+    expect(feb.nodes.east_australia_rainfall.value).toBe(1);
+  });
+  it('the Cape and southeast South America links are rated below established, and say so', () => {
+    const byId = new Map(graph.links.map((l) => [l.id, l]));
+    expect(byId.get('positive_sam_western_cape')!.confidence).toBe('probable');
+    expect(byId.get('positive_sam_western_cape')!.evidence_note).toMatch(/South Africa/);
+    expect(byId.get('positive_sam_southeast_south_america')!.confidence).toBe('contested');
+    expect(byId.get('positive_sam_southeast_south_america')!.caveat).toMatch(/changed/);
+  });
+  it('ENSO, IOD and NAO regions stay hollow: the map does not fake a SAM effect', () => {
+    for (const id of ['peru_coast_rainfall', 'indonesia_rainfall', 'east_africa_short_rains', 'northern_europe_winter', 'central_chile_winter']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: negative SAM, June start', () => {
+  const tl = runSam('negative');
+  it('reverses the positive phase wherever a negative link exists, and never copies its sign', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'sam' && l.when === 'negative').map((l) => l.to));
+    expect(targets.size).toBe(POSITIVE_SAM.length);
+    for (const [id, sign] of POSITIVE_SAM) {
+      expect(targets.has(id), `${id} has no negative link`).toBe(true);
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the positive phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the positive sign`).toHaveLength(0);
+    }
+  });
+  it('a negative spring is hot and dry in the east: eastern Australia dry from November', () => {
+    const nov = tl.months.find((m) => m.calendarMonth === 11)!;
+    expect(nov.nodes.east_australia_rainfall.value).toBe(-1);
+    expect(nov.nodes.east_australia_rainfall.viaLinkIds).toEqual(['negative_sam_east_australia_summer']);
+  });
+});
+
+describe('acceptance: ENSO pushes the SAM in summer (June start, chain on)', () => {
+  const tl = runDeep('enso', 'el_nino', 6);
+  it('El Niño pushes the SAM negative from November, and the SAM summer links follow one tier down', () => {
+    for (const m of tl.months) {
+      const pushed = m.calendarMonth >= 11 || m.calendarMonth <= 2;
+      expect(m.nodes.sam.value, `month ${m.index} (calendar ${m.calendarMonth})`).toBe(pushed && m.index >= 4 ? -1 : 0);
+    }
+    const jan = tl.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.links.el_nino_negative_sam?.status).toBe('applied');
+    expect(jan.links.negative_sam_new_zealand?.status).toBe('applied');
+    expect(jan.links.negative_sam_new_zealand?.depth).toBe(2);
+    expect(jan.links.negative_sam_new_zealand?.confidence).toBe('contested');
+    // New Zealand cool through El Niño directly and through the pushed SAM: same sign, no conflict.
+    expect(jan.nodes.new_zealand_summer.value).toBe(-1);
+    expect(jan.nodes.new_zealand_summer.conflicting).toBe(false);
+    expect([...jan.nodes.new_zealand_summer.viaLinkIds].sort()).toEqual(['el_nino_new_zealand', 'negative_sam_new_zealand']);
+  });
+  it('the pushed SAM winter links never apply: pending while it holds its phase in summer, absent in winter', () => {
+    for (const m of tl.months) {
+      const st = m.links.negative_sam_southwest_australia;
+      if (m.nodes.sam.value === -1) expect(st?.status, `month ${m.index}`).toBe('pending');
+      else expect(st, `month ${m.index}`).toBeUndefined();
+      expect(m.nodes.southwest_australia_winter_rainfall.value).toBe(0);
+    }
+  });
+  it('La Niña pushes the SAM positive, and eastern Australia gets La Niña and the SAM together in January', () => {
+    const ln = runDeep('enso', 'la_nina', 6);
+    const jan = ln.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.nodes.sam.value).toBe(1);
+    expect(jan.nodes.east_australia_rainfall.value).toBe(1);
+    expect([...jan.nodes.east_australia_rainfall.viaLinkIds].sort()).toEqual(['la_nina_east_australia', 'positive_sam_east_australia_summer']);
+  });
+});
+
+describe('acceptance: the 2019 story, a negative SAM with a positive dipole since June', () => {
+  const tl = runTwo(['sam', 'negative'], ['iod', 'positive'], 11, 6, true);
+  it('the dipole is in phase from month 0 with an onset five months back', () => {
+    expect(chosenOnset(tl.scenario, 'iod')).toBe(-5);
+    expect(tl.months[0].nodes.iod.value).toBe(1);
+    expect(tl.months[0].nodes.sam.value).toBe(-1);
+  });
+  it('eastern Australia is dry at month 0 through both drivers, without conflict', () => {
+    const st = tl.months[0].nodes.east_australia_rainfall;
+    expect(st.value).toBe(-1);
+    expect(st.conflicting).toBe(false);
+    expect(st.viaLinkIds).toContain('negative_sam_east_australia_summer');
+  });
+  it('southeast Australia is dry at month 0 through the dipole alone, and hollow in December when both seasons end', () => {
+    expect(tl.months[0].nodes.southeast_australia_rainfall.viaLinkIds).toEqual(['positive_iod_southeast_australia']);
+    expect(tl.months[1].calendarMonth).toBe(12);
+    expect(tl.months[1].nodes.southeast_australia_rainfall.viaLinkIds).toHaveLength(0);
+  });
+  it('ENSO is untouched until May, when the dipole’s contested next-year link (lag 11 from June) pushes it toward La Niña', () => {
+    for (const m of tl.months.slice(0, 6)) expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
+    expect(tl.months[6].calendarMonth).toBe(5);
+    expect(tl.months[6].nodes.enso.value).toBe(-1);
+    expect(tl.months[6].links.positive_iod_la_nina_next_year?.status).toBe('applied');
+    expect(tl.months[6].nodes.enso.confidence).toBe('contested');
+  });
+  it('the shipped story uses these settings', () => {
+    const s = graph.stories.find((x) => x.id === 'negative_sam_2019_black_summer')!;
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
+      .toEqual(['sam', 'negative', 'iod', 'positive', 6, true, 11, 2019]);
   });
 });
