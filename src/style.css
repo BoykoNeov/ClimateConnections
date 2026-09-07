@@ -67,6 +67,25 @@ html, body { margin: 0; height: 100%; }
 .hint { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
 .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
+/* Season dial (M13): the year as a circle, in the left panel. */
+.season-dial svg { display: block; width: 100%; max-width: 212px; height: auto; margin: 2px auto 0; }
+.dial-months .month { cursor: pointer; outline: none; }
+.dial-months .month path { fill: #eceff3; stroke: var(--panel); stroke-width: 1; transition: fill 120ms; }
+.dial-months .month:hover path, .dial-months .month:focus-visible path { fill: #d5dce6; }
+.dial-months .month.current path { fill: var(--accent); }
+.dial-months .month text { font-size: 9px; fill: var(--ink); pointer-events: none; }
+.dial-months .month.current text { fill: #ffffff; font-weight: 700; }
+.dial-months .month.start text { text-decoration: underline; }
+.dial-months .month:focus-visible path { stroke: var(--accent); stroke-width: 2; }
+.dial-onset { fill: var(--ink); }
+.dial-second { stroke: #ffffff; stroke-width: 1.2; }
+.dial-heat path { fill: var(--accent); stroke: var(--panel); stroke-width: 1; }
+.dial-ring path.off { fill: #e9ebef; }
+.dial-ring path { stroke: var(--panel); stroke-width: 0.8; }
+.dial-count { font-size: 15px; font-weight: 600; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.dial-note { font-size: 8px; fill: var(--muted); }
+.dial-caption { text-align: center; }
+
 .legend { font-size: 12px; }
 .legend-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .legend-row svg { flex: none; }

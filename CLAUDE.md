@@ -8,8 +8,9 @@ schema, engine semantics, and milestones.
 A static, browser-based teaching tool that draws known climate
 teleconnections (ENSO, since M8 the Indian Ocean Dipole, since M9 the
 North Atlantic Oscillation, since M10 the links between those drivers,
-since M11 two drivers chosen at once, and since M12 a start month of its
-own for the second one) on a Pacific-centered world map and
+since M11 two drivers chosen at once, since M12 a start month of its
+own for the second one, and since M13 a season dial showing the calendar
+year as a circle) on a Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
 one.
@@ -27,14 +28,18 @@ one.
   chosen drivers (§4 rule 8) add up under the same sum-and-clamp rule and
   are never pushed; no new combination rule. The second driver's own start
   month (M12) is read within the twelve months shown and the driver is held
-  out of play (pinned, no phase) before it.
+  out of play (pinned, no phase) before it. The season dial (M13) shows
+  the season gate only, read from each link's `season`; it never
+  recomputes states and must not hide the lag (its hint says a month can
+  be in season and still empty).
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
   sign-off; the Indian Ocean Dipole (M8), the North Atlantic Oscillation
-  (M9), driver-to-driver links (M10), two chosen drivers (M11) and the
-  second driver's own start month (M12) were signed off on 2026-09-07. Do
-  not start another version 2 item without sign-off.
+  (M9), driver-to-driver links (M10), two chosen drivers (M11), the
+  second driver's own start month (M12) and the season dial (M13) were
+  signed off on 2026-09-07. Do not start another version 2 item without
+  sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow

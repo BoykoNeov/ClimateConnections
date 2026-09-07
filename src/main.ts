@@ -1,8 +1,10 @@
 import './style.css';
-import type { Confidence, DriverNode, Graph, Scenario, Timeline } from '../src/types';
+import type { Confidence, DriverNode, Graph, Link, Scenario, Timeline } from '../src/types';
 import { MONTH_NAMES } from './types';
 import { chosenOnset, propagate } from './engine/propagate';
-import { MapView } from './ui/map';
+import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
+import { MapView, stateColor } from './ui/map';
+import { SeasonDialView, seasonWords, type DialRing } from './ui/dial';
 import { TimelineView } from './ui/timeline';
 import { ControlsView, type ConfidenceFilter, type ControlState } from './ui/controls';
 import { renderCard, type ChosenPhase } from './ui/card';
@@ -32,6 +34,9 @@ async function main(): Promise<void> {
   let focusNodeId: string | null = null;
   let timeline: Timeline;
   let prevApplied = new Set<string>();
+  /** the links in play in the current timeline and their season gate by calendar month (M13) */
+  let inPlay: Link[] = [];
+  let profile: SeasonMonth[] = [];
 
   const mapEl = document.getElementById('map-container')!;
   const cardEl = document.getElementById('card')!;
@@ -42,6 +47,7 @@ async function main(): Promise<void> {
   const tl = new TimelineView(document.getElementById('timeline')!, HORIZON, controls.startMonth);
   const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, controls);
   const story = new StoryView(document.getElementById('story')!, new Map(graph.sources.map((s) => [s.key, s])));
+  const dial = new SeasonDialView(ctl.dialHost);
 
   function recompute(): void {
     const scenario: Scenario = {
@@ -52,6 +58,23 @@ async function main(): Promise<void> {
     timeline = propagate(graph, scenario);
     prevApplied = new Set();
     tl.setSecondOnset(controls.second ? chosenOnset(scenario, controls.second.driverId) : null);
+    inPlay = linksInPlay(graph, timeline);
+    profile = seasonProfile(inPlay);
+  }
+
+  /** The links in play that act on a node, as dial rings (M13): colour of the
+   *  effect, tooltip naming the firing driver, the tendency and the season. */
+  function ringsFor(nodeId: string): DialRing[] {
+    const node = graph.nodes.find((n) => n.id === nodeId);
+    if (!node) return [];
+    return inPlay.filter((l) => l.to === nodeId).map((l) => {
+      const from = graph.nodes.find((n) => n.id === l.from);
+      const fromName = from ? from.name.replace(/\s*\(.*\)$/, '') : l.from;
+      const tendency = node.kind === 'driver'
+        ? `toward ${node.phases.find((p) => p.value === l.effect)?.label ?? 'a phase'}`
+        : l.effect > 0 ? node.labels.plus : node.labels.minus;
+      return { id: l.id, months: l.season, color: stateColor(node, l.effect), title: `From ${fromName}: ${tendency}. Season: ${seasonWords(l.season)}. Expected from month ${l.lag_months[0]} after onset.` };
+    });
   }
 
   function draw(): void {
@@ -79,6 +102,14 @@ async function main(): Promise<void> {
     captionEl.textContent = printCaption(driver, phase.label, second, secondPhase?.label ?? null, month.index, month.calendarMonth);
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
     renderCard(cardEl, graph, node, month, chosenPhases);
+    dial.render({
+      startMonth: controls.startMonth,
+      currentMonth: month.calendarMonth,
+      second: second && secondPhase && controls.second ? { month: controls.second.startMonth, color: secondPhase.color, name: second.name.replace(/\s*\(.*\)$/, '') } : null,
+      profile,
+      rings: node ? ringsFor(node.id) : null,
+      selectedName: node ? node.name.replace(/\s*\(.*\)$/, '') : null,
+    });
   }
 
   ctl.onChange = (s) => {
@@ -96,6 +127,9 @@ async function main(): Promise<void> {
   };
   tl.onChange = (i) => { monthIndex = i; draw(); };
   map.onNodeClick = (id) => { selectedNodeId = selectedNodeId === id ? null : id; draw(); };
+  // The dial jumps by calendar month: the first time that month comes up in
+  // the year shown. Like the scrubber, it pauses play and leaves a story alone.
+  dial.onPick = (cal) => { tl.pause(); tl.set(indexForCalendarMonth(controls.startMonth, cal)); };
 
   ctl.onStory = (id) => {
     const s = id ? graph.stories.find((x) => x.id === id) : undefined;

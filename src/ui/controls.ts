@@ -1,5 +1,5 @@
 // Left panel: driver picker, phase buttons, optional second driver (M11),
-// start month, confidence filter, legend.
+// start month, a slot for the season dial (M13), confidence filter, legend.
 
 import type { DriverNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
@@ -38,6 +38,8 @@ export class ControlsView {
   private secondMonthSelect: HTMLSelectElement | null = null;
   private secondOnsetHint: HTMLParagraphElement | null = null;
   private onsetHint: HTMLParagraphElement;
+  /** empty box under the start-month control for the season dial (M13) */
+  readonly dialHost: HTMLDivElement;
   private monthHeading: HTMLHeadingElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
@@ -172,6 +174,17 @@ export class ControlsView {
     this.onsetHint = document.createElement('p');
     this.onsetHint.className = 'hint';
     container.append(this.onsetHint);
+
+    // Season dial (M13): the page draws it into this slot.
+    const hd = document.createElement('h2');
+    hd.textContent = 'Season dial';
+    container.append(hd);
+    this.dialHost = document.createElement('div');
+    container.append(this.dialHost);
+    const hintD = document.createElement('p');
+    hintD.className = 'hint';
+    hintD.textContent = 'The year as a circle: the month shown is filled, the triangle marks where the year shown begins. A connection is only felt in its season, so a month can be in season and still empty while the lag runs. Click a month to jump to it; click a place on the map to see the season of each connection acting on it.';
+    container.append(hintD);
 
     const h3 = document.createElement('h2');
     h3.textContent = 'Show connections';

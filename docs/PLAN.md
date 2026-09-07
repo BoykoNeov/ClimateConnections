@@ -401,6 +401,9 @@ and lowest-confidence selection.
 - Horizontal scrubber, 0–12, labeled with calendar month names.
 - Play/pause button; play advances one month per ~1.2 s.
 - Current month shown large in the corner of the map ("Month 4 — October").
+- The season dial in the controls panel (section 5.6, M13) is the
+  timeline's calendar counterpart: it follows the month shown and jumps
+  the scrubber by calendar month.
 
 ### 5.5 Card panel (right side)
 On clicking a node show: name, region, current state in plain words, then for
@@ -422,6 +425,22 @@ phase description and the timescale.
 - Start month selector (default: June, because El Niño events typically
   begin to develop in boreal late spring/summer). Its heading reads "Event
   begins in", or "First driver begins in" while a second driver is chosen.
+- Season dial (M13), under the start month: the calendar year as a circle
+  of twelve month sectors, January at the top, clockwise. The month on
+  screen is filled and follows the timeline; a dark triangle outside the
+  ring marks where the year shown begins, a dot in the phase colour where a
+  second driver begins. Inside, one ring for the whole scenario: each
+  month shaded by how many of the links in play (applied or pending at
+  some month; ghosts excluded) pass the season gate, against the busiest
+  month, with the count "k of N in season now" in the centre. While a
+  place is selected the inner area shows one ring per link acting on it
+  instead, coloured by effect over its season months and grey outside
+  them, with a tooltip naming the firing driver, the tendency, the season
+  in words ("Dec–Mar") and the minimum lag. The dial shows the season gate
+  only and its hint says so: a month can be in season and still empty
+  while the lag runs. Clicking a sector (or Enter on it) jumps the
+  timeline to the first month index with that calendar month, pauses play
+  and leaves a running story alone, like the scrubber. Hidden in print.
 - Confidence filter: all / probable and above / established only (section 3.4).
 - Legend: confidence line styles and the state color scheme.
 - A permanent one-line disclaimer under the title: "Shows historical
@@ -644,9 +663,45 @@ is fully green.
   positive NAO from December (pinned through November, its links absent
   rather than pending), and the March wrap; the stories test passes the
   second start month.
-- Not in M12 (later v2 items): season dial, compare mode, a second driver
-  that begins *before* the first (the timeline starts at the first
-  driver's onset).
+- Not in M12 (later v2 items): season dial (done in M13), compare mode, a
+  second driver that begins *before* the first (the timeline starts at the
+  first driver's onset).
+
+### M13 — Season dial (signed off 2026-09-07)
+- Engine: `src/engine/season.ts`, pure helpers beside the engine, no change
+  to `propagate`: `linksInPlay(graph, timeline)` (every link reported
+  applied or pending in some month, graph order, ghosts excluded),
+  `inSeason(link, calendarMonth)`, `seasonProfile(links)` (twelve
+  `SeasonMonth` entries, January first, each listing the links in and out
+  of season) and `indexForCalendarMonth(startMonth, calendarMonth)` (the
+  first month index that shows the calendar month; the start month maps
+  to 0).
+- Schema and data: no change. The dial reads each link's `season`.
+- Rendering: `src/ui/dial.ts`, section 5.6. The controls panel exposes an
+  empty slot (`dialHost`) under the start-month hint; the page draws the
+  dial into it and re-renders it with every month and every scenario
+  change. Sectors are keyboard buttons (`role=button`, `aria-pressed` on
+  the month shown, `aria-label` "Jump to March, month 9 after onset").
+- Tests: `src/engine/season.test.ts`: the index mapping including the
+  wrap, the season gate and the profile (empty season = all year, year
+  wrap, no links), links in play (applied and pending, the other phase and
+  a never-reached lag left out, ghosts left out, a second driver's links
+  from its own month, a pushed driver's links with the chain on), and two
+  blocks on the shipped data (monsoon a summer link and the Gulf Coast a
+  winter one, every month has something in season; every applied link is
+  in season in its calendar month and every pending one is not).
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m13.mjs`, 30
+  checks): sectors and labels, the current and start sector following the
+  timeline, the onset triangle and second-driver dot, the heat ring's
+  counts matching the distinct non-ghost arrows drawn over the year,
+  click and Enter jumping by calendar month and pausing play, one ring
+  for the monsoon with the chain off and two with it on, the Gulf Coast's
+  winter ring wrapping the year, East Africa's two rings with a negative
+  dipole from September, the fallback caption for a place nothing acts
+  on, a story left open by a sector click, the NAO's December start, and
+  the dial hidden in print.
+- Not in M13 (later v2 items): compare mode; a second driver that begins
+  before the first.
 
 ---
 
@@ -731,7 +786,8 @@ writing mechanism text):
 - **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation
   (done, M9) as drivers; driver-to-driver links (done, M10); multi-driver
   scenarios with conflict flags (done, M11: two chosen drivers; M12: the
-  second driver's own start month); season dial; compare mode (two maps
-  side by side); spreadsheet-to-YAML importer if outside contributors join.
+  second driver's own start month); season dial (done, M13); compare mode
+  (two maps side by side); spreadsheet-to-YAML importer if outside
+  contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

@@ -94,6 +94,18 @@ any static file server.
   develop in late boreal spring or summer, and December for the NAO, which
   is a winter pattern. Both the default and the note under the control come
   from the data.
+- **Season dial** (under the start month) shows the calendar year as a
+  circle. The month on screen is filled and follows the timeline; a dark
+  triangle marks where the year shown begins, and a dot in the phase
+  colour marks where a second driver begins. The ring inside is shaded by
+  how many of the scenario's connections are in season each month, with
+  the count in the centre. Click a place on the map and the dial shows one
+  ring per connection acting on it instead, coloured over the months it
+  can be felt and grey outside them; hover a ring for the driver, the
+  tendency and the season in words. The dial shows only the season gate:
+  a connection also waits for its lag, so a month can be in season and
+  still empty. Click a month (or press Enter on it) to jump the timeline
+  there.
 - **Show connections** filters by confidence. Hidden links stay on the map as
   faint grey lines so you can see what was left out.
 - **Timeline** (bottom) scrubs from month 0 to month 12. Play advances one
@@ -139,8 +151,8 @@ data/nodes.yaml      the phenomena on the map (drivers and outcomes)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
 scripts/build-data.mjs   validates the YAML and writes public/data/graph.json
-src/engine/          pure propagation engine: scenario in, month-by-month states out
-src/ui/              map, timeline, controls, legend, card, story panel
+src/engine/          pure propagation engine: scenario in, month-by-month states out; season-dial helpers
+src/ui/              map, timeline, season dial, controls, legend, card, story panel
 docs/PLAN.md         the plan: scope, schema, engine semantics, milestones
 docs/DATA_FORMAT.md  field-by-field schema for the three data files
 ```
