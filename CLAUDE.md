@@ -9,8 +9,9 @@ A static, browser-based teaching tool that draws known climate
 teleconnections (ENSO, since M8 the Indian Ocean Dipole, since M9 the
 North Atlantic Oscillation, since M10 the links between those drivers,
 since M11 two drivers chosen at once, since M12 a start month of its
-own for the second one, and since M13 a season dial showing the calendar
-year as a circle) on a Pacific-centered world map and
+own for the second one, since M13 a season dial showing the calendar
+year as a circle, and since M14 two scenarios compared side by side) on a
+Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
 one.
@@ -31,15 +32,18 @@ one.
   out of play (pinned, no phase) before it. The season dial (M13) shows
   the season gate only, read from each link's `season`; it never
   recomputes states and must not hide the lag (its hint says a month can
-  be in season and still empty).
+  be in season and still empty). Compare mode (M14) runs the engine once
+  per side on the same month index and only compares the results
+  (`src/engine/compare.ts`); it never blends the two scenarios or invents
+  a third state, and a story is one scenario, so it turns compare off.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
   sign-off; the Indian Ocean Dipole (M8), the North Atlantic Oscillation
   (M9), driver-to-driver links (M10), two chosen drivers (M11), the
-  second driver's own start month (M12) and the season dial (M13) were
-  signed off on 2026-09-07. Do not start another version 2 item without
-  sign-off.
+  second driver's own start month (M12), the season dial (M13) and
+  compare mode (M14) were signed off on 2026-09-07. Do not start another
+  version 2 item without sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow

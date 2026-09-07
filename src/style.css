@@ -91,8 +91,44 @@ html, body { margin: 0; height: 100%; }
 .legend-row svg { flex: none; }
 .legend-note { font-size: 11px; color: var(--muted); margin: 2px 0 8px 0; }
 
-#map-container { grid-area: map; position: relative; background: var(--ocean); min-width: 0; min-height: 0; }
+#map-container { grid-area: map; position: relative; background: var(--ocean); min-width: 0; min-height: 0; display: grid; grid-template-columns: 1fr; }
 #map-container svg { display: block; width: 100%; height: 100%; }
+/* Compare mode (M14): two panes side by side, each with a clickable title
+   naming its scenario; the pane being edited carries the accent. */
+#map-container.compare { grid-template-columns: 1fr 1fr; gap: 4px; background: var(--line); }
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--ocean); }
+.pane-map { flex: 1; min-height: 0; position: relative; }
+.pane-head {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  font: inherit; font-size: 12px; padding: 5px 10px; text-align: left; color: var(--muted);
+  border: 0; border-bottom: 2px solid transparent; background: var(--panel); cursor: pointer;
+}
+.pane.editing .pane-head { border-bottom-color: var(--accent); color: var(--ink); }
+.pane-head .what { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pane-head .when { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.side-tag { display: inline-block; min-width: 18px; text-align: center; border-radius: 4px; padding: 1px 5px; font-size: 11px; font-weight: 700; background: var(--muted); color: #ffffff; }
+.pane.editing .side-tag, .side-btn[aria-pressed="true"] .side-tag, .cmp-cell.editing .side-tag { background: var(--accent); }
+.side-switch { display: flex; gap: 6px; margin-top: 6px; }
+.side-btn {
+  flex: 1; display: flex; align-items: center; gap: 6px; padding: 5px 8px; font: inherit; font-size: 12px;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel); cursor: pointer; text-align: left;
+}
+.side-btn[aria-pressed="true"] { border-color: var(--ink); background: #eef1f5; font-weight: 600; }
+.compare-note { font-weight: 600; color: var(--ink); }
+.node circle.diff { display: none; }
+.node.differs circle.diff, .node.differs.driver circle.diff, .node.differs.selected circle.diff, .node.differs.conflicting circle.diff, .node.differs.driver.induced circle.diff, .node.differs.driver.pending circle.diff {
+  display: inline; fill: none; stroke: #1f2328; stroke-width: 1.6; stroke-dasharray: none; stroke-opacity: 1; fill-opacity: 1; animation: none;
+}
+.compare-block { margin: 6px 0 10px; }
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cmp-cell { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.cmp-cell.editing { border-color: var(--accent); }
+.cmp-title { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.cmp-cell .state-line { margin: 0; padding: 6px 8px; font-size: 12.5px; }
+.cmp-verdict { margin: 8px 0 0; font-weight: 600; }
+.cmp-verdict.opposite { color: #b71c1c; }
+.cmp-verdict.only_a, .cmp-verdict.only_b, .cmp-verdict.differ { color: #b26a00; }
+.cmp-verdict.same, .cmp-verdict.none { color: var(--muted); }
 .sphere { fill: var(--ocean); stroke: var(--border); stroke-width: 0.6; }
 .graticule { fill: none; stroke: #ffffff; stroke-opacity: 0.6; stroke-width: 0.4; }
 .land { fill: var(--land); stroke: var(--border); stroke-width: 0.4; }
@@ -240,6 +276,12 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
 
   #map-container { grid-area: map; height: 112mm; background: #ffffff; margin-top: 3mm; }
   #map-container svg { width: 100%; height: 100%; overflow: visible; }
+  #map-container.compare { gap: 4mm; background: #ffffff; }
+  .pane { background: #ffffff; }
+  .pane-head { border-bottom: 1px solid #000; background: #ffffff; color: #000; font-size: 8pt; padding: 0 0 1mm; }
+  .side-tag { background: #000 !important; }
+  .side-switch, .compare-note { display: none; }
+  .cmp-cell.editing { border-color: #000; }
   .sphere { fill: #f3f6f9; stroke: #666; }
   .land { fill: #ffffff; stroke: #777; }
   .graticule { stroke: #d0d4da; stroke-opacity: 1; }

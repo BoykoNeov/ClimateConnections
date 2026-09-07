@@ -13,7 +13,8 @@ The map currently holds three drivers, 30 outcome regions, 70 cited links
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
-opposite ways the map says so rather than picking a winner.
+opposite ways the map says so rather than picking a winner. Two scenarios
+can be compared side by side on one timeline.
 
 ## What it is
 
@@ -118,6 +119,19 @@ any static file server.
   sets the scenario, steps through the year, highlights one region at a
   time and explains what happened in that event. Changing the phase or start
   month by hand leaves the story.
+- **Compare** (under Stories) draws two scenarios side by side on the same
+  timeline: El Niño against La Niña, a year with and without a second
+  driver, the chain on against off, all links against established only.
+  B starts as a copy of A with the opposite phase. The controls edit the
+  side you pick with **Edit A** / **Edit B** (or by clicking a map's
+  title); the other map keeps its own scenario, and each map's title says
+  what it shows and which calendar month it is on. A dark ring marks every
+  place the two scenarios treat differently this month, and a line under
+  the switch counts them. Click a ringed place and the card opens with the
+  place's state under A and under B and a one-line verdict (same,
+  opposite, only one side acts, or differs in timing) before the usual
+  details for the side you are editing. Picking a story turns compare
+  off. Printing gives both maps with a caption naming both scenarios.
 - **Show affected areas** toggles the rough regional outlines under the
   arrows.
 - **Follow links through other drivers** (on by default) lets a driver that
@@ -151,8 +165,8 @@ data/nodes.yaml      the phenomena on the map (drivers and outcomes)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
 scripts/build-data.mjs   validates the YAML and writes public/data/graph.json
-src/engine/          pure propagation engine: scenario in, month-by-month states out; season-dial helpers
-src/ui/              map, timeline, season dial, controls, legend, card, story panel
+src/engine/          pure propagation engine: scenario in, month-by-month states out; season-dial and compare helpers
+src/ui/              map (one per side), timeline, season dial, controls, legend, card, story panel
 docs/PLAN.md         the plan: scope, schema, engine semantics, milestones
 docs/DATA_FORMAT.md  field-by-field schema for the three data files
 ```

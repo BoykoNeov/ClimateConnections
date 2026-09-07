@@ -1,8 +1,9 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, Link, LinkState, MonthState, Source } from '../types';
+import type { DriverNode, Graph, GraphNode, Link, LinkState, MonthState, NodeState, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
 import { phaseForValue } from '../engine/propagate';
+import { compareNode, type Verdict } from '../engine/compare';
 import { stateColor } from './map';
 
 function esc(s: string): string {
@@ -166,10 +167,65 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
   return html;
 }
 
-/** `chosen` maps each driver chosen by hand to its phase and onset (one, or two since M11). */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>): void {
+/** Compare mode (M14): the same month on both sides, and which side the
+ *  details below describe. */
+export interface CardCompare {
+  /** the side the rest of the card is about (the one being edited) */
+  side: 'A' | 'B';
+  a: { month: MonthState; title: string };
+  b: { month: MonthState; title: string };
+}
+
+/** One node's state in one month, in plain words, for the comparison block. */
+function stateWords(node: GraphNode, st: NodeState): { text: string; color: string } {
+  if (node.kind === 'driver') {
+    if (st.value === 0 && st.viaLinkIds.length === 0) {
+      if (st.pendingLinkIds.length > 0) return { text: 'expected to be pushed, out of season', color: '#f0f2f5' };
+      return { text: st.conflicting ? 'no phase: pushes cancel out' : 'not in play', color: '#f0f2f5' };
+    }
+    const phase = phaseForValue(node, st.value);
+    return { text: phase?.label ?? 'a phase', color: phase?.color ?? '#f0f2f5' };
+  }
+  if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return { text: 'no known effect', color: '#f0f2f5' };
+  if (st.viaLinkIds.length === 0) return { text: 'expected, out of season', color: '#f0f2f5' };
+  const label = st.value > 0 ? node.labels.plus : st.value < 0 ? node.labels.minus : node.labels.zero;
+  return { text: st.conflicting ? `${label} (conflicting)` : label, color: st.value === 0 ? '#f0f2f5' : stateColor(node, st.value) };
+}
+
+const VERDICT_TEXT: Record<Verdict, string> = {
+  none: 'Neither scenario acts here this month.',
+  same: 'Same in both scenarios this month.',
+  opposite: 'Opposite: the two scenarios pull this place different ways.',
+  only_a: 'Only scenario A acts here this month.',
+  only_b: 'Only scenario B acts here this month.',
+  differ: 'The scenarios differ here: one pushes, the other is still waiting for its season, cancelled out or not in play.',
+};
+
+/** Side-by-side states of the node in both scenarios, a one-line verdict,
+ *  and which side the rest of the card describes. */
+function compareBlock(node: GraphNode, cmp: CardCompare): string {
+  const a = cmp.a.month.nodes[node.id];
+  const b = cmp.b.month.nodes[node.id];
+  if (!a || !b) return '';
+  const verdict = compareNode(a, b);
+  const cell = (side: 'A' | 'B', title: string, st: NodeState) => {
+    const w = stateWords(node, st);
+    const light = w.color === '#f0f2f5';
+    return `<div class="cmp-cell${side === cmp.side ? ' editing' : ''}"><div class="cmp-title"><span class="side-tag">${side}</span> ${esc(title)}</div>
+      <div class="state-line ${light ? 'zero' : 'plus'}" style="background:${w.color}${light ? ';color:inherit' : ''}">${esc(w.text)}</div></div>`;
+  };
+  return `<div class="compare-block">
+    <div class="cmp-grid">${cell('A', cmp.a.title, a)}${cell('B', cmp.b.title, b)}</div>
+    <p class="cmp-verdict ${verdict}">${VERDICT_TEXT[verdict]}</p>
+    <p class="hint">Details below are for scenario ${cmp.side}, the one you are editing. Switch sides in the left panel or click the other map's title to read the other.</p>
+  </div>`;
+}
+
+/** `chosen` maps each driver chosen by hand to its phase and onset (one, or two since M11).
+ *  `compare` (M14) adds the other scenario's month for a side-by-side block on top. */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare): void {
   if (!node) {
-    container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on the map to read what tends to happen there, why, and how sure the science is.</p>`;
+    container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
   }
   const ctx: Ctx = {
@@ -179,6 +235,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     chosen,
   };
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
+  if (compare) html += compareBlock(node, compare);
 
   if (node.kind === 'driver') {
     container.innerHTML = html + driverCard(node, graph, ctx, month);

@@ -1,5 +1,6 @@
-// Left panel: driver picker, phase buttons, optional second driver (M11),
-// start month, a slot for the season dial (M13), confidence filter, legend.
+// Left panel: compare switch (M14), driver picker, phase buttons, optional
+// second driver (M11), start month, a slot for the season dial (M13),
+// confidence filter, legend.
 
 import type { DriverNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
@@ -7,17 +8,53 @@ import { renderLegend } from './legend';
 
 export type ConfidenceFilter = 'all' | 'probable' | 'established';
 
-export interface ControlState {
+/** Everything that defines one scenario: what the map on one side draws. */
+export interface ScenarioSettings {
   driverId: string;
   phaseId: string;
   startMonth: number;
   filter: ConfidenceFilter;
-  showAreas: boolean;
   /** follow links through drivers the scenario driver has pushed (M10) */
   chain: boolean;
   /** a second driver chosen by hand (M11) with its own calendar start month
    *  (M12; read within the twelve months shown); null = none */
   second: { driverId: string; phaseId: string; startMonth: number } | null;
+}
+
+export type Side = 'a' | 'b';
+
+/** Scenario A (the fields inherited from `ScenarioSettings`) plus the settings
+ *  shared by both maps and, in compare mode, scenario B. */
+export interface ControlState extends ScenarioSettings {
+  showAreas: boolean;
+  /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
+   *  and which of the two the scenario controls edit; null = one map */
+  compare: { side: Side; b: ScenarioSettings } | null;
+}
+
+/** Scenario A's settings alone. */
+export function scenarioSettings(s: ScenarioSettings): ScenarioSettings {
+  return { driverId: s.driverId, phaseId: s.phaseId, startMonth: s.startMonth, filter: s.filter, chain: s.chain, second: s.second };
+}
+
+/** The settings on one side: A, or B in compare mode. */
+export function sideSettings(s: ControlState, side: Side): ScenarioSettings {
+  return side === 'b' && s.compare ? s.compare.b : scenarioSettings(s);
+}
+
+/** The scenario the controls edit right now. */
+export function editedSide(s: ControlState): Side {
+  return s.compare?.side ?? 'a';
+}
+
+/** The phase on the other side of the driver's axis (El Niño -> La Niña);
+ *  from neutral, the first phase that is not neutral. The default for a new
+ *  scenario B, so the two maps differ from the start. */
+export function oppositePhaseId(driver: DriverNode, phaseId: string): string {
+  const cur = driver.phases.find((p) => p.id === phaseId);
+  const want = cur ? -cur.value : 0;
+  const opp = want !== 0 ? driver.phases.find((p) => p.value === want) : driver.phases.find((p) => p.value !== 0);
+  return (opp ?? driver.phases.find((p) => p.id !== phaseId) ?? driver.phases[0]).id;
 }
 
 export class ControlsView {
@@ -43,6 +80,14 @@ export class ControlsView {
   private monthHeading: HTMLHeadingElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
+  private filterSelect: HTMLSelectElement;
+  private chainBox: HTMLInputElement;
+  /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
+  private compareBox: HTMLInputElement;
+  private sideBox: HTMLDivElement;
+  private sideButtons = new Map<Side, HTMLButtonElement>();
+  /** live line under the side buttons: how many markers differ this month (set by the page) */
+  readonly compareNote: HTMLParagraphElement;
   /** driver whose phase buttons are currently in the DOM */
   private renderedDriverId: string | null = null;
   onChange: (s: ControlState) => void = () => {};
@@ -74,6 +119,47 @@ export class ControlsView {
     hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
     container.append(hintS);
 
+    // Compare mode (M14): two scenarios side by side on one timeline. The
+    // scenario controls below edit the side picked here.
+    const hc = document.createElement('h2');
+    hc.textContent = 'Compare';
+    container.append(hc);
+    const compareLabel = document.createElement('label');
+    compareLabel.className = 'check';
+    this.compareBox = document.createElement('input');
+    this.compareBox.type = 'checkbox';
+    this.compareBox.checked = !!state.compare;
+    this.compareBox.addEventListener('change', () => {
+      if (!this.compareBox.checked) { this.update({ compare: null }); return; }
+      // B starts as a copy of A with the opposite phase, so the maps differ from the start.
+      const a = scenarioSettings(this.state);
+      this.update({ compare: { side: 'a', b: { ...a, phaseId: oppositePhaseId(this.driverById(a.driverId), a.phaseId) } } });
+    });
+    compareLabel.append(this.compareBox, document.createTextNode(' Two scenarios side by side'));
+    container.append(compareLabel);
+    this.sideBox = document.createElement('div');
+    this.sideBox.className = 'side-switch';
+    this.sideBox.hidden = true;
+    for (const side of ['a', 'b'] as Side[]) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'side-btn';
+      b.dataset.side = side;
+      b.innerHTML = `<span class="side-tag">${side.toUpperCase()}</span><span>Edit ${side.toUpperCase()}</span>`;
+      b.addEventListener('click', () => { if (this.state.compare) this.update({ compare: { ...this.state.compare, side } }); });
+      this.sideBox.append(b);
+      this.sideButtons.set(side, b);
+    }
+    container.append(this.sideBox);
+    this.compareNote = document.createElement('p');
+    this.compareNote.className = 'hint compare-note';
+    this.compareNote.hidden = true;
+    container.append(this.compareNote);
+    const hintC = document.createElement('p');
+    hintC.className = 'hint';
+    hintC.textContent = 'Both maps follow the same timeline, month by month after onset. The controls below set the scenario you are editing; the other map keeps its own. B starts as a copy of A with the opposite phase. A dark ring marks a place where the two maps differ this month; click it to read both.';
+    container.append(hintC);
+
     // Driver: a dropdown when there is more than one, otherwise just a heading.
     this.driverHeading = document.createElement('h2');
     container.append(this.driverHeading);
@@ -93,8 +179,8 @@ export class ControlsView {
         // usually begin (a winter pattern should not start in June). If it
         // was the second driver, the second slot empties: no driver twice.
         const d = this.driverById(sel.value);
-        const second = this.state.second?.driverId === d.id ? null : this.state.second;
-        this.update({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, second });
+        const second = this.edited().second?.driverId === d.id ? null : this.edited().second;
+        this.updateScenario({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, second });
       });
       container.append(sel);
       this.driverSelect = sel;
@@ -112,10 +198,10 @@ export class ControlsView {
       const sel2 = document.createElement('select');
       sel2.setAttribute('aria-label', 'Pick a second driver phenomenon, or none');
       sel2.addEventListener('change', () => {
-        if (!sel2.value) { this.update({ second: null }); return; }
+        if (!sel2.value) { this.updateScenario({ second: null }); return; }
         // Like the main driver: first phase, and the month its events usually begin.
         const d = this.driverById(sel2.value);
-        this.update({ second: { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month } });
+        this.updateScenario({ second: { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month } });
       });
       container.append(sel2);
       this.secondSelect = sel2;
@@ -144,8 +230,9 @@ export class ControlsView {
         month2.append(o);
       });
       month2.addEventListener('change', () => {
-        if (!this.state.second) return;
-        this.update({ second: { ...this.state.second, startMonth: Number(month2.value) } });
+        const second = this.edited().second;
+        if (!second) return;
+        this.updateScenario({ second: { ...second, startMonth: Number(month2.value) } });
       });
       box2.append(month2);
       this.secondMonthSelect = month2;
@@ -168,7 +255,7 @@ export class ControlsView {
       month.append(o);
     });
     month.value = String(state.startMonth);
-    month.addEventListener('change', () => this.update({ startMonth: Number(month.value) }));
+    month.addEventListener('change', () => this.updateScenario({ startMonth: Number(month.value) }));
     container.append(month);
     this.monthSelect = month;
     this.onsetHint = document.createElement('p');
@@ -197,8 +284,9 @@ export class ControlsView {
       filter.append(o);
     }
     filter.value = state.filter;
-    filter.addEventListener('change', () => this.update({ filter: filter.value as ConfidenceFilter }));
+    filter.addEventListener('change', () => this.updateScenario({ filter: filter.value as ConfidenceFilter }));
     container.append(filter);
+    this.filterSelect = filter;
     const hint2 = document.createElement('p');
     hint2.className = 'hint';
     hint2.textContent = 'Hidden connections stay on the map as faint grey lines, so you can see what was left out.';
@@ -221,15 +309,15 @@ export class ControlsView {
     container.append(hint3);
     const chainLabel = document.createElement('label');
     chainLabel.className = 'check';
-    const chainBox = document.createElement('input');
-    chainBox.type = 'checkbox';
-    chainBox.checked = state.chain;
-    chainBox.addEventListener('change', () => this.update({ chain: chainBox.checked }));
-    chainLabel.append(chainBox, document.createTextNode(' Follow links through other drivers'));
+    this.chainBox = document.createElement('input');
+    this.chainBox.type = 'checkbox';
+    this.chainBox.checked = state.chain;
+    this.chainBox.addEventListener('change', () => this.updateScenario({ chain: this.chainBox.checked }));
+    chainLabel.append(this.chainBox, document.createTextNode(' Follow links through other drivers'));
     container.append(chainLabel);
     const hint4 = document.createElement('p');
     hint4.className = 'hint';
-    hint4.textContent = 'When this driver pushes another driver into a phase, keep following that driver\u2019s own links. Each extra step lowers the confidence one tier. Off: direct links only.';
+    hint4.textContent = 'When this driver pushes another driver into a phase, keep following that driver’s own links. Each extra step lowers the confidence one tier. Off: direct links only.';
     container.append(hint4);
 
     const h4 = document.createElement('h2');
@@ -249,10 +337,21 @@ export class ControlsView {
     return d;
   }
 
+  /** The scenario the controls edit: A, or B while compare mode edits B. */
+  private edited(): ScenarioSettings {
+    return sideSettings(this.state, editedSide(this.state));
+  }
+
   private update(patch: Partial<ControlState>): void {
     this.state = { ...this.state, ...patch };
     this.reflect();
     this.onChange(this.state);
+  }
+
+  /** Change the scenario being edited (A, or B in compare mode). */
+  private updateScenario(patch: Partial<ScenarioSettings>): void {
+    if (this.state.compare?.side === 'b') this.update({ compare: { ...this.state.compare, b: { ...this.state.compare.b, ...patch } } });
+    else this.update(patch);
   }
 
   /** Reflect a state set from outside (a story) without firing onChange. */
@@ -296,7 +395,7 @@ export class ControlsView {
       b.type = 'button';
       b.className = 'phase-btn';
       b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.update({ second: { driverId: driver.id, phaseId: p.id, startMonth: this.state.second?.startMonth ?? driver.default_start_month } }));
+      b.addEventListener('click', () => this.updateScenario({ second: { driverId: driver.id, phaseId: p.id, startMonth: this.edited().second?.startMonth ?? driver.default_start_month } }));
       this.secondBox.append(b);
       this.secondPhaseButtons.set(p.id, b);
     }
@@ -313,7 +412,7 @@ export class ControlsView {
       b.type = 'button';
       b.className = 'phase-btn';
       b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.update({ phaseId: p.id }));
+      b.addEventListener('click', () => this.updateScenario({ phaseId: p.id }));
       this.phaseBox.append(b);
       this.phaseButtons.set(p.id, b);
     }
@@ -322,28 +421,38 @@ export class ControlsView {
   }
 
   private reflect(): void {
-    const driver = this.driverById(this.state.driverId);
+    // Compare switch and side buttons (M14).
+    const compare = this.state.compare;
+    this.compareBox.checked = !!compare;
+    this.sideBox.hidden = !compare;
+    this.compareNote.hidden = !compare;
+    for (const [side, b] of this.sideButtons) b.setAttribute('aria-pressed', String(!!compare && compare.side === side));
+
+    const s = this.edited();
+    const driver = this.driverById(s.driverId);
     this.renderPhases(driver);
     if (this.driverSelect) this.driverSelect.value = driver.id;
-    for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === this.state.phaseId));
+    for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === s.phaseId));
     if (this.secondSelect) {
       this.renderSecondOptions(driver.id);
-      const second = this.state.second ? this.driverById(this.state.second.driverId) : null;
+      const second = s.second ? this.driverById(s.second.driverId) : null;
       this.secondSelect.value = second?.id ?? '';
       this.renderSecondPhases(second);
-      for (const [id, b] of this.secondPhaseButtons) b.setAttribute('aria-pressed', String(id === this.state.second?.phaseId));
+      for (const [id, b] of this.secondPhaseButtons) b.setAttribute('aria-pressed', String(id === s.second?.phaseId));
       // The second driver's own start month (M12), only while one is chosen.
       if (this.secondMonthBox && this.secondMonthSelect && this.secondOnsetHint) {
         this.secondMonthBox.hidden = !second;
-        if (second && this.state.second) {
-          this.secondMonthSelect.value = String(this.state.second.startMonth);
-          const offset = (this.state.second.startMonth - this.state.startMonth + 12) % 12;
-          const when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${this.state.second.startMonth < this.state.startMonth ? ', in the following year' : ''}.`;
+        if (second && s.second) {
+          this.secondMonthSelect.value = String(s.second.startMonth);
+          const offset = (s.second.startMonth - s.startMonth + 12) % 12;
+          const when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${s.second.startMonth < s.startMonth ? ', in the following year' : ''}.`;
           this.secondOnsetHint.textContent = `${when} ${second.onset_hint}`;
         }
       }
       this.monthHeading.textContent = second ? 'First driver begins in' : 'Event begins in';
     }
-    this.monthSelect.value = String(this.state.startMonth);
+    this.monthSelect.value = String(s.startMonth);
+    this.filterSelect.value = s.filter;
+    this.chainBox.checked = s.chain;
   }
 }

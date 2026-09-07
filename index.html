@@ -16,7 +16,16 @@
         <div id="month-display" aria-live="polite"></div>
       </header>
       <aside id="controls"></aside>
-      <main id="map-container"></main>
+      <main id="map-container">
+        <section class="pane" data-side="a">
+          <button type="button" class="pane-head" hidden title="Edit this scenario"></button>
+          <div class="pane-map"></div>
+        </section>
+        <section class="pane" data-side="b" hidden>
+          <button type="button" class="pane-head" title="Edit this scenario"></button>
+          <div class="pane-map"></div>
+        </section>
+      </main>
       <p id="print-caption" class="print-only"></p>
       <aside id="card-panel">
         <section id="story" aria-live="polite"></section>

@@ -41,6 +41,9 @@ export interface RenderOptions {
   focusNodeId: string | null;
   /** draw each node's rough affected area under the arrows */
   showAreas: boolean;
+  /** compare mode (M14): nodes the other scenario treats differently this
+   *  month; each gets a dark outer ring */
+  differs?: Set<string>;
 }
 
 /**
@@ -98,7 +101,9 @@ export class MapView {
   private linkById: Map<string, Link>;
   onNodeClick: (id: string) => void = () => {};
 
-  constructor(container: HTMLElement, private graph: Graph) {
+  /** `idPrefix` keeps the SVG ids (arrowheads, the conflict hatch) apart
+   *  when two maps share a page (M14). */
+  constructor(container: HTMLElement, private graph: Graph, private idPrefix = '') {
     this.nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
     this.linkById = new Map(graph.links.map((l) => [l.id, l]));
     this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
@@ -106,13 +111,13 @@ export class MapView {
     const defs = this.svg.append('defs');
     // Hatch for a marker whose opposite pushes cancel out (conflicting at 0),
     // so a tie is not mistaken for "near normal".
-    const hatch = defs.append('pattern').attr('id', 'conflict-hatch')
+    const hatch = defs.append('pattern').attr('id', `${idPrefix}conflict-hatch`)
       .attr('width', 4).attr('height', 4).attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
     hatch.append('rect').attr('width', 4).attr('height', 4).attr('fill', '#ffffff');
     hatch.append('rect').attr('width', 2).attr('height', 4).attr('fill', NEUTRAL);
     for (const [id, color] of this.markerColors()) {
       defs.append('marker')
-        .attr('id', `arrow-${id}`).attr('viewBox', '0 0 10 10').attr('refX', 9).attr('refY', 5)
+        .attr('id', `${idPrefix}arrow-${id}`).attr('viewBox', '0 0 10 10').attr('refX', 9).attr('refY', 5)
         .attr('markerWidth', 5).attr('markerHeight', 5).attr('orient', 'auto-start-reverse')
         .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', color);
     }
@@ -262,7 +267,7 @@ export class MapView {
     const merged = enter.merge(sel)
       .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : ''}`)
       .attr('stroke', (d) => d.color)
-      .attr('marker-end', (d) => `url(#arrow-${this.markerId(d.target, d.link.effect, d.kind)})`)
+      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${this.markerId(d.target, d.link.effect, d.kind)})`)
       .attr('d', (d) => this.arcPath(d.from, d.target));
 
     // Arrival animation: fade in, and for solid lines draw along the path.
@@ -290,6 +295,8 @@ export class MapView {
       });
     nEnter.append('circle');
     nEnter.append('text').attr('dy', '0.35em');
+    // Outer ring shown only on nodes the other scenario treats differently (M14).
+    nEnter.append('circle').attr('class', 'diff').attr('r', (d) => (d.kind === 'driver' ? 17 : 12));
     const nMerged = nEnter.merge(nodes);
     nMerged
       .attr('class', (d) => {
@@ -309,6 +316,7 @@ export class MapView {
         }
         if (opts.selectedNodeId === d.id) cls.push('selected');
         if (opts.focusNodeId === d.id) cls.push('focus');
+        if (opts.differs?.has(d.id)) cls.push('differs');
         return cls.join(' ');
       })
       .attr('transform', (d) => {
@@ -336,7 +344,7 @@ export class MapView {
    *  opposite pushes cancel out (conflicting at 0). */
   private nodeFill(d: GraphNode, month: MonthState, opts: RenderOptions): string {
     const st = month.nodes[d.id];
-    if (st.conflicting && st.value === 0 && !opts.chosen.has(d.id)) return 'url(#conflict-hatch)';
+    if (st.conflicting && st.value === 0 && !opts.chosen.has(d.id)) return `url(#${this.idPrefix}conflict-hatch)`;
     return this.nodeColor(d, month, opts);
   }
 

@@ -462,6 +462,44 @@ illustrative outlines, not scientific boundaries, and the control says so.
 - The page must survive `Ctrl+P` as a legible one-page figure (add a print
   stylesheet that hides controls).
 
+### 5.9 Compare mode (M14)
+- A "Compare" section at the top of the controls panel, under Stories: a
+  checkbox "Two scenarios side by side" and, while it is on, two buttons
+  "Edit A" / "Edit B" and a live line ("4 markers differ this month (dark
+  rings)" or "The two maps agree this month.").
+- Two maps side by side in the map area, each with a title strip: the side
+  tag, the scenario in words ("El Niño from June + Negative IOD from
+  September · direct links only"; the filter and chain are named only when
+  they are not the defaults) and that map's calendar month and month index.
+  The side being edited carries the accent; clicking a title makes that
+  side the edited one.
+- Both maps follow the one timeline by month index. Scenario B is a full
+  scenario of its own (driver, phase, start month, second driver and its
+  month, confidence filter, chain); the areas toggle is shared. The
+  existing scenario controls, the dial, the timeline's ticks and
+  second-onset mark and the card's details all follow the edited side.
+  When the two start months differ the header shows "Month N" with both
+  calendar months underneath.
+- B starts as a copy of A with the opposite phase (El Niño → La Niña; from
+  neutral, the driver's first non-neutral phase), so the maps differ from
+  the start. Turning compare off keeps A.
+- Each marker the two scenarios treat differently this month gets a dark
+  outer ring on both maps. "Differently" is decided by
+  `src/engine/compare.ts` from the engine's own states: none (neither acts),
+  same (same value and conflict flag), opposite (nonzero, opposite sign),
+  only A / only B (one acts, the other does not), differ (anything else:
+  applied against pending, a push against a cancelled tie, a driver in a
+  phase against one held out). No third state is invented and the two
+  scenarios are never blended.
+- The card, with a place selected, opens with a side-by-side block: the
+  place's state under A and under B in plain words and colour, a one-line
+  verdict in the words above, and a note that the details below are for
+  the edited side. The rest of the card is unchanged.
+- A story is one scenario: picking a story turns compare off; turning
+  compare on ends a story, like any change to the scenario by hand.
+- Print: both maps side by side with their titles, the side switch hidden,
+  and the caption "Two scenarios compared. A: … B: …".
+
 ---
 
 ## 6. Milestones
@@ -700,8 +738,52 @@ is fully green.
   dipole from September, the fallback caption for a place nothing acts
   on, a story left open by a sector click, the NAO's December start, and
   the dial hidden in print.
-- Not in M13 (later v2 items): compare mode; a second driver that begins
-  before the first.
+- Not in M13 (later v2 items): compare mode (done in M14); a second driver
+  that begins before the first.
+
+### M14 — Compare mode (signed off 2026-09-07)
+- Engine: `src/engine/compare.ts`, pure helpers beside the engine, no change
+  to `propagate`: `acts(state)`, `compareNode(a, b)` (the verdicts in
+  section 5.9), `compareMonth(a, b)` (a verdict per node of either month)
+  and `differing(a, b)` (the ids whose verdict is neither none nor same).
+  The page runs `propagate` once per side on the same month index.
+- Schema and data: no change.
+- Rendering: section 5.9. `MapView` takes an id prefix so two maps can share
+  a page (arrowheads and the conflict hatch keep separate ids) and a
+  `differs` set that adds the `differs` class and an outer ring. The
+  controls' state carries `compare: { side, b }`; `ScenarioSettings` is
+  the per-side part, `sideSettings` / `editedSide` / `oppositePhaseId`
+  are exported for the page. `renderCard` takes an optional comparison
+  (both months and titles, and the edited side).
+- Tests: `src/engine/compare.test.ts`: the verdicts on hand-made states
+  (acts, none / only, same regardless of which links produced it, opposite,
+  differ for applied against pending and a push against a cancelled tie),
+  and on the shipped data: a scenario against itself never differs; El Niño
+  against La Niña (driver and Indonesia opposite, the monsoon a tie against
+  wet with the chain on and opposite without it, the NAO untouched in
+  August); El Niño against neutral (only A everywhere); El Niño alone
+  against El Niño with a negative dipole from September (southeast
+  Australia only A while the dipole is pinned, the dipole and southeast
+  Australia opposite in October, Indonesia a tie in B, East Africa wet
+  against a tie in December, the Gulf Coast never differing); the chain on
+  against off (the pushed dipole itself the same, its own effects only A).
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m14.mjs`, 39
+  checks): one map and no rings at load; compare on gives two panes, B = La
+  Niña from June, the drivers in their own colours, prefixed arrowhead ids,
+  the live note matching the ringed markers on both maps and the engine
+  (ENSO, Indonesia and eastern Australia ringed at month 0, the pending Gulf
+  Coast not); the Indonesia card's two cells and "Opposite"; the side
+  buttons and pane titles switching the edited side without changing either
+  scenario; a second driver added to B only, with the timeline's Sep mark,
+  the dial's dot and "Only scenario A" / "differ" verdicts (East Africa wet
+  against a hatched tie in December); the NAO on B with the header "Month 1
+  · A: July · B: January" and ticks from December; chain and filter per
+  side named in the titles; ArrowRight moving both maps; a story turning
+  compare off and compare ending a story; compare off keeping A; print with
+  two columns, titles, hidden side switch and the two-part caption
+  (`m14-print.pdf`).
+- Not in M14 (later v2 items): a second driver that begins before the
+  first; the spreadsheet importer.
 
 ---
 
@@ -787,7 +869,7 @@ writing mechanism text):
   (done, M9) as drivers; driver-to-driver links (done, M10); multi-driver
   scenarios with conflict flags (done, M11: two chosen drivers; M12: the
   second driver's own start month); season dial (done, M13); compare mode
-  (two maps side by side); spreadsheet-to-YAML importer if outside
-  contributors join.
+  (done, M14: two maps side by side); spreadsheet-to-YAML importer if
+  outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").
