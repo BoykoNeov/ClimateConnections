@@ -6,7 +6,9 @@
 # scientific boundary.
 
 nodes:
-  # ---------------------------------------------------------------- driver
+  # ---------------------------------------------------------------- drivers
+  # Each phase carries `value` (+1 / 0 / -1): a link into a driver with
+  # effect +1 pushes it into its +1 phase, -1 into its -1 phase (M10).
   - id: enso
     name: El Niño–Southern Oscillation (ENSO)
     label: ENSO
@@ -25,6 +27,7 @@ nodes:
       turn nudges weather patterns around the whole planet.
     phases:
       - id: el_nino
+        value: 1
         label: El Niño
         color: "#d7301f"
         summary: >
@@ -34,6 +37,7 @@ nodes:
           Events usually begin to develop around May–July, peak in
           November–January, and fade by the following spring.
       - id: neutral
+        value: 0
         label: Neutral
         color: "#999999"
         summary: >
@@ -41,6 +45,7 @@ nodes:
           their long-term average and none of the ENSO-related tendencies on
           this map are expected. Other drivers still shape the weather.
       - id: la_nina
+        value: -1
         label: La Niña
         color: "#2b8cbe"
         summary: >
@@ -75,6 +80,7 @@ nodes:
     default_start_month: 6
     phases:
       - id: positive
+        value: 1
         label: Positive IOD
         color: "#e6550d"
         summary: >
@@ -84,6 +90,7 @@ nodes:
           around May–July, peak in September–November and end by December.
           The strongest recent cases were 1994, 1997, 2006 and 2019.
       - id: neutral
+        value: 0
         label: Neutral
         color: "#999999"
         summary: >
@@ -91,6 +98,7 @@ nodes:
           Indian Ocean Dipole tendencies on this map are expected. ENSO and
           other drivers still shape the weather.
       - id: negative
+        value: -1
         label: Negative IOD
         color: "#238b45"
         summary: >
@@ -124,6 +132,7 @@ nodes:
     default_start_month: 12
     phases:
       - id: positive
+        value: 1
         label: Positive NAO
         color: "#7b3294"
         summary: >
@@ -134,6 +143,7 @@ nodes:
           eastern United States and cold in Greenland. Winters that leaned
           strongly positive include 1988–89, 1989–90 and 2014–15.
       - id: neutral
+        value: 0
         label: Neutral
         color: "#999999"
         summary: >
@@ -141,6 +151,7 @@ nodes:
           the North Atlantic Oscillation tendencies on this map are
           expected. ENSO and other drivers still shape the weather.
       - id: negative
+        value: -1
         label: Negative NAO
         color: "#008080"
         summary: >

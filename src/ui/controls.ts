@@ -12,6 +12,8 @@ export interface ControlState {
   startMonth: number;
   filter: ConfidenceFilter;
   showAreas: boolean;
+  /** follow links through drivers the scenario driver has pushed (M10) */
+  chain: boolean;
 }
 
 export class ControlsView {
@@ -131,6 +133,18 @@ export class ControlsView {
     hint3.className = 'hint';
     hint3.textContent = 'Rough outlines of the region each point stands for. Illustrative, not exact boundaries.';
     container.append(hint3);
+    const chainLabel = document.createElement('label');
+    chainLabel.className = 'check';
+    const chainBox = document.createElement('input');
+    chainBox.type = 'checkbox';
+    chainBox.checked = state.chain;
+    chainBox.addEventListener('change', () => this.update({ chain: chainBox.checked }));
+    chainLabel.append(chainBox, document.createTextNode(' Follow links through other drivers'));
+    container.append(chainLabel);
+    const hint4 = document.createElement('p');
+    hint4.className = 'hint';
+    hint4.textContent = 'When this driver pushes another driver into a phase, keep following that driver\u2019s own links. Each extra step lowers the confidence one tier. Off: direct links only.';
+    container.append(hint4);
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';

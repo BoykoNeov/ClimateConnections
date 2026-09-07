@@ -8,7 +8,8 @@ import 'd3-transition';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import world from 'world-atlas/countries-110m.json';
-import type { Graph, GraphNode, Link, MonthState, Confidence, Axis, Value } from '../types';
+import type { Graph, GraphNode, Link, LinkStatus, MonthState, Confidence, Axis, Value } from '../types';
+import { phaseForValue } from '../engine/propagate';
 
 export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   wet_dry: { plus: '#2166ac', minus: '#b35806' },
@@ -20,17 +21,19 @@ const NEUTRAL = '#9a9a9a';
 /** marker colour for a driver that is not part of the current scenario */
 const INACTIVE_DRIVER = '#c7c9cf';
 
+/** Colour for a node pushed to `value`: the axis colour for an outcome, the
+ *  phase colour for a driver (M10), grey for 0. */
 export function stateColor(node: GraphNode, value: Value): string {
-  if (node.kind !== 'outcome' || value === 0) return NEUTRAL;
+  if (value === 0) return NEUTRAL;
+  if (node.kind === 'driver') return phaseForValue(node, value)?.color ?? NEUTRAL;
   return value > 0 ? AXIS_COLORS[node.axis].plus : AXIS_COLORS[node.axis].minus;
 }
 
 export interface RenderOptions {
-  /** the driver whose phase the scenario is about; other drivers are drawn inactive */
+  /** the driver whose phase the scenario is about. Other drivers are drawn
+   *  in their phase colour when a link has pushed them there, grey otherwise. */
   driverId: string;
   phaseColor: string;
-  /** links for this phase that are hidden by the confidence filter */
-  ghostLinks: Link[];
   /** link ids that first became applied this month (animate) */
   arrivals: Set<string>;
   selectedNodeId: string | null;
@@ -72,8 +75,10 @@ export function areaPolygon(ring: [number, number][]): GeoJSON.Polygon {
 
 interface ArrowDatum {
   link: Link;
+  from: GraphNode;
   target: GraphNode;
-  kind: 'applied' | 'pending' | 'ghost';
+  kind: LinkStatus;
+  /** confidence after the per-hop downgrade: the line style */
   confidence: Confidence;
   color: string;
 }
@@ -90,10 +95,12 @@ export class MapView {
   private width = 0;
   private height = 0;
   private nodeById: Map<string, GraphNode>;
+  private linkById: Map<string, Link>;
   onNodeClick: (id: string) => void = () => {};
 
   constructor(container: HTMLElement, private graph: Graph) {
     this.nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+    this.linkById = new Map(graph.links.map((l) => [l.id, l]));
     this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
     this.svg = select(container).append('svg').attr('role', 'img').attr('aria-label', 'World map of climate connections');
     const defs = this.svg.append('defs');
@@ -114,12 +121,21 @@ export class MapView {
   private markerColors(): Array<[string, string]> {
     const out: Array<[string, string]> = [['neutral', NEUTRAL], ['ghost', '#c7c9cf']];
     for (const [axis, c] of Object.entries(AXIS_COLORS)) out.push([`${axis}-plus`, c.plus], [`${axis}-minus`, c.minus]);
+    // Arrows into a driver take the colour of the phase they push it into.
+    for (const n of this.graph.nodes) {
+      if (n.kind !== 'driver') continue;
+      for (const p of n.phases) out.push([`phase-${n.id}-${p.id}`, p.color]);
+    }
     return out;
   }
 
   private markerId(node: GraphNode, value: Value, kind: ArrowDatum['kind']): string {
     if (kind === 'ghost') return 'ghost';
-    if (node.kind !== 'outcome' || value === 0) return 'neutral';
+    if (value === 0) return 'neutral';
+    if (node.kind === 'driver') {
+      const phase = phaseForValue(node, value);
+      return phase ? `phase-${node.id}-${phase.id}` : 'neutral';
+    }
     return `${node.axis}-${value > 0 ? 'plus' : 'minus'}`;
   }
 
@@ -191,8 +207,7 @@ export class MapView {
   }
 
   render(month: MonthState, opts: RenderOptions): void {
-    const driver = this.nodeById.get(opts.driverId);
-    if (!driver) return;
+    if (!this.nodeById.has(opts.driverId)) return;
 
     // ---- affected areas (under the arrows, same colour/state as the marker)
     const areaNodes = opts.showAreas ? this.graph.nodes.filter((n) => this.areas.has(n.id)) : [];
@@ -204,12 +219,11 @@ export class MapView {
       .attr('class', (d) => {
         const st = month.nodes[d.id];
         const cls = ['area'];
-        if (d.kind === 'outcome') {
+        if (d.kind === 'outcome' || d.id !== opts.driverId) {
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) cls.push('inactive');
           else if (st.viaLinkIds.length === 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
         }
-        if (d.kind === 'driver' && d.id !== opts.driverId) cls.push('inactive');
         if (opts.selectedNodeId === d.id) cls.push('selected');
         return cls.join(' ');
       })
@@ -223,34 +237,27 @@ export class MapView {
       .attr('stroke', globalNode && globalState && opts.showAreas && globalState.value !== 0 ? stateColor(globalNode, globalState.value) : null)
       .attr('stroke-width', globalNode && globalState && opts.showAreas && globalState.value !== 0 ? 4 : null);
 
-    // ---- arrows
+    // ---- arrows: one per link the engine reports this month, drawn from the
+    // driver that fires it (the scenario driver, or a driver it has pushed).
     const arrows: ArrowDatum[] = [];
-    for (const [id, st] of Object.entries(month.nodes)) {
-      const target = this.nodeById.get(id);
-      if (!target) continue;
-      for (const lid of st.viaLinkIds) {
-        const link = this.graph.links.find((l) => l.id === lid)!;
-        arrows.push({ link, target, kind: 'applied', confidence: link.confidence, color: stateColor(target, link.effect) });
-      }
-      for (const lid of st.pendingLinkIds) {
-        const link = this.graph.links.find((l) => l.id === lid)!;
-        arrows.push({ link, target, kind: 'pending', confidence: link.confidence, color: stateColor(target, link.effect) });
-      }
-    }
-    for (const link of opts.ghostLinks) {
-      if (month.index < link.lag_months[0]) continue;
+    for (const [lid, ls] of Object.entries(month.links)) {
+      const link = this.linkById.get(lid);
+      if (!link) continue;
+      const from = this.nodeById.get(link.from);
       const target = this.nodeById.get(link.to);
-      if (target) arrows.push({ link, target, kind: 'ghost', confidence: link.confidence, color: '#c7c9cf' });
+      if (!from || !target) continue;
+      const color = ls.status === 'ghost' ? '#c7c9cf' : stateColor(target, link.effect);
+      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color });
     }
 
     const sel = this.gLinks.selectAll<SVGPathElement, ArrowDatum>('path.link').data(arrows, (d) => d.link.id);
     sel.exit().remove();
     const enter = sel.enter().append('path');
     const merged = enter.merge(sel)
-      .attr('class', (d) => `link ${d.confidence} ${d.kind}`)
+      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : ''}`)
       .attr('stroke', (d) => d.color)
       .attr('marker-end', (d) => `url(#arrow-${this.markerId(d.target, d.link.effect, d.kind)})`)
-      .attr('d', (d) => this.arcPath(driver, d.target));
+      .attr('d', (d) => this.arcPath(d.from, d.target));
 
     // Arrival animation: fade in, and for solid lines draw along the path.
     merged.filter((d) => opts.arrivals.has(d.link.id) && d.kind === 'applied').each(function (d) {
@@ -286,8 +293,14 @@ export class MapView {
           if (st.value === 0 && st.viaLinkIds.length === 0) cls.push('hollow');
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
+        } else if (d.id !== opts.driverId) {
+          // Another driver: pushed into a phase by a link (M10), expected but
+          // out of season, or not in play at all.
+          if (st.viaLinkIds.length > 0) cls.push('induced');
+          else if (st.pendingLinkIds.length > 0) cls.push('pending');
+          else cls.push('inactive');
+          if (st.conflicting) cls.push('conflicting');
         }
-        if (d.kind === 'driver' && d.id !== opts.driverId) cls.push('inactive');
         if (opts.selectedNodeId === d.id) cls.push('selected');
         if (opts.focusNodeId === d.id) cls.push('focus');
         return cls.join(' ');
@@ -298,7 +311,7 @@ export class MapView {
       });
     nMerged.select('circle')
       .attr('fill', (d) => this.nodeColor(d, month, opts))
-      .attr('stroke', (d) => (d.kind === 'driver' ? '#ffffff' : stateColor(d, month.nodes[d.id].value === 0 ? 1 : month.nodes[d.id].value)))
+      .attr('stroke', (d) => (d.kind === 'driver' ? (d.id !== opts.driverId && month.nodes[d.id].viaLinkIds.length ? '#1f2328' : '#ffffff') : stateColor(d, month.nodes[d.id].value === 0 ? 1 : month.nodes[d.id].value)))
       .attr('stroke-opacity', (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6));
     nMerged.select('text')
       .attr('x', (d) => (d.kind === 'driver' ? 0 : 10))
@@ -308,15 +321,17 @@ export class MapView {
   }
 
   /** Marker/area colour for a node in a month: phase colour for the scenario's
-   *  driver, grey for any other driver, state colour for outcomes, and the
-   *  expected colour for pending ones. */
+   *  driver, phase colour for a driver pushed there by a link (grey when
+   *  nothing pushes it), state colour for outcomes, and the expected colour
+   *  for pending ones. */
   private nodeColor(d: GraphNode, month: MonthState, opts: RenderOptions): string {
-    if (d.kind === 'driver') return d.id === opts.driverId ? opts.phaseColor : INACTIVE_DRIVER;
+    if (d.kind === 'driver' && d.id === opts.driverId) return opts.phaseColor;
     const st = month.nodes[d.id];
     if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) {
-      const pendingLink = this.graph.links.find((l) => l.id === st.pendingLinkIds[0])!;
+      const pendingLink = this.linkById.get(st.pendingLinkIds[0])!;
       return stateColor(d, pendingLink.effect);
     }
+    if (d.kind === 'driver' && st.viaLinkIds.length === 0) return INACTIVE_DRIVER;
     return stateColor(d, st.value);
   }
 }

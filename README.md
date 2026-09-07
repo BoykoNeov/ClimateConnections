@@ -8,9 +8,11 @@ known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds three drivers, 30 outcome regions, 64 cited links
-and four guided stories. Each scenario is one driver in one phase; the
-drivers are not yet combined (see the roadmap in `docs/PLAN.md`).
+The map currently holds three drivers, 30 outcome regions, 70 cited links
+(six of them between the drivers) and five guided stories. Each scenario
+is one driver in one phase; a driver can push another driver into a phase,
+and the map then follows that driver's links too, but you cannot yet choose
+two phases at once (see the roadmap in `docs/PLAN.md`).
 
 ## What it is
 
@@ -86,6 +88,15 @@ any static file server.
   month by hand leaves the story.
 - **Show affected areas** toggles the rough regional outlines under the
   arrows.
+- **Follow links through other drivers** (on by default) lets a driver that
+  the scenario driver has pushed into a phase fire its own links. El Niño,
+  for example, tends to push the Indian Ocean Dipole positive from June and
+  the NAO negative in late winter; with the box on, the dipole's and the
+  NAO's own arrows then appear from their markers, one confidence tier
+  lower. A pushed driver is drawn in its phase colour with a dark dashed
+  ring; its card says who pushed it. Links that would push the scenario
+  driver itself are never drawn; its card lists them under "Feedback from
+  other drivers". With the box off, only direct links show.
 
 Keyboard:
 
@@ -121,8 +132,16 @@ the calendar month must be in the link's season. Applied links push the
 target one step along its axis; the sum is clamped to a three-level state
 (+1, 0, −1). A link that is past its lag but out of season is "pending" and
 drawn muted. Opposite pushes on the same node are flagged as conflicting.
-Nothing else happens: there is no feedback, no chaining beyond one hop, and
-no randomness.
+
+A link may also point at another driver. It pushes that driver into a phase
+the same way, and the engine then follows that driver's own links for up to
+three hops in all, with strict rules so the graph cannot run away: each
+driver enters a phase once, its onset fixed at the first month it is pushed
+and its links counting their lag from there; a driver that already holds a
+phase is never pushed again, so the scenario driver is never fed back on;
+and each hop lowers the confidence one tier, never above the link that set
+the driver off. Nothing else happens: no randomness, and no loop is ever
+animated. The rules are written out in docs/PLAN.md §4.
 
 Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
 the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;
@@ -155,8 +174,9 @@ Pacific as a curve.
    - id: el_nino_example_region       # unique, permanent
      from: enso                        # a driver id (enso, iod or nao)
      when: el_nino                     # a phase id of that driver
-     to: example_region                # a node id
-     effect: -1                        # +1 or -1 on the target's axis
+     to: example_region                # a node id: an outcome, or another driver
+     effect: -1                        # +1 or -1 on the target's axis; for a driver
+                                       #   target, the `value` of the phase to push it into
      lag_months: [2, 5]                # first and last month after onset it can start
      season: [12, 1, 2]                # calendar months when it is felt; [] = all year
      confidence: probable              # established | probable | contested

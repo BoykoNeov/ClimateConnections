@@ -33,8 +33,10 @@ nodes:
       - id: el_nino
         label: El Niño
         color: "#d7301f"
-        summary: >
-          ...
+        value: 1               # +1 / 0 / -1: where the phase sits on the driver's own
+        summary: >             # axis. A link into this driver with effect +1 pushes it
+          ...                  # into the phase with value 1 (M10). Values are unique
+                               # within a driver and one phase has value 0.
 
   - id: indian_summer_monsoon
     kind: outcome
@@ -49,7 +51,8 @@ nodes:
 
 Rules enforced by the validator:
 - Drivers have `phases`, `onset_hint` and `default_start_month` and no
-  `axis`/`labels`; outcomes have `axis` and `labels` and no `phases`.
+  `axis`/`labels`; outcomes have `axis` and `labels` and no `phases`. Every
+  phase has a `value`, unique within the driver, and one phase is 0.
 - Any number of drivers is allowed. The app offers a driver dropdown when
   there is more than one; a scenario is always one driver in one phase.
 - `lat` in [-90, 90], `lon` in [-180, 180].
@@ -63,8 +66,9 @@ links:
   - id: el_nino_indian_monsoon          # unique
     from: enso                          # a driver node id
     when: el_nino                       # a phase id of that driver
-    to: indian_summer_monsoon           # an outcome node id (v1)
-    effect: -1                          # +1 | -1 on the target's axis
+    to: indian_summer_monsoon           # an outcome node id, or another driver's id (M10)
+    effect: -1                          # +1 | -1 on the target's axis; for a driver target,
+                                        #   the value of the phase to push it into
     lag_months: [0, 3]                  # [min, max] months after onset, 0–24
     season: [6, 7, 8, 9]                # months 1–12 the effect is felt; [] = all year
     confidence: established             # established | probable | contested
@@ -83,8 +87,11 @@ sources:
 ```
 
 Rules enforced by the validator:
-- `from` must be a driver, `when` one of its phases, `to` an outcome.
-  Driver-to-driver links are not supported yet (see docs/PLAN.md §10).
+- `from` must be a driver, `when` one of its phases, `to` an outcome or
+  another driver. For a driver target the target must have a phase whose
+  `value` equals `effect`, and a driver cannot push itself. How the engine
+  follows such links (depth, one firing per link, loop guard, one
+  confidence tier down per hop) is in docs/PLAN.md §4.
 - Only one link per (from, when, to) triple.
 - Every source key must resolve; every link needs at least one.
 - `mechanism` and `caveat` are at least 20 characters. Absolute wording

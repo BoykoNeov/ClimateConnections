@@ -1213,6 +1213,160 @@ links:
     sources: [cullen_demenocal_2000, turkes_erlat_2003]
 
 # ================================================================== SOURCES
+  # ================================================================ DRIVER TO DRIVER (M10)
+  # These links push another driver into a phase rather than an outcome
+  # along its axis. The engine then follows that driver's own links one
+  # confidence tier lower (docs/PLAN.md §4). Links that would push the
+  # scenario driver itself (feedback loops) are never drawn; the driver card
+  # lists them in words.
+  - id: el_nino_positive_iod
+    from: enso
+    when: el_nino
+    to: iod
+    effect: 1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      El Niño weakens the east-west overturning of air along the equator, so
+      sinking, dry air settles over Indonesia and the winds along the
+      equatorial Indian Ocean turn toward the west. Those winds push warm
+      surface water away from Sumatra and let cooler water rise there, which
+      is the start of a positive dipole.
+    caveat: >
+      The dipole has its own dynamics and can grow without El Niño, as in
+      1961, 1994 and 2019, and many El Niño years pass without one; whether
+      it develops also depends on the state of the Indian Ocean in spring.
+    evidence_note: >
+      Strong positive dipoles fell in the El Niño years 1972, 1982, 1997,
+      2006 and 2015, and statistical studies find that El Niño accounts for
+      a large share of dipole variability. How much of the rest is
+      independent is still argued; the 2019 event, with no El Niño, is the
+      standard counter-example.
+    sources: [annamalai_2003, stuecker_2017, yamagata_2004, saji_1999]
+
+  - id: la_nina_negative_iod
+    from: enso
+    when: la_nina
+    to: iod
+    effect: -1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      La Niña strengthens the rising air over Indonesia and turns the winds
+      along the equatorial Indian Ocean toward the east, which piles warm
+      water up against Sumatra and tends to tip the Indian Ocean into a
+      negative dipole.
+    caveat: >
+      Negative dipoles are rarer and weaker than positive ones, and the
+      pairing with La Niña is looser than the El Niño pairing; a La Niña
+      year can pass with a neutral or even a positive dipole.
+    evidence_note: >
+      Negative dipoles fell in the La Niña years 1964, 1974, 1975, 1989,
+      1998 and 2010, but the relationship is not a mirror image of the El
+      Niño one: the pathway between the two oceans is asymmetric and the
+      negative side of it is less consistent.
+    sources: [stuecker_2017, cai_2012, yamagata_2004]
+
+  - id: negative_iod_el_nino_next_year
+    from: iod
+    when: negative
+    to: enso
+    effect: 1
+    lag_months: [11, 14]
+    season: []
+    confidence: contested
+    mechanism: >
+      A negative dipole strengthens the rain over the eastern Indian Ocean
+      and Indonesia in autumn; when it collapses in winter the winds over
+      the western Pacific swing to westerly, which can start the warming
+      that grows into an El Niño by the following year.
+    caveat: >
+      The Pacific has its own two-to-seven-year rhythm, and several studies
+      find the Indian Ocean adds little once that rhythm is allowed for; a
+      negative dipole in autumn is at most one of several nudges toward an
+      El Niño a year later.
+    evidence_note: >
+      The link was proposed from the 1981-2009 record, where a negative
+      dipole preceded most El Niño onsets by about fourteen months, and
+      argued to hold across earlier decades. Others find the same
+      statistics can be explained by the Pacific's own cycle, with the
+      dipole tagging along rather than leading.
+    sources: [izumo_2010, izumo_2014, stuecker_2017]
+
+  - id: positive_iod_la_nina_next_year
+    from: iod
+    when: positive
+    to: enso
+    effect: -1
+    lag_months: [11, 14]
+    season: []
+    confidence: contested
+    mechanism: >
+      A positive dipole weakens the rain over Indonesia in autumn; when it
+      collapses in winter the winds over the western Pacific swing to
+      easterly, which can start the cooling that grows into a La Niña by
+      the following year.
+    caveat: >
+      Positive dipoles usually come with an El Niño, and an El Niño is often
+      followed by a La Niña anyway, so it is hard to tell how much the
+      dipole itself contributes; the Pacific's own cycle may explain most
+      of it.
+    evidence_note: >
+      Reported in the same studies as the negative-dipole link and less
+      robust than it, because the positive dipole rarely occurs on its own.
+    sources: [izumo_2010, izumo_2014]
+
+  - id: el_nino_negative_nao
+    from: enso
+    when: el_nino
+    to: nao
+    effect: -1
+    lag_months: [6, 9]
+    season: [1, 2, 3]
+    confidence: probable
+    mechanism: >
+      In an El Niño winter the storm track over the North Pacific shifts and
+      strengthens, and planetary-scale waves carry that disturbance up into
+      the stratosphere and across to the Atlantic, where late in winter it
+      tends to weaken the Icelandic low and the Azores high: a negative NAO.
+    caveat: >
+      The signal is modest, appears mostly in late winter, and is easily
+      hidden by the Atlantic's own week-to-week swings; the strongest El
+      Niños of 1982-83 and 1997-98 did not produce it, and the relationship
+      has come and gone over the twentieth century.
+    evidence_note: >
+      Reviews find a late-winter tendency toward a negative NAO in moderate
+      El Niño winters, with the stratosphere as the likely route; model
+      experiments reproduce it. Very strong events seem to behave
+      differently, and some periods show no signal at all.
+    sources: [bronnimann_2007, ineson_scaife_2009, toniazzo_scaife_2006, domeisen_2019]
+
+  - id: la_nina_positive_nao
+    from: enso
+    when: la_nina
+    to: nao
+    effect: 1
+    lag_months: [6, 9]
+    season: [1, 2, 3]
+    confidence: contested
+    mechanism: >
+      In a La Niña winter the North Pacific storm track weakens and shifts,
+      and the disturbance that reaches the Atlantic tends to strengthen the
+      westerlies there rather than weaken them, leaning the winter toward a
+      positive NAO.
+    caveat: >
+      The La Niña signal over the Atlantic is weaker and less consistent
+      than the El Niño one, and different studies find it in different
+      months or not at all; a La Niña winter can easily be a negative NAO
+      winter, as 2010-11 was.
+    evidence_note: >
+      One study of the twentieth century found the La Niña signal over the
+      North Atlantic clearer than the El Niño one; later reviews find the
+      opposite. Shown as contested because the literature does not agree.
+    sources: [pozo_vazquez_2001, bronnimann_2007]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -1393,3 +1547,38 @@ sources:
   - key: ncar_nao_guide
     citation: "National Center for Atmospheric Research, Climate Data Guide. Hurrell North Atlantic Oscillation (NAO) index (station-based)."
     url: https://climatedataguide.ucar.edu/climate-data/hurrell-north-atlantic-oscillation-nao-index-station-based
+
+  # ---- driver-to-driver links (M10)
+  - key: annamalai_2003
+    citation: "Annamalai, H., Murtugudde, R., Potemra, J., Xie, S.-P., Liu, P., & Wang, B. (2003). Coupled dynamics over the Indian Ocean: spring initiation of the Zonal Mode. Deep Sea Research Part II, 50(12–13), 2305–2330."
+    url: https://doi.org/10.1016/S0967-0645(03)00058-4
+  - key: stuecker_2017
+    citation: "Stuecker, M. F., Timmermann, A., Jin, F.-F., Chikamoto, Y., Zhang, W., Wittenberg, A. T., Widiasih, E., & Zhao, S. (2017). Revisiting ENSO/Indian Ocean Dipole phase relationships. Geophysical Research Letters, 44(5), 2481–2492."
+    url: https://doi.org/10.1002/2016GL072308
+  - key: yamagata_2004
+    citation: "Yamagata, T., Behera, S. K., Luo, J.-J., Masson, S., Jury, M. R., & Rao, S. A. (2004). Coupled ocean-atmosphere variability in the tropical Indian Ocean. In Earth's Climate: The Ocean–Atmosphere Interaction, Geophysical Monograph 147, 189–211. American Geophysical Union."
+    url: https://doi.org/10.1029/147GM12
+  - key: cai_2012
+    citation: "Cai, W., van Rensch, P., Cowan, T., & Hendon, H. H. (2012). An asymmetry in the IOD and ENSO teleconnection pathway and its impact on Australian climate. Journal of Climate, 25(18), 6318–6329."
+    url: https://doi.org/10.1175/JCLI-D-11-00501.1
+  - key: izumo_2010
+    citation: "Izumo, T., Vialard, J., Lengaigne, M., de Boyer Montégut, C., Behera, S. K., Luo, J.-J., Cravatte, S., Masson, S., & Yamagata, T. (2010). Influence of the state of the Indian Ocean Dipole on the following year's El Niño. Nature Geoscience, 3, 168–172."
+    url: https://doi.org/10.1038/ngeo760
+  - key: izumo_2014
+    citation: "Izumo, T., Lengaigne, M., Vialard, J., Luo, J.-J., Yamagata, T., & Madec, G. (2014). Influence of Indian Ocean Dipole and Pacific recharge on following year's El Niño: interdecadal robustness. Climate Dynamics, 42, 291–310."
+    url: https://doi.org/10.1007/s00382-012-1628-1
+  - key: bronnimann_2007
+    citation: "Brönnimann, S. (2007). Impact of El Niño–Southern Oscillation on European climate. Reviews of Geophysics, 45, RG3003."
+    url: https://doi.org/10.1029/2006RG000199
+  - key: ineson_scaife_2009
+    citation: "Ineson, S., & Scaife, A. A. (2009). The role of the stratosphere in the European climate response to El Niño. Nature Geoscience, 2, 32–36."
+    url: https://doi.org/10.1038/ngeo381
+  - key: toniazzo_scaife_2006
+    citation: "Toniazzo, T., & Scaife, A. A. (2006). The influence of ENSO on winter North Atlantic climate. Geophysical Research Letters, 33, L24704."
+    url: https://doi.org/10.1029/2006GL027881
+  - key: domeisen_2019
+    citation: "Domeisen, D. I. V., Garfinkel, C. I., & Butler, A. H. (2019). The teleconnection of El Niño Southern Oscillation to the stratosphere. Reviews of Geophysics, 57(1), 5–47."
+    url: https://doi.org/10.1029/2018RG000596
+  - key: pozo_vazquez_2001
+    citation: "Pozo-Vázquez, D., Esteban-Parra, M. J., Rodrigo, F. S., & Castro-Díez, Y. (2001). The association between ENSO and winter atmospheric circulation and temperature in the North Atlantic region. Journal of Climate, 14(16), 3408–3420."
+    url: https://doi.org/10.1175/1520-0442(2001)014<3408:TABEAW>2.0.CO;2

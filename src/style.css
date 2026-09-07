@@ -103,6 +103,10 @@ html, body { margin: 0; height: 100%; }
   50% { stroke-width: 9; stroke-opacity: 0.45; }
 }
 .node.conflicting circle { stroke-dasharray: 2 2; }
+.node.driver.induced circle { stroke: #1f2328; stroke-dasharray: 5 3; }
+.node.driver.pending circle { fill-opacity: 0.3; stroke: #1f2328; stroke-dasharray: 5 3; stroke-opacity: 0.5; }
+.node.driver.pending text { fill: var(--muted); font-weight: 500; }
+.link.to-driver { stroke-linecap: butt; }
 .node text {
   font-size: 10.5px; fill: var(--ink); paint-order: stroke; stroke: #ffffff; stroke-width: 3px;
   stroke-linejoin: round; pointer-events: none;
@@ -151,6 +155,7 @@ html, body { margin: 0; height: 100%; }
 .badge.contested { border-color: #b71c1c; color: #b71c1c; }
 .link-block { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
 .link-block h4 { margin: 0 0 6px; font-size: 13px; }
+.link-block h4 .via { font-weight: 500; color: var(--muted); }
 .sure { background: #fff8e6; border-left: 3px solid #e0a800; padding: 6px 10px; margin: 8px 0; font-size: 12.5px; }
 .sure strong { display: block; margin-bottom: 2px; }
 .sources { font-size: 11.5px; color: var(--muted); }

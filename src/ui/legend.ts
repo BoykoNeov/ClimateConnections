@@ -34,6 +34,7 @@ export function renderLegend(): HTMLElement {
   }
   html += `<div class="legend-row"><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#fff" stroke="#888" stroke-width="1.5"/></svg><span>No expected effect yet</span></div>`;
   html += `<div class="legend-row"><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#2166ac" fill-opacity="0.25" stroke="#2166ac" stroke-width="1.5"/></svg><span>Effect expected, but out of season</span></div>`;
+  html += `<div class="legend-row"><svg width="14" height="14"><circle cx="7" cy="7" r="5.5" fill="#e6550d" stroke="#1f2328" stroke-width="1.5" stroke-dasharray="2.5 1.5"/></svg><span>Driver pushed into a phase by another driver</span></div>`;
   el.innerHTML = html;
   return el;
 }

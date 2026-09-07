@@ -44,19 +44,22 @@
           "id": "el_nino",
           "label": "El Niño",
           "color": "#d7301f",
-          "summary": "The warm phase. Surface water in the central and eastern tropical Pacific is warmer than usual, the trade winds weaken, and the heaviest rain moves east from Indonesia toward the central Pacific. Events usually begin to develop around May–July, peak in November–January, and fade by the following spring.\n"
+          "summary": "The warm phase. Surface water in the central and eastern tropical Pacific is warmer than usual, the trade winds weaken, and the heaviest rain moves east from Indonesia toward the central Pacific. Events usually begin to develop around May–July, peak in November–January, and fade by the following spring.\n",
+          "value": 1
         },
         {
           "id": "neutral",
           "label": "Neutral",
           "color": "#999999",
-          "summary": "Neither warm nor cool. Tropical Pacific temperatures are close to their long-term average and none of the ENSO-related tendencies on this map are expected. Other drivers still shape the weather.\n"
+          "summary": "Neither warm nor cool. Tropical Pacific temperatures are close to their long-term average and none of the ENSO-related tendencies on this map are expected. Other drivers still shape the weather.\n",
+          "value": 0
         },
         {
           "id": "la_nina",
           "label": "La Niña",
           "color": "#2b8cbe",
-          "summary": "The cool phase. Surface water in the central and eastern tropical Pacific is cooler than usual, the trade winds strengthen, and the heaviest rain piles up over Indonesia and the western Pacific. La Niña often follows an El Niño and can persist for two or three winters in a row.\n"
+          "summary": "The cool phase. Surface water in the central and eastern tropical Pacific is cooler than usual, the trade winds strengthen, and the heaviest rain piles up over Indonesia and the western Pacific. La Niña often follows an El Niño and can persist for two or three winters in a row.\n",
+          "value": -1
         }
       ]
     },
@@ -100,19 +103,22 @@
           "id": "positive",
           "label": "Positive IOD",
           "color": "#e6550d",
-          "summary": "The western Indian Ocean is warmer than usual and the water off Sumatra and Java is cooler. Rising air and rain shift toward East Africa and away from Indonesia and Australia. Events usually begin around May–July, peak in September–November and end by December. The strongest recent cases were 1994, 1997, 2006 and 2019.\n"
+          "summary": "The western Indian Ocean is warmer than usual and the water off Sumatra and Java is cooler. Rising air and rain shift toward East Africa and away from Indonesia and Australia. Events usually begin around May–July, peak in September–November and end by December. The strongest recent cases were 1994, 1997, 2006 and 2019.\n",
+          "value": 1
         },
         {
           "id": "neutral",
           "label": "Neutral",
           "color": "#999999",
-          "summary": "Neither end of the ocean is unusually warm or cool. None of the Indian Ocean Dipole tendencies on this map are expected. ENSO and other drivers still shape the weather.\n"
+          "summary": "Neither end of the ocean is unusually warm or cool. None of the Indian Ocean Dipole tendencies on this map are expected. ENSO and other drivers still shape the weather.\n",
+          "value": 0
         },
         {
           "id": "negative",
           "label": "Negative IOD",
           "color": "#238b45",
-          "summary": "The water off Sumatra is warmer than usual and the western Indian Ocean cooler. Rain shifts toward Indonesia and Australia and away from East Africa. Negative events are somewhat rarer and weaker than positive ones; recent cases include 1998, 2010 and 2016.\n"
+          "summary": "The water off Sumatra is warmer than usual and the western Indian Ocean cooler. Rain shifts toward Indonesia and Australia and away from East Africa. Negative events are somewhat rarer and weaker than positive ones; recent cases include 1998, 2010 and 2016.\n",
+          "value": -1
         }
       ]
     },
@@ -156,19 +162,22 @@
           "id": "positive",
           "label": "Positive NAO",
           "color": "#7b3294",
-          "summary": "The Icelandic low and the Azores high are both stronger than usual, so the westerly winds across the Atlantic are strong and the storm track runs toward Scotland and Norway. Winters tend to be mild and wet in northern Europe, dry in the Mediterranean, mild in the eastern United States and cold in Greenland. Winters that leaned strongly positive include 1988–89, 1989–90 and 2014–15.\n"
+          "summary": "The Icelandic low and the Azores high are both stronger than usual, so the westerly winds across the Atlantic are strong and the storm track runs toward Scotland and Norway. Winters tend to be mild and wet in northern Europe, dry in the Mediterranean, mild in the eastern United States and cold in Greenland. Winters that leaned strongly positive include 1988–89, 1989–90 and 2014–15.\n",
+          "value": 1
         },
         {
           "id": "neutral",
           "label": "Neutral",
           "color": "#999999",
-          "summary": "The Atlantic pressure pattern is close to its average and none of the North Atlantic Oscillation tendencies on this map are expected. ENSO and other drivers still shape the weather.\n"
+          "summary": "The Atlantic pressure pattern is close to its average and none of the North Atlantic Oscillation tendencies on this map are expected. ENSO and other drivers still shape the weather.\n",
+          "value": 0
         },
         {
           "id": "negative",
           "label": "Negative NAO",
           "color": "#008080",
-          "summary": "The Icelandic low and the Azores high are both weak, so the westerlies slacken and often buckle into a blocking high near Greenland. Storms are steered south into Iberia and the Mediterranean, while cold air reaches northern Europe and the eastern United States and Greenland turns unusually mild. The winter of 2009–10 was the most strongly negative on record.\n"
+          "summary": "The Icelandic low and the Azores high are both weak, so the westerlies slacken and often buckle into a blocking high near Greenland. Storms are steered south into Iberia and the Mediterranean, while cold air reaches northern Europe and the eastern United States and Greenland turns unusually mild. The winter of 2009–10 was the most strongly negative on record.\n",
+          "value": -1
         }
       ]
     },
@@ -2930,6 +2939,154 @@
         "cullen_demenocal_2000",
         "turkes_erlat_2003"
       ]
+    },
+    {
+      "id": "el_nino_positive_iod",
+      "from": "enso",
+      "when": "el_nino",
+      "to": "iod",
+      "effect": 1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "probable",
+      "mechanism": "El Niño weakens the east-west overturning of air along the equator, so sinking, dry air settles over Indonesia and the winds along the equatorial Indian Ocean turn toward the west. Those winds push warm surface water away from Sumatra and let cooler water rise there, which is the start of a positive dipole.\n",
+      "caveat": "The dipole has its own dynamics and can grow without El Niño, as in 1961, 1994 and 2019, and many El Niño years pass without one; whether it develops also depends on the state of the Indian Ocean in spring.\n",
+      "evidence_note": "Strong positive dipoles fell in the El Niño years 1972, 1982, 1997, 2006 and 2015, and statistical studies find that El Niño accounts for a large share of dipole variability. How much of the rest is independent is still argued; the 2019 event, with no El Niño, is the standard counter-example.\n",
+      "sources": [
+        "annamalai_2003",
+        "stuecker_2017",
+        "yamagata_2004",
+        "saji_1999"
+      ]
+    },
+    {
+      "id": "la_nina_negative_iod",
+      "from": "enso",
+      "when": "la_nina",
+      "to": "iod",
+      "effect": -1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "probable",
+      "mechanism": "La Niña strengthens the rising air over Indonesia and turns the winds along the equatorial Indian Ocean toward the east, which piles warm water up against Sumatra and tends to tip the Indian Ocean into a negative dipole.\n",
+      "caveat": "Negative dipoles are rarer and weaker than positive ones, and the pairing with La Niña is looser than the El Niño pairing; a La Niña year can pass with a neutral or even a positive dipole.\n",
+      "evidence_note": "Negative dipoles fell in the La Niña years 1964, 1974, 1975, 1989, 1998 and 2010, but the relationship is not a mirror image of the El Niño one: the pathway between the two oceans is asymmetric and the negative side of it is less consistent.\n",
+      "sources": [
+        "stuecker_2017",
+        "cai_2012",
+        "yamagata_2004"
+      ]
+    },
+    {
+      "id": "negative_iod_el_nino_next_year",
+      "from": "iod",
+      "when": "negative",
+      "to": "enso",
+      "effect": 1,
+      "lag_months": [
+        11,
+        14
+      ],
+      "season": [],
+      "confidence": "contested",
+      "mechanism": "A negative dipole strengthens the rain over the eastern Indian Ocean and Indonesia in autumn; when it collapses in winter the winds over the western Pacific swing to westerly, which can start the warming that grows into an El Niño by the following year.\n",
+      "caveat": "The Pacific has its own two-to-seven-year rhythm, and several studies find the Indian Ocean adds little once that rhythm is allowed for; a negative dipole in autumn is at most one of several nudges toward an El Niño a year later.\n",
+      "evidence_note": "The link was proposed from the 1981-2009 record, where a negative dipole preceded most El Niño onsets by about fourteen months, and argued to hold across earlier decades. Others find the same statistics can be explained by the Pacific's own cycle, with the dipole tagging along rather than leading.\n",
+      "sources": [
+        "izumo_2010",
+        "izumo_2014",
+        "stuecker_2017"
+      ]
+    },
+    {
+      "id": "positive_iod_la_nina_next_year",
+      "from": "iod",
+      "when": "positive",
+      "to": "enso",
+      "effect": -1,
+      "lag_months": [
+        11,
+        14
+      ],
+      "season": [],
+      "confidence": "contested",
+      "mechanism": "A positive dipole weakens the rain over Indonesia in autumn; when it collapses in winter the winds over the western Pacific swing to easterly, which can start the cooling that grows into a La Niña by the following year.\n",
+      "caveat": "Positive dipoles usually come with an El Niño, and an El Niño is often followed by a La Niña anyway, so it is hard to tell how much the dipole itself contributes; the Pacific's own cycle may explain most of it.\n",
+      "evidence_note": "Reported in the same studies as the negative-dipole link and less robust than it, because the positive dipole rarely occurs on its own.\n",
+      "sources": [
+        "izumo_2010",
+        "izumo_2014"
+      ]
+    },
+    {
+      "id": "el_nino_negative_nao",
+      "from": "enso",
+      "when": "el_nino",
+      "to": "nao",
+      "effect": -1,
+      "lag_months": [
+        6,
+        9
+      ],
+      "season": [
+        1,
+        2,
+        3
+      ],
+      "confidence": "probable",
+      "mechanism": "In an El Niño winter the storm track over the North Pacific shifts and strengthens, and planetary-scale waves carry that disturbance up into the stratosphere and across to the Atlantic, where late in winter it tends to weaken the Icelandic low and the Azores high: a negative NAO.\n",
+      "caveat": "The signal is modest, appears mostly in late winter, and is easily hidden by the Atlantic's own week-to-week swings; the strongest El Niños of 1982-83 and 1997-98 did not produce it, and the relationship has come and gone over the twentieth century.\n",
+      "evidence_note": "Reviews find a late-winter tendency toward a negative NAO in moderate El Niño winters, with the stratosphere as the likely route; model experiments reproduce it. Very strong events seem to behave differently, and some periods show no signal at all.\n",
+      "sources": [
+        "bronnimann_2007",
+        "ineson_scaife_2009",
+        "toniazzo_scaife_2006",
+        "domeisen_2019"
+      ]
+    },
+    {
+      "id": "la_nina_positive_nao",
+      "from": "enso",
+      "when": "la_nina",
+      "to": "nao",
+      "effect": 1,
+      "lag_months": [
+        6,
+        9
+      ],
+      "season": [
+        1,
+        2,
+        3
+      ],
+      "confidence": "contested",
+      "mechanism": "In a La Niña winter the North Pacific storm track weakens and shifts, and the disturbance that reaches the Atlantic tends to strengthen the westerlies there rather than weaken them, leaning the winter toward a positive NAO.\n",
+      "caveat": "The La Niña signal over the Atlantic is weaker and less consistent than the El Niño one, and different studies find it in different months or not at all; a La Niña winter can easily be a negative NAO winter, as 2010-11 was.\n",
+      "evidence_note": "One study of the twentieth century found the La Niña signal over the North Atlantic clearer than the El Niño one; later reviews find the opposite. Shown as contested because the literature does not agree.\n",
+      "sources": [
+        "pozo_vazquez_2001",
+        "bronnimann_2007"
+      ]
     }
   ],
   "sources": [
@@ -3227,6 +3384,61 @@
       "key": "ncar_nao_guide",
       "citation": "National Center for Atmospheric Research, Climate Data Guide. Hurrell North Atlantic Oscillation (NAO) index (station-based).",
       "url": "https://climatedataguide.ucar.edu/climate-data/hurrell-north-atlantic-oscillation-nao-index-station-based"
+    },
+    {
+      "key": "annamalai_2003",
+      "citation": "Annamalai, H., Murtugudde, R., Potemra, J., Xie, S.-P., Liu, P., & Wang, B. (2003). Coupled dynamics over the Indian Ocean: spring initiation of the Zonal Mode. Deep Sea Research Part II, 50(12–13), 2305–2330.",
+      "url": "https://doi.org/10.1016/S0967-0645(03)00058-4"
+    },
+    {
+      "key": "stuecker_2017",
+      "citation": "Stuecker, M. F., Timmermann, A., Jin, F.-F., Chikamoto, Y., Zhang, W., Wittenberg, A. T., Widiasih, E., & Zhao, S. (2017). Revisiting ENSO/Indian Ocean Dipole phase relationships. Geophysical Research Letters, 44(5), 2481–2492.",
+      "url": "https://doi.org/10.1002/2016GL072308"
+    },
+    {
+      "key": "yamagata_2004",
+      "citation": "Yamagata, T., Behera, S. K., Luo, J.-J., Masson, S., Jury, M. R., & Rao, S. A. (2004). Coupled ocean-atmosphere variability in the tropical Indian Ocean. In Earth's Climate: The Ocean–Atmosphere Interaction, Geophysical Monograph 147, 189–211. American Geophysical Union.",
+      "url": "https://doi.org/10.1029/147GM12"
+    },
+    {
+      "key": "cai_2012",
+      "citation": "Cai, W., van Rensch, P., Cowan, T., & Hendon, H. H. (2012). An asymmetry in the IOD and ENSO teleconnection pathway and its impact on Australian climate. Journal of Climate, 25(18), 6318–6329.",
+      "url": "https://doi.org/10.1175/JCLI-D-11-00501.1"
+    },
+    {
+      "key": "izumo_2010",
+      "citation": "Izumo, T., Vialard, J., Lengaigne, M., de Boyer Montégut, C., Behera, S. K., Luo, J.-J., Cravatte, S., Masson, S., & Yamagata, T. (2010). Influence of the state of the Indian Ocean Dipole on the following year's El Niño. Nature Geoscience, 3, 168–172.",
+      "url": "https://doi.org/10.1038/ngeo760"
+    },
+    {
+      "key": "izumo_2014",
+      "citation": "Izumo, T., Lengaigne, M., Vialard, J., Luo, J.-J., Yamagata, T., & Madec, G. (2014). Influence of Indian Ocean Dipole and Pacific recharge on following year's El Niño: interdecadal robustness. Climate Dynamics, 42, 291–310.",
+      "url": "https://doi.org/10.1007/s00382-012-1628-1"
+    },
+    {
+      "key": "bronnimann_2007",
+      "citation": "Brönnimann, S. (2007). Impact of El Niño–Southern Oscillation on European climate. Reviews of Geophysics, 45, RG3003.",
+      "url": "https://doi.org/10.1029/2006RG000199"
+    },
+    {
+      "key": "ineson_scaife_2009",
+      "citation": "Ineson, S., & Scaife, A. A. (2009). The role of the stratosphere in the European climate response to El Niño. Nature Geoscience, 2, 32–36.",
+      "url": "https://doi.org/10.1038/ngeo381"
+    },
+    {
+      "key": "toniazzo_scaife_2006",
+      "citation": "Toniazzo, T., & Scaife, A. A. (2006). The influence of ENSO on winter North Atlantic climate. Geophysical Research Letters, 33, L24704.",
+      "url": "https://doi.org/10.1029/2006GL027881"
+    },
+    {
+      "key": "domeisen_2019",
+      "citation": "Domeisen, D. I. V., Garfinkel, C. I., & Butler, A. H. (2019). The teleconnection of El Niño Southern Oscillation to the stratosphere. Reviews of Geophysics, 57(1), 5–47.",
+      "url": "https://doi.org/10.1029/2018RG000596"
+    },
+    {
+      "key": "pozo_vazquez_2001",
+      "citation": "Pozo-Vázquez, D., Esteban-Parra, M. J., Rodrigo, F. S., & Castro-Díez, Y. (2001). The association between ENSO and winter atmospheric circulation and temperature in the North Atlantic region. Journal of Climate, 14(16), 3408–3420.",
+      "url": "https://doi.org/10.1175/1520-0442(2001)014<3408:TABEAW>2.0.CO;2"
     }
   ],
   "stories": [
@@ -3577,6 +3789,89 @@
           "sources": [
             "osborn_2011",
             "hurrell_2003"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "el_nino_1997_indian_ocean",
+      "title": "1997: El Niño sets off the Indian Ocean Dipole",
+      "intro": "The same El Niño as the first story, seen from the Indian Ocean. Here the map follows a chain: El Niño pushes the Indian Ocean Dipole into its positive phase, and the dipole's own effects then join El Niño's. Turn \"Follow links through other drivers\" off to see the map without the chain. As before, the places where 1997 broke the pattern are the teaching points.\n",
+      "driver": "enso",
+      "phase": "el_nino",
+      "start_month": 5,
+      "start_year": 1997,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "enso",
+          "text": "By May 1997 the central and eastern Pacific were warming fast and the trade winds had slackened. On this map that single change is the start of everything else, including, one hop away, a change in the ocean next door.\n",
+          "sources": [
+            "mcphaden_1999"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "iod",
+          "text": "As the rising air over Indonesia weakened, the winds along the equatorial Indian Ocean swung toward the west and cool water rose off Sumatra. The dipole marker turns orange: the map now treats the Indian Ocean as a second driver, set off by El Niño, and follows its links one confidence step lower. In 1997 the dipole began unusually early and grew into the strongest on record.\n",
+          "sources": [
+            "webster_1999",
+            "annamalai_2003"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "indonesia_rainfall",
+          "text": "Two arrows now reach Indonesia: El Niño's directly, and the dipole's through the chain. Both push the same way, toward drought, and the map keeps the state at \"drier\". The 1997 dry season was one of the harshest on record and the peat and forest fires that followed covered Southeast Asia in haze for months.\n",
+          "sources": [
+            "field_2009",
+            "saji_1999"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "southeast_australia_rainfall",
+          "text": "This marker has no El Niño link of its own; it is lit only through the dipole. With the chain switched off it stays hollow. Cool water off Sumatra means less moisture feeding the fronts that bring winter and spring rain to Victoria and South Australia, and the second half of 1997 was dry across much of the southeast.\n",
+          "sources": [
+            "ummenhofer_2009",
+            "cai_2011"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "east_africa_short_rains",
+          "text": "Two pushes in the same direction again. El Niño and the warm western Indian Ocean both feed the October to December short rains, and in 1997 they came as floods: the heaviest rain in decades across Kenya, Somalia and Ethiopia, with rivers over their banks from October into early 1998.\n",
+          "sources": [
+            "black_2003",
+            "webster_1999"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "iod",
+          "text": "November 1997 was the dipole's peak. On the map its link from El Niño runs only from June to November, because the dipole cannot survive the reversal of the monsoon winds in December; step one month on and the dipole drops back to grey while El Niño carries on. Real events do end this way: the 1997 dipole collapsed in December.\n",
+          "sources": [
+            "webster_1999",
+            "saji_1999"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "nao",
+          "text": "Here the chain broke. In a moderate El Niño winter the map expects the Atlantic pressure pattern to lean negative from January, with a cold northern Europe behind it. The winter of 1997-98 did not oblige: the pattern stayed positive and Europe was mild. Studies since suggest that the very strongest El Niños disturb the atmosphere in a different way from moderate ones, which is why the link is drawn dashed and rated only probable.\n",
+          "sources": [
+            "toniazzo_scaife_2006",
+            "bronnimann_2007"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "enso",
+          "text": "By May 1998 the warm water was gone and the Pacific tipped into a La Niña that lasted into 2000. On this map La Niña has its own link to the dipole, pushing it negative, and 1998 did bring a negative dipole. Whether the dipole in turn helps set up the next El Niño is the contested feedback listed on the ENSO card; it is told in words, not drawn, because the map never lets an effect loop back onto the driver you chose.\n",
+          "sources": [
+            "mcphaden_1999",
+            "stuecker_2017",
+            "izumo_2010"
           ]
         }
       ]

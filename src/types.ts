@@ -11,6 +11,9 @@ export interface Phase {
   label: string;
   color: string;
   summary: string;
+  /** where this phase sits on the driver's own axis: +1, 0 (neutral) or -1.
+   *  A link into a driver with effect +1 pushes it toward its +1 phase (M10). */
+  value: Value;
 }
 
 interface NodeBase {
@@ -102,9 +105,31 @@ export interface Scenario {
   /** 1–12; calendar month of month index 0 */
   startMonth: number;
   horizonMonths: number;
+  /** how many hops of links to follow (M10). 1 = only the scenario driver's
+   *  own links, the version-1 behaviour and the default; 2 lets a driver that
+   *  was set off by the scenario driver fire its own links, and so on. */
+  maxDepth?: number;
+  /** links whose effective confidence is below this tier apply nothing and
+   *  are reported as ghosts (the confidence filter). Default: contested, i.e. all. */
+  minConfidence?: Confidence;
+}
+
+export type LinkStatus = 'applied' | 'pending' | 'ghost';
+
+/** What happened to one link in one month (M10). Only links that are past
+ *  their minimum lag from the onset of their source driver's phase appear. */
+export interface LinkState {
+  status: LinkStatus;
+  /** the link's confidence after the per-hop downgrade; the line style to draw */
+  confidence: Confidence;
+  /** 1 for the scenario driver's own links, 2 for links of a driver it set off, ... */
+  depth: number;
 }
 
 export interface NodeState {
+  /** outcomes: state on their axis. Drivers: the value of the phase they hold
+   *  (the scenario driver's chosen phase, or the phase another driver pushed
+   *  them into); 0 when not in play. */
   value: Value;
   confidence: Confidence | null;
   /** links applied this month (in season and past their minimum lag) */
@@ -119,6 +144,8 @@ export interface MonthState {
   index: number;
   calendarMonth: number;
   nodes: Record<string, NodeState>;
+  /** per-link status this month, keyed by link id (M10) */
+  links: Record<string, LinkState>;
 }
 
 export interface Timeline {

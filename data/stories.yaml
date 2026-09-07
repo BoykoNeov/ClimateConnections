@@ -415,3 +415,102 @@ stories:
           no calendar. A run of negative winters says little about the next
           one, which is why the map calls its timescale "weeks to months".
         sources: [osborn_2011, hurrell_2003]
+
+  - id: el_nino_1997_indian_ocean
+    title: "1997: El Niño sets off the Indian Ocean Dipole"
+    intro: >
+      The same El Niño as the first story, seen from the Indian Ocean. Here
+      the map follows a chain: El Niño pushes the Indian Ocean Dipole into
+      its positive phase, and the dipole's own effects then join El Niño's.
+      Turn "Follow links through other drivers" off to see the map without
+      the chain. As before, the places where 1997 broke the pattern are the
+      teaching points.
+    driver: enso
+    phase: el_nino
+    start_month: 5
+    start_year: 1997
+    steps:
+      - month: 0
+        focus: enso
+        text: >
+          By May 1997 the central and eastern Pacific were warming fast and
+          the trade winds had slackened. On this map that single change is
+          the start of everything else, including, one hop away, a change
+          in the ocean next door.
+        sources: [mcphaden_1999]
+
+      - month: 1
+        focus: iod
+        text: >
+          As the rising air over Indonesia weakened, the winds along the
+          equatorial Indian Ocean swung toward the west and cool water rose
+          off Sumatra. The dipole marker turns orange: the map now treats the
+          Indian Ocean as a second driver, set off by El Niño, and follows
+          its links one confidence step lower. In 1997 the dipole began
+          unusually early and grew into the strongest on record.
+        sources: [webster_1999, annamalai_2003]
+
+      - month: 3
+        focus: indonesia_rainfall
+        text: >
+          Two arrows now reach Indonesia: El Niño's directly, and the
+          dipole's through the chain. Both push the same way, toward drought,
+          and the map keeps the state at "drier". The 1997 dry season was
+          one of the harshest on record and the peat and forest fires that
+          followed covered Southeast Asia in haze for months.
+        sources: [field_2009, saji_1999]
+
+      - month: 4
+        focus: southeast_australia_rainfall
+        text: >
+          This marker has no El Niño link of its own; it is lit only through
+          the dipole. With the chain switched off it stays hollow. Cool
+          water off Sumatra means less moisture feeding the fronts that
+          bring winter and spring rain to Victoria and South Australia, and
+          the second half of 1997 was dry across much of the southeast.
+        sources: [ummenhofer_2009, cai_2011]
+
+      - month: 5
+        focus: east_africa_short_rains
+        text: >
+          Two pushes in the same direction again. El Niño and the warm
+          western Indian Ocean both feed the October to December short
+          rains, and in 1997 they came as floods: the heaviest rain in
+          decades across Kenya, Somalia and Ethiopia, with rivers over their
+          banks from October into early 1998.
+        sources: [black_2003, webster_1999]
+
+      - month: 6
+        focus: iod
+        text: >
+          November 1997 was the dipole's peak. On the map its link from El
+          Niño runs only from June to November, because the dipole cannot
+          survive the reversal of the monsoon winds in December; step one
+          month on and the dipole drops back to grey while El Niño carries
+          on. Real events do end this way: the 1997 dipole collapsed in
+          December.
+        sources: [webster_1999, saji_1999]
+
+      - month: 8
+        focus: nao
+        text: >
+          Here the chain broke. In a moderate El Niño winter the map expects
+          the Atlantic pressure pattern to lean negative from January, with
+          a cold northern Europe behind it. The winter of 1997-98 did not
+          oblige: the pattern stayed positive and Europe was mild. Studies
+          since suggest that the very strongest El Niños disturb the
+          atmosphere in a different way from moderate ones, which is why the
+          link is drawn dashed and rated only probable.
+        sources: [toniazzo_scaife_2006, bronnimann_2007]
+
+      - month: 12
+        focus: enso
+        text: >
+          By May 1998 the warm water was gone and the Pacific tipped into a
+          La Niña that lasted into 2000. On this map La Niña has its own
+          link to the dipole, pushing it negative, and 1998 did bring a
+          negative dipole. Whether the dipole in turn helps set up the next
+          El Niño is the contested feedback listed on the ENSO card; it is
+          told in words, not drawn, because the map never lets an effect
+          loop back onto the driver you chose.
+        sources: [mcphaden_1999, stuecker_2017, izumo_2010]

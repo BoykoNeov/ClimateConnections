@@ -12,6 +12,8 @@ import graphJson from '../../public/data/graph.json';
 const graph = graphJson as unknown as Graph;
 const HORIZON = 12;
 
+// Version-1 blocks run at the default depth of 1 (direct links only); the
+// M10 block at the end follows links through pushed drivers.
 function run(phaseId: string): Timeline {
   const scenario: Scenario = { driverId: 'enso', phaseId, startMonth: 6, horizonMonths: HORIZON };
   return propagate(graph, scenario);
@@ -242,6 +244,158 @@ describe('acceptance: drivers', () => {
     for (const driverId of DRIVERS) {
       const tl = propagate(graph, { driverId, phaseId: 'neutral', startMonth: 6, horizonMonths: HORIZON });
       for (const m of tl.months) for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
+    }
+  });
+});
+
+// ---------------------------------------------------------------- M10: driver-to-driver links
+// The app follows links through pushed drivers up to three hops.
+function runDeep(driverId: string, phaseId: string, startMonth: number, maxDepth = 3): Timeline {
+  return propagate(graph, { driverId, phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+describe('acceptance: El Niño pushes the dipole and the NAO (June start, chain on)', () => {
+  const tl = runDeep('enso', 'el_nino', 6);
+  const direct = runDeep('enso', 'el_nino', 6, 1);
+
+  it('the dipole turns positive from month 0 (June) and drops out in December', () => {
+    expect(tl.months[0].nodes.iod.value).toBe(1);
+    expect(tl.months[0].nodes.iod.viaLinkIds).toEqual(['el_nino_positive_iod']);
+    expect(tl.months[0].nodes.iod.confidence).toBe('probable');
+    expect(tl.months[6].calendarMonth).toBe(12);
+    expect(tl.months[6].nodes.iod.value).toBe(0);
+    expect(tl.months[6].nodes.iod.pendingLinkIds).toEqual(['el_nino_positive_iod']);
+  });
+
+  it('southeast Australia, which has no ENSO link, turns dry through the dipole one tier lower', () => {
+    const m = tl.months[2];
+    expect(m.nodes.southeast_australia_rainfall.value).toBe(-1);
+    expect(m.nodes.southeast_australia_rainfall.viaLinkIds).toEqual(['positive_iod_southeast_australia']);
+    expect(m.links.positive_iod_southeast_australia).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    for (const dm of direct.months) {
+      expect(dm.nodes.southeast_australia_rainfall.value).toBe(0);
+      expect(dm.nodes.southeast_australia_rainfall.viaLinkIds).toHaveLength(0);
+    }
+  });
+
+  it('East Africa\'s short rains get both pushes, same sign, and stay at +1 without conflict', () => {
+    const m = tl.months[4];
+    expect(m.calendarMonth).toBe(10);
+    expect(m.nodes.east_africa_short_rains.viaLinkIds.sort()).toEqual(['el_nino_east_africa_short_rains', 'positive_iod_east_africa_short_rains']);
+    expect(m.nodes.east_africa_short_rains.value).toBe(1);
+    expect(m.nodes.east_africa_short_rains.conflicting).toBe(false);
+  });
+
+  it('the Indian monsoon shows the contested tug-of-war: both links, conflicting, netting to 0', () => {
+    const m = tl.months[1];
+    expect(m.nodes.indian_summer_monsoon.viaLinkIds.sort()).toEqual(['el_nino_indian_monsoon', 'positive_iod_indian_monsoon']);
+    expect(m.nodes.indian_summer_monsoon.conflicting).toBe(true);
+    expect(m.nodes.indian_summer_monsoon.value).toBe(0);
+    expect(m.links.positive_iod_indian_monsoon.confidence).toBe('contested');
+    expect(direct.months[1].nodes.indian_summer_monsoon.value).toBe(-1);
+  });
+
+  it('the NAO leans negative in January to March, pending in December, out of play by April', () => {
+    expect(tl.months[6].nodes.nao.value).toBe(0);
+    expect(tl.months[6].nodes.nao.pendingLinkIds).toEqual(['el_nino_negative_nao']);
+    for (const i of [7, 8, 9]) expect(tl.months[i].nodes.nao.value, `month ${i}`).toBe(-1);
+    expect(tl.months[10].calendarMonth).toBe(4);
+    expect(tl.months[10].nodes.nao.value).toBe(0);
+  });
+
+  it('northern Europe turns cold through the NAO at two hops, rated probable, hollow under direct links', () => {
+    const m = tl.months[8];
+    expect(m.nodes.northern_europe_winter.value).toBe(-1);
+    expect(m.nodes.northern_europe_winter.viaLinkIds).toEqual(['negative_nao_northern_europe']);
+    expect(m.links.negative_nao_northern_europe).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    for (const dm of direct.months) expect(dm.nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
+  });
+
+  it('the dipole\'s feedback onto ENSO is never applied: the chosen driver holds its phase', () => {
+    for (const m of tl.months) {
+      expect(m.links.positive_iod_la_nina_next_year).toBeUndefined();
+      expect(m.nodes.enso.value).toBe(1);
+      expect(m.nodes.enso.viaLinkIds).toHaveLength(0);
+    }
+  });
+
+  it('under "established only" the second-hop links are ghosts and push nothing', () => {
+    const est = propagate(graph, { driverId: 'enso', phaseId: 'el_nino', startMonth: 6, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    expect(est.months[0].links.el_nino_positive_iod.status).toBe('ghost');
+    expect(est.months[0].nodes.iod.value).toBe(0);
+    expect(est.months[2].nodes.southeast_australia_rainfall.value).toBe(0);
+    expect(est.months[2].links.positive_iod_southeast_australia).toBeUndefined();
+  });
+});
+
+describe('acceptance: La Niña pushes the dipole negative and the NAO positive (contested)', () => {
+  const tl = runDeep('enso', 'la_nina', 6);
+  it('the dipole turns negative from June and southeast Australia turns wet through it', () => {
+    expect(tl.months[0].nodes.iod.value).toBe(-1);
+    expect(tl.months[0].nodes.iod.viaLinkIds).toEqual(['la_nina_negative_iod']);
+    expect(tl.months[2].nodes.southeast_australia_rainfall.value).toBe(1);
+    expect(tl.months[2].links.negative_iod_southeast_australia).toMatchObject({ depth: 2, confidence: 'probable' });
+  });
+  it('the NAO leans positive in late winter, and everything downstream of it is contested', () => {
+    expect(tl.months[7].nodes.nao.value).toBe(1);
+    expect(tl.months[7].nodes.nao.confidence).toBe('contested');
+    expect(tl.months[8].nodes.northern_europe_winter.value).toBe(1);
+    expect(tl.months[8].links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+  });
+});
+
+describe('acceptance: a positive dipole tips the Pacific toward La Niña a year on (contested)', () => {
+  const tl = runDeep('iod', 'positive', 6);
+  it('ENSO is untouched for ten months, then pushed to La Niña at month 11', () => {
+    for (const m of tl.months.slice(0, 11)) expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
+    expect(tl.months[11].nodes.enso.value).toBe(-1);
+    expect(tl.months[11].links.positive_iod_la_nina_next_year).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+  });
+  it('La Niña\'s all-year links then fire at two hops, contested, from month 11', () => {
+    expect(tl.months[10].nodes.central_pacific_islands.value).toBe(0);
+    expect(tl.months[11].nodes.central_pacific_islands.value).toBe(-1);
+    expect(tl.months[11].links.la_nina_central_pacific_islands).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+  });
+  it('La Niña\'s push back onto the dipole is skipped: the chosen driver holds its phase', () => {
+    for (const m of tl.months) {
+      expect(m.links.la_nina_negative_iod).toBeUndefined();
+      expect(m.nodes.iod.value).toBe(1);
+    }
+  });
+  it('with direct links only, ENSO is still pushed but nothing fires from it', () => {
+    const d = runDeep('iod', 'positive', 6, 1);
+    expect(d.months[11].nodes.enso.value).toBe(-1);
+    expect(d.months[11].nodes.central_pacific_islands.value).toBe(0);
+  });
+});
+
+describe('acceptance: driver-to-driver data', () => {
+  const drivers = graph.nodes.filter((n) => n.kind === 'driver');
+  const driverIds = new Set(drivers.map((d) => d.id));
+  const d2d = graph.links.filter((l) => driverIds.has(l.to));
+  it('every driver has phases valued +1, 0 and -1', () => {
+    for (const d of drivers) {
+      if (d.kind !== 'driver') continue;
+      expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
+    }
+  });
+  it('ships six driver-to-driver links, each with an evidence note and no self-loop', () => {
+    expect(d2d.map((l) => l.id).sort()).toEqual([
+      'el_nino_negative_nao', 'el_nino_positive_iod', 'la_nina_negative_iod', 'la_nina_positive_nao',
+      'negative_iod_el_nino_next_year', 'positive_iod_la_nina_next_year',
+    ]);
+    for (const l of d2d) {
+      expect(l.from).not.toBe(l.to);
+      expect(l.evidence_note, `${l.id} needs an evidence note`).toBeTruthy();
+    }
+  });
+  it('a neutral phase applies nothing at full depth either', () => {
+    for (const d of drivers) {
+      const tl = runDeep(d.id, 'neutral', 6);
+      for (const m of tl.months) {
+        for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
+        expect(Object.keys(m.links)).toHaveLength(0);
+      }
     }
   });
 });

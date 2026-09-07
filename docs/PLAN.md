@@ -159,15 +159,18 @@ A list of nodes under a top-level `nodes:` key. Each node:
     - id: el_nino
       label: El Niño
       color: "#d7301f"
-      summary: >               # what this phase is, plain language
+      value: 1                 # where the phase sits on the driver's own axis (M10):
+      summary: >               #   a link into the driver with effect +1 pushes it here
         ...
     - id: neutral
       label: Neutral
       color: "#999999"
+      value: 0
       summary: ...
     - id: la_nina
       label: La Niña
       color: "#2b8cbe"
+      value: -1
       summary: ...
   # outcomes only:
   axis: wet_dry                # wet_dry | warm_cool | active_quiet | high_low
@@ -182,6 +185,7 @@ A list of nodes under a top-level `nodes:` key. Each node:
 
 Rules:
 - `kind: driver` nodes must have `phases` and must not have `axis`/`labels`.
+  Phase values are unique within a driver and one phase has value 0.
 - `kind: outcome` nodes must have `axis` and `labels` and must not have `phases`.
 - `lat` in [-90, 90], `lon` in [-180, 180].
 - Ids are permanent. If a node needs renaming, change `name`, never `id`.
@@ -214,9 +218,11 @@ sources:
 
 Rules:
 - `from` must be a `driver` node; `when` must be one of its phase ids.
-- `to` must be an existing node. Version 1: `to` is always an `outcome`.
-  (Driver-to-driver links, e.g. ENSO to the Indian Ocean Dipole, arrive in
-  version 2 together with the loop-safety rules in section 4.)
+- `to` must be an existing node: an `outcome` (version 1) or, since M10,
+  another `driver`. For a driver target `effect` names the phase to push it
+  into (the phase whose `value` equals the effect), the target must have such
+  a phase, and a driver cannot push itself. Loop safety is the engine's job
+  (section 4).
 - `lag_months[0] <= lag_months[1]`, both in [0, 24].
 - `season` values are integers 1–12, no duplicates.
 - Every link needs `confidence`, `mechanism`, `caveat`, and at least one source key
@@ -279,9 +285,34 @@ Semantics (implement exactly this; do not improvise):
    does not need a rewrite.)
 5. Node confidence is the *lowest* confidence among the links that produced
    its state (order: established > probable > contested).
-6. Depth is bounded to 1 hop in version 1 (driver → outcome). Version 2 adds
-   a `maxDepth` parameter, a rule that each link fires at most once per
-   scenario, and one confidence-tier downgrade per hop.
+6. Depth is bounded to 1 hop by default (driver → outcome, version 1). The
+   `maxDepth` scenario field (M10) lets links run through drivers:
+   - A link into a driver pushes it like any other target (sum, clamp,
+     conflict flag). A non-zero value puts the driver into the phase with
+     that `value`; 0 (conflicting pushes) leaves it in no phase.
+   - At each hop the drivers pushed into a phase at the previous hop fire
+     their own links for that phase, up to `maxDepth` hops, breadth first.
+   - Each link fires once: a driver's onset in a phase is the first month
+     index it is pushed there, fixed for the rest of the scenario, and its
+     links count their lag from that onset. A pushed driver holds its phase
+     only in months where the pushing link is applied; outside them its
+     links do not fire (they are not reported at all, not even as pending).
+   - Loop guard: a link into a driver that already holds a phase this month
+     (the scenario driver, or a driver pushed at a shallower hop) is skipped
+     and not reported. Feedback onto the scenario driver is therefore told
+     on its card, never drawn.
+   - Confidence: a link fired at hop *d* is reported one tier lower per hop
+     beyond the first (`downgrade`, floored at contested) and never above the
+     confidence of the driver state it starts from. Rule 5 then applies to
+     the effective confidences. The `minConfidence` field ghosts links whose
+     effective confidence is below the tier: they are reported with status
+     `ghost`, apply nothing and push nothing.
+   - Sums accumulate across hops within a month: a first-hop and a
+     second-hop push on the same node add up and may conflict.
+   - Per-link status is reported in `MonthState.links[id]` as
+     `{ status: applied | pending | ghost, confidence, depth }`.
+   The app runs with `maxDepth` 3 (every driver can appear once) when
+   "Follow links through other drivers" is on, and 1 when it is off.
 7. The function is pure. No Date, no randomness, no DOM.
 
 Unit tests must cover: lag gating, season gating including year wrap
@@ -472,6 +503,41 @@ is fully green.
   interplay in the 2009–10 story is told in text, not drawn), multi-driver
   scenarios with conflict flags, compare mode.
 
+### M10 — Driver-to-driver links (signed off 2026-09-07)
+- Schema: every driver phase carries `value` (+1 / 0 / −1); a link's `to`
+  may be a driver, and its `effect` then names the phase to push it into.
+  The validator checks the phase exists, forbids self-pushes, and checks
+  story steps through one pushed driver.
+- Data: six cited links. El Niño → positive dipole and La Niña → negative
+  dipole (probable, June–November, asymmetric in the evidence notes);
+  El Niño → negative NAO (probable, January–March, with the caveat that the
+  strongest events did not follow) and La Niña → positive NAO (contested);
+  negative dipole → El Niño the following year and positive dipole → La Niña
+  (both contested, lag 11–14 months, so they only show at the tail of the
+  timeline). One story: the 1997 El Niño seen from the Indian Ocean, with
+  the monsoon tug-of-war and the winter where the chain broke.
+- Engine: section 4 rule 6 as written above: `maxDepth`, `minConfidence`,
+  onset-based lag, loop guard, per-hop downgrade, `MonthState.links`.
+  Sums accumulate across hops (found by the acceptance test: the monsoon
+  gets El Niño's −1 and the dipole's +1 and must read as conflicting, 0).
+- Rendering: arrows are drawn from the driver that fires them; an arrow
+  into a driver is coloured with the phase it pushes toward; a pushed driver
+  gets its phase colour with a dark dashed ring (legend row added), or a
+  faded marker when its push is out of season; line style follows the
+  effective confidence. The card for a pushed driver says who pushed it and
+  lists the pushing links; an outcome card says "through <driver>" and
+  explains the downgrade; the scenario driver's card lists incoming links
+  from other drivers under "Feedback from other drivers", not drawn.
+- Controls: "Follow links through other drivers" checkbox (on by default);
+  the confidence filter now ghosts by effective confidence; the print
+  caption names the setting.
+- Tests: engine unit block (push, depth, onset lag, downgrade, cap, loop
+  guard, conflict cancels a push, ghosts), acceptance blocks for El Niño
+  and La Niña chains, the dipole → La Niña tail, and the data; stories test
+  runs at depth 3 and accepts conflicting focus nodes.
+- Not in M10 (later v2 items): multi-driver scenarios (two chosen phases at
+  once), season dial, compare mode.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -541,7 +607,7 @@ writing mechanism text):
 | Hurdle | Answer |
 |---|---|
 | Effects are tendencies, not certainties | Confidence tiers in data, line-style encoding, caveat on every card, permanent disclaimer |
-| Feedback loops between drivers (v2) | Bounded depth, each link fires once, confidence downgrade per hop, loops explained in text not animated |
+| Feedback loops between drivers (v2) | Bounded depth, each link fires once, confidence downgrade per hop, loops explained in text not animated (done in M10: the scenario driver's card lists incoming links under "Feedback from other drivers") |
 | Two drivers pushing one region opposite ways (v2) | Sum-and-clamp with a "conflicting" flag; the flag is a teaching point |
 | Students trust a polished map too much | Disclaimer, caveats, and the contested tier shown rather than hidden |
 | Pacific split on standard maps | Rotated projection from day one |
@@ -553,8 +619,8 @@ writing mechanism text):
 ## 10. Roadmap beyond version 1 (do not start without sign-off)
 
 - **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation
-  (done, M9) as drivers; driver-to-driver links; season dial; compare mode
-  (two maps side by side); multi-driver scenarios with conflict flags;
-  spreadsheet-to-YAML importer if outside contributors join.
+  (done, M9) as drivers; driver-to-driver links (done, M10); season dial;
+  compare mode (two maps side by side); multi-driver scenarios with
+  conflict flags; spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

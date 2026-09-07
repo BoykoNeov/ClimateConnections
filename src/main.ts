@@ -1,7 +1,7 @@
 import './style.css';
-import type { DriverNode, Graph, Link, Scenario, Timeline } from '../src/types';
-import { CONFIDENCE_ORDER, MONTH_NAMES } from './types';
-import { activeLinks, propagate } from './engine/propagate';
+import type { Confidence, DriverNode, Graph, Scenario, Timeline } from '../src/types';
+import { MONTH_NAMES } from './types';
+import { propagate } from './engine/propagate';
 import { MapView } from './ui/map';
 import { TimelineView } from './ui/timeline';
 import { ControlsView, type ConfidenceFilter, type ControlState } from './ui/controls';
@@ -9,7 +9,10 @@ import { renderCard } from './ui/card';
 import { StoryView } from './ui/story';
 
 const HORIZON = 12;
-const FILTER_MIN: Record<ConfidenceFilter, number> = { all: 1, probable: 2, established: 3 };
+const FILTER_MIN: Record<ConfidenceFilter, Confidence> = { all: 'contested', probable: 'probable', established: 'established' };
+/** Hops to follow when "Follow links through other drivers" is on: enough
+ *  for every driver to appear once (a driver is never pushed twice). */
+const MAX_DEPTH = 3;
 
 async function main(): Promise<void> {
   const res = await fetch(`${import.meta.env.BASE_URL}data/graph.json`);
@@ -23,12 +26,11 @@ async function main(): Promise<void> {
     return d;
   };
 
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, chain: true };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
   let timeline: Timeline;
-  let ghostLinks: Link[] = [];
   let prevApplied = new Set<string>();
 
   const mapEl = document.getElementById('map-container')!;
@@ -42,11 +44,11 @@ async function main(): Promise<void> {
   const story = new StoryView(document.getElementById('story')!, new Map(graph.sources.map((s) => [s.key, s])));
 
   function recompute(): void {
-    const scenario: Scenario = { driverId: controls.driverId, phaseId: controls.phaseId, startMonth: controls.startMonth, horizonMonths: HORIZON };
-    const min = FILTER_MIN[controls.filter];
-    const visible: Graph = { ...graph, links: graph.links.filter((l) => CONFIDENCE_ORDER[l.confidence] >= min) };
-    timeline = propagate(visible, scenario);
-    ghostLinks = activeLinks(graph, scenario).filter((l) => CONFIDENCE_ORDER[l.confidence] < min);
+    const scenario: Scenario = {
+      driverId: controls.driverId, phaseId: controls.phaseId, startMonth: controls.startMonth, horizonMonths: HORIZON,
+      maxDepth: controls.chain ? MAX_DEPTH : 1, minConfidence: FILTER_MIN[controls.filter],
+    };
+    timeline = propagate(graph, scenario);
     prevApplied = new Set();
   }
 
@@ -58,7 +60,7 @@ async function main(): Promise<void> {
     prevApplied = applied;
     const driver = driverById(controls.driverId);
     const phase = driver.phases.find((p) => p.id === controls.phaseId)!;
-    map.render(month, { driverId: driver.id, phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
+    map.render(month, { driverId: driver.id, phaseColor: phase.color, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
     monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     captionEl.textContent = printCaption(driver, phase.label, month.index, month.calendarMonth);
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -127,7 +129,8 @@ async function main(): Promise<void> {
     const filterText = { all: 'all connections, including contested ones', probable: 'probable and established connections', established: 'established connections only' }[controls.filter];
     const driverName = driver.name.replace(/\s*\(.*\)$/, '');
     return `${driverName}: ${phaseLabel}, event beginning in ${MONTH_NAMES[controls.startMonth - 1]}. ` +
-      `Shown: ${MONTH_NAMES[calendarMonth - 1]}, month ${index} after onset. Showing ${filterText}. ` +
+      `Shown: ${MONTH_NAMES[calendarMonth - 1]}, month ${index} after onset. Showing ${filterText}` +
+      `${controls.chain ? ', following links through other drivers' : ', direct links only'}. ` +
       `Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 

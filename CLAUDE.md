@@ -6,9 +6,10 @@ schema, engine semantics, and milestones.
 
 ## What this project is
 A static, browser-based teaching tool that draws known climate
-teleconnections (ENSO, since M8 the Indian Ocean Dipole, and since M9 the
-North Atlantic Oscillation) on a Pacific-centered world map and animates
-their arrival over a twelve-month timeline. It is a hand-curated,
+teleconnections (ENSO, since M8 the Indian Ocean Dipole, since M9 the
+North Atlantic Oscillation, and since M10 the links between those drivers)
+on a Pacific-centered world map and animates their arrival over a
+twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
 one.
 
@@ -20,12 +21,14 @@ one.
   has a "How sure are we?" section, the disclaimer is always visible. Do not
   hide contested links; that is the point of showing them.
 - The engine (`src/engine/`) is pure and DOM-free. Three-level states only.
+  Driver-to-driver links follow the loop rules in `docs/PLAN.md` §4 rule 6
+  (fixed onset, loop guard, one tier down per hop); do not relax them.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
   sign-off; the Indian Ocean Dipole (M8) and the North Atlantic Oscillation
-  (M9) were signed off on 2026-09-07. Do not start another version 2 item
-  without sign-off.
+  (M9) and driver-to-driver links (M10) were signed off on 2026-09-07. Do
+  not start another version 2 item without sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow
