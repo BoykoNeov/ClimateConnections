@@ -23,6 +23,12 @@ npm run build:data   # validate data/*.yaml -> public/data/graph.json
 npm run dev          # open the printed URL
 ```
 
+## Add a story
+Stories are guided walkthroughs in `data/stories.yaml`: a scenario plus a
+list of steps, each with a month, a node to highlight, a short text and a
+source. The validator refuses a step that points at a node the scenario does
+not affect at that month. See `docs/DATA_FORMAT.md`.
+
 ## Add or change a climate link
 1. Edit `data/links.yaml` (and `data/nodes.yaml` if the region is new).
 2. Every link needs a source key that resolves in the `sources` list, a

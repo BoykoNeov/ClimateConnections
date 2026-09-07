@@ -849,3 +849,12 @@ sources:
   - key: wang_2000
     citation: "Wang, B., Wu, R., & Fu, X. (2000). Pacific–East Asian teleconnection: How does ENSO affect East Asian climate? Journal of Climate, 13(9), 1517–1536."
     url: https://doi.org/10.1175/1520-0442(2000)013<1517:PEATHD>2.0.CO;2
+  - key: mcphaden_1999
+    citation: "McPhaden, M. J. (1999). Genesis and evolution of the 1997–98 El Niño. Science, 283(5404), 950–954."
+    url: https://doi.org/10.1126/science.283.5404.950
+  - key: bom_scs24
+    citation: "Australian Bureau of Meteorology (2011). Special Climate Statement 24: Frequent heavy rain events in late 2010/early 2011 lead to widespread flooding across eastern Australia."
+    url: http://www.bom.gov.au/climate/current/statements/scs24.pdf
+  - key: boening_2012
+    citation: "Boening, C., Willis, J. K., Landerer, F. W., Nerem, R. S., & Fasullo, J. (2012). The 2011 La Niña: So strong, the oceans fell. Geophysical Research Letters, 39(19), L19602."
+    url: https://doi.org/10.1029/2012GL053055

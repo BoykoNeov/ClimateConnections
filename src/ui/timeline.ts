@@ -65,6 +65,11 @@ export class TimelineView {
     this.onChange(index);
   }
 
+  /** Move the scrubber without firing onChange (caller redraws). */
+  setIndex(index: number): void {
+    this.input.value = String(index);
+  }
+
   play(): void {
     if (this.index >= this.horizon) this.set(0);
     this.button.textContent = '❚❚ Pause';

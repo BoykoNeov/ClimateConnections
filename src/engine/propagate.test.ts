@@ -17,6 +17,7 @@ function graphWith(links: Partial<Link>[]): Graph {
       confidence: 'established', mechanism: '', caveat: '', sources: ['s'], ...l,
     })),
     sources: [{ key: 's', citation: 'x' }],
+    stories: [],
   };
 }
 

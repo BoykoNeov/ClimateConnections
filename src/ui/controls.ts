@@ -1,6 +1,6 @@
 // Left panel: phase buttons, start month, confidence filter, legend.
 
-import type { DriverNode } from '../types';
+import type { DriverNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
 import { renderLegend } from './legend';
 
@@ -15,10 +15,36 @@ export interface ControlState {
 
 export class ControlsView {
   private phaseButtons = new Map<string, HTMLButtonElement>();
+  private monthSelect: HTMLSelectElement;
+  private storySelect: HTMLSelectElement;
   onChange: (s: ControlState) => void = () => {};
+  /** a story was picked from the dropdown (null = "none") */
+  onStory: (storyId: string | null) => void = () => {};
 
-  constructor(container: HTMLElement, driver: DriverNode, private state: ControlState) {
+  constructor(container: HTMLElement, driver: DriverNode, stories: Story[], private state: ControlState) {
     container.innerHTML = '';
+
+    const hs = document.createElement('h2');
+    hs.textContent = 'Stories';
+    container.append(hs);
+    this.storySelect = document.createElement('select');
+    this.storySelect.setAttribute('aria-label', 'Play a story');
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = 'Pick a guided walkthrough…';
+    this.storySelect.append(none);
+    for (const s of stories) {
+      const o = document.createElement('option');
+      o.value = s.id;
+      o.textContent = s.title;
+      this.storySelect.append(o);
+    }
+    this.storySelect.addEventListener('change', () => this.onStory(this.storySelect.value || null));
+    container.append(this.storySelect);
+    const hintS = document.createElement('p');
+    hintS.className = 'hint';
+    hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
+    container.append(hintS);
 
     const h1 = document.createElement('h2');
     h1.textContent = driver.name.replace(/\s*\(.*\)$/, '');
@@ -49,6 +75,7 @@ export class ControlsView {
     month.value = String(state.startMonth);
     month.addEventListener('change', () => this.update({ startMonth: Number(month.value) }));
     container.append(month);
+    this.monthSelect = month;
     const hint = document.createElement('p');
     hint.className = 'hint';
     hint.textContent = 'El Niño and La Niña events usually start to develop between May and July.';
@@ -102,7 +129,19 @@ export class ControlsView {
     this.onChange(this.state);
   }
 
+  /** Reflect a state set from outside (a story) without firing onChange. */
+  setState(patch: Partial<ControlState>): void {
+    this.state = { ...this.state, ...patch };
+    this.reflect();
+  }
+
+  /** Reflect which story is playing (null = none) without firing onStory. */
+  setStory(storyId: string | null): void {
+    this.storySelect.value = storyId ?? '';
+  }
+
   private reflect(): void {
     for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === this.state.phaseId));
+    this.monthSelect.value = String(this.state.startMonth);
   }
 }

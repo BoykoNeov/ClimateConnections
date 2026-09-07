@@ -97,6 +97,11 @@ html, body { margin: 0; height: 100%; }
 .node.hollow circle { fill: #ffffff; }
 .node.pending circle { fill-opacity: 0.25; }
 .node.selected circle { stroke: var(--ink); stroke-width: 3; }
+.node.focus circle { animation: focus-pulse 1.3s ease-in-out infinite; }
+@keyframes focus-pulse {
+  0%, 100% { stroke-width: 3; stroke-opacity: 1; }
+  50% { stroke-width: 9; stroke-opacity: 0.45; }
+}
 .node.conflicting circle { stroke-dasharray: 2 2; }
 .node text {
   font-size: 10.5px; fill: var(--ink); paint-order: stroke; stroke: #ffffff; stroke-width: 3px;
@@ -104,15 +109,36 @@ html, body { margin: 0; height: 100%; }
 }
 .node.driver text { font-size: 12px; font-weight: 600; }
 
-#card {
+#card-panel {
   grid-area: card;
-  padding: 14px 16px;
   border-left: 1px solid var(--line);
   background: var(--panel);
   overflow-y: auto;
   font-size: 13.5px;
   line-height: 1.45;
 }
+#card { padding: 14px 16px; }
+
+#story {
+  padding: 12px 16px 14px;
+  background: #eef4fa;
+  border-bottom: 3px solid var(--accent);
+}
+#story h3 { margin: 4px 0 2px; font-size: 16px; }
+.story-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.story-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 600; }
+.story-exit { font: inherit; font-size: 11px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); cursor: pointer; color: var(--muted); }
+.story-exit:hover { color: var(--ink); border-color: var(--ink); }
+.story-intro { font-style: italic; color: var(--muted); margin: 6px 0; }
+.story-when { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); }
+.story-text { margin: 6px 0 8px; font-size: 14px; }
+.story-nav { display: flex; gap: 8px; margin-top: 8px; }
+.story-nav button {
+  flex: 1; font: inherit; padding: 6px 10px; border: 1px solid var(--ink); border-radius: 6px;
+  background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.story-nav button[data-act="next"] { background: var(--ink); color: #ffffff; }
+.story-nav button:disabled { opacity: 0.4; cursor: default; }
 #card h3 { margin: 0 0 2px; font-size: 17px; }
 #card .region { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
 #card p { margin: 6px 0; }
@@ -150,5 +176,7 @@ html, body { margin: 0; height: 100%; }
 @media print {
   #controls, #timeline, #header #month-display { display: none; }
   #app { grid-template-columns: 1fr 340px; grid-template-areas: "header header" "map card"; height: auto; }
+  .story-nav, .story-exit { display: none; }
+  .node.focus circle { animation: none; }
   #map-container { height: 60vh; }
 }

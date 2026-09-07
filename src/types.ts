@@ -63,10 +63,32 @@ export interface Source {
   url?: string;
 }
 
+export interface StoryStep {
+  /** month index on the timeline to jump to */
+  month: number;
+  /** node id to highlight and open in the card */
+  focus: string;
+  text: string;
+  sources: string[];
+}
+
+export interface Story {
+  id: string;
+  title: string;
+  intro: string;
+  driver: string;
+  phase: string;
+  start_month: number;
+  /** calendar year of month index 0, for stories about a real event */
+  start_year?: number;
+  steps: StoryStep[];
+}
+
 export interface Graph {
   nodes: GraphNode[];
   links: Link[];
   sources: Source[];
+  stories: Story[];
 }
 
 // ---------------------------------------------------------------- engine

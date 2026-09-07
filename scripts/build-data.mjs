@@ -1,4 +1,4 @@
-// Validates data/nodes.yaml + data/links.yaml and writes public/data/graph.json.
+// Validates data/nodes.yaml, data/links.yaml and data/stories.yaml and writes public/data/graph.json.
 // Fails loudly on any schema error, unknown id, or missing source.
 // Run: npm run build:data
 
@@ -73,8 +73,30 @@ const Source = z.object({
   url: z.string().url().optional(),
 }).strict();
 
+// The app's timeline is 12 months long (HORIZON in src/main.ts).
+const HORIZON = 12;
+
+const StoryStep = z.object({
+  month: z.number().int().min(0).max(HORIZON),
+  focus: Id,
+  text: z.string().min(40),
+  sources: z.array(Id).min(1, 'every story step needs at least one source'),
+}).strict();
+
+const Story = z.object({
+  id: Id,
+  title: z.string().min(3),
+  intro: z.string().min(20),
+  driver: Id,
+  phase: Id,
+  start_month: Month,
+  start_year: z.number().int().min(1800).max(2100).optional(),
+  steps: z.array(StoryStep).min(3),
+}).strict();
+
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
+const StoriesFile = z.object({ stories: z.array(Story).min(1) }).strict();
 
 // ---------------------------------------------------------------- load + validate
 const errors = [];
@@ -92,8 +114,9 @@ function parse(schema, data, label) {
 
 const nodesFile = parse(NodesFile, read('data/nodes.yaml'), 'nodes.yaml');
 const linksFile = parse(LinksFile, read('data/links.yaml'), 'links.yaml');
+const storiesFile = parse(StoriesFile, read('data/stories.yaml'), 'stories.yaml');
 
-if (nodesFile && linksFile) {
+if (nodesFile && linksFile && storiesFile) {
   const nodes = new Map();
   for (const n of nodesFile.nodes) {
     if (nodes.has(n.id)) fail(`nodes.yaml: duplicate node id "${n.id}"`);
@@ -140,18 +163,52 @@ if (nodesFile && linksFile) {
     if (dup.has(key)) fail(`links.yaml: two links from ${l.from}/${l.when} to ${l.to} (${l.id})`);
     dup.add(key);
   }
+  // ---- stories: scenario must exist, every step must point at a node that
+  // is genuinely affected in that month (same rule as the engine: past the
+  // minimum lag and in season), and every step must cite a source.
+  const calendarMonth = (start, index) => ((start - 1 + index) % 12) + 1;
+  const storyIds = new Set();
+  for (const s of storiesFile.stories) {
+    if (storyIds.has(s.id)) fail(`stories.yaml: duplicate story id "${s.id}"`);
+    storyIds.add(s.id);
+    const driver = nodes.get(s.driver);
+    if (!driver) { fail(`story "${s.id}": unknown driver "${s.driver}"`); continue; }
+    if (driver.kind !== 'driver') { fail(`story "${s.id}": "${s.driver}" is not a driver`); continue; }
+    if (!driver.phases.some((p) => p.id === s.phase)) fail(`story "${s.id}": "${s.phase}" is not a phase of "${s.driver}"`);
+    let lastMonth = -1;
+    s.steps.forEach((step, i) => {
+      const where = `story "${s.id}" step ${i + 1}`;
+      if (step.month < lastMonth) fail(`${where}: month ${step.month} goes backwards (previous step was month ${lastMonth})`);
+      lastMonth = step.month;
+      const focus = nodes.get(step.focus);
+      if (!focus) { fail(`${where}: unknown focus node "${step.focus}"`); return; }
+      if (focus.kind === 'outcome') {
+        const cal = calendarMonth(s.start_month, step.month);
+        const active = linksFile.links.some((l) =>
+          l.from === s.driver && l.when === s.phase && l.to === step.focus &&
+          step.month >= l.lag_months[0] && (l.season.length === 0 || l.season.includes(cal)));
+        if (!active) fail(`${where}: "${step.focus}" is not affected by ${s.driver}/${s.phase} at month ${step.month} (calendar month ${cal}); the marker would be hollow`);
+      }
+      for (const k of step.sources) {
+        if (!sources.has(k)) fail(`${where}: unknown source "${k}"`);
+        usedSources.add(k);
+      }
+    });
+  }
+
   for (const k of sources.keys()) if (!usedSources.has(k)) warnings.push(`source "${k}" is never cited`);
 
   if (errors.length === 0) {
     const graph = {
-      generatedFrom: ['data/nodes.yaml', 'data/links.yaml'],
+      generatedFrom: ['data/nodes.yaml', 'data/links.yaml', 'data/stories.yaml'],
       nodes: nodesFile.nodes,
       links: linksFile.links,
       sources: linksFile.sources,
+      stories: storiesFile.stories,
     };
     mkdirSync(join(root, 'public/data'), { recursive: true });
     writeFileSync(join(root, 'public/data/graph.json'), JSON.stringify(graph, null, 2) + '\n');
-    console.log(`graph.json: ${graph.nodes.length} nodes, ${graph.links.length} links, ${graph.sources.length} sources`);
+    console.log(`graph.json: ${graph.nodes.length} nodes, ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories`);
   }
 }
 

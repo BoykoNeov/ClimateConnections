@@ -1,7 +1,8 @@
 {
   "generatedFrom": [
     "data/nodes.yaml",
-    "data/links.yaml"
+    "data/links.yaml",
+    "data/stories.yaml"
   ],
   "nodes": [
     {
@@ -2029,6 +2030,239 @@
       "key": "wang_2000",
       "citation": "Wang, B., Wu, R., & Fu, X. (2000). Pacific–East Asian teleconnection: How does ENSO affect East Asian climate? Journal of Climate, 13(9), 1517–1536.",
       "url": "https://doi.org/10.1175/1520-0442(2000)013<1517:PEATHD>2.0.CO;2"
+    },
+    {
+      "key": "mcphaden_1999",
+      "citation": "McPhaden, M. J. (1999). Genesis and evolution of the 1997–98 El Niño. Science, 283(5404), 950–954.",
+      "url": "https://doi.org/10.1126/science.283.5404.950"
+    },
+    {
+      "key": "bom_scs24",
+      "citation": "Australian Bureau of Meteorology (2011). Special Climate Statement 24: Frequent heavy rain events in late 2010/early 2011 lead to widespread flooding across eastern Australia.",
+      "url": "http://www.bom.gov.au/climate/current/statements/scs24.pdf"
+    },
+    {
+      "key": "boening_2012",
+      "citation": "Boening, C., Willis, J. K., Landerer, F. W., Nerem, R. S., & Fasullo, J. (2012). The 2011 La Niña: So strong, the oceans fell. Geophysical Research Letters, 39(19), L19602.",
+      "url": "https://doi.org/10.1029/2012GL053055"
+    }
+  ],
+  "stories": [
+    {
+      "id": "el_nino_1997_98",
+      "title": "The 1997–98 El Niño",
+      "intro": "The strongest El Niño of the twentieth century. Follow it month by month and compare what the map expects with what actually happened, including the places where the real event broke the pattern.\n",
+      "driver": "enso",
+      "phase": "el_nino",
+      "start_month": 5,
+      "start_year": 1997,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "enso",
+          "text": "In spring 1997 the trade winds along the equator weakened and warm water spread east across the Pacific. By May the sea surface off Peru was already far warmer than normal, and by the end of the year the warming was the largest ever measured. Everything that follows on this map starts from this one change.\n",
+          "sources": [
+            "mcphaden_1999"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "indonesia_rainfall",
+          "text": "With the warm water and the rising air moved east, Indonesia sat under sinking, dry air. The rains failed across much of the region. Fires lit to clear land burned out of control in the dried-out peat and forest, and smoke haze covered Southeast Asia for months.\n",
+          "sources": [
+            "field_2009"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "atlantic_hurricanes",
+          "text": "Strong winds high over the Atlantic, set up by El Niño, tore developing storms apart. The 1997 Atlantic hurricane season was well below average, with fewer storms than usual and not a single named storm during August, normally the start of the peak season.\n",
+          "sources": [
+            "bell_2014",
+            "gray_1984"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "indian_summer_monsoon",
+          "text": "Here the pattern broke. A strong El Niño usually means a weak Indian monsoon, and 1997 was expected to bring drought. Instead, monsoon rain over India came in close to normal. Scientists have offered several explanations, including where in the Pacific the warmest water sat. The map shows the tendency, not what happened this time.\n",
+          "sources": [
+            "kumar_1999"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "east_australia_rainfall",
+          "text": "Eastern Australia was drier than usual through the second half of 1997, as expected, though the drought was less severe than in the big El Niño of 1982–83. Australian forecasters point to 1997 as a reminder that a strong event in the Pacific does not guarantee a strong effect on land.\n",
+          "sources": [
+            "bom_enso_australia"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "east_africa_short_rains",
+          "text": "In East Africa the effect ran the other way. Warm water also spread across the western Indian Ocean, and the October–December \"short rains\" turned into months of extreme rainfall. Kenya, Somalia and Ethiopia saw some of the worst flooding on record, with roads and villages washed away.\n",
+          "sources": [
+            "indeje_2000"
+          ]
+        },
+        {
+          "month": 7,
+          "focus": "global_mean_temperature",
+          "text": "December 1997 was the peak. Heat stored in the tropical Pacific was being released to the atmosphere, and with it the whole planet warmed. 1998 became the warmest year in the instrumental record at the time: an El Niño spike on top of the long-term warming trend.\n",
+          "sources": [
+            "trenberth_2002"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "peru_fishery",
+          "text": "Off Peru the warm water sat like a lid on the ocean, shutting off the cold, nutrient-rich water that normally rises from below. Plankton dwindled, the anchoveta moved away or died, and the catch collapsed, as it had in the 1982–83 event.\n",
+          "sources": [
+            "barber_chavez_1983"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "peru_coast_rainfall",
+          "text": "The normally bone-dry coast of Peru and Ecuador had a summer of torrential rain. Rivers that are usually dry flooded, mudslides cut the Pan-American Highway, and thousands of homes were destroyed. This is one of the most reliable El Niño effects, and 1997–98 was among the wettest cases.\n",
+          "sources": [
+            "lagos_2008"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "california_winter",
+          "text": "California's link to El Niño is marked as contested on this map, because in many events little happens. 1997–98 was the exception that made the link famous: a string of winter storms brought heavy rain, floods and coastal damage. Studies since then suggest the effect is real mainly in the strongest events.\n",
+          "sources": [
+            "jong_2016"
+          ]
+        },
+        {
+          "month": 10,
+          "focus": "coral_bleaching_central_pacific",
+          "text": "Months of unusually warm water pushed corals past their limit. 1998 saw the first mass coral bleaching recorded across the whole tropics, with severe reef death in the Indian Ocean and parts of the Pacific.\n",
+          "sources": [
+            "eakin_2019"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "enso",
+          "text": "By May 1998 the warm water was gone, and the Pacific swung quickly into a La Niña that lasted into 2000. The twelve months of this map are a snapshot of the classic El Niño year; the return swing is the next story.\n",
+          "sources": [
+            "mcphaden_1999"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "la_nina_southern_hemisphere",
+      "title": "A La Niña year in the Southern Hemisphere",
+      "intro": "La Niña is the cool sister of El Niño, and many of its effects are the mirror image. This walkthrough follows a typical La Niña year south of the equator, where the effects are among the strongest, and stops at the places where the mirror does not quite hold.\n",
+      "driver": "enso",
+      "phase": "la_nina",
+      "start_month": 6,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "enso",
+          "text": "The trade winds strengthen, piling warm water up in the far western Pacific and drawing cold, deep water to the surface off South America. Rising air and rain concentrate over Indonesia and northern Australia. Notice that some places with a solid El Niño arrow get a dashed La Niña arrow: the science is less symmetric than the names suggest.\n",
+          "sources": [
+            "noaa_climate_gov_enso"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "indonesia_rainfall",
+          "text": "With the warm pool close by, Indonesia and the Maritime Continent get more rain than usual from the very start of the event. Flooding is the typical hazard, the opposite of the El Niño fire season.\n",
+          "sources": [
+            "ropelewski_halpert_1989"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "east_australia_rainfall",
+          "text": "Eastern Australia is the textbook La Niña region: wetter winters and springs, more tropical cyclones, higher flood risk. The 2010–11 La Niña brought one of the wettest springs on record and widespread flooding in Queensland, including the city of Brisbane.\n",
+          "sources": [
+            "bom_enso_australia",
+            "bom_scs24"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "central_chile_winter",
+          "text": "On the other side of the Pacific, central Chile tends to have a dry winter. The storm track that would bring rain to Santiago stays further south. The link is rated probable: it shows up in most, not all, La Niña winters.\n",
+          "sources": [
+            "montecinos_aceituno_2003"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "east_africa_short_rains",
+          "text": "Near the equator in East Africa the October–December \"short rains\" tend to fail. The 2010–11 La Niña coincided with severe drought in Somalia and northern Kenya, though that drought had other causes as well. The map shows one contributing tendency, not the whole explanation.\n",
+          "sources": [
+            "indeje_2000"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "southeast_south_america",
+          "text": "Spring in Uruguay, southern Brazil and the Argentine pampas tends to be drier during La Niña, the reverse of the El Niño floods. Farmers in the region watch the Pacific closely for exactly this reason.\n",
+          "sources": [
+            "grimm_2000"
+          ]
+        },
+        {
+          "month": 7,
+          "focus": "southern_africa_summer",
+          "text": "The summer rainy season over South Africa, Zimbabwe and Mozambique tends to be wetter than normal, sometimes with damaging floods. The effect is rated probable: the Indian Ocean has a say too, and the relationship has not held in every event.\n",
+          "sources": [
+            "lindesay_1988"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "peru_coast_rainfall",
+          "text": "The coast of Peru and Ecuador stays cool and dry, its usual state made a little stronger. Where El Niño brought floods, La Niña brings nothing unusual to the desert, which is why this link is drawn as probable rather than established: the change is subtle.\n",
+          "sources": [
+            "lagos_2008"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "peru_fishery",
+          "text": "Offshore, the stronger upwelling of cold, nutrient-rich water feeds one of the richest fisheries on Earth. Anchoveta catches tend to be good in La Niña years, though fishing quotas and the stock's own history matter as much as the ocean does.\n",
+          "sources": [
+            "barber_chavez_1983"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "northeast_brazil",
+          "text": "The rainy season in Northeast Brazil, February to May, tends to be wetter. This is one of the longest-lagged links on the map: the effect arrives most of a year after the Pacific first cooled.\n",
+          "sources": [
+            "hastenrath_heller_1977"
+          ]
+        },
+        {
+          "month": 10,
+          "focus": "global_mean_temperature",
+          "text": "With the Pacific storing heat rather than releasing it, the whole planet runs slightly cooler for a year or so. The strong 2010–11 La Niña was even measurable in sea level: so much rain fell on land, especially in Australia, that global sea level briefly dropped.\n",
+          "sources": [
+            "boening_2012",
+            "trenberth_2002"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "enso",
+          "text": "La Niña events often last longer than El Niño and frequently return for a second year, so the twelve months shown here can repeat. Markers that stay hollow in this scenario have no La Niña link in the literature collected here. That is a real gap, not an oversight.\n",
+          "sources": [
+            "noaa_climate_gov_enso"
+          ]
+        }
+      ]
     }
   ]
 }

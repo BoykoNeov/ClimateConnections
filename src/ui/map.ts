@@ -30,6 +30,8 @@ export interface RenderOptions {
   /** link ids that first became applied this month (animate) */
   arrivals: Set<string>;
   selectedNodeId: string | null;
+  /** node a playing story is pointing at (pulsing ring) */
+  focusNodeId: string | null;
   /** draw each node's rough affected area under the arrows */
   showAreas: boolean;
 }
@@ -267,6 +269,7 @@ export class MapView {
           if (st.conflicting) cls.push('conflicting');
         }
         if (opts.selectedNodeId === d.id) cls.push('selected');
+        if (opts.focusNodeId === d.id) cls.push('focus');
         return cls.join(' ');
       })
       .attr('transform', (d) => {

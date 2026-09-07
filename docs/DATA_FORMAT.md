@@ -1,6 +1,6 @@
 # Data format
 
-The knowledge base is two YAML files. `npm run build:data` validates them and
+The knowledge base is three YAML files. `npm run build:data` validates them and
 writes `public/data/graph.json`, which the app loads. The validator is
 `scripts/build-data.mjs`; if this document and the validator disagree, the
 validator wins and this document needs fixing.
@@ -86,6 +86,43 @@ Rules enforced by the validator:
 - Asymmetry is expected. El Niño and La Niña links are separate entries and
   are never derived from each other. If only one phase is supported by the
   literature, add only that one.
+
+## `data/stories.yaml`
+
+A story is a guided walkthrough: it fixes a scenario and steps through the
+timeline, pointing at one node at a time with a short text.
+
+```yaml
+stories:
+  - id: el_nino_1997_98                # unique
+    title: "The 1997–98 El Niño"
+    intro: >                            # shown on the first step
+      ...
+    driver: enso                        # a driver node id
+    phase: el_nino                      # a phase id of that driver
+    start_month: 5                      # calendar month of month index 0
+    start_year: 1997                    # optional; dates the steps ("December 1997")
+    steps:                              # at least three
+      - month: 2                        # month index 0–12, never decreasing
+        focus: indonesia_rainfall       # node to highlight and open in the card
+        text: >                         # plain language, 2–4 sentences
+          ...
+        sources: [field_2009]           # at least one key from links.yaml
+```
+
+Rules enforced by the validator:
+- `driver` must be a driver and `phase` one of its phases.
+- Every `focus` must be a node id. If it is an outcome, it must actually be
+  affected by that driver phase at that month: some link from `driver`/`phase`
+  to it has `lag_months[0] <= month` and is in season for the calendar month.
+  A story can never point at a hollow marker.
+- Step months never go backwards.
+- Every step cites at least one source key that resolves in `links.yaml`.
+- `src/engine/stories.test.ts` re-checks every step through the real engine.
+
+Historical facts in a story are illustrations of the map's tendencies. Where
+a real event broke the pattern (the near-normal Indian monsoon of 1997, say),
+say so in the text: that is the teaching point, not a problem to hide.
 
 ## Confidence tiers
 
