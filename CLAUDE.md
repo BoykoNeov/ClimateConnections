@@ -12,8 +12,9 @@ since M11 two drivers chosen at once, since M12 a start month of its
 own for the second one, since M13 a season dial showing the calendar
 year as a circle, since M14 two scenarios compared side by side,
 since M15 a second driver that may begin before the first, and since
-M16 the Southern Annular Mode as a fourth driver, and since M17 the
-Pacific Decadal Oscillation as a fifth) on a
+M16 the Southern Annular Mode as a fourth driver, since M17 the
+Pacific Decadal Oscillation as a fifth, and since M18 the Atlantic
+Multidecadal Oscillation as a sixth) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -51,7 +52,8 @@ one.
   second driver's own start month (M12), the season dial (M13), compare
   mode (M14), a second driver that begins before the first (M15), the
   Southern Annular Mode as a fourth driver (M16) and the Pacific Decadal
-  Oscillation as a fifth (M17) were signed off on 2026-09-07. A new driver is data only (a driver node, its outcome
+  Oscillation as a fifth (M17) were signed off on 2026-09-07, and the
+  Atlantic Multidecadal Oscillation as a sixth (M18) on 2026-09-08. A new driver is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
   everything from the data. Do not start another version 2 item without
   sign-off.

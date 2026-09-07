@@ -280,6 +280,59 @@ nodes:
           1999 to 2013.
     sources: [mantua_1997, mantua_hare_2002, zhang_wallace_battisti_1997, newman_2016, power_1999, noaa_ncei_pdo]
 
+  - id: amo
+    name: Atlantic Multidecadal Oscillation (AMO)
+    label: AMO
+    kind: driver
+    lat: 33
+    lon: -40
+    area: [[-80, 60], [0, 60], [0, 0], [-80, 0]]
+    region: North Atlantic Ocean, from the equator to Greenland
+    timescale: Phases last twenty to forty years; a whole cycle runs sixty to eighty years
+    summary: >
+      A slow warming and cooling of the whole North Atlantic, from the
+      tropics to Greenland, by a few tenths of a degree. Warm phases ran
+      from about 1860 to 1880, from the 1930s to 1960 and from 1995 on;
+      cool phases from 1905 to 1925 and from the mid-1960s to 1994. It is
+      the pattern behind the long swings in Sahel rain, in Atlantic
+      hurricane activity and in summer weather on both sides of the ocean.
+      What drives it is argued over: the slow overturning of the ocean,
+      or pollution haze and volcanic dust changing the sunlight the ocean
+      receives, or the atmosphere's own noise soaked up by the sea. The
+      map shows one year inside a phase.
+    onset_hint: The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase; start in June to see the summer and hurricane-season effects first.
+    default_start_month: 6
+    phases:
+      - id: positive
+        value: 1
+        label: Positive AMO
+        color: "#7f0000"
+        summary: >
+          The North Atlantic is warmer than usual from the tropics to
+          Greenland. The Sahel's rains tend to be stronger, hurricane
+          seasons more active, summers on both sides of the ocean warmer
+          and the Great Plains drier. The warm phase that began around 1995
+          brought the active hurricane era that peaked in 2004 and 2005.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The North Atlantic is close to its long-term average and none of
+          the Atlantic Multidecadal Oscillation tendencies on this map are
+          expected. ENSO and the other drivers still shape the weather.
+      - id: negative
+        value: -1
+        label: Negative AMO
+        color: "#5ab4ac"
+        summary: >
+          The North Atlantic is cooler than usual. The Sahel's rains tend to
+          fail, hurricane seasons are quieter and Great Plains summers
+          wetter. The cool phase from the mid-1960s to 1994 is the one
+          behind the long Sahel drought of the 1970s and 1980s and the
+          quiet hurricane decades before 1995.
+    sources: [kerr_2000, enfield_2001, knight_2005, schlesinger_ramankutty_1994, booth_2012, clement_2015, noaa_psl_amo]
+
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1359,3 +1412,49 @@ nodes:
       Alaska's climate stepped warmer after the Pacific flipped in 1976–77,
       one of the clearest regional marks of the oscillation.
     sources: [mantua_1997, mantua_hare_2002]
+
+  # ---- Atlantic Multidecadal Oscillation outcomes (M18)
+  - id: western_europe_summer
+    name: Western Europe summer temperature
+    label: W Europe
+    kind: outcome
+    lat: 51
+    lon: -16
+    area: [[-11, 58], [15, 58], [15, 43], [-11, 43]]
+    region: The British Isles, France, the Low Countries and Germany
+    timescale: June–August
+    axis: warm_cool
+    labels:
+      plus: Summer tends to be warmer than usual
+      zero: Near normal
+      minus: Summer tends to be cooler than usual
+    summary: >
+      Western Europe's summers follow the Atlantic slowly, the way its
+      winters follow the NAO quickly. When the ocean is in its warm phase
+      the summers tend to be warmer, with more rain in the north-west of
+      the continent and less in the south. The shift to warmer summers in
+      the mid-1990s came with the Atlantic's swing to warm.
+    sources: [sutton_hodson_2005, sutton_dong_2012]
+
+  - id: us_great_plains_summer
+    name: US Great Plains summer rainfall
+    label: Great Plains
+    kind: outcome
+    lat: 42
+    lon: -106.5
+    area: [[-105, 49], [-95, 49], [-95, 30], [-105, 30]]
+    region: The central United States, from the Dakotas to Texas
+    timescale: May–September, the growing season
+    axis: wet_dry
+    labels:
+      plus: Summer tends to be wetter than usual
+      zero: Near normal
+      minus: Summer tends to be drier than usual, with drought risk
+    summary: >
+      The Plains get most of their rain in late spring and summer, from
+      moisture carried north out of the Gulf of Mexico. When the North
+      Atlantic is warm, less of that moisture reaches inland and summers run
+      dry; the great droughts of the 1930s and 1950s fell in warm-Atlantic
+      decades, and the wet years of the early twentieth century in a cool
+      one.
+    sources: [enfield_2001, nigam_2011, mccabe_2004]

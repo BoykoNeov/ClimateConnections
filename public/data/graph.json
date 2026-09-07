@@ -304,6 +304,69 @@
       ]
     },
     {
+      "id": "amo",
+      "name": "Atlantic Multidecadal Oscillation (AMO)",
+      "label": "AMO",
+      "area": [
+        [
+          -80,
+          60
+        ],
+        [
+          0,
+          60
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -80,
+          0
+        ]
+      ],
+      "lat": 33,
+      "lon": -40,
+      "region": "North Atlantic Ocean, from the equator to Greenland",
+      "timescale": "Phases last twenty to forty years; a whole cycle runs sixty to eighty years",
+      "summary": "A slow warming and cooling of the whole North Atlantic, from the tropics to Greenland, by a few tenths of a degree. Warm phases ran from about 1860 to 1880, from the 1930s to 1960 and from 1995 on; cool phases from 1905 to 1925 and from the mid-1960s to 1994. It is the pattern behind the long swings in Sahel rain, in Atlantic hurricane activity and in summer weather on both sides of the ocean. What drives it is argued over: the slow overturning of the ocean, or pollution haze and volcanic dust changing the sunlight the ocean receives, or the atmosphere's own noise soaked up by the sea. The map shows one year inside a phase.\n",
+      "sources": [
+        "kerr_2000",
+        "enfield_2001",
+        "knight_2005",
+        "schlesinger_ramankutty_1994",
+        "booth_2012",
+        "clement_2015",
+        "noaa_psl_amo"
+      ],
+      "kind": "driver",
+      "onset_hint": "The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase; start in June to see the summer and hurricane-season effects first.",
+      "default_start_month": 6,
+      "phases": [
+        {
+          "id": "positive",
+          "label": "Positive AMO",
+          "color": "#7f0000",
+          "summary": "The North Atlantic is warmer than usual from the tropics to Greenland. The Sahel's rains tend to be stronger, hurricane seasons more active, summers on both sides of the ocean warmer and the Great Plains drier. The warm phase that began around 1995 brought the active hurricane era that peaked in 2004 and 2005.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "The North Atlantic is close to its long-term average and none of the Atlantic Multidecadal Oscillation tendencies on this map are expected. ENSO and the other drivers still shape the weather.\n",
+          "value": 0
+        },
+        {
+          "id": "negative",
+          "label": "Negative AMO",
+          "color": "#5ab4ac",
+          "summary": "The North Atlantic is cooler than usual. The Sahel's rains tend to fail, hurricane seasons are quieter and Great Plains summers wetter. The cool phase from the mid-1960s to 1994 is the one behind the long Sahel drought of the 1970s and 1980s and the quiet hurricane decades before 1995.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -2329,6 +2392,87 @@
         "plus": "Winter tends to be milder than usual",
         "zero": "Near normal",
         "minus": "Winter tends to be colder than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "western_europe_summer",
+      "name": "Western Europe summer temperature",
+      "label": "W Europe",
+      "area": [
+        [
+          -11,
+          58
+        ],
+        [
+          15,
+          58
+        ],
+        [
+          15,
+          43
+        ],
+        [
+          -11,
+          43
+        ]
+      ],
+      "lat": 51,
+      "lon": -16,
+      "region": "The British Isles, France, the Low Countries and Germany",
+      "timescale": "June–August",
+      "summary": "Western Europe's summers follow the Atlantic slowly, the way its winters follow the NAO quickly. When the ocean is in its warm phase the summers tend to be warmer, with more rain in the north-west of the continent and less in the south. The shift to warmer summers in the mid-1990s came with the Atlantic's swing to warm.\n",
+      "sources": [
+        "sutton_hodson_2005",
+        "sutton_dong_2012"
+      ],
+      "kind": "outcome",
+      "axis": "warm_cool",
+      "labels": {
+        "plus": "Summer tends to be warmer than usual",
+        "zero": "Near normal",
+        "minus": "Summer tends to be cooler than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "us_great_plains_summer",
+      "name": "US Great Plains summer rainfall",
+      "label": "Great Plains",
+      "area": [
+        [
+          -105,
+          49
+        ],
+        [
+          -95,
+          49
+        ],
+        [
+          -95,
+          30
+        ],
+        [
+          -105,
+          30
+        ]
+      ],
+      "lat": 42,
+      "lon": -106.5,
+      "region": "The central United States, from the Dakotas to Texas",
+      "timescale": "May–September, the growing season",
+      "summary": "The Plains get most of their rain in late spring and summer, from moisture carried north out of the Gulf of Mexico. When the North Atlantic is warm, less of that moisture reaches inland and summers run dry; the great droughts of the 1930s and 1950s fell in warm-Atlantic decades, and the wet years of the early twentieth century in a cool one.\n",
+      "sources": [
+        "enfield_2001",
+        "nigam_2011",
+        "mccabe_2004"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Summer tends to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Summer tends to be drier than usual, with drought risk"
       },
       "global": false
     }
@@ -5470,6 +5614,358 @@
         "alexander_2002",
         "newman_2016"
       ]
+    },
+    {
+      "id": "positive_amo_atlantic_hurricanes",
+      "from": "amo",
+      "when": "positive",
+      "to": "atlantic_hurricanes",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "A warm tropical North Atlantic feeds storms more energy and comes with weaker wind shear over the main hurricane-forming region between Africa and the Caribbean, so more storms form and more of them grow into major hurricanes.\n",
+      "caveat": "El Niño can quieten a season inside a warm phase, and a single season's count swings widely for reasons of its own; the tendency is over the decades.\n",
+      "evidence_note": "Activity from 1995 on roughly doubled that of 1971–1994, with a two-and-a-half-fold rise in major hurricanes, and the same warm-Atlantic, low-shear pairing marks the active decades before 1970; a long climate-model run reproduces the association.\n",
+      "sources": [
+        "goldenberg_2001",
+        "zhang_delworth_2006",
+        "knight_2006"
+      ]
+    },
+    {
+      "id": "negative_amo_atlantic_hurricanes",
+      "from": "amo",
+      "when": "negative",
+      "to": "atlantic_hurricanes",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "A cool tropical North Atlantic and stronger wind shear over the hurricane-forming region between Africa and the Caribbean tend to tear developing storms apart, so seasons are quieter.\n",
+      "caveat": "A quiet phase still produces destructive hurricanes (Andrew in 1992 fell in one), and a La Niña can make a season inside a cool phase busy.\n",
+      "sources": [
+        "goldenberg_2001",
+        "knight_2006"
+      ]
+    },
+    {
+      "id": "positive_amo_sahel",
+      "from": "amo",
+      "when": "positive",
+      "to": "sahel_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "established",
+      "mechanism": "A warm North Atlantic, warmer than the ocean south of the equator, pulls the tropical rain belt north in summer and draws moist air further inland over West Africa, so the Sahel's short rainy season tends to be stronger.\n",
+      "caveat": "The Sahel also answers the Pacific and the Indian Ocean, and a warm phase does not guarantee a wet year; the tendency is over decades, with wet and dry years inside each phase.\n",
+      "evidence_note": "The wet Sahel of the 1950s and the drought of the 1970s and 1980s line up with the warm and cool Atlantic phases, model runs driven by the observed sea temperatures reproduce the swing, and a 1400-year climate-model run shows the same link. What set the Atlantic's phases is argued over: pollution haze and volcanic dust may have driven much of the twentieth-century cooling. The link from the ocean to the rain holds either way.\n",
+      "sources": [
+        "folland_1986",
+        "giannini_2003",
+        "zhang_delworth_2006",
+        "knight_2006",
+        "booth_2012"
+      ]
+    },
+    {
+      "id": "negative_amo_sahel",
+      "from": "amo",
+      "when": "negative",
+      "to": "sahel_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "established",
+      "mechanism": "A cool North Atlantic, cool relative to the ocean south of the equator, holds the tropical rain belt further south in summer, so the Sahel's rains tend to fail.\n",
+      "caveat": "The tendency is over decades: even in the drought decades a few summers were wet, and the drying of the 1970s and 1980s was helped along by warm water in the Indian Ocean and the tropics generally.\n",
+      "evidence_note": "The Sahel drought of the 1970s and 1980s coincided with the cool phase from the mid-1960s to 1994, and the drying trend is reproduced by models driven with the observed sea temperatures.\n",
+      "sources": [
+        "folland_1986",
+        "giannini_2003",
+        "zhang_delworth_2006"
+      ]
+    },
+    {
+      "id": "positive_amo_great_plains",
+      "from": "amo",
+      "when": "positive",
+      "to": "us_great_plains_summer",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8
+      ],
+      "confidence": "probable",
+      "mechanism": "With a warm North Atlantic, high pressure over the ocean and the Gulf of Mexico sends less moisture north onto the Plains in summer, so the growing season tends to run dry.\n",
+      "caveat": "The Pacific matters at least as much: the worst multidecadal droughts came when the Atlantic was warm and the Pacific cool at the same time, and any one summer can be wet inside a warm phase.\n",
+      "evidence_note": "During warm phases most of the United States sees less rain than usual, mainly in summer, including the Midwest droughts of the 1930s and 1950s; about half of the multidecadal swing in drought over the United States is tied to the Atlantic and Pacific oscillations together.\n",
+      "sources": [
+        "enfield_2001",
+        "sutton_hodson_2005",
+        "mccabe_2004",
+        "nigam_2011"
+      ]
+    },
+    {
+      "id": "negative_amo_great_plains",
+      "from": "amo",
+      "when": "negative",
+      "to": "us_great_plains_summer",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8
+      ],
+      "confidence": "probable",
+      "mechanism": "With a cool North Atlantic the summer flow of moisture out of the Gulf of Mexico onto the Plains tends to be stronger, so summers run wetter.\n",
+      "caveat": "A cool phase does not rule out drought: the Pacific can dry the Plains on its own, and single summers vary widely.\n",
+      "evidence_note": "The wet periods of the Great Plains in the twentieth century fell in cool-Atlantic decades, and river flows in the central United States run higher between warm phases.\n",
+      "sources": [
+        "enfield_2001",
+        "nigam_2011"
+      ]
+    },
+    {
+      "id": "positive_amo_western_europe_summer",
+      "from": "amo",
+      "when": "positive",
+      "to": "western_europe_summer",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8
+      ],
+      "confidence": "probable",
+      "mechanism": "A warm North Atlantic warms the air arriving over western Europe in summer and shifts the summer weather pattern so that the continent runs warmer, with more rain in the north-west and less in the south.\n",
+      "caveat": "The effect is a few tenths of a degree over a decade; any one summer is set far more by the weather of that summer, and the warming trend from greenhouse gases now runs alongside it.\n",
+      "evidence_note": "Observations and model experiments tie the multidecadal swings in summer climate over western Europe to basin-wide changes in the Atlantic, and the shift to warmer summers in the mid-1990s is attributed largely to the ocean's swing to warm.\n",
+      "sources": [
+        "sutton_hodson_2005",
+        "sutton_dong_2012",
+        "knight_2006"
+      ]
+    },
+    {
+      "id": "negative_amo_western_europe_summer",
+      "from": "amo",
+      "when": "negative",
+      "to": "western_europe_summer",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8
+      ],
+      "confidence": "probable",
+      "mechanism": "A cool North Atlantic cools the air arriving over western Europe in summer, so summers tend to run cooler.\n",
+      "caveat": "Small against the year-to-year swings of summer weather and against the warming trend; the cool summers of the 1960s to 1980s are the example, and other things lay behind them as well.\n",
+      "sources": [
+        "sutton_hodson_2005",
+        "sutton_dong_2012"
+      ]
+    },
+    {
+      "id": "positive_amo_northeast_brazil",
+      "from": "amo",
+      "when": "positive",
+      "to": "northeast_brazil",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "confidence": "contested",
+      "mechanism": "When the North Atlantic is warmer than the South Atlantic the tropical rain belt sits further north in the early months of the year and reaches the Nordeste less, so its short rainy season tends to be weaker.\n",
+      "caveat": "What matters for the Nordeste is the north–south contrast across the tropical Atlantic in that particular spring, and the Pacific; the slow basin-wide warming is only one part of that contrast, so the link is shown as contested.\n",
+      "evidence_note": "Drier Nordeste seasons in warm phases appear in observations and in a long climate-model run, but the instrumental record holds only a few phases, and forecasts of Nordeste rain lean on the year's own Atlantic contrast and on ENSO.\n",
+      "sources": [
+        "knight_2006",
+        "folland_2001"
+      ]
+    },
+    {
+      "id": "negative_amo_northeast_brazil",
+      "from": "amo",
+      "when": "negative",
+      "to": "northeast_brazil",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "confidence": "contested",
+      "mechanism": "When the North Atlantic is cooler than the South Atlantic the tropical rain belt reaches further south in the early months of the year, so the Nordeste's rainy season tends to be stronger.\n",
+      "caveat": "One part of the year's Atlantic contrast, and easily overridden by an El Niño; shown as contested.\n",
+      "sources": [
+        "knight_2006",
+        "folland_2001"
+      ]
+    },
+    {
+      "id": "positive_amo_indian_monsoon",
+      "from": "amo",
+      "when": "positive",
+      "to": "indian_summer_monsoon",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "A warm North Atlantic is proposed to warm the air over Eurasia in late summer, which keeps the land–sea temperature contrast that drives the monsoon going for longer, so the monsoon tends to be a little stronger and to withdraw later.\n",
+      "caveat": "Mostly a model result about a small multidecadal tilt; ENSO and the Indian Ocean set any one monsoon, and studies disagree on how much the Atlantic adds.\n",
+      "evidence_note": "Statistical work links the multidecadal swings of Indian and Sahel rain and of hurricanes to the Atlantic, and one model traces a pathway through the temperature of the upper air over Eurasia; the signal is small and the link is shown as contested.\n",
+      "sources": [
+        "zhang_delworth_2006",
+        "goswami_2006"
+      ]
+    },
+    {
+      "id": "negative_amo_indian_monsoon",
+      "from": "amo",
+      "when": "negative",
+      "to": "indian_summer_monsoon",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "A cool North Atlantic is proposed to cool the air over Eurasia in late summer, weakening the contrast that drives the monsoon, so it tends to withdraw earlier and deliver a little less rain.\n",
+      "caveat": "Mostly a model result; small against ENSO and the Indian Ocean, and shown as contested.\n",
+      "sources": [
+        "zhang_delworth_2006",
+        "goswami_2006"
+      ]
+    },
+    {
+      "id": "positive_amo_negative_nao",
+      "from": "amo",
+      "when": "positive",
+      "to": "nao",
+      "effect": -1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2,
+        3
+      ],
+      "confidence": "contested",
+      "mechanism": "A warm North Atlantic warms and moistens the lower atmosphere over the ocean in winter, which is proposed to weaken the Icelandic low and the Azores high, the negative side of the NAO, partly by way of the stratosphere.\n",
+      "caveat": "The NAO swings within weeks under its own weather, and the Atlantic's tilt is small and slow; it shows up in decade averages and in model experiments, not reliably in any one winter, so the link is shown as contested.\n",
+      "evidence_note": "Model experiments forced with a warm North Atlantic produce a negative-NAO-like winter circulation, and the decadal record leans the same way, but the response depends on how the model treats the stratosphere and the observed record holds only a few phases.\n",
+      "sources": [
+        "peings_magnusdottir_2014",
+        "omrani_2014"
+      ]
+    },
+    {
+      "id": "negative_amo_positive_nao",
+      "from": "amo",
+      "when": "negative",
+      "to": "nao",
+      "effect": 1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2,
+        3
+      ],
+      "confidence": "contested",
+      "mechanism": "A cool North Atlantic is proposed to sharpen the winter contrast between the Icelandic low and the Azores high, the positive side of the NAO.\n",
+      "caveat": "A small, slow tilt against the NAO's own swings, seen in decade averages and model experiments; shown as contested.\n",
+      "evidence_note": "The composite and model results for the warm phase imply the reverse for the cool one; the positive-NAO winters of the late 1980s and early 1990s fell in a cool Atlantic phase.\n",
+      "sources": [
+        "peings_magnusdottir_2014",
+        "omrani_2014"
+      ]
     }
   ],
   "sources": [
@@ -6151,6 +6647,111 @@
       "key": "zhang_wallace_battisti_1997",
       "citation": "Zhang, Y., Wallace, J. M., & Battisti, D. S. (1997). ENSO-like interdecadal variability: 1900–93. Journal of Climate, 10(5), 1004–1020.",
       "url": "https://doi.org/10.1175/1520-0442(1997)010<1004:ELIV>2.0.CO;2"
+    },
+    {
+      "key": "kerr_2000",
+      "citation": "Kerr, R. A. (2000). A North Atlantic climate pacemaker for the centuries. Science, 288(5473), 1984–1985.",
+      "url": "https://doi.org/10.1126/science.288.5473.1984"
+    },
+    {
+      "key": "schlesinger_ramankutty_1994",
+      "citation": "Schlesinger, M. E., & Ramankutty, N. (1994). An oscillation in the global climate system of period 65–70 years. Nature, 367, 723–726.",
+      "url": "https://doi.org/10.1038/367723a0"
+    },
+    {
+      "key": "enfield_2001",
+      "citation": "Enfield, D. B., Mestas-Nuñez, A. M., & Trimble, P. J. (2001). The Atlantic Multidecadal Oscillation and its relation to rainfall and river flows in the continental U.S. Geophysical Research Letters, 28(10), 2077–2080.",
+      "url": "https://doi.org/10.1029/2000GL012745"
+    },
+    {
+      "key": "knight_2005",
+      "citation": "Knight, J. R., Allan, R. J., Folland, C. K., Vellinga, M., & Mann, M. E. (2005). A signature of persistent natural thermohaline circulation cycles in observed climate. Geophysical Research Letters, 32, L20708.",
+      "url": "https://doi.org/10.1029/2005GL024233"
+    },
+    {
+      "key": "knight_2006",
+      "citation": "Knight, J. R., Folland, C. K., & Scaife, A. A. (2006). Climate impacts of the Atlantic Multidecadal Oscillation. Geophysical Research Letters, 33, L17706.",
+      "url": "https://doi.org/10.1029/2006GL026242"
+    },
+    {
+      "key": "zhang_delworth_2006",
+      "citation": "Zhang, R., & Delworth, T. L. (2006). Impact of Atlantic multidecadal oscillations on India/Sahel rainfall and Atlantic hurricanes. Geophysical Research Letters, 33, L17712.",
+      "url": "https://doi.org/10.1029/2006GL026267"
+    },
+    {
+      "key": "goldenberg_2001",
+      "citation": "Goldenberg, S. B., Landsea, C. W., Mestas-Nuñez, A. M., & Gray, W. M. (2001). The recent increase in Atlantic hurricane activity: Causes and implications. Science, 293(5529), 474–479.",
+      "url": "https://doi.org/10.1126/science.1060040"
+    },
+    {
+      "key": "landsea_1998",
+      "citation": "Landsea, C. W., Bell, G. D., Gray, W. M., & Goldenberg, S. B. (1998). The extremely active 1995 Atlantic hurricane season: Environmental conditions and verification of seasonal forecasts. Monthly Weather Review, 126(5), 1174–1193.",
+      "url": "https://doi.org/10.1175/1520-0493(1998)126<1174:TEAAHS>2.0.CO;2"
+    },
+    {
+      "key": "sutton_hodson_2005",
+      "citation": "Sutton, R. T., & Hodson, D. L. R. (2005). Atlantic Ocean forcing of North American and European summer climate. Science, 309(5731), 115–118.",
+      "url": "https://doi.org/10.1126/science.1109496"
+    },
+    {
+      "key": "sutton_dong_2012",
+      "citation": "Sutton, R. T., & Dong, B. (2012). Atlantic Ocean influence on a shift in European climate in the 1990s. Nature Geoscience, 5, 788–792.",
+      "url": "https://doi.org/10.1038/ngeo1595"
+    },
+    {
+      "key": "folland_1986",
+      "citation": "Folland, C. K., Palmer, T. N., & Parker, D. E. (1986). Sahel rainfall and worldwide sea temperatures, 1901–85. Nature, 320, 602–607.",
+      "url": "https://doi.org/10.1038/320602a0"
+    },
+    {
+      "key": "giannini_2003",
+      "citation": "Giannini, A., Saravanan, R., & Chang, P. (2003). Oceanic forcing of Sahel rainfall on interannual to interdecadal time scales. Science, 302(5647), 1027–1030.",
+      "url": "https://doi.org/10.1126/science.1089357"
+    },
+    {
+      "key": "nicholson_2005",
+      "citation": "Nicholson, S. (2005). On the question of the \"recovery\" of the rains in the West African Sahel. Journal of Arid Environments, 63(3), 615–641.",
+      "url": "https://doi.org/10.1016/j.jaridenv.2005.03.004"
+    },
+    {
+      "key": "booth_2012",
+      "citation": "Booth, B. B. B., Dunstone, N. J., Halloran, P. R., Andrews, T., & Bellouin, N. (2012). Aerosols implicated as a prime driver of twentieth-century North Atlantic climate variability. Nature, 484, 228–232.",
+      "url": "https://doi.org/10.1038/nature10946"
+    },
+    {
+      "key": "clement_2015",
+      "citation": "Clement, A., Bellomo, K., Murphy, L. N., Cane, M. A., Mauritsen, T., Rädel, G., & Stevens, B. (2015). The Atlantic Multidecadal Oscillation without a role for ocean circulation. Science, 350(6258), 320–324.",
+      "url": "https://doi.org/10.1126/science.aab3980"
+    },
+    {
+      "key": "goswami_2006",
+      "citation": "Goswami, B. N., Madhusoodanan, M. S., Neema, C. P., & Sengupta, D. (2006). A physical mechanism for North Atlantic SST influence on the Indian summer monsoon. Geophysical Research Letters, 33, L02706.",
+      "url": "https://doi.org/10.1029/2005GL024803"
+    },
+    {
+      "key": "peings_magnusdottir_2014",
+      "citation": "Peings, Y., & Magnusdottir, G. (2014). Forcing of the wintertime atmospheric circulation by the multidecadal fluctuations of the North Atlantic ocean. Environmental Research Letters, 9(3), 034018.",
+      "url": "https://doi.org/10.1088/1748-9326/9/3/034018"
+    },
+    {
+      "key": "omrani_2014",
+      "citation": "Omrani, N.-E., Keenlyside, N. S., Bader, J., & Manzini, E. (2014). Stratosphere key for wintertime atmospheric response to warm Atlantic decadal conditions. Climate Dynamics, 42, 649–663.",
+      "url": "https://doi.org/10.1007/s00382-013-1860-3"
+    },
+    {
+      "key": "folland_2001",
+      "citation": "Folland, C. K., Colman, A. W., Rowell, D. P., & Davey, M. K. (2001). Predictability of Northeast Brazil rainfall and real-time forecast skill, 1987–98. Journal of Climate, 14(9), 1937–1958.",
+      "url": "https://doi.org/10.1175/1520-0442(2001)014<1937:PONBRA>2.0.CO;2"
+    },
+    {
+      "key": "nigam_2011",
+      "citation": "Nigam, S., Guan, B., & Ruiz-Barradas, A. (2011). Key role of the Atlantic Multidecadal Oscillation in 20th century drought and wet periods over the Great Plains. Geophysical Research Letters, 38, L16713.",
+      "url": "https://doi.org/10.1029/2011GL048650"
+    },
+    {
+      "key": "noaa_psl_amo",
+      "citation": "NOAA Physical Sciences Laboratory. Atlantic Multidecadal Oscillation (AMO): index description and monthly time series.",
+      "url": "https://psl.noaa.gov/data/timeseries/AMO/"
     }
   ],
   "stories": [
@@ -6877,6 +7478,70 @@
           "sources": [
             "gershunov_barnett_1998",
             "mantua_1997"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "positive_amo_1995",
+      "title": "1995: the Atlantic turns warm",
+      "intro": "After thirty years in its cool phase the North Atlantic swung warm in 1995, and the swing showed up at once: the busiest hurricane season in decades, the beginning of a partial recovery of the Sahel's rains, and a run of warmer European summers. The year shown begins in June 1995 with the oscillation positive; a weak La Niña is set to begin in September, when it did. Watch the hurricane region in October, where the two drivers point the same way, and read the last step for what the map cannot settle.\n",
+      "driver": "amo",
+      "phase": "positive",
+      "start_month": 6,
+      "start_year": 1995,
+      "second_driver": "enso",
+      "second_phase": "la_nina",
+      "second_start_month": 9,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "amo",
+          "text": "The whole North Atlantic had run cool since the mid-1960s. In 1995 the basin-wide average crossed back above its long-term mean and stayed there, the third warm phase in the record after those of the late 1800s and the middle of the twentieth century. The map holds the phase for a year; the real one has held for decades. Whether the ocean's slow overturning, pollution haze or the weather's own noise set the swing is argued over, and the driver card says so.\n",
+          "sources": [
+            "enfield_2001",
+            "knight_2005",
+            "booth_2012",
+            "noaa_psl_amo"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "western_europe_summer",
+          "text": "The map paints western Europe warm, on the dashed line of a probable link. The summers of the late 1990s and 2000s in north-west Europe were warmer than those of the decades before, and wetter too, and that shift has been traced in large part to the Atlantic's swing to warm rather than to the weather of any single year. A few tenths of a degree over a decade, felt as more hot summers than cool ones.\n",
+          "sources": [
+            "sutton_dong_2012",
+            "sutton_hodson_2005"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "sahel_rainfall",
+          "text": "The Sahel had lived through the drought of the 1970s and 1980s with the Atlantic cool. From the mid-1990s its rains came back in part, never to the plenty of the 1950s but well above the drought years, and the map's solid line says why: a warm North Atlantic pulls the tropical rain belt north in summer. Models driven by the observed sea temperatures reproduce the drying and the partial return; what set the ocean's phases is a separate argument.\n",
+          "sources": [
+            "nicholson_2005",
+            "giannini_2003",
+            "folland_1986"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "atlantic_hurricanes",
+          "text": "Two arrows point at the hurricane region the same way, active: the warm Atlantic's solid line and La Niña's, which arrived in September. 1995 delivered one of the most active seasons on record, with nineteen named storms, and the six seasons from 1995 to 2000 saw roughly double the activity of the previous twenty-four years, a doubling that the research at the time laid at the door of the warm Atlantic and the weaker wind shear that came with it.\n",
+          "sources": [
+            "landsea_1998",
+            "goldenberg_2001",
+            "noaa_cpc_oni"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "amo",
+          "text": "A year on, in June 1996, the phase held, and it went on holding: the active hurricane era peaked in 2004 and 2005. What the map cannot settle is why the Atlantic swings. One camp reads the record as a natural cycle of the ocean's overturning; another finds that pollution haze and volcanic dust explain most of the twentieth-century swings; a third reproduces the pattern without any ocean circulation change at all. The links on this map run from the warm ocean to the weather and hold whichever camp is right; the phase's next turn is the open question.\n",
+          "sources": [
+            "knight_2005",
+            "booth_2012",
+            "clement_2015"
           ]
         }
       ]

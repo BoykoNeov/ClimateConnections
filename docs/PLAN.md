@@ -963,9 +963,59 @@ is fully green.
   Alaska reached through it, the ghost under "established only"), the
   2014–15 story stepped to its end, the print caption.
 - Not in M17: further drivers. Candidates that fit a monthly timeline are
-  the Atlantic Multidecadal Oscillation and the Atlantic Niño; the
+  the Atlantic Multidecadal Oscillation (M18) and the Atlantic Niño; the
   Madden–Julian Oscillation does not (it swings within weeks). Each needs
   sign-off.
+
+### M18 — Sixth driver: Atlantic Multidecadal Oscillation (signed off 2026-09-08)
+- Data: `amo` driver node with positive / neutral / negative phases (marker
+  in the central North Atlantic at 33°N 40°W, area over the whole basin
+  from the equator to 60°N, `default_start_month` 6); two new outcome
+  nodes (western Europe summer temperature, US Great Plains summer
+  rainfall); twelve outcome links, six per phase, on those two and four
+  existing nodes (Atlantic hurricanes, the Sahel, the Nordeste, the Indian
+  monsoon), all with lag 0–1 and their own seasons. Tiers follow how many
+  independent lines of evidence agree: hurricanes and the Sahel
+  established (the 1995 shift, the drought decades, SST-forced model runs,
+  a 1400-year model run), the Plains and Europe probable, the Nordeste and
+  the monsoon contested. Two driver-to-driver links, the AMO tilting the
+  winter NAO (positive toward negative, negative toward positive;
+  contested, lag 0–3, December–March), so a positive AMO with the chain on
+  cools northern Europe two hops down at the contested tier and
+  "established only" ghosts it. Nothing pushes the AMO. Twenty-one
+  sources, every one resolved on Crossref before use. One story, "1995:
+  the Atlantic turns warm" (AMO positive from June 1995, La Niña from
+  September as the second driver), five steps: the swing, the warmer
+  European summers, the Sahel's partial recovery, October with both
+  arrows on the hurricane region, and June 1996 with the open question of
+  what drives the oscillation.
+- Honesty note carried in the data: a phase lasts decades, so the year
+  shown is one year inside a phase (driver summary, onset hint, the
+  story's first step), and the cause of the oscillation is argued over
+  (ocean overturning, aerosols, or atmospheric noise); the links run from
+  the warm ocean to the weather and hold whichever camp is right.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for positive AMO from June (hurricanes, the
+  Plains, Europe and the monsoon from month 0, the Sahel from July, the
+  Nordeste from February, summer links pending in December, the tiers,
+  other drivers' regions hollow, the NAO pushed at depth 1 but its links
+  not fired), the negative reversal, the AMO tilting the NAO with the
+  chain on (negative from December, northern Europe cold two hops down and
+  never above contested, the ghost under "established only", the negative
+  phase tilting it positive, nothing pushing the AMO), and the 1995
+  scenario (La Niña onset 3, October with both hurricane arrows rated
+  established, the NAO pulled opposite ways by March and conflicting, the
+  shipped story's fields). Existing expectations updated: six drivers,
+  twelve driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m18.mjs`, 45
+  checks): the three new markers placed with no label overlap (western
+  Europe moved west of Ireland and the Plains to Wyoming to clear the
+  Alpine, Pacific Northwest and Eastern US labels), the driver dropdown,
+  positive AMO in June (contested monsoon arrow dotted) and July, February
+  with the NAO pushed (induced marker, northern Europe cold, the ghost
+  under "established only"), the Sahel and AMO cards, the negative
+  reversal, the 1995 story stepped to its end, the print caption.
+- Not in M18: the Atlantic Niño (M19).
 
 ---
 
@@ -1060,6 +1110,16 @@ acts on pacific_northwest_winter (+/−, probable), canadian_prairies_winter
 |---|---|---|---|---|---|
 | alaska_winter | Alaska / Yukon | warm_cool | PDO | positive mild winter (+), probable | negative cold winter (−), probable |
 
+Outcome nodes added with the Atlantic Multidecadal Oscillation (M18); the
+AMO also acts on atlantic_hurricanes (+/−, established), sahel_rainfall
+(+/−, established), northeast_brazil (−/+, contested) and
+indian_summer_monsoon (+/−, contested):
+
+| id | region | axis | driver | main + phase tendency | main − phase tendency |
+|---|---|---|---|---|---|
+| western_europe_summer | British Isles to Germany | warm_cool | AMO | positive warm summer (+), probable | negative cool summer (−), probable |
+| us_great_plains_summer | Dakotas to Texas | wet_dry | AMO | positive dry summer (−), probable | negative wet summer (+), probable |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1094,7 +1154,8 @@ writing mechanism text):
   second driver's own start month; M15: a second driver that begins before
   the first); season dial (done, M13); compare mode (done, M14: two maps
   side by side); more drivers (done, M16: the Southern Annular Mode; M17:
-  the Pacific Decadal Oscillation);
+  the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
+  Oscillation);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

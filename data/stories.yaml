@@ -876,3 +876,87 @@ stories:
           North Pacific is in its warm phase. Whether the rain delivers is
           for the record to say; the map only says the odds have lined up.
         sources: [gershunov_barnett_1998, mantua_1997]
+
+  - id: positive_amo_1995
+    title: "1995: the Atlantic turns warm"
+    intro: >
+      After thirty years in its cool phase the North Atlantic swung warm in
+      1995, and the swing showed up at once: the busiest hurricane season
+      in decades, the beginning of a partial recovery of the Sahel's rains,
+      and a run of warmer European summers. The year shown begins in June
+      1995 with the oscillation positive; a weak La Niña is set to begin in
+      September, when it did. Watch the hurricane region in October, where
+      the two drivers point the same way, and read the last step for what
+      the map cannot settle.
+    driver: amo
+    phase: positive
+    second_driver: enso
+    second_phase: la_nina
+    second_start_month: 9
+    start_month: 6
+    start_year: 1995
+    steps:
+      - month: 0
+        focus: amo
+        text: >
+          The whole North Atlantic had run cool since the mid-1960s. In 1995
+          the basin-wide average crossed back above its long-term mean and
+          stayed there, the third warm phase in the record after those of
+          the late 1800s and the middle of the twentieth century. The map
+          holds the phase for a year; the real one has held for decades.
+          Whether the ocean's slow overturning, pollution haze or the
+          weather's own noise set the swing is argued over, and the driver
+          card says so.
+        sources: [enfield_2001, knight_2005, booth_2012, noaa_psl_amo]
+
+      - month: 2
+        focus: western_europe_summer
+        text: >
+          The map paints western Europe warm, on the dashed line of a
+          probable link. The summers of the late 1990s and 2000s in
+          north-west Europe were warmer than those of the decades before,
+          and wetter too, and that shift has been traced in large part to
+          the Atlantic's swing to warm rather than to the weather of any
+          single year. A few tenths of a degree over a decade, felt as more
+          hot summers than cool ones.
+        sources: [sutton_dong_2012, sutton_hodson_2005]
+
+      - month: 3
+        focus: sahel_rainfall
+        text: >
+          The Sahel had lived through the drought of the 1970s and 1980s
+          with the Atlantic cool. From the mid-1990s its rains came back in
+          part, never to the plenty of the 1950s but well above the
+          drought years, and the map's solid line says why: a warm North
+          Atlantic pulls the tropical rain belt north in summer. Models
+          driven by the observed sea temperatures reproduce the drying and
+          the partial return; what set the ocean's phases is a separate
+          argument.
+        sources: [nicholson_2005, giannini_2003, folland_1986]
+
+      - month: 4
+        focus: atlantic_hurricanes
+        text: >
+          Two arrows point at the hurricane region the same way, active:
+          the warm Atlantic's solid line and La Niña's, which arrived in
+          September. 1995 delivered one of the most active seasons on
+          record, with nineteen named storms, and the six seasons from 1995
+          to 2000 saw roughly double the activity of the previous
+          twenty-four years, a doubling that the research at the time laid
+          at the door of the warm Atlantic and the weaker wind shear that
+          came with it.
+        sources: [landsea_1998, goldenberg_2001, noaa_cpc_oni]
+
+      - month: 12
+        focus: amo
+        text: >
+          A year on, in June 1996, the phase held, and it went on holding:
+          the active hurricane era peaked in 2004 and 2005. What the map
+          cannot settle is why the Atlantic swings. One camp reads the
+          record as a natural cycle of the ocean's overturning; another
+          finds that pollution haze and volcanic dust explain most of the
+          twentieth-century swings; a third reproduces the pattern without
+          any ocean circulation change at all. The links on this map run
+          from the warm ocean to the weather and hold whichever camp is
+          right; the phase's next turn is the open question.
+        sources: [knight_2005, booth_2012, clement_2015]

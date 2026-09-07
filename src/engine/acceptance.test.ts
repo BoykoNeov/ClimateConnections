@@ -221,8 +221,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['enso', 'iod', 'nao', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM and the PDO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'enso', 'iod', 'nao', 'pdo', 'sam'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO and the AMO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -241,6 +241,7 @@ describe('acceptance: drivers', () => {
     expect(start('nao')).toBe(12);
     expect(start('sam')).toBe(6);
     expect(start('pdo')).toBe(11);
+    expect(start('amo')).toBe(6);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -381,10 +382,10 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships ten driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twelve driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
       'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
-      'negative_iod_el_nino_next_year', 'positive_iod_la_nina_next_year',
+      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year',
     ]);
     for (const l of d2d) {
       expect(l.from).not.toBe(l.to);
@@ -1063,5 +1064,157 @@ describe('acceptance: the 2014–15 story, a positive PDO with El Niño from Mar
     expect(s).toBeDefined();
     expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
       .toEqual(['pdo', 'positive', 'enso', 'el_nino', 3, undefined, 11, 2014]);
+  });
+});
+
+// ---------------------------------------------------------------- M18: sixth driver (Atlantic Multidecadal Oscillation)
+// The AMO holds a phase for decades; the year shown is one year inside such a
+// phase, so its scenarios start in June and its summer links apply at once.
+function runAmo(phaseId: string, startMonth = 6): Timeline {
+  return propagate(graph, { driverId: 'amo', phaseId, startMonth, horizonMonths: HORIZON });
+}
+
+const POSITIVE_AMO: Array<[string, Value, string]> = [
+  ['atlantic_hurricanes', 1, 'Atlantic hurricanes active'],
+  ['sahel_rainfall', 1, 'the Sahel wet'],
+  ['us_great_plains_summer', -1, 'the Great Plains dry'],
+  ['western_europe_summer', 1, 'western Europe warm'],
+  ['northeast_brazil', -1, 'the Nordeste dry'],
+  ['indian_summer_monsoon', 1, 'the Indian monsoon stronger'],
+];
+
+describe('acceptance: positive AMO, June start', () => {
+  const tl = runAmo('positive');
+  for (const [id, sign, label] of POSITIVE_AMO) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('hurricanes, the Plains, Europe and the monsoon are applied from month 0 (June); the Sahel from July; the Nordeste from February', () => {
+    expect(tl.months[0].calendarMonth).toBe(6);
+    expect(tl.months[0].nodes.atlantic_hurricanes.value).toBe(1);
+    expect(tl.months[0].nodes.us_great_plains_summer.value).toBe(-1);
+    expect(tl.months[0].nodes.western_europe_summer.value).toBe(1);
+    expect(tl.months[0].nodes.indian_summer_monsoon.value).toBe(1);
+    expect(tl.months[0].nodes.sahel_rainfall.value).toBe(0);
+    expect(tl.months[0].nodes.sahel_rainfall.pendingLinkIds).toEqual(['positive_amo_sahel']);
+    expect(tl.months[1].nodes.sahel_rainfall.value).toBe(1);
+    expect(tl.months[7].calendarMonth).toBe(1);
+    expect(tl.months[7].nodes.northeast_brazil.value).toBe(0);
+    expect(tl.months[8].nodes.northeast_brazil.value).toBe(-1);
+  });
+  it('the summer links are pending, not applied, in winter (December)', () => {
+    const dec = tl.months.find((m) => m.calendarMonth === 12)!;
+    for (const id of ['atlantic_hurricanes', 'sahel_rainfall', 'us_great_plains_summer', 'western_europe_summer', 'indian_summer_monsoon']) {
+      expect(dec.nodes[id].viaLinkIds, id).toHaveLength(0);
+      expect(dec.nodes[id].pendingLinkIds.length, id).toBeGreaterThan(0);
+    }
+  });
+  it('tiers: hurricanes and the Sahel established, the Plains and Europe probable, the Nordeste, the monsoon and the NAO contested', () => {
+    const own = graph.links.filter((l) => l.from === 'amo');
+    expect(own).toHaveLength(14);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => l.confidence);
+    expect(tier('atlantic_hurricanes')).toEqual(['established', 'established']);
+    expect(tier('sahel_rainfall')).toEqual(['established', 'established']);
+    expect(tier('us_great_plains_summer')).toEqual(['probable', 'probable']);
+    expect(tier('western_europe_summer')).toEqual(['probable', 'probable']);
+    expect(tier('northeast_brazil')).toEqual(['contested', 'contested']);
+    expect(tier('indian_summer_monsoon')).toEqual(['contested', 'contested']);
+    expect(tier('nao')).toEqual(['contested', 'contested']);
+    expect(tl.months[0].nodes.atlantic_hurricanes.confidence).toBe('established');
+    expect(tl.months[0].nodes.indian_summer_monsoon.confidence).toBe('contested');
+  });
+  it('regions of the other drivers stay hollow: the map does not fake an AMO effect', () => {
+    for (const id of ['peru_coast_rainfall', 'indonesia_rainfall', 'east_australia_rainfall', 'alaska_winter', 'patagonia_rainfall', 'california_winter', 'east_africa_short_rains']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+  it('at depth 1 the NAO is pushed but its own links do not fire: northern Europe stays hollow', () => {
+    expect(tl.months[6].nodes.nao.value).toBe(-1);
+    for (const m of tl.months) expect(m.nodes.northern_europe_winter.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+  });
+});
+
+describe('acceptance: negative AMO, June start', () => {
+  const tl = runAmo('negative');
+  it('reverses the positive phase at every target, and never copies its sign', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'amo' && l.when === 'negative' && l.to !== 'nao').map((l) => l.to));
+    expect(targets.size).toBe(POSITIVE_AMO.length);
+    for (const [id, sign] of POSITIVE_AMO) {
+      expect(targets.has(id), `${id} has no negative link`).toBe(true);
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the positive phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the positive sign`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: the AMO tilts the NAO (June start, chain on)', () => {
+  const tl = runDeep('amo', 'positive', 6);
+  it('a positive AMO pushes the NAO negative from December (winter only) at the contested tier', () => {
+    for (const m of tl.months) expect(m.nodes.nao.value, `month ${m.index}`).toBe(m.calendarMonth === 12 || m.calendarMonth <= 3 ? -1 : 0);
+    expect(tl.months[6].calendarMonth).toBe(12);
+    expect(tl.months[6].links.positive_amo_negative_nao?.status).toBe('applied');
+    expect(tl.months[6].nodes.nao.confidence).toBe('contested');
+  });
+  it('the pushed NAO cools northern Europe in winter, two hops down and never above contested', () => {
+    const jan = tl.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.nodes.northern_europe_winter.value).toBe(-1);
+    expect(jan.nodes.northern_europe_winter.viaLinkIds).toEqual(['negative_nao_northern_europe']);
+    expect(jan.nodes.northern_europe_winter.confidence).toBe('contested');
+    expect(jan.links.negative_nao_northern_europe?.depth).toBe(2);
+  });
+  it('under "established only" the tilt is a ghost and northern Europe stays hollow', () => {
+    const est = propagate(graph, { driverId: 'amo', phaseId: 'positive', startMonth: 6, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    const jan = est.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.links.positive_amo_negative_nao?.status).toBe('ghost');
+    expect(jan.nodes.nao.value).toBe(0);
+    expect(jan.nodes.northern_europe_winter.value).toBe(0);
+  });
+  it('a negative AMO pushes the NAO positive and northern Europe mild', () => {
+    const neg = runDeep('amo', 'negative', 6);
+    const jan = neg.months.find((m) => m.calendarMonth === 1)!;
+    expect(jan.nodes.nao.value).toBe(1);
+    expect(jan.nodes.northern_europe_winter.value).toBe(1);
+  });
+  it('nothing on the map pushes the AMO', () => {
+    expect(graph.links.filter((l) => l.to === 'amo')).toHaveLength(0);
+  });
+});
+
+describe('acceptance: the 1995 story, a positive AMO with La Niña from September', () => {
+  const tl = runTwo(['amo', 'positive'], ['enso', 'la_nina'], 6, 9);
+  it('La Niña enters at month 3 (September) and is never pushed before it', () => {
+    expect(chosenOnset(tl.scenario, 'enso')).toBe(3);
+    for (const m of tl.months.slice(0, 3)) expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
+    expect(tl.months[3].nodes.enso.value).toBe(-1);
+  });
+  it('in October the hurricane region carries both arrows, same sign, rated established by both', () => {
+    const oct = tl.months[4];
+    expect(oct.calendarMonth).toBe(10);
+    expect([...oct.nodes.atlantic_hurricanes.viaLinkIds].sort()).toEqual(['la_nina_atlantic_hurricanes', 'positive_amo_atlantic_hurricanes']);
+    expect(oct.nodes.atlantic_hurricanes.value).toBe(1);
+    expect(oct.nodes.atlantic_hurricanes.conflicting).toBe(false);
+    expect(oct.nodes.atlantic_hurricanes.confidence).toBe('established');
+  });
+  it('the two drivers pull the NAO opposite ways by March: the AMO from December, La Niña once its lag has run, so the NAO conflicts and holds no phase', () => {
+    const dec = tl.months[6];
+    expect(dec.calendarMonth).toBe(12);
+    expect(dec.nodes.nao.value).toBe(-1);
+    const mar = tl.months[9];
+    expect(mar.calendarMonth).toBe(3);
+    expect([...mar.nodes.nao.viaLinkIds].sort()).toEqual(['la_nina_positive_nao', 'positive_amo_negative_nao']);
+    expect(mar.nodes.nao.conflicting).toBe(true);
+    expect(mar.nodes.nao.value).toBe(0);
+    expect(mar.nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
+  });
+  it('the shipped story uses these settings', () => {
+    const s = graph.stories.find((x) => x.id === 'positive_amo_1995')!;
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
+      .toEqual(['amo', 'positive', 'enso', 'la_nina', 9, undefined, 6, 1995]);
   });
 });
