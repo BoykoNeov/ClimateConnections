@@ -1138,3 +1138,113 @@ stories:
           once held the water. The map shows the tendency; the damage
           depends on what people have done on the ground.
         sources: [kosaka_2013, zong_chen_2000, xie_2016]
+
+  - id: positive_amm_2005_amazon
+    title: "2005: the Amazon dries without an El Niño"
+    intro: >
+      In the spring of 2005 the tropical Atlantic north of the equator ran
+      unusually warm and the rain belt sat well north of its usual place.
+      There was no El Niño to blame: the weak one of the previous winter
+      had faded, and the studies of what followed find the cause in the
+      Atlantic. The year shown begins in March 2005 with the meridional
+      mode in its positive phase and no second driver, so the map can show
+      what the Atlantic does on its own: the busiest hurricane season on
+      record and a drought that stranded boats on the Amazon's western
+      rivers.
+    driver: atlantic_meridional_mode
+    phase: positive
+    start_month: 3
+    start_year: 2005
+    steps:
+      - month: 0
+        focus: atlantic_meridional_mode
+        text: >
+          By March 2005 the northern tropical Atlantic was warmer than
+          usual and the southern side cooler, and the belt of tropical
+          rain that normally sits near 5°N in spring had moved north over
+          the warm water. This is the mode in its positive phase. It is
+          usually set off by a winter of weak trade winds, from an El Niño
+          or a negative North Atlantic Oscillation, and then wind and
+          evaporation feed on each other to hold the contrast through
+          spring. In 2005 the Pacific was near neutral by spring, so this
+          story leaves ENSO out and lets the Atlantic act alone.
+        sources: [chiang_vimont_2004, marengo_2008, noaa_psl_amm]
+
+      - month: 1
+        focus: northeast_brazil
+        text: >
+          The first arrow is the shortest. The Nordeste's rainy season
+          comes in March and April, when the rain belt reaches its
+          southernmost point; with the north Atlantic warm the belt stays
+          north and withdraws early, and sinking air sits over Northeast
+          Brazil instead. This is the classic mechanism of Nordeste
+          drought, worked out in the early 1980s, and it is one of the
+          most reliable arrows on the map. El Niño dries the Nordeste in
+          the same months through its own arrow, and the two usually
+          arrive together, since an El Niño winter tends to warm the north
+          Atlantic; here the Atlantic is acting by itself.
+        sources: [moura_shukla_1981, hastenrath_greischar_1993, nobre_shukla_1996]
+
+      - month: 3
+        focus: atlantic_hurricanes
+        text: >
+          From June the solid arrow points at the hurricane grounds and
+          says active. The 2005 season was the most active on record:
+          twenty-eight storms, fifteen of them hurricanes, seven of those
+          major, with Katrina among them, and the records for storms,
+          hurricanes and total storm energy all broken. A warm northern
+          tropical Atlantic with the rain belt north gives storms warm
+          water, moist air and weak wind shear, and moves their
+          birthplace out over the open Atlantic where they have room to
+          grow. The same year sat inside a warm AMO decade, which makes
+          such springs more common; had the AMO been chosen too, its
+          arrow would point the same way and the map would rate the
+          region by the weaker of the two.
+        sources: [beven_2008, kossin_vimont_2007, vimont_kossin_2007]
+
+      - month: 6
+        focus: southwest_amazon_dry_season
+        text: >
+          By September the drought in the southwestern Amazon was one of
+          the most intense in a hundred years. The Solimões and the
+          Madeira fell to record lows, navigation was suspended, villages
+          along the rivers were cut off, and with the air 3–5°C warmer
+          than usual and the dry season stretched long, fires ran through
+          parts of Acre and Rondônia. The mechanism is the arrow's: the
+          warm north Atlantic kept the rain belt and the rising air north,
+          the trade winds carried less moisture into southern Amazonia,
+          and the air over the region sank instead of rising. The arrow is
+          dashed, because this is known from two droughts and a short
+          record of correlations.
+        sources: [marengo_2008, zeng_2008, phillips_2009]
+
+      - month: 7
+        focus: southwest_amazon_dry_season
+        text: >
+          Here is the teaching point. Look at ENSO's marker: it is grey, not
+          part of this scenario, and no arrow reaches the Amazon from the
+          Pacific. The usual suspect for an Amazon drought is El Niño, as
+          in 1926, 1983 and 1998, but those droughts fell in the wet season
+          and on the central and eastern side of the basin. The 2005
+          drought did not touch central or eastern Amazonia; it fell in the
+          dry season, in the southwest, and the studies of it find the
+          cause in the Atlantic, whose influence on Amazon rain over
+          1979–2005 is comparable to the Pacific's. Five years later, in
+          2010, the same warm north Atlantic did it again, and worse.
+        sources: [marengo_2008, zeng_2008, marengo_2011]
+
+      - month: 12
+        focus: atlantic_meridional_mode
+        text: >
+          A year on, in March 2006, the map still holds the mode positive.
+          The real contrast had faded by late summer 2005, as it usually
+          does; the rains returned to the Amazon in October and brought
+          floods after February 2006. Two cautions travel with this
+          driver. It overlaps the AMO on the map and in its effects, and
+          the map does not draw the AMO pushing it, because the same
+          tropical warmth would then be counted twice on the hurricanes,
+          the Sahel and the Nordeste. And a drought's cost depends on the
+          ground as much as the sky: the 2005 dry season turned the forest
+          from a store of carbon into a source, and the fires were set by
+          people. The map shows the tendency; the damage is a human story.
+        sources: [marengo_2008, phillips_2009, vimont_kossin_2007]

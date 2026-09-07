@@ -178,10 +178,14 @@ describe('acceptance: positive NAO, December start', () => {
     expect(tl.months[0].nodes.northern_europe_winter.value).toBe(1);
     expect(tl.months[0].nodes.greenland_winter.value).toBe(-1);
   });
-  it('is a winter pattern: nothing is applied from April to October', () => {
+  it('is a winter pattern: nothing is applied from April to October (except the spring mode it pushes, M21)', () => {
     for (const m of tl.months) {
       if (m.calendarMonth < 4 || m.calendarMonth > 10) continue;
-      for (const st of Object.values(m.nodes)) expect(st.viaLinkIds, `month ${m.index} (calendar ${m.calendarMonth})`).toHaveLength(0);
+      for (const [id, st] of Object.entries(m.nodes)) {
+        // Since M21 a positive NAO winter pushes the Atlantic meridional mode negative from February and holds it; that is a driver, not a region.
+        if (id === 'atlantic_meridional_mode') continue;
+        expect(st.viaLinkIds, `month ${m.index} (calendar ${m.calendarMonth})`).toHaveLength(0);
+      }
     }
     // ...but the winter links are pending, not gone, in the summer months.
     const july = tl.months.find((m) => m.calendarMonth === 7)!;
@@ -221,8 +225,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño and the Indian Ocean basin mode as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pdo', 'sam'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode and the Atlantic meridional mode as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -244,6 +248,7 @@ describe('acceptance: drivers', () => {
     expect(start('amo')).toBe(6);
     expect(start('atlantic_nino')).toBe(5);
     expect(start('indian_ocean_basin')).toBe(2);
+    expect(start('atlantic_meridional_mode')).toBe(3);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -384,10 +389,10 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships seventeen driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twenty-one driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'la_nina_cool_basin', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
-      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'warm_basin_la_nina',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
+      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'warm_basin_la_nina',
     ]);
     for (const l of d2d) {
       expect(l.from).not.toBe(l.to);
@@ -1580,5 +1585,189 @@ describe('acceptance: the 1998 scenario, a warm basin with the El Niño that beg
     expect(s).toBeDefined();
     expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 3, 4, 5, 6, 12]);
+  });
+});
+
+
+// ---------------------------------------------------------------- M21: ninth driver (Atlantic Meridional Mode)
+// The mode peaks in March–May, so its scenarios start in March. Nothing on
+// the map is pushed by it; ENSO and the NAO push it.
+function runAmm(phaseId: string, startMonth = 3, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'atlantic_meridional_mode', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+const POSITIVE_AMM: Array<[string, Value, string]> = [
+  ['atlantic_hurricanes', 1, 'the hurricane season active'],
+  ['northeast_brazil', -1, 'the Nordeste dry'],
+  ['sahel_rainfall', 1, 'the Sahel wet'],
+  ['southwest_amazon_dry_season', -1, 'the southern Amazon dry season harsher'],
+  ['central_america_rainfall', 1, 'Central America wet'],
+];
+
+describe('acceptance: positive Atlantic meridional mode, March start', () => {
+  const tl = runAmm('positive');
+  for (const [id, sign, label] of POSITIVE_AMM) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the Nordeste dry from month 0 (March) through May; the hurricanes from June (month 3), pending in May; the Sahel July–September; the Amazon June–October; Central America May–July', () => {
+    expect(tl.months[0].calendarMonth).toBe(3);
+    expect(monthsWith(tl, 'northeast_brazil', -1)).toEqual([0, 1, 2, 11, 12]);
+    expect(tl.months[3].nodes.northeast_brazil.pendingLinkIds).toEqual(['positive_amm_northeast_brazil']);
+    expect(monthsWith(tl, 'atlantic_hurricanes', 1)).toEqual([3, 4, 5, 6, 7, 8]);
+    expect(tl.months[1].nodes.atlantic_hurricanes.pendingLinkIds).toHaveLength(0);
+    expect(tl.months[2].nodes.atlantic_hurricanes.pendingLinkIds).toEqual(['positive_amm_atlantic_hurricanes']);
+    expect(monthsWith(tl, 'sahel_rainfall', 1)).toEqual([4, 5, 6]);
+    expect(monthsWith(tl, 'southwest_amazon_dry_season', -1)).toEqual([3, 4, 5, 6, 7]);
+    expect(monthsWith(tl, 'central_america_rainfall', 1)).toEqual([2, 3, 4]);
+  });
+  it('tiers: hurricanes and the Nordeste established, the Sahel, the Amazon and Central America probable, the Amazon wet side contested', () => {
+    const own = graph.links.filter((l) => l.from === 'atlantic_meridional_mode');
+    expect(own).toHaveLength(9);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => `${l.when}:${l.confidence}`).sort();
+    expect(tier('atlantic_hurricanes')).toEqual(['negative:established', 'positive:established']);
+    expect(tier('northeast_brazil')).toEqual(['negative:established', 'positive:established']);
+    expect(tier('sahel_rainfall')).toEqual(['negative:probable', 'positive:probable']);
+    expect(tier('southwest_amazon_dry_season')).toEqual(['negative:contested', 'positive:probable']);
+    expect(tier('central_america_rainfall')).toEqual(['positive:probable']);
+    expect(tl.months[3].nodes.atlantic_hurricanes.confidence).toBe('established');
+    expect(tl.months[0].nodes.northeast_brazil.confidence).toBe('established');
+    expect(tl.months[5].nodes.southwest_amazon_dry_season.confidence).toBe('probable');
+  });
+  it('under "established only" the Sahel, the Amazon and Central America are hollow ghosts while the hurricanes and the Nordeste still apply', () => {
+    const est = propagate(graph, { driverId: 'atlantic_meridional_mode', phaseId: 'positive', startMonth: 3, horizonMonths: HORIZON, maxDepth: 1, minConfidence: 'established' });
+    expect(est.months[5].nodes.sahel_rainfall.value).toBe(0);
+    expect(est.months[5].links.positive_amm_sahel?.status).toBe('ghost');
+    expect(est.months[5].nodes.southwest_amazon_dry_season.value).toBe(0);
+    expect(est.months[5].links.positive_amm_southern_amazon?.status).toBe('ghost');
+    expect(est.months[3].nodes.central_america_rainfall.value).toBe(0);
+    expect(est.months[3].links.positive_amm_central_america?.status).toBe('ghost');
+    expect(est.months[3].nodes.atlantic_hurricanes.value).toBe(1);
+    expect(est.months[0].nodes.northeast_brazil.value).toBe(-1);
+  });
+  it('the mode pushes nothing: ENSO, the NAO and the AMO stay neutral even with the chain on, and the regions of the other drivers stay hollow', () => {
+    const deep = runAmm('positive', 3, 3);
+    for (const m of deep.months) {
+      for (const id of ['enso', 'nao', 'amo', 'atlantic_nino', 'iod']) {
+        expect(m.nodes[id].value, `${id} at month ${m.index}`).toBe(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+      for (const id of ['northern_amazon_rainfall', 'guinea_coast_rainfall', 'us_great_plains_summer', 'western_europe_summer', 'indonesia_rainfall', 'east_africa_short_rains']) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: negative Atlantic meridional mode, March start', () => {
+  const tl = runAmm('negative');
+  it('reverses the hurricanes, the Nordeste, the Sahel and the Amazon, and never copies the positive sign', () => {
+    for (const [id, sign] of POSITIVE_AMM.filter(([id]) => id !== 'central_america_rainfall')) {
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the positive phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the positive sign`).toHaveLength(0);
+    }
+    expect(tl.months[3].nodes.atlantic_hurricanes.confidence).toBe('established');
+    expect(tl.months[0].nodes.northeast_brazil.confidence).toBe('established');
+    expect(tl.months[5].nodes.sahel_rainfall.confidence).toBe('probable');
+    expect(tl.months[5].nodes.southwest_amazon_dry_season.confidence).toBe('contested');
+  });
+  it('leaves Central America hollow: the literature supports the warm-north side only', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.central_america_rainfall.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      expect(m.nodes.central_america_rainfall.pendingLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: El Niño pushes the mode positive the following spring (June start, chain on)', () => {
+  const tl = runDeep('enso', 'el_nino', 6);
+  it('the mode is pushed in March (lag 9) at depth 1, rated established, and holds to the end of the year shown', () => {
+    expect(tl.months[8].nodes.atlantic_meridional_mode.value).toBe(0);
+    expect(tl.months[9].calendarMonth).toBe(3);
+    expect(tl.months[9].nodes.atlantic_meridional_mode.value).toBe(1);
+    expect(tl.months[9].nodes.atlantic_meridional_mode.viaLinkIds).toEqual(['el_nino_positive_amm']);
+    expect(tl.months[9].links.el_nino_positive_amm?.depth).toBe(1);
+    expect(tl.months[9].nodes.atlantic_meridional_mode.confidence).toBe('established');
+    expect(tl.months[12].nodes.atlantic_meridional_mode.value).toBe(1);
+  });
+  it('the Nordeste carries both arrows from March, same sign, rated by the weaker (the mode’s one tier down)', () => {
+    expect(tl.months[8].nodes.northeast_brazil.viaLinkIds).toEqual(['el_nino_northeast_brazil']);
+    const mar = tl.months[9];
+    expect([...mar.nodes.northeast_brazil.viaLinkIds].sort()).toEqual(['el_nino_northeast_brazil', 'positive_amm_northeast_brazil']);
+    expect(mar.nodes.northeast_brazil.value).toBe(-1);
+    expect(mar.nodes.northeast_brazil.conflicting).toBe(false);
+    expect(mar.links.positive_amm_northeast_brazil?.depth).toBe(2);
+    expect(mar.links.positive_amm_northeast_brazil?.confidence).toBe('probable');
+    expect(mar.nodes.northeast_brazil.confidence).toBe('probable');
+  });
+  it('at month 12 (June) the pushed mode says active hurricanes and the El Niño says quiet: a conflict, the compensation the literature describes', () => {
+    const jun = tl.months[12];
+    expect(jun.calendarMonth).toBe(6);
+    expect([...jun.nodes.atlantic_hurricanes.viaLinkIds].sort()).toEqual(['el_nino_atlantic_hurricanes', 'positive_amm_atlantic_hurricanes']);
+    expect(jun.nodes.atlantic_hurricanes.value).toBe(0);
+    expect(jun.nodes.atlantic_hurricanes.conflicting).toBe(true);
+    expect(tl.months[11].nodes.atlantic_hurricanes.pendingLinkIds).toContain('positive_amm_atlantic_hurricanes');
+  });
+  it('ENSO is never pushed back: the mode has no outward driver links', () => {
+    for (const m of tl.months) expect(m.nodes.enso.value, `month ${m.index}`).toBe(1);
+    expect(graph.links.filter((l) => l.from === 'atlantic_meridional_mode' && graph.nodes.find((n) => n.id === l.to)?.kind === 'driver')).toHaveLength(0);
+  });
+  it('a La Niña from June pushes the mode negative in March, rated probable', () => {
+    const ln = runDeep('enso', 'la_nina', 6);
+    expect(ln.months[8].nodes.atlantic_meridional_mode.value).toBe(0);
+    expect(ln.months[9].nodes.atlantic_meridional_mode.value).toBe(-1);
+    expect(ln.months[9].nodes.atlantic_meridional_mode.confidence).toBe('probable');
+  });
+});
+
+describe('acceptance: a negative NAO winter pushes the mode positive in spring (December start, chain on)', () => {
+  const tl = runDeep('nao', 'negative', 12);
+  it('the mode is pushed in February (lag 2) at depth 1, rated probable', () => {
+    expect(tl.months[1].nodes.atlantic_meridional_mode.value).toBe(0);
+    expect(tl.months[2].calendarMonth).toBe(2);
+    expect(tl.months[2].nodes.atlantic_meridional_mode.value).toBe(1);
+    expect(tl.months[2].nodes.atlantic_meridional_mode.viaLinkIds).toEqual(['negative_nao_positive_amm']);
+    expect(tl.months[2].nodes.atlantic_meridional_mode.confidence).toBe('probable');
+  });
+  it('the pushed mode dries the Nordeste February–May and fires the hurricanes from June, one tier down, with the Sahel contested in July', () => {
+    expect(monthsWith(tl, 'northeast_brazil', -1)).toEqual([2, 3, 4, 5]);
+    expect(tl.months[2].links.positive_amm_northeast_brazil?.depth).toBe(2);
+    expect(tl.months[2].nodes.northeast_brazil.confidence).toBe('probable');
+    expect(monthsWith(tl, 'atlantic_hurricanes', 1)).toEqual([6, 7, 8, 9, 10, 11]);
+    expect(tl.months[6].nodes.atlantic_hurricanes.confidence).toBe('probable');
+    expect(monthsWith(tl, 'sahel_rainfall', 1)).toEqual([7, 8, 9]);
+    expect(tl.months[7].nodes.sahel_rainfall.confidence).toBe('contested');
+  });
+  it('a positive NAO pushes the mode negative; under "established only" the push is a ghost and the mode stays neutral', () => {
+    const pos = runDeep('nao', 'positive', 12);
+    expect(pos.months[2].nodes.atlantic_meridional_mode.value).toBe(-1);
+    const est = propagate(graph, { driverId: 'nao', phaseId: 'negative', startMonth: 12, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    expect(est.months[2].links.negative_nao_positive_amm?.status).toBe('ghost');
+    for (const m of est.months) expect(m.nodes.atlantic_meridional_mode.value, `month ${m.index}`).toBe(0);
+  });
+});
+
+describe('acceptance: the 2005 story, the mode alone from March', () => {
+  const s = graph.stories.find((x) => x.id === 'positive_amm_2005_amazon')!;
+  it('ships with the mode positive from March 2005, no second driver, six steps', () => {
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['atlantic_meridional_mode', 'positive', undefined, 3, 2005]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 1, 3, 6, 7, 12]);
+  });
+  it('shows the hurricanes arrow at full tier from June with ENSO hollow all year', () => {
+    const tl = propagate(graph, { driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3 });
+    expect(tl.months[3].nodes.atlantic_hurricanes.viaLinkIds).toEqual(['positive_amm_atlantic_hurricanes']);
+    expect(tl.months[3].nodes.atlantic_hurricanes.confidence).toBe('established');
+    expect(tl.months[3].links.positive_amm_atlantic_hurricanes?.depth).toBe(1);
+    for (const m of tl.months) {
+      expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
+      expect(m.nodes.enso.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      expect(m.nodes.enso.pendingLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+    expect(tl.months[6].nodes.southwest_amazon_dry_season.value).toBe(-1);
+    expect(tl.months[7].nodes.southwest_amazon_dry_season.value).toBe(-1);
   });
 });

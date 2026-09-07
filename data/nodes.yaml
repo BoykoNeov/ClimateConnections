@@ -442,6 +442,71 @@ nodes:
           busier. The cooling after a La Niña is weaker and less reliable
           than the warming after an El Niño, so fewer links are drawn.
     sources: [klein_1999, xie_2009, xie_2016, du_2009, chowdary_gnanaseelan_2007]
+  - id: atlantic_meridional_mode
+    name: Atlantic Meridional Mode (AMM)
+    label: AMM
+    kind: driver
+    lat: 7
+    lon: -26
+    area: [[-62, 20], [-12, 20], [-12, -5], [-62, -5]]
+    region: The tropical Atlantic, from the Caribbean to the Gulf of Guinea, either side of the rain belt
+    timescale: A season; peaks March–May and fades by late summer, in some years lingering into the hurricane season
+    summary: >
+      A spring-time contrast between the two sides of the tropical Atlantic.
+      In its positive phase the water north of the equator runs warm and
+      the water south of it cool, and the belt of tropical rain that
+      normally sits near 5°N moves north over the warm side; in the
+      negative phase the reverse. It is set off from outside: a winter of
+      weak trade winds, whether from an El Niño in the Pacific or a
+      negative North Atlantic Oscillation, lets the northern tropical
+      Atlantic warm, and then wind and evaporation feed on each other to
+      hold the contrast through spring. It is the mode that carries
+      those winter signals into the hurricane season, into the Nordeste's
+      rainy season and into the southern Amazon's dry season. It is the
+      seasonal cousin of the Atlantic Multidecadal Oscillation: that one
+      holds for decades, this one for a season, and a warm AMO decade
+      makes positive springs more common. The map does not draw the AMO
+      pushing this mode, because the same tropical warmth would then be
+      counted twice on the hurricanes, the Sahel and the Nordeste; the
+      two drivers rate those regions separately. The mode itself pushes
+      nothing on this map; a proposed feedback onto the Pacific is too
+      thin to draw.
+    onset_hint: The Atlantic meridional mode peaks in March–May; start in March to watch the Nordeste's rainy season, then the hurricane season and the Amazon's dry season that follow.
+    default_start_month: 3
+    phases:
+      - id: positive
+        value: 1
+        label: Positive AMM
+        color: "#e6ab02"
+        summary: >
+          The northern tropical Atlantic is warmer than usual, the southern
+          cooler, and the rain belt sits north of its usual place. The
+          Nordeste's rainy season tends to fail, the hurricane season to be
+          active, the Sahel's rains stronger, and the southern Amazon's dry
+          season harsher. The spring of 2005 was one such year, followed by
+          the busiest hurricane season on record and a drought that
+          emptied the Amazon's western rivers.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The two sides of the tropical Atlantic are close to their usual
+          temperatures and none of the meridional-mode tendencies on this
+          map are expected. ENSO, the AMO and the Atlantic Niño still shape
+          the region's weather.
+      - id: negative
+        value: -1
+        label: Negative AMM
+        color: "#66a61e"
+        summary: >
+          The northern tropical Atlantic is cooler than usual, the southern
+          warmer, and the rain belt sits south of its usual place, over
+          Northeast Brazil. The Nordeste tends to have a good rainy season
+          or floods, the hurricane season is quieter, the Sahel's rains
+          weaker. The spring of 2009 was a strong case, with floods in the
+          Nordeste.
+    sources: [chiang_vimont_2004, servain_1991, czaja_2002, vimont_kossin_2007, xie_carton_2004, noaa_psl_amm]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -529,8 +594,8 @@ nodes:
     name: Peruvian anchoveta fishery
     label: Peru fishery
     kind: outcome
-    lat: -12
-    lon: -79
+    lat: -15
+    lon: -77
     area: [[-84, -4], [-79, -4], [-72, -18], [-78, -20]]
     region: Humboldt Current, offshore Peru
     timescale: Months to a year
@@ -1122,7 +1187,7 @@ nodes:
     label: Northern Amazon
     kind: outcome
     lat: 4
-    lon: -63
+    lon: -68
     area: [[-78, 10], [-52, 10], [-52, -4], [-78, -4]]
     region: Northern Brazil, Colombia, Venezuela, the Guianas
     timescale: Strongest from the late year into the following March
@@ -1640,3 +1705,31 @@ nodes:
       to answer to ENSO; the spring season is less understood, and the
       arrow pointing here is the least certain on this map.
     sources: [evan_camargo_2011, ng_chan_2011, felton_2013]
+
+  # ---- Atlantic Meridional Mode outcomes (M21)
+  - id: southwest_amazon_dry_season
+    name: Southwestern Amazon dry season
+    label: SW Amazon
+    kind: outcome
+    lat: -9.2
+    lon: -69.5
+    area: [[-75, -3], [-57, -3], [-57, -14], [-75, -14]]
+    region: Acre, Rondônia, southern and western Amazonas; the Solimões and Madeira rivers
+    timescale: June–October, the dry season, when the rivers fall to their lowest
+    axis: wet_dry
+    labels:
+      plus: Dry season milder and rivers higher than usual
+      zero: Near normal
+      minus: Dry season harsher than usual, rivers low, more fires
+    summary: >
+      The southern and western Amazon has a real dry season, from June to
+      October, when the rivers fall, the forest lives on stored water and
+      the fires people set for clearing can run. How harsh it is depends on
+      the moisture the trade winds carry in from the tropical North
+      Atlantic: when that ocean is warm the rain belt and the rising air
+      stay north, the trades bring less moisture, and the dry season runs
+      long and hot. The droughts of 2005 and 2010, with the Solimões and
+      Madeira at record lows and boats stranded, followed warm north
+      Atlantic springs, not El Niños. El Niño's own Amazon drought falls
+      in the wet season, on the northern side of the basin.
+    sources: [marengo_2008, zeng_2008, marengo_2011, phillips_2009]

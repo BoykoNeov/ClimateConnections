@@ -488,6 +488,68 @@
       ]
     },
     {
+      "id": "atlantic_meridional_mode",
+      "name": "Atlantic Meridional Mode (AMM)",
+      "label": "AMM",
+      "area": [
+        [
+          -62,
+          20
+        ],
+        [
+          -12,
+          20
+        ],
+        [
+          -12,
+          -5
+        ],
+        [
+          -62,
+          -5
+        ]
+      ],
+      "lat": 7,
+      "lon": -26,
+      "region": "The tropical Atlantic, from the Caribbean to the Gulf of Guinea, either side of the rain belt",
+      "timescale": "A season; peaks March–May and fades by late summer, in some years lingering into the hurricane season",
+      "summary": "A spring-time contrast between the two sides of the tropical Atlantic. In its positive phase the water north of the equator runs warm and the water south of it cool, and the belt of tropical rain that normally sits near 5°N moves north over the warm side; in the negative phase the reverse. It is set off from outside: a winter of weak trade winds, whether from an El Niño in the Pacific or a negative North Atlantic Oscillation, lets the northern tropical Atlantic warm, and then wind and evaporation feed on each other to hold the contrast through spring. It is the mode that carries those winter signals into the hurricane season, into the Nordeste's rainy season and into the southern Amazon's dry season. It is the seasonal cousin of the Atlantic Multidecadal Oscillation: that one holds for decades, this one for a season, and a warm AMO decade makes positive springs more common. The map does not draw the AMO pushing this mode, because the same tropical warmth would then be counted twice on the hurricanes, the Sahel and the Nordeste; the two drivers rate those regions separately. The mode itself pushes nothing on this map; a proposed feedback onto the Pacific is too thin to draw.\n",
+      "sources": [
+        "chiang_vimont_2004",
+        "servain_1991",
+        "czaja_2002",
+        "vimont_kossin_2007",
+        "xie_carton_2004",
+        "noaa_psl_amm"
+      ],
+      "kind": "driver",
+      "onset_hint": "The Atlantic meridional mode peaks in March–May; start in March to watch the Nordeste's rainy season, then the hurricane season and the Amazon's dry season that follow.",
+      "default_start_month": 3,
+      "phases": [
+        {
+          "id": "positive",
+          "label": "Positive AMM",
+          "color": "#e6ab02",
+          "summary": "The northern tropical Atlantic is warmer than usual, the southern cooler, and the rain belt sits north of its usual place. The Nordeste's rainy season tends to fail, the hurricane season to be active, the Sahel's rains stronger, and the southern Amazon's dry season harsher. The spring of 2005 was one such year, followed by the busiest hurricane season on record and a drought that emptied the Amazon's western rivers.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "The two sides of the tropical Atlantic are close to their usual temperatures and none of the meridional-mode tendencies on this map are expected. ENSO, the AMO and the Atlantic Niño still shape the region's weather.\n",
+          "value": 0
+        },
+        {
+          "id": "negative",
+          "label": "Negative AMM",
+          "color": "#66a61e",
+          "summary": "The northern tropical Atlantic is cooler than usual, the southern warmer, and the rain belt sits south of its usual place, over Northeast Brazil. The Nordeste tends to have a good rainy season or floods, the hurricane season is quieter, the Sahel's rains weaker. The spring of 2009 was a strong case, with floods in the Nordeste.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -689,8 +751,8 @@
           -20
         ]
       ],
-      "lat": -12,
-      "lon": -79,
+      "lat": -15,
+      "lon": -77,
       "region": "Humboldt Current, offshore Peru",
       "timescale": "Months to a year",
       "summary": "Cold, nutrient-rich water rising along the Peruvian coast feeds the largest single-species fishery on Earth. El Niño caps that upwelling with warm water, and the fish disappear; the 1972 collapse is the classic example.\n",
@@ -1808,7 +1870,7 @@
         ]
       ],
       "lat": 4,
-      "lon": -63,
+      "lon": -68,
       "region": "Northern Brazil, Colombia, Venezuela, the Guianas",
       "timescale": "Strongest from the late year into the following March",
       "summary": "The northern half of the Amazon basin and the Andean countries to its north receive their rain from air that rises over warm tropical waters. When El Niño moves the rising air out into the Pacific, the region tends to dry out, rivers fall and the forest burns more readily; the droughts of 1997–98 and 2015–16 both came with El Niño.\n",
@@ -2717,6 +2779,48 @@
         "plus": "More pre-monsoon storms than usual",
         "zero": "Near normal",
         "minus": "Fewer pre-monsoon storms than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "southwest_amazon_dry_season",
+      "name": "Southwestern Amazon dry season",
+      "label": "SW Amazon",
+      "area": [
+        [
+          -75,
+          -3
+        ],
+        [
+          -57,
+          -3
+        ],
+        [
+          -57,
+          -14
+        ],
+        [
+          -75,
+          -14
+        ]
+      ],
+      "lat": -9.2,
+      "lon": -69.5,
+      "region": "Acre, Rondônia, southern and western Amazonas; the Solimões and Madeira rivers",
+      "timescale": "June–October, the dry season, when the rivers fall to their lowest",
+      "summary": "The southern and western Amazon has a real dry season, from June to October, when the rivers fall, the forest lives on stored water and the fires people set for clearing can run. How harsh it is depends on the moisture the trade winds carry in from the tropical North Atlantic: when that ocean is warm the rain belt and the rising air stay north, the trades bring less moisture, and the dry season runs long and hot. The droughts of 2005 and 2010, with the Solimões and Madeira at record lows and boats stranded, followed warm north Atlantic springs, not El Niños. El Niño's own Amazon drought falls in the wet season, on the northern side of the basin.\n",
+      "sources": [
+        "marengo_2008",
+        "zeng_2008",
+        "marengo_2011",
+        "phillips_2009"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Dry season milder and rivers higher than usual",
+        "zero": "Near normal",
+        "minus": "Dry season harsher than usual, rivers low, more fires"
       },
       "global": false
     }
@@ -6646,6 +6750,333 @@
         "okumura_2011",
         "xie_2016"
       ]
+    },
+    {
+      "id": "positive_amm_atlantic_hurricanes",
+      "from": "atlantic_meridional_mode",
+      "when": "positive",
+      "to": "atlantic_hurricanes",
+      "effect": 1,
+      "lag_months": [
+        2,
+        5
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "A warm northern tropical Atlantic with the rain belt sitting north puts warm water, moist air and weak wind shear over the sea where hurricanes are born, and shifts the birthplace of storms toward the open Atlantic, where they have room to grow.\n",
+      "caveat": "The mode peaks in spring and the hurricane season runs from June; in some years the spring contrast has faded by then. An El Niño in the same year works the other way and the two can cancel, which is what the map shows when both are in play.\n",
+      "evidence_note": "The mode is strongly related to seasonal hurricane activity on year-to-year and decadal time scales, through local conditions that all cooperate; a large part of overall activity is explained by shifts in where storms form, which track the mode; in summer the mode keeps its spring structure and reduces the wind shear over the tropical Atlantic, which model runs reproduce.\n",
+      "sources": [
+        "vimont_kossin_2007",
+        "kossin_vimont_2007",
+        "smirnov_vimont_2011",
+        "patricola_2014"
+      ]
+    },
+    {
+      "id": "negative_amm_atlantic_hurricanes",
+      "from": "atlantic_meridional_mode",
+      "when": "negative",
+      "to": "atlantic_hurricanes",
+      "effect": -1,
+      "lag_months": [
+        2,
+        5
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "A cool northern tropical Atlantic with the rain belt sitting south leaves cooler water, drier air and stronger wind shear over the hurricane breeding grounds, and storms that do form start closer to Africa's coast and the Caribbean, with less room to grow.\n",
+      "caveat": "A La Niña in the same year favours storms and can offset the quiet tendency; the relation is with the season as a whole, and a single strong storm can still form.\n",
+      "evidence_note": "The negative phase, with cool northern and warm southern tropical Atlantic water, inhibits Atlantic storms on its own, and the framework relating the mode to hurricane activity holds in both signs on interannual and multidecadal time scales.\n",
+      "sources": [
+        "patricola_2014",
+        "kossin_vimont_2007",
+        "vimont_kossin_2007"
+      ]
+    },
+    {
+      "id": "positive_amm_northeast_brazil",
+      "from": "atlantic_meridional_mode",
+      "when": "positive",
+      "to": "northeast_brazil",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "confidence": "established",
+      "mechanism": "The Nordeste's short rainy season comes when the tropical rain belt reaches its southernmost point, in March and April. With the north Atlantic warm and the south cool, the belt stays north and withdraws early, and sinking air sits over Northeast Brazil instead.\n",
+      "caveat": "The rains also answer the Pacific: an El Niño dries the Nordeste in the same months through its own arrow, and the two drivers usually arrive together, since an El Niño winter tends to warm the north Atlantic. Southern Bahia can run the other way from the northern Nordeste.\n",
+      "evidence_note": "The classic mechanism: warm water north and cool water south of the equator drive a local circulation with rising air near 10°N and sinking air over Northeast Brazil; in dry years the north Atlantic is warmer and the ITCZ displaced north; the Nordeste drought is the local face of a rain deficit across the whole equatorial Atlantic tied to the early withdrawal of the ITCZ toward the warm north.\n",
+      "sources": [
+        "moura_shukla_1981",
+        "hastenrath_greischar_1993",
+        "nobre_shukla_1996",
+        "kushnir_2006"
+      ]
+    },
+    {
+      "id": "negative_amm_northeast_brazil",
+      "from": "atlantic_meridional_mode",
+      "when": "negative",
+      "to": "northeast_brazil",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "confidence": "established",
+      "mechanism": "With the south Atlantic warm and the north cool, the rain belt pushes further south than usual and lingers over Northeast Brazil, giving the Nordeste a good rainy season or floods.\n",
+      "caveat": "A good year for the sertão can be a flood year for the coast, and a La Niña in the Pacific adds to the wet tendency on its own; the quantity depends on how far south the belt gets and for how long.\n",
+      "evidence_note": "In wet years the tropical North Atlantic is cooler and the South Atlantic warmer, with the near-equatorial rain belt displaced south and stronger rising air over the Nordeste; the strong negative event of spring 2009, with the belt shifted south, brought severe flooding to Northeast Brazil.\n",
+      "sources": [
+        "hastenrath_greischar_1993",
+        "foltz_2012",
+        "nobre_shukla_1996"
+      ]
+    },
+    {
+      "id": "positive_amm_sahel",
+      "from": "atlantic_meridional_mode",
+      "when": "positive",
+      "to": "sahel_rainfall",
+      "effect": 1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "When the north Atlantic is warm and the south cool, the tropical rain belt sits further north in summer over the eastern Atlantic and West Africa, and the monsoon winds carry moist air deeper into the Sahel.\n",
+      "caveat": "The mode peaks in spring and the Sahel's rains come in July– September; the arrow assumes the contrast lasts into summer, which it does in some years and not others. The Indian Ocean and the Mediterranean also move the Sahel's rains, and the decades-long swings belong to the AMO's arrow rather than this one.\n",
+      "evidence_note": "Wet Sahel years go with a warm north and a cool south tropical Atlantic and a rain belt displaced north; over the drought decades the north Atlantic cooled, the south warmed and the wind confluence over the eastern Atlantic moved 150–200 km south, most of all in July–August, enough to account for the fall in Sahel rain; the studies work with the sea-temperature pattern rather than the spring mode itself.\n",
+      "sources": [
+        "lamb_1978",
+        "folland_1986",
+        "hastenrath_1990",
+        "giannini_2003"
+      ]
+    },
+    {
+      "id": "negative_amm_sahel",
+      "from": "atlantic_meridional_mode",
+      "when": "negative",
+      "to": "sahel_rainfall",
+      "effect": -1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "With the north Atlantic cool and the south warm, the rain belt over the eastern Atlantic and West Africa sits further south in summer, and the monsoon's rains fall short of the Sahel.\n",
+      "caveat": "Same limits as the wet side: the spring contrast has to last into summer, and the Sahel answers other oceans too. The long drought of the 1970s and 1980s was the AMO's cool decades, not a run of single springs.\n",
+      "evidence_note": "Dry Sahel years go with a cool north and a warm south tropical Atlantic and a rain belt displaced south; the drought decades show the same pattern in every season, strongest in boreal summer.\n",
+      "sources": [
+        "lamb_1978",
+        "hastenrath_1990",
+        "folland_1986"
+      ]
+    },
+    {
+      "id": "positive_amm_southern_amazon",
+      "from": "atlantic_meridional_mode",
+      "when": "positive",
+      "to": "southwest_amazon_dry_season",
+      "effect": -1,
+      "lag_months": [
+        3,
+        7
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "probable",
+      "mechanism": "A warm tropical North Atlantic keeps the rain belt and the rising air north of the equator through the southern winter. The trade winds that would carry Atlantic moisture into the southern Amazon weaken, the air over the region sinks, and the dry season runs long and hot.\n",
+      "caveat": "Known from two droughts, 2005 and 2010, and a short record of correlations, so shown as probable. El Niño dries the Amazon too, but in the wet season and on the northern side of the basin, which is why the map keeps the two regions apart. How much the drought costs depends on the fires people set.\n",
+      "evidence_note": "The 2005 drought of southwestern Amazonia was not related to El Niño but to the anomalously warm tropical North Atlantic, weaker trade-wind moisture transport into southern Amazonia and weakened rising motion, intensified through the dry season into September; the Atlantic influence over 1979–2005 is comparable to the Pacific's and falls in the dry season; the 2010 drought was intensified by the same warming of the tropical North Atlantic through a longer dry season.\n",
+      "sources": [
+        "marengo_2008",
+        "zeng_2008",
+        "yoon_zeng_2010",
+        "marengo_2011"
+      ]
+    },
+    {
+      "id": "negative_amm_southern_amazon",
+      "from": "atlantic_meridional_mode",
+      "when": "negative",
+      "to": "southwest_amazon_dry_season",
+      "effect": 1,
+      "lag_months": [
+        3,
+        7
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "confidence": "contested",
+      "mechanism": "With the tropical North Atlantic cool and the rain belt sitting south, the trade winds are proposed to carry more moisture into the southern Amazon, so the dry season is milder and the rivers stay higher.\n",
+      "caveat": "The wet side is an inference from the correlation and the mechanism: the studies are about the two droughts, and there is no well-studied case of a cool north Atlantic spring giving the southern Amazon a gentle dry season. Shown as contested for that reason.\n",
+      "evidence_note": "The analysis of 1979–2005 finds a linear Atlantic influence on Amazon dry-season rainfall, which would run both ways, but the papers document the dry years only.\n",
+      "sources": [
+        "yoon_zeng_2010",
+        "zeng_2008"
+      ]
+    },
+    {
+      "id": "positive_amm_central_america",
+      "from": "atlantic_meridional_mode",
+      "when": "positive",
+      "to": "central_america_rainfall",
+      "effect": 1,
+      "lag_months": [
+        2,
+        4
+      ],
+      "season": [
+        5,
+        6,
+        7
+      ],
+      "confidence": "probable",
+      "mechanism": "A warm tropical North Atlantic and Caribbean gives the tropical waves that cross it in early summer more moisture and energy, so the first half of the rainy season, from May to July, tends to be wetter over the Caribbean and Central America.\n",
+      "caveat": "The early season answers the Atlantic; the late season, from August, answers the Pacific, and an El Niño can cancel the wet tendency. The studies use the north Atlantic's temperature rather than the spring mode itself, and the rain belt's position matters more for the Pacific coast of Central America than for the islands.\n",
+      "evidence_note": "Early-season (May–July) Caribbean rainfall is strongly influenced by warm water in the tropical North Atlantic between the equator and 20°N, the band where tropical waves develop, while the late season answers the equatorial Pacific and Atlantic; Central America is wettest when the north Atlantic is warm and the eastern Pacific cool.\n",
+      "sources": [
+        "taylor_2002",
+        "enfield_alfaro_1999",
+        "giannini_2000"
+      ]
+    },
+    {
+      "id": "el_nino_positive_amm",
+      "from": "enso",
+      "when": "el_nino",
+      "to": "atlantic_meridional_mode",
+      "effect": 1,
+      "lag_months": [
+        9,
+        11
+      ],
+      "season": [],
+      "confidence": "established",
+      "mechanism": "An El Niño winter weakens the northeast trade winds over the tropical Atlantic through the same chain of high and low pressure that reaches North America. Weaker trades mean less evaporation and less cooling, so the northern tropical Atlantic warms in late winter and the contrast with the south peaks the following spring.\n",
+      "caveat": "The warming trails the El Niño's peak by four to five months, so from a June start it arrives the following March and most of the mode's own effects fall after the year shown. Not every El Niño warms the Atlantic; a positive NAO winter can undo it.\n",
+      "evidence_note": "Half to four fifths of the north Atlantic trade-wind belt's temperature variability goes with the Pacific ENSO, with Atlantic warmings four to five months after the mature phase of Pacific warm events, through reduced trade winds and reduced evaporative cooling, best developed in the spring after; almost all extreme north tropical Atlantic springs since 1950 relate to ENSO or the NAO; the mode's spring predictability comes from the tropical Pacific.\n",
+      "sources": [
+        "enfield_mayer_1997",
+        "czaja_2002",
+        "nobre_shukla_1996",
+        "vimont_2012",
+        "chiang_vimont_2004"
+      ]
+    },
+    {
+      "id": "la_nina_negative_amm",
+      "from": "enso",
+      "when": "la_nina",
+      "to": "atlantic_meridional_mode",
+      "effect": -1,
+      "lag_months": [
+        9,
+        11
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "A La Niña winter strengthens the northeast trades over the tropical Atlantic, more evaporation cools the northern side, and the contrast tips the other way the following spring.\n",
+      "caveat": "The Atlantic's answer to a La Niña is weaker and less regular than its answer to an El Niño, and the study that found the lag looked at warm events; shown one tier lower for that reason.\n",
+      "evidence_note": "The remote-forcing study finds that the north tropical Atlantic's extreme springs of both signs relate to ENSO or the NAO through the trade winds and evaporation; the lag analysis itself was done on Pacific warm events.\n",
+      "sources": [
+        "czaja_2002",
+        "enfield_mayer_1997",
+        "kushnir_2006"
+      ]
+    },
+    {
+      "id": "negative_nao_positive_amm",
+      "from": "nao",
+      "when": "negative",
+      "to": "atlantic_meridional_mode",
+      "effect": 1,
+      "lag_months": [
+        2,
+        4
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "A negative NAO winter weakens the Azores high and with it the northeast trade winds. Weaker trades evaporate less water from the northern tropical Atlantic, which warms through late winter, and wind and evaporation then feed on each other to hold the warm north through spring.\n",
+      "caveat": "The NAO changes from month to month, so a single stormy December may not be enough; it is a winter's average that matters. The link is drawn from the NAO as chosen in December; the mode's own summer effects then fall inside the year shown, which is the point of the chain.\n",
+      "evidence_note": "Almost all extreme north tropical Atlantic springs since 1950 relate to either ENSO or the NAO, which lead them, through changes in surface winds and evaporation; the spring meridional modes are forced by trade-wind variations in the northern subtropical ocean; the 2009 negative event began with a stronger subtropical high and stronger trades in January–February, the mirror case.\n",
+      "sources": [
+        "czaja_2002",
+        "chiang_vimont_2004",
+        "foltz_2012",
+        "kushnir_2006"
+      ]
+    },
+    {
+      "id": "positive_nao_negative_amm",
+      "from": "nao",
+      "when": "positive",
+      "to": "atlantic_meridional_mode",
+      "effect": -1,
+      "lag_months": [
+        2,
+        4
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "A positive NAO winter strengthens the Azores high and the northeast trades, more evaporation cools the northern tropical Atlantic, and the contrast tips negative in spring, with the rain belt held south.\n",
+      "caveat": "Same limits as the mirror link: a winter's average matters, not one month, and an El Niño in the same winter works the other way.\n",
+      "evidence_note": "The strong negative event of 2009 was initiated by stronger than normal trade winds in January and February with a strengthened subtropical North Atlantic high, cooling the ocean by evaporation and deepening the mixed layer; the remote-forcing study ties such springs to the NAO and ENSO.\n",
+      "sources": [
+        "foltz_2012",
+        "czaja_2002",
+        "kushnir_2006"
+      ]
     }
   ],
   "sources": [
@@ -7617,6 +8048,126 @@
       "key": "okumura_2011",
       "citation": "Okumura, Y. M., Ohba, M., Deser, C., & Ueda, H. (2011). A proposed mechanism for the asymmetric duration of El Niño and La Niña. Journal of Climate, 24(15), 3822–3829.",
       "url": "https://doi.org/10.1175/2011JCLI3999.1"
+    },
+    {
+      "key": "chiang_vimont_2004",
+      "citation": "Chiang, J. C. H., & Vimont, D. J. (2004). Analogous Pacific and Atlantic meridional modes of tropical atmosphere–ocean variability. Journal of Climate, 17(21), 4143–4158.",
+      "url": "https://doi.org/10.1175/JCLI4953.1"
+    },
+    {
+      "key": "vimont_kossin_2007",
+      "citation": "Vimont, D. J., & Kossin, J. P. (2007). The Atlantic Meridional Mode and hurricane activity. Geophysical Research Letters, 34, L07709.",
+      "url": "https://doi.org/10.1029/2007GL029683"
+    },
+    {
+      "key": "kossin_vimont_2007",
+      "citation": "Kossin, J. P., & Vimont, D. J. (2007). A more general framework for understanding Atlantic hurricane variability and trends. Bulletin of the American Meteorological Society, 88(11), 1767–1782.",
+      "url": "https://doi.org/10.1175/BAMS-88-11-1767"
+    },
+    {
+      "key": "smirnov_vimont_2011",
+      "citation": "Smirnov, D., & Vimont, D. J. (2011). Variability of the Atlantic Meridional Mode during the Atlantic hurricane season. Journal of Climate, 24(5), 1409–1424.",
+      "url": "https://doi.org/10.1175/2010JCLI3549.1"
+    },
+    {
+      "key": "patricola_2014",
+      "citation": "Patricola, C. M., Saravanan, R., & Chang, P. (2014). The impact of the El Niño–Southern Oscillation and Atlantic Meridional Mode on seasonal Atlantic tropical cyclone activity. Journal of Climate, 27(14), 5311–5328.",
+      "url": "https://doi.org/10.1175/JCLI-D-13-00687.1"
+    },
+    {
+      "key": "moura_shukla_1981",
+      "citation": "Moura, A. D., & Shukla, J. (1981). On the dynamics of droughts in northeast Brazil: Observations, theory and numerical experiments with a general circulation model. Journal of the Atmospheric Sciences, 38(12), 2653–2675.",
+      "url": "https://doi.org/10.1175/1520-0469(1981)038<2653:OTDODI>2.0.CO;2"
+    },
+    {
+      "key": "hastenrath_greischar_1993",
+      "citation": "Hastenrath, S., & Greischar, L. (1993). Circulation mechanisms related to northeast Brazil rainfall anomalies. Journal of Geophysical Research: Atmospheres, 98(D3), 5093–5102.",
+      "url": "https://doi.org/10.1029/92JD02646"
+    },
+    {
+      "key": "nobre_shukla_1996",
+      "citation": "Nobre, P., & Shukla, J. (1996). Variations of sea surface temperature, wind stress, and rainfall over the tropical Atlantic and South America. Journal of Climate, 9(10), 2464–2479.",
+      "url": "https://doi.org/10.1175/1520-0442(1996)009<2464:VOSSTW>2.0.CO;2"
+    },
+    {
+      "key": "hastenrath_1990",
+      "citation": "Hastenrath, S. (1990). Decadal-scale changes of the circulation in the tropical Atlantic sector associated with Sahel drought. International Journal of Climatology, 10(5), 459–472.",
+      "url": "https://doi.org/10.1002/joc.3370100504"
+    },
+    {
+      "key": "marengo_2008",
+      "citation": "Marengo, J. A., Nobre, C. A., Tomasella, J., Oyama, M. D., Sampaio de Oliveira, G., de Oliveira, R., Camargo, H., Alves, L. M., & Brown, I. F. (2008). The drought of Amazonia in 2005. Journal of Climate, 21(3), 495–516.",
+      "url": "https://doi.org/10.1175/2007JCLI1600.1"
+    },
+    {
+      "key": "zeng_2008",
+      "citation": "Zeng, N., Yoon, J.-H., Marengo, J. A., Subramaniam, A., Nobre, C. A., Mariotti, A., & Neelin, J. D. (2008). Causes and impacts of the 2005 Amazon drought. Environmental Research Letters, 3(1), 014002.",
+      "url": "https://doi.org/10.1088/1748-9326/3/1/014002"
+    },
+    {
+      "key": "yoon_zeng_2010",
+      "citation": "Yoon, J.-H., & Zeng, N. (2010). An Atlantic influence on Amazon rainfall. Climate Dynamics, 34(2–3), 249–264.",
+      "url": "https://doi.org/10.1007/s00382-009-0551-6"
+    },
+    {
+      "key": "marengo_2011",
+      "citation": "Marengo, J. A., Tomasella, J., Alves, L. M., Soares, W. R., & Rodriguez, D. A. (2011). The drought of 2010 in the context of historical droughts in the Amazon region. Geophysical Research Letters, 38, L12703.",
+      "url": "https://doi.org/10.1029/2011GL047436"
+    },
+    {
+      "key": "phillips_2009",
+      "citation": "Phillips, O. L., Aragão, L. E. O. C., Lewis, S. L., et al. (2009). Drought sensitivity of the Amazon rainforest. Science, 323(5919), 1344–1347.",
+      "url": "https://doi.org/10.1126/science.1164033"
+    },
+    {
+      "key": "enfield_mayer_1997",
+      "citation": "Enfield, D. B., & Mayer, D. A. (1997). Tropical Atlantic sea surface temperature variability and its relation to El Niño–Southern Oscillation. Journal of Geophysical Research: Oceans, 102(C1), 929–945.",
+      "url": "https://doi.org/10.1029/96JC03296"
+    },
+    {
+      "key": "czaja_2002",
+      "citation": "Czaja, A., van der Vaart, P., & Marshall, J. (2002). A diagnostic study of the role of remote forcing in tropical Atlantic variability. Journal of Climate, 15(22), 3280–3290.",
+      "url": "https://doi.org/10.1175/1520-0442(2002)015<3280:ADSOTR>2.0.CO;2"
+    },
+    {
+      "key": "vimont_2012",
+      "citation": "Vimont, D. J. (2012). Analysis of the Atlantic Meridional Mode using linear inverse modeling: Seasonality and regional influences. Journal of Climate, 25(4), 1194–1212.",
+      "url": "https://doi.org/10.1175/JCLI-D-11-00012.1"
+    },
+    {
+      "key": "foltz_2012",
+      "citation": "Foltz, G. R., McPhaden, M. J., & Lumpkin, R. (2012). A strong Atlantic Meridional Mode event in 2009: The role of mixed-layer dynamics. Journal of Climate, 25(1), 363–380.",
+      "url": "https://doi.org/10.1175/JCLI-D-11-00150.1"
+    },
+    {
+      "key": "kushnir_2006",
+      "citation": "Kushnir, Y., Robinson, W. A., Chang, P., & Robertson, A. W. (2006). The physical basis for predicting Atlantic sector seasonal-to-interannual climate variability. Journal of Climate, 19(23), 5949–5970.",
+      "url": "https://doi.org/10.1175/JCLI3943.1"
+    },
+    {
+      "key": "servain_1991",
+      "citation": "Servain, J. (1991). Simple climatic indices for the tropical Atlantic Ocean and some applications. Journal of Geophysical Research: Oceans, 96(C8), 15137–15146.",
+      "url": "https://doi.org/10.1029/91JC01046"
+    },
+    {
+      "key": "xie_carton_2004",
+      "citation": "Xie, S.-P., & Carton, J. A. (2004). Tropical Atlantic variability: Patterns, mechanisms, and impacts. In Earth's Climate: The Ocean–Atmosphere Interaction, Geophysical Monograph 147, 121–142. American Geophysical Union.",
+      "url": "https://doi.org/10.1029/147GM07"
+    },
+    {
+      "key": "taylor_2002",
+      "citation": "Taylor, M. A., Enfield, D. B., & Chen, A. A. (2002). Influence of the tropical Atlantic versus the tropical Pacific on Caribbean rainfall. Journal of Geophysical Research: Oceans, 107(C9), 3127.",
+      "url": "https://doi.org/10.1029/2001JC001097"
+    },
+    {
+      "key": "beven_2008",
+      "citation": "Beven, J. L., Avila, L. A., Blake, E. S., Brown, D. P., Franklin, J. L., Knabb, R. D., Pasch, R. J., Rhome, J. R., & Stewart, S. R. (2008). Atlantic hurricane season of 2005. Monthly Weather Review, 136(3), 1109–1173.",
+      "url": "https://doi.org/10.1175/2007MWR2074.1"
+    },
+    {
+      "key": "noaa_psl_amm",
+      "citation": "NOAA Physical Sciences Laboratory. Atlantic Meridional Mode (AMM) index, monthly, 1948–present.",
+      "url": "https://psl.noaa.gov/data/timeseries/monthly/AMM/"
     }
   ],
   "stories": [
@@ -8542,6 +9093,77 @@
             "kosaka_2013",
             "zong_chen_2000",
             "xie_2016"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "positive_amm_2005_amazon",
+      "title": "2005: the Amazon dries without an El Niño",
+      "intro": "In the spring of 2005 the tropical Atlantic north of the equator ran unusually warm and the rain belt sat well north of its usual place. There was no El Niño to blame: the weak one of the previous winter had faded, and the studies of what followed find the cause in the Atlantic. The year shown begins in March 2005 with the meridional mode in its positive phase and no second driver, so the map can show what the Atlantic does on its own: the busiest hurricane season on record and a drought that stranded boats on the Amazon's western rivers.\n",
+      "driver": "atlantic_meridional_mode",
+      "phase": "positive",
+      "start_month": 3,
+      "start_year": 2005,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "atlantic_meridional_mode",
+          "text": "By March 2005 the northern tropical Atlantic was warmer than usual and the southern side cooler, and the belt of tropical rain that normally sits near 5°N in spring had moved north over the warm water. This is the mode in its positive phase. It is usually set off by a winter of weak trade winds, from an El Niño or a negative North Atlantic Oscillation, and then wind and evaporation feed on each other to hold the contrast through spring. In 2005 the Pacific was near neutral by spring, so this story leaves ENSO out and lets the Atlantic act alone.\n",
+          "sources": [
+            "chiang_vimont_2004",
+            "marengo_2008",
+            "noaa_psl_amm"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "northeast_brazil",
+          "text": "The first arrow is the shortest. The Nordeste's rainy season comes in March and April, when the rain belt reaches its southernmost point; with the north Atlantic warm the belt stays north and withdraws early, and sinking air sits over Northeast Brazil instead. This is the classic mechanism of Nordeste drought, worked out in the early 1980s, and it is one of the most reliable arrows on the map. El Niño dries the Nordeste in the same months through its own arrow, and the two usually arrive together, since an El Niño winter tends to warm the north Atlantic; here the Atlantic is acting by itself.\n",
+          "sources": [
+            "moura_shukla_1981",
+            "hastenrath_greischar_1993",
+            "nobre_shukla_1996"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "atlantic_hurricanes",
+          "text": "From June the solid arrow points at the hurricane grounds and says active. The 2005 season was the most active on record: twenty-eight storms, fifteen of them hurricanes, seven of those major, with Katrina among them, and the records for storms, hurricanes and total storm energy all broken. A warm northern tropical Atlantic with the rain belt north gives storms warm water, moist air and weak wind shear, and moves their birthplace out over the open Atlantic where they have room to grow. The same year sat inside a warm AMO decade, which makes such springs more common; had the AMO been chosen too, its arrow would point the same way and the map would rate the region by the weaker of the two.\n",
+          "sources": [
+            "beven_2008",
+            "kossin_vimont_2007",
+            "vimont_kossin_2007"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "southwest_amazon_dry_season",
+          "text": "By September the drought in the southwestern Amazon was one of the most intense in a hundred years. The Solimões and the Madeira fell to record lows, navigation was suspended, villages along the rivers were cut off, and with the air 3–5°C warmer than usual and the dry season stretched long, fires ran through parts of Acre and Rondônia. The mechanism is the arrow's: the warm north Atlantic kept the rain belt and the rising air north, the trade winds carried less moisture into southern Amazonia, and the air over the region sank instead of rising. The arrow is dashed, because this is known from two droughts and a short record of correlations.\n",
+          "sources": [
+            "marengo_2008",
+            "zeng_2008",
+            "phillips_2009"
+          ]
+        },
+        {
+          "month": 7,
+          "focus": "southwest_amazon_dry_season",
+          "text": "Here is the teaching point. Look at ENSO's marker: it is grey, not part of this scenario, and no arrow reaches the Amazon from the Pacific. The usual suspect for an Amazon drought is El Niño, as in 1926, 1983 and 1998, but those droughts fell in the wet season and on the central and eastern side of the basin. The 2005 drought did not touch central or eastern Amazonia; it fell in the dry season, in the southwest, and the studies of it find the cause in the Atlantic, whose influence on Amazon rain over 1979–2005 is comparable to the Pacific's. Five years later, in 2010, the same warm north Atlantic did it again, and worse.\n",
+          "sources": [
+            "marengo_2008",
+            "zeng_2008",
+            "marengo_2011"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "atlantic_meridional_mode",
+          "text": "A year on, in March 2006, the map still holds the mode positive. The real contrast had faded by late summer 2005, as it usually does; the rains returned to the Amazon in October and brought floods after February 2006. Two cautions travel with this driver. It overlaps the AMO on the map and in its effects, and the map does not draw the AMO pushing it, because the same tropical warmth would then be counted twice on the hurricanes, the Sahel and the Nordeste. And a drought's cost depends on the ground as much as the sky: the 2005 dry season turned the forest from a store of carbon into a source, and the fires were set by people. The map shows the tendency; the damage is a human story.\n",
+          "sources": [
+            "marengo_2008",
+            "phillips_2009",
+            "vimont_kossin_2007"
           ]
         }
       ]

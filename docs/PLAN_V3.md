@@ -193,6 +193,18 @@ it fills the gap the M19 note left ("candidates exhausted").
 
 ### M21 — Ninth driver: the Atlantic Meridional Mode
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§10 under M21. Departures from the text below, each with its reason
+there: the Amazon link goes to a new southwestern Amazon dry-season node
+rather than `northern_amazon_rainfall` (that node is El Niño's wet-season
+drought on the northern side of the basin; the 2005 drought did not
+touch it); Central America is probable, not contested; the ENSO push
+lags 9–11 months from a June onset, not 3–6, so that the mode arrives
+the following March as the sources say; the label is "AMM". With the
+chain on, an El Niño from June now shows the pushed mode and the El Niño
+disagreeing at the hurricanes in the last month shown, which is the
+compensation the literature describes and is asserted in the tests.
+
 The spring-time north-south contrast in the tropical Atlantic: a warm
 northern tropical Atlantic with the rain belt (ITCZ) shifted north, or the
 reverse. It is the seasonal, year-to-year cousin of the AMO (M18), and it

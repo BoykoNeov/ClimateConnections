@@ -1141,7 +1141,89 @@ drivers stays in one place.
   Niño chain with the basin induced in September and the Yangtze wet at
   month 12, the 1998 story stepped to its end, the print caption.
 - Not in M20: any change to how the IOD is described; the Indian Ocean
-  subtropical dipole. Next in `docs/PLAN_V3.md`: M21, the Atlantic
+  subtropical dipole.
+
+### M21 — Ninth driver: Atlantic Meridional Mode (version 3, signed off 2026-09-08)
+- Data: `atlantic_meridional_mode` driver node with positive / neutral /
+  negative phases (label "AMM", like the other acronym drivers, because a
+  centred full name is wider than the tropical Atlantic between Brazil and
+  the map seam; marker at 7°N 26°W, clear of the hurricanes at 15°N 50°W,
+  the Nordeste at 7°S 40°W and the AMO at 33°N 40°W; area the tropical
+  Atlantic 62°W–12°W, 5°S–20°N; `default_start_month` 3). One new outcome
+  node: the southwestern Amazon dry season (`southwest_amazon_dry_season`,
+  wet_dry, June–October, marker in Acre at 9.2°S 69.5°W, the only slot
+  between the Peru coast and Peru fishery labels). Nine outcome links:
+  the hurricanes (+ / − established, lag 2–5, June–November), the
+  Nordeste (− / + established, lag 0–1, February–May, the classic Moura &
+  Shukla mechanism), the Sahel (+ / − probable, lag 3–5, July–September),
+  the southwestern Amazon (− probable / + contested, lag 3–7, June–
+  October, the 2005 and 2010 droughts) and Central America (positive
+  only, + probable, lag 2–4, May–July, the early rainy season). Four
+  driver-to-driver links, all into the mode: El Niño pushes it positive
+  the following spring (established, lag 9–11, all year, the trade winds
+  and evaporation) and La Niña negative (probable); a negative NAO winter
+  pushes it positive in spring (probable, lag 2–4) and a positive NAO
+  negative (probable). Nothing pushes it from the AMO, on purpose, and it
+  pushes nothing. Twenty-four sources, every one resolved on Crossref,
+  nineteen with abstracts read. One story, "2005: the Amazon dries
+  without an El Niño" (the mode alone from March 2005), six steps: the
+  warm north Atlantic in spring, the Nordeste mechanism, the record
+  hurricane season, the September drought with the Solimões and Madeira
+  at record lows, the teaching point that ENSO's marker is grey, and
+  March 2006 with the cautions.
+- Departures from the version 3 plan, each for a reason: the Amazon got
+  its own southwestern node because `northern_amazon_rainfall` is the
+  wet-season, northern-basin region El Niño dries, and the 2005 drought
+  did not touch central or eastern Amazonia; the Central America link is
+  probable rather than contested, because the early-season studies agree
+  on the sign (the Pacific can cancel it, said in the caveat); the
+  ENSO push lags 9–11 months rather than 3–6, matching the tropical North
+  Atlantic warming four to five months after the El Niño peak and the
+  data's own El Niño → Nordeste lag of 8–11; the label is "AMM". Two
+  existing markers were nudged to clear the new labels: the Northern
+  Amazon 5° west (4°N 68°W, still inside its region) and the Peru fishery
+  3° south along the coast (15°S 77°W). The M9 test that nothing is
+  applied under the NAO from April to October now excepts the mode's own
+  marker, since a positive NAO winter holds it negative from February.
+- What the chain shows, asserted in tests: from a June El Niño the mode
+  is pushed in March and the Nordeste carries both arrows the same way,
+  rated by the weaker; at month 12 (June) the pushed mode says active
+  hurricanes while the El Niño says quiet, so the marker is hatched as
+  conflicting, which is the compensation Patricola et al. (2014)
+  describe. From a negative NAO in December the mode is pushed in
+  February, the Nordeste dries February–May one tier down and the
+  hurricane season fires from June.
+- Honesty note carried in the data: the mode overlaps the AMO on the map
+  and in its effects; the card says one is decades and the other a
+  season, that a warm AMO decade makes positive springs more common, and
+  that the AMO → mode chain is not drawn because the same tropical warmth
+  would be counted twice on the hurricanes, the Sahel and the Nordeste;
+  the map holds the mode a year while the real contrast fades by late
+  summer (the story's last step says so).
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the positive mode from March (the
+  Nordeste March–May and again from February, the hurricanes June–
+  November and pending in May, the Sahel, the Amazon, Central America,
+  the tiers, the hollow ghosts under "established only", nothing pushed
+  with the chain on), the negative mode (four reversed, Central America
+  hollow), the El Niño chain (pushed in March at depth 1 rated
+  established, both Nordeste arrows, the hurricane conflict at month 12,
+  ENSO never pushed back, La Niña → negative probable), the NAO chain
+  (pushed in February, the Nordeste and hurricanes one tier down, the
+  ghost under "established only") and the 2005 story (fields, six steps,
+  the hurricanes at full tier with ENSO hollow). Existing expectations
+  updated: nine drivers, twenty-one driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m21.mjs`, 48
+  checks): the two new markers placed with no label overlap, the driver
+  dropdown jumping to March, the phase button labels, March, May, June
+  and August states with the arrow styles, the Nordeste, Amazon and mode
+  cards, the ghost under "established only", the negative reversal, the
+  El Niño chain with the mode induced in March and the hurricane conflict
+  at month 12, the NAO chain, the 2005 story stepped to its end, the
+  print caption.
+- Not in M21: any change to the AMO's links, even where the same outcome
+  is now reachable two ways (two arrows on one region rated separately is
+  the M11 behaviour). Next in `docs/PLAN_V3.md`: M22, the Pacific
   Meridional Mode.
 
 ---
@@ -1264,6 +1346,15 @@ acts on west_pacific_typhoons (−/+, probable/contested), south_china_rainfall
 | yangtze_summer_rainfall | Sichuan basin to Shanghai | wet_dry | Indian Ocean basin | heavier Meiyu June–August (+), established | lighter (−), probable |
 | north_indian_ocean_cyclones | Arabian Sea and Bay of Bengal | active_quiet | Indian Ocean basin | fewer pre-monsoon storms April–June (−), contested | none drawn |
 
+Outcome node added with the Atlantic Meridional Mode (M21); the mode also
+acts on atlantic_hurricanes (+/−, established), northeast_brazil (−/+,
+established), sahel_rainfall (+/−, probable) and central_america_rainfall
+(positive phase only, +, probable):
+
+| id | region | axis | driver | main positive-phase tendency | main negative-phase tendency |
+|---|---|---|---|---|---|
+| southwest_amazon_dry_season | Acre, Rondônia, southern and western Amazonas | wet_dry | Atlantic meridional mode | harsher dry season June–October (−), probable | milder (+), contested |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1300,7 +1391,7 @@ writing mechanism text):
   side by side); more drivers (done, M16: the Southern Annular Mode; M17:
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
   Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
-  the first version 3 driver);
+  the first version 3 driver; M21: the Atlantic Meridional Mode);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean
