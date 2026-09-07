@@ -102,8 +102,11 @@ const Story = z.object({
   phase: Id,
   start_month: Month,
   start_year: z.number().int().min(1800).max(2100).optional(),
+  /** a second driver chosen by hand for the whole story (M11); both or neither */
+  second_driver: Id.optional(),
+  second_phase: Id.optional(),
   steps: z.array(StoryStep).min(3),
-}).strict();
+}).strict().refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together');
 
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
@@ -180,30 +183,36 @@ if (nodesFile && linksFile && storiesFile) {
   }
   // ---- stories: scenario must exist, every step must point at a node that
   // is genuinely affected in that month (same rule as the engine: past the
-  // minimum lag and in season, directly or through one driver the scenario
-  // driver has pushed), and every step must cite a source. This is a copy of
-  // the engine rule without sum-and-clamp; src/engine/stories.test.ts runs
-  // the real engine over the same stories.
+  // minimum lag and in season, directly from a chosen driver or through one
+  // driver a chosen driver has pushed; a chosen driver is never pushed), and
+  // every step must cite a source. This is a copy of the engine rule without
+  // sum-and-clamp; src/engine/stories.test.ts runs the real engine over the
+  // same stories.
   const calendarMonth = (start, index) => ((start - 1 + index) % 12) + 1;
   const links = linksFile.links;
   const appliedAt = (l, onsetIdx, m, start) =>
     m >= onsetIdx + l.lag_months[0] && (l.season.length === 0 || l.season.includes(calendarMonth(start, m)));
+  /** The drivers a story fixes by hand: [driverId, phaseId] for the main one and, if any, the second (M11). */
+  const chosenOf = (s) => (s.second_driver ? [[s.driver, s.phase], [s.second_driver, s.second_phase]] : [[s.driver, s.phase]]);
   /** Drivers pushed into a phase at month m: [driverId, phaseId, onset month]. */
   const pushedAt = (s, m) => {
     const out = [];
-    for (const l of links) {
-      if (l.from !== s.driver || l.when !== s.phase) continue;
-      const d = nodes.get(l.to);
-      if (!d || d.kind !== 'driver' || !appliedAt(l, 0, m, s.start_month)) continue;
-      let onsetIdx = 0;
-      while (onsetIdx < m && !appliedAt(l, 0, onsetIdx, s.start_month)) onsetIdx++;
-      const phase = d.phases.find((p) => p.value === l.effect);
-      if (phase) out.push([d.id, phase.id, onsetIdx]);
+    const chosenIds = new Set(chosenOf(s).map(([d]) => d));
+    for (const [cd, cp] of chosenOf(s)) {
+      for (const l of links) {
+        if (l.from !== cd || l.when !== cp) continue;
+        const d = nodes.get(l.to);
+        if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, 0, m, s.start_month)) continue;
+        let onsetIdx = 0;
+        while (onsetIdx < m && !appliedAt(l, 0, onsetIdx, s.start_month)) onsetIdx++;
+        const phase = d.phases.find((p) => p.value === l.effect);
+        if (phase) out.push([d.id, phase.id, onsetIdx]);
+      }
     }
     return out;
   };
   const affectedAt = (s, focusId, m) => {
-    if (links.some((l) => l.from === s.driver && l.when === s.phase && l.to === focusId && appliedAt(l, 0, m, s.start_month))) return true;
+    if (chosenOf(s).some(([cd, cp]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, 0, m, s.start_month)))) return true;
     return pushedAt(s, m).some(([d, p, onsetIdx]) =>
       links.some((l) => l.from === d && l.when === p && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
   };
@@ -215,6 +224,14 @@ if (nodesFile && linksFile && storiesFile) {
     if (!driver) { fail(`story "${s.id}": unknown driver "${s.driver}"`); continue; }
     if (driver.kind !== 'driver') { fail(`story "${s.id}": "${s.driver}" is not a driver`); continue; }
     if (!driver.phases.some((p) => p.id === s.phase)) fail(`story "${s.id}": "${s.phase}" is not a phase of "${s.driver}"`);
+    if (s.second_driver) {
+      const second = nodes.get(s.second_driver);
+      if (!second) { fail(`story "${s.id}": unknown second driver "${s.second_driver}"`); continue; }
+      if (second.kind !== 'driver') { fail(`story "${s.id}": "${s.second_driver}" is not a driver`); continue; }
+      if (second.id === s.driver) { fail(`story "${s.id}": the second driver must differ from "${s.driver}"`); continue; }
+      if (!second.phases.some((p) => p.id === s.second_phase)) fail(`story "${s.id}": "${s.second_phase}" is not a phase of "${s.second_driver}"`);
+    }
+    const chosenIds = new Set(chosenOf(s).map(([d]) => d));
     let lastMonth = -1;
     s.steps.forEach((step, i) => {
       const where = `story "${s.id}" step ${i + 1}`;
@@ -222,9 +239,10 @@ if (nodesFile && linksFile && storiesFile) {
       lastMonth = step.month;
       const focus = nodes.get(step.focus);
       if (!focus) { fail(`${where}: unknown focus node "${step.focus}"`); return; }
-      if (focus.id !== s.driver && !affectedAt(s, step.focus, step.month)) {
+      if (!chosenIds.has(focus.id) && !affectedAt(s, step.focus, step.month)) {
         const cal = calendarMonth(s.start_month, step.month);
-        fail(`${where}: "${step.focus}" is not affected by ${s.driver}/${s.phase} at month ${step.month} (calendar month ${cal}), directly or through a pushed driver; the marker would be ${focus.kind === 'driver' ? 'grey' : 'hollow'}`);
+        const by = chosenOf(s).map(([d, p]) => `${d}/${p}`).join(' or ');
+        fail(`${where}: "${step.focus}" is not affected by ${by} at month ${step.month} (calendar month ${cal}), directly or through a pushed driver; the marker would be ${focus.kind === 'driver' ? 'grey' : 'hollow'}`);
       }
       for (const k of step.sources) {
         if (!sources.has(k)) fail(`${where}: unknown source "${k}"`);

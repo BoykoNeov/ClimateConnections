@@ -9,10 +9,11 @@ months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
 The map currently holds three drivers, 30 outcome regions, 70 cited links
-(six of them between the drivers) and five guided stories. Each scenario
-is one driver in one phase; a driver can push another driver into a phase,
-and the map then follows that driver's links too, but you cannot yet choose
-two phases at once (see the roadmap in `docs/PLAN.md`).
+(six of them between the drivers) and six guided stories. A scenario is
+one driver in one phase, optionally with a second driver in a phase of its
+own; a driver can also push another driver into a phase, and the map then
+follows that driver's links too. Where two influences push a place
+opposite ways the map says so rather than picking a winner.
 
 ## What it is
 
@@ -69,6 +70,17 @@ any static file server.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
   Niña; positive, neutral or negative dipole; positive, neutral or negative
   NAO.
+- **Second driver (optional)** adds one more driver in a phase of your own
+  choosing, for years when two patterns coincided (La Niña with a negative
+  dipole in 2010, say). Both drivers start in the same month and hold their
+  phase all year; both fire their own links at full confidence. Where they
+  push a place the same way the state simply holds; where they push it
+  opposite ways the marker gets a dashed ring, a grey hatch if the pushes
+  cancel, and the card says "conflicting influences". A chosen driver is
+  never pushed by the other one: you have set both phases, so the links
+  between them are listed on the cards, not drawn. Choosing the second
+  driver's neutral phase holds it out of play, which shows what a year
+  looks like when the other driver does not respond.
 - **Event begins in** picks the calendar month of onset. Picking a driver
   moves it to that driver's usual start: June for ENSO and the dipole, which
   develop in late boreal spring or summer, and December for the NAO, which
@@ -125,13 +137,16 @@ docs/PLAN.md         the plan: scope, schema, engine semantics, milestones
 docs/DATA_FORMAT.md  field-by-field schema for the three data files
 ```
 
-The engine takes a scenario (driver, phase, start month) and, for each of
-the thirteen month indices from onset, decides which links apply: the link's
-phase must match, the month must be at or past the link's minimum lag, and
-the calendar month must be in the link's season. Applied links push the
-target one step along its axis; the sum is clamped to a three-level state
-(+1, 0, −1). A link that is past its lag but out of season is "pending" and
-drawn muted. Opposite pushes on the same node are flagged as conflicting.
+The engine takes a scenario (driver, phase, start month, and optionally a
+second driver and phase) and, for each of the thirteen month indices from
+onset, decides which links apply: the link's phase must match, the month
+must be at or past the link's minimum lag, and the calendar month must be
+in the link's season. Applied links push the target one step along its
+axis; the sum is clamped to a three-level state (+1, 0, −1). A link that is
+past its lag but out of season is "pending" and drawn muted. Opposite
+pushes on the same node are flagged as conflicting. A second chosen driver
+starts at month 0 like the first and is treated the same way; the two
+drivers' pushes simply add up.
 
 A link may also point at another driver. It pushes that driver into a phase
 the same way, and the engine then follows that driver's own links for up to
@@ -205,7 +220,8 @@ The full schema is in `docs/DATA_FORMAT.md`.
 ## Add a story
 
 Stories are guided walkthroughs in `data/stories.yaml`: a title, an intro, a
-phase and start month (and optionally a start year for a real event), then a
+phase and start month (optionally a start year for a real event, and
+optionally a second driver and phase chosen for the whole story), then a
 list of steps, each with a month index, a node to focus, a short text and
 sources. The validator refuses a step that points at a node the scenario
 does not affect at that month, so a story cannot claim more than the links

@@ -116,6 +116,8 @@ stories:
     phase: el_nino                      # a phase id of that driver
     start_month: 5                      # calendar month of month index 0
     start_year: 1997                    # optional; dates the steps ("December 1997")
+    second_driver: iod                  # optional (M11): a second driver chosen by hand
+    second_phase: negative              #   for the whole story; both fields or neither
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -125,10 +127,13 @@ stories:
 ```
 
 Rules enforced by the validator:
-- `driver` must be a driver and `phase` one of its phases.
-- Every `focus` must be a node id. If it is an outcome, it must actually be
-  affected by that driver phase at that month: some link from `driver`/`phase`
-  to it has `lag_months[0] <= month` and is in season for the calendar month.
+- `driver` must be a driver and `phase` one of its phases. `second_driver`,
+  if given, must be a different driver with `second_phase` as one of its
+  phases; both chosen drivers enter their phase at month 0.
+- Every `focus` must be a node id. If it is not a chosen driver, it must
+  actually be affected at that month: some link from a chosen driver/phase
+  to it (or from a driver a chosen driver has pushed) has
+  `lag_months[0] <= month` and is in season for the calendar month.
   A story can never point at a hollow marker.
 - Step months never go backwards.
 - Every step cites at least one source key that resolves in `links.yaml`.

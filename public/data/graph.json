@@ -3241,6 +3241,11 @@
       "url": "http://www.bom.gov.au/climate/current/statements/scs24.pdf"
     },
     {
+      "key": "dutra_2013",
+      "citation": "Dutra, E., Magnusson, L., Wetterhall, F., Cloke, H. L., Balsamo, G., Boussetta, S., & Pappenberger, F. (2013). The 2010–2011 drought in the Horn of Africa in ECMWF reanalysis and seasonal forecast products. International Journal of Climatology, 33(7), 1720–1729.",
+      "url": "https://doi.org/10.1002/joc.3545"
+    },
+    {
       "key": "boening_2012",
       "citation": "Boening, C., Willis, J. K., Landerer, F. W., Nerem, R. S., & Fasullo, J. (2012). The 2011 La Niña: So strong, the oceans fell. Geophysical Research Letters, 39(19), L19602.",
       "url": "https://doi.org/10.1029/2012GL053055"
@@ -3872,6 +3877,82 @@
             "mcphaden_1999",
             "stuecker_2017",
             "izumo_2010"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "la_nina_negative_iod_2010_11",
+      "title": "2010–11: La Niña and a negative dipole together",
+      "intro": "The first story with two drivers chosen by hand. In 2010 a strong La Niña coincided with a negative Indian Ocean Dipole, and the two pushed many of the same places the same way. Here the dipole is not set off by a link from La Niña; you choose both phases, both hold all year, and the map adds their effects up. Where two chosen drivers push a place opposite ways the marker turns hatched and its card says \"conflicting\"; try swapping the dipole to positive to see that.\n",
+      "driver": "enso",
+      "phase": "la_nina",
+      "start_month": 6,
+      "start_year": 2010,
+      "second_driver": "iod",
+      "second_phase": "negative",
+      "steps": [
+        {
+          "month": 0,
+          "focus": "enso",
+          "text": "By June 2010 the El Niño of the previous winter had collapsed and the Pacific was swinging into La Niña, which by the end of the year was among the strongest on record. Two driver markers are lit from the start: La Niña here, and a negative dipole in the Indian Ocean, both chosen by hand rather than one set off by the other.\n",
+          "sources": [
+            "boening_2012",
+            "bom_scs24"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "iod",
+          "text": "The dipole marker is green with a plain white ring, not the dashed ring of a driver pushed by a link. Its links fire at full confidence and its phase holds for the whole year. La Niña's own link into the dipole is not drawn: a chosen driver is never pushed, because you have already decided its phase. In 2010 the water off Sumatra ran warm from winter into spring, the reverse of 1997.\n",
+          "sources": [
+            "bom_iod",
+            "ummenhofer_2009"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "southeast_australia_rainfall",
+          "text": "This marker has no La Niña link of its own, so it shows what the second driver adds: a warm eastern Indian Ocean feeds moisture into the fronts that cross Victoria and South Australia in winter and spring. Spring 2010 was Australia's wettest on record, and the southeast's long drought ended in mud.\n",
+          "sources": [
+            "bom_scs24",
+            "ummenhofer_2009"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "east_africa_short_rains",
+          "text": "Two arrows, both pointing the same way. La Niña and a negative dipole each tend to weaken the October to December short rains, and the map keeps the state at \"drier\" without a conflict flag. The 2010 short rains largely failed across Somalia, Kenya and Ethiopia; when the long rains of 2011 failed too, famine followed in southern Somalia.\n",
+          "sources": [
+            "dutra_2013",
+            "behera_2005"
+          ]
+        },
+        {
+          "month": 7,
+          "focus": "east_australia_rainfall",
+          "text": "Only La Niña's arrow reaches Queensland and New South Wales: the dipole's link runs to the southeast and is out of season by January. That one arrow was enough. Repeated heavy rain from November onward filled the catchments, and in January 2011 floods reached Brisbane and much of southern Queensland.\n",
+          "sources": [
+            "bom_scs24",
+            "cai_2011"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "iod",
+          "text": "The dipole marker is still green because the map holds a chosen phase for all twelve months. Real dipoles do not: the 2010 event faded in early summer as the monsoon winds reversed, and by now every dipole arrow is drawn faint, out of season. Choosing two phases is a teaching convenience, not a claim that both patterns lasted a year.\n",
+          "sources": [
+            "bom_iod",
+            "saji_1999"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "enso",
+          "text": "La Niña weakened through autumn 2011 and the Pacific was back to neutral by June, before a second, weaker La Niña formed late in the year. So much rain fell on land in 2010 and 2011 that global sea level dropped for a while; the study that found this called the event \"so strong, the oceans fell\".\n",
+          "sources": [
+            "boening_2012",
+            "noaa_climate_gov_enso"
           ]
         }
       ]

@@ -1,8 +1,9 @@
 // Every story step must point at a node that is genuinely affected in that
 // month of the story's scenario, as computed by the real engine at the depth
-// the app uses (M10: links are followed through pushed drivers). The data
-// validator does the same check with its own copy of the rule; this test is
-// the one that uses the engine itself.
+// the app uses (M10: links are followed through pushed drivers; M11: a story
+// may fix a second driver by hand). The data validator does the same check
+// with its own copy of the rule; this test is the one that uses the engine
+// itself.
 
 import { describe, expect, it } from 'vitest';
 import { propagate } from './propagate';
@@ -20,12 +21,14 @@ describe('stories', () => {
     describe(story.title, () => {
       const timeline = propagate(graph, {
         driverId: story.driver, phaseId: story.phase, startMonth: story.start_month, horizonMonths: 12, maxDepth: 3,
+        secondary: story.second_driver && story.second_phase ? { driverId: story.second_driver, phaseId: story.second_phase } : undefined,
       });
+      const chosen = new Set([story.driver, story.second_driver].filter((x): x is string => !!x));
       story.steps.forEach((step, i) => {
         it(`step ${i + 1} (month ${step.month}) focuses an affected node: ${step.focus}`, () => {
           const node = graph.nodes.find((n) => n.id === step.focus);
           expect(node).toBeDefined();
-          if (node!.id === story.driver) return;
+          if (chosen.has(node!.id)) return;
           const st = timeline.months[step.month].nodes[step.focus];
           // Applied by at least one link; a conflicting node (pushes cancel
           // to 0) still counts, because its marker is drawn, not hollow.

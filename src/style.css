@@ -55,6 +55,7 @@ html, body { margin: 0; height: 100%; }
 #controls h2, #card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 0 6px; }
 #controls h2:first-child { margin-top: 0; }
 .phase-buttons { display: flex; flex-direction: column; gap: 6px; }
+.phase-buttons:empty { display: none; }
 .phase-btn {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px;

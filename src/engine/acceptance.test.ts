@@ -399,3 +399,130 @@ describe('acceptance: driver-to-driver data', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------- M11: two chosen drivers
+// A second driver chosen by hand enters its phase at month 0 with the first,
+// fires at the first hop at full confidence, is never pushed, and its effects
+// add up with the first driver's: same sign reinforces, opposite signs conflict.
+function runTwo(a: [string, string], b: [string, string], startMonth: number): Timeline {
+  return propagate(graph, {
+    driverId: a[0], phaseId: a[1], startMonth, horizonMonths: HORIZON, maxDepth: 3, secondary: { driverId: b[0], phaseId: b[1] },
+  });
+}
+
+describe('acceptance: El Niño with a negative dipole chosen by hand (June start)', () => {
+  const tl = runTwo(['enso', 'el_nino'], ['iod', 'negative'], 6);
+  it('both drivers hold their phase all year; the dipole is chosen, not pushed, and El Niño\'s push into it is skipped', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.enso.value).toBe(1);
+      expect(m.nodes.iod.value).toBe(-1);
+      expect(m.nodes.iod.viaLinkIds).toHaveLength(0);
+      expect(m.links.el_nino_positive_iod).toBeUndefined();
+    }
+  });
+  it('Indonesia gets El Niño\'s drying and the dipole\'s wetting in July: conflicting, netting to 0, rated at the weaker link', () => {
+    const st = tl.months[1].nodes.indonesia_rainfall;
+    expect([...st.viaLinkIds].sort()).toEqual(['el_nino_indonesia', 'negative_iod_indonesia']);
+    expect(st.conflicting).toBe(true);
+    expect(st.value).toBe(0);
+    expect(st.confidence).toBe('probable');
+    expect(tl.months[1].links.negative_iod_indonesia).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+  });
+  it('East Africa\'s short rains conflict in November: El Niño wet, the dipole dry', () => {
+    const st = tl.months[5].nodes.east_africa_short_rains;
+    expect([...st.viaLinkIds].sort()).toEqual(['el_nino_east_africa_short_rains', 'negative_iod_east_africa_short_rains']);
+    expect(st.conflicting).toBe(true);
+    expect(st.value).toBe(0);
+  });
+  it('southeast Australia turns wet through the dipole alone, at full confidence, with no conflict', () => {
+    const st = tl.months[3].nodes.southeast_australia_rainfall;
+    expect(st.viaLinkIds).toEqual(['negative_iod_southeast_australia']);
+    expect(st.value).toBe(1);
+    expect(st.confidence).toBe('established');
+    expect(st.conflicting).toBe(false);
+  });
+  it('a driver that is not chosen can still be pushed: the NAO leans negative in January', () => {
+    const st = tl.months[7].nodes.nao;
+    expect(st.value).toBe(-1);
+    expect(st.viaLinkIds).toEqual(['el_nino_negative_nao']);
+    expect(tl.months[7].nodes.northern_europe_winter.value).toBe(-1);
+  });
+  it('the dipole\'s feedback onto ENSO at month 11 is skipped: chosen drivers are never pushed', () => {
+    expect(tl.months[11].links.negative_iod_el_nino_next_year).toBeUndefined();
+    expect(tl.months[11].nodes.enso.viaLinkIds).toHaveLength(0);
+    expect(tl.months[11].nodes.enso.value).toBe(1);
+  });
+});
+
+describe('acceptance: La Niña with a negative dipole (the 2010–11 story, June start)', () => {
+  const tl = runTwo(['enso', 'la_nina'], ['iod', 'negative'], 6);
+  it('East Africa\'s short rains get both pushes, same sign: drier, no conflict, rated probable', () => {
+    const st = tl.months[5].nodes.east_africa_short_rains;
+    expect([...st.viaLinkIds].sort()).toEqual(['la_nina_east_africa_short_rains', 'negative_iod_east_africa_short_rains']);
+    expect(st.value).toBe(-1);
+    expect(st.conflicting).toBe(false);
+    expect(st.confidence).toBe('probable');
+  });
+  it('southeast Australia is wet through the dipole in spring; eastern Australia wet through La Niña alone in January', () => {
+    expect(tl.months[3].nodes.southeast_australia_rainfall.value).toBe(1);
+    expect(tl.months[3].nodes.southeast_australia_rainfall.viaLinkIds).toEqual(['negative_iod_southeast_australia']);
+    const jan = tl.months[7].nodes.east_australia_rainfall;
+    expect(jan.value).toBe(1);
+    expect(jan.viaLinkIds).toEqual(['la_nina_east_australia']);
+    expect(tl.months[7].nodes.southeast_australia_rainfall.pendingLinkIds).toEqual(['negative_iod_southeast_australia']);
+  });
+  it('the chosen dipole holds its phase in February, where the chain would have dropped it', () => {
+    expect(tl.months[8].nodes.iod.value).toBe(-1);
+    expect(runDeep('enso', 'la_nina', 6).months[8].nodes.iod.value).toBe(0);
+  });
+  it('matches La Niña alone wherever the dipole has no link of its own', () => {
+    const solo = runDeep('enso', 'la_nina', 6);
+    const iodTargets = new Set(graph.links.filter((l) => l.from === 'iod').map((l) => l.to));
+    for (const n of graph.nodes) {
+      if (n.kind !== 'outcome' || iodTargets.has(n.id)) continue;
+      for (const m of tl.months) expect(m.nodes[n.id], `${n.id} at month ${m.index}`).toEqual(solo.months[m.index].nodes[n.id]);
+    }
+  });
+});
+
+describe('acceptance: two chosen drivers, in general', () => {
+  it('a neutral second driver applies nothing but pins that driver: El Niño can no longer push the dipole, so its chain is cut', () => {
+    const solo = runDeep('enso', 'el_nino', 6);
+    const tl = runTwo(['enso', 'el_nino'], ['iod', 'neutral'], 6);
+    const iodTargets = new Set(graph.links.filter((l) => l.from === 'iod').map((l) => l.to));
+    for (const m of tl.months) {
+      expect(m.nodes.iod.value).toBe(0);
+      expect(m.nodes.iod.viaLinkIds).toHaveLength(0);
+      expect(m.links.el_nino_positive_iod).toBeUndefined();
+      expect(Object.keys(m.links).some((id) => graph.links.find((l) => l.id === id)!.from === 'iod')).toBe(false);
+      for (const n of graph.nodes) {
+        if (n.id === 'iod' || iodTargets.has(n.id)) continue;
+        expect(m.nodes[n.id], `${n.id} at month ${m.index}`).toEqual(solo.months[m.index].nodes[n.id]);
+      }
+    }
+    // Southeast Australia is lit only through the dipole: hollow once the dipole is held neutral.
+    expect(solo.months[3].nodes.southeast_australia_rainfall.value).toBe(-1);
+    expect(tl.months[3].nodes.southeast_australia_rainfall.value).toBe(0);
+    expect(tl.months[3].nodes.southeast_australia_rainfall.viaLinkIds).toHaveLength(0);
+  });
+  it('the same driver cannot be chosen twice', () => {
+    expect(() => runTwo(['enso', 'el_nino'], ['enso', 'la_nina'], 6)).toThrow(/twice/);
+  });
+  it('El Niño with a positive NAO chosen by hand: the push toward negative is skipped and the NAO\'s own winter links fire at full confidence', () => {
+    const tl = runTwo(['enso', 'el_nino'], ['nao', 'positive'], 6);
+    const jan = tl.months[7];
+    expect(jan.nodes.nao.value).toBe(1);
+    expect(jan.links.el_nino_negative_nao).toBeUndefined();
+    expect(jan.links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(jan.nodes.northern_europe_winter.value).toBe(1);
+    expect(jan.nodes.northern_europe_winter.confidence).toBe('established');
+  });
+  it('the shipped two-driver story chooses La Niña and a negative dipole', () => {
+    const story = graph.stories.find((s) => s.id === 'la_nina_negative_iod_2010_11');
+    expect(story).toBeDefined();
+    expect(story!.driver).toBe('enso');
+    expect(story!.phase).toBe('la_nina');
+    expect(story!.second_driver).toBe('iod');
+    expect(story!.second_phase).toBe('negative');
+  });
+});

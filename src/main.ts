@@ -26,7 +26,7 @@ async function main(): Promise<void> {
     return d;
   };
 
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, chain: true };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, chain: true, second: null };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -47,6 +47,7 @@ async function main(): Promise<void> {
     const scenario: Scenario = {
       driverId: controls.driverId, phaseId: controls.phaseId, startMonth: controls.startMonth, horizonMonths: HORIZON,
       maxDepth: controls.chain ? MAX_DEPTH : 1, minConfidence: FILTER_MIN[controls.filter],
+      secondary: controls.second ?? undefined,
     };
     timeline = propagate(graph, scenario);
     prevApplied = new Set();
@@ -60,16 +61,23 @@ async function main(): Promise<void> {
     prevApplied = applied;
     const driver = driverById(controls.driverId);
     const phase = driver.phases.find((p) => p.id === controls.phaseId)!;
-    map.render(month, { driverId: driver.id, phaseColor: phase.color, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
+    const second = controls.second ? driverById(controls.second.driverId) : null;
+    const secondPhase = second ? second.phases.find((p) => p.id === controls.second!.phaseId)! : null;
+    // The drivers chosen by hand: id -> phase colour for the map, id -> phase id for the card.
+    const chosen = new Map<string, string>([[driver.id, phase.color]]);
+    const chosenPhases = new Map<string, string>([[driver.id, phase.id]]);
+    if (second && secondPhase) { chosen.set(second.id, secondPhase.color); chosenPhases.set(second.id, secondPhase.id); }
+    map.render(month, { chosen, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
     monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
-    captionEl.textContent = printCaption(driver, phase.label, month.index, month.calendarMonth);
+    captionEl.textContent = printCaption(driver, phase.label, second, secondPhase?.label ?? null, month.index, month.calendarMonth);
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
-    renderCard(cardEl, graph, node, month, controls.driverId, controls.phaseId);
+    renderCard(cardEl, graph, node, month, chosenPhases);
   }
 
   ctl.onChange = (s) => {
     const monthChanged = s.startMonth !== controls.startMonth;
-    const scenarioChanged = monthChanged || s.phaseId !== controls.phaseId || s.driverId !== controls.driverId;
+    const secondChanged = (s.second?.driverId ?? null) !== (controls.second?.driverId ?? null) || (s.second?.phaseId ?? null) !== (controls.second?.phaseId ?? null);
+    const scenarioChanged = monthChanged || secondChanged || s.phaseId !== controls.phaseId || s.driverId !== controls.driverId;
     Object.assign(controls, s);
     if (monthChanged) tl.setStartMonth(s.startMonth);
     // Changing the scenario by hand ends the story; the filter and areas
@@ -88,7 +96,8 @@ async function main(): Promise<void> {
     controls.driverId = s.driver;
     controls.phaseId = s.phase;
     controls.startMonth = s.start_month;
-    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month });
+    controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase } : null;
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, second: controls.second });
     tl.setStartMonth(s.start_month);
     tl.pause();
     recompute();
@@ -125,10 +134,13 @@ async function main(): Promise<void> {
     if (used) e.preventDefault();
   });
 
-  function printCaption(driver: DriverNode, phaseLabel: string, index: number, calendarMonth: number): string {
+  function printCaption(driver: DriverNode, phaseLabel: string, second: DriverNode | null, secondLabel: string | null, index: number, calendarMonth: number): string {
     const filterText = { all: 'all connections, including contested ones', probable: 'probable and established connections', established: 'established connections only' }[controls.filter];
     const driverName = driver.name.replace(/\s*\(.*\)$/, '');
-    return `${driverName}: ${phaseLabel}, event beginning in ${MONTH_NAMES[controls.startMonth - 1]}. ` +
+    const secondName = second?.name.replace(/\s*\(.*\)$/, '');
+    const when = MONTH_NAMES[controls.startMonth - 1];
+    const who = second && secondLabel ? `${driverName}: ${phaseLabel} and ${secondName}: ${secondLabel}, both beginning in ${when}. ` : `${driverName}: ${phaseLabel}, event beginning in ${when}. `;
+    return who +
       `Shown: ${MONTH_NAMES[calendarMonth - 1]}, month ${index} after onset. Showing ${filterText}` +
       `${controls.chain ? ', following links through other drivers' : ', direct links only'}. ` +
       `Printed from Climate Connections, ${location.origin}${location.pathname}`;

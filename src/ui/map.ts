@@ -30,10 +30,10 @@ export function stateColor(node: GraphNode, value: Value): string {
 }
 
 export interface RenderOptions {
-  /** the driver whose phase the scenario is about. Other drivers are drawn
-   *  in their phase colour when a link has pushed them there, grey otherwise. */
-  driverId: string;
-  phaseColor: string;
+  /** the drivers whose phases were chosen by hand (one, or two since M11),
+   *  each with its phase colour. Other drivers are drawn in their phase
+   *  colour when a link has pushed them there, grey otherwise. */
+  chosen: Map<string, string>;
   /** link ids that first became applied this month (animate) */
   arrivals: Set<string>;
   selectedNodeId: string | null;
@@ -104,6 +104,12 @@ export class MapView {
     this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
     this.svg = select(container).append('svg').attr('role', 'img').attr('aria-label', 'World map of climate connections');
     const defs = this.svg.append('defs');
+    // Hatch for a marker whose opposite pushes cancel out (conflicting at 0),
+    // so a tie is not mistaken for "near normal".
+    const hatch = defs.append('pattern').attr('id', 'conflict-hatch')
+      .attr('width', 4).attr('height', 4).attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
+    hatch.append('rect').attr('width', 4).attr('height', 4).attr('fill', '#ffffff');
+    hatch.append('rect').attr('width', 2).attr('height', 4).attr('fill', NEUTRAL);
     for (const [id, color] of this.markerColors()) {
       defs.append('marker')
         .attr('id', `arrow-${id}`).attr('viewBox', '0 0 10 10').attr('refX', 9).attr('refY', 5)
@@ -207,7 +213,7 @@ export class MapView {
   }
 
   render(month: MonthState, opts: RenderOptions): void {
-    if (!this.nodeById.has(opts.driverId)) return;
+    for (const id of opts.chosen.keys()) if (!this.nodeById.has(id)) return;
 
     // ---- affected areas (under the arrows, same colour/state as the marker)
     const areaNodes = opts.showAreas ? this.graph.nodes.filter((n) => this.areas.has(n.id)) : [];
@@ -219,7 +225,7 @@ export class MapView {
       .attr('class', (d) => {
         const st = month.nodes[d.id];
         const cls = ['area'];
-        if (d.kind === 'outcome' || d.id !== opts.driverId) {
+        if (d.kind === 'outcome' || !opts.chosen.has(d.id)) {
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) cls.push('inactive');
           else if (st.viaLinkIds.length === 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
@@ -227,7 +233,7 @@ export class MapView {
         if (opts.selectedNodeId === d.id) cls.push('selected');
         return cls.join(' ');
       })
-      .attr('fill', (d) => this.nodeColor(d, month, opts))
+      .attr('fill', (d) => this.nodeFill(d, month, opts))
       .attr('stroke', (d) => this.nodeColor(d, month, opts))
       .attr('d', (d) => this.path(this.areas.get(d.id)!));
     // Global outcomes (no area) tint the edge of the whole map instead.
@@ -293,9 +299,9 @@ export class MapView {
           if (st.value === 0 && st.viaLinkIds.length === 0) cls.push('hollow');
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
-        } else if (d.id !== opts.driverId) {
-          // Another driver: pushed into a phase by a link (M10), expected but
-          // out of season, or not in play at all.
+        } else if (!opts.chosen.has(d.id)) {
+          // A driver not chosen by hand: pushed into a phase by a link (M10),
+          // expected but out of season, or not in play at all.
           if (st.viaLinkIds.length > 0) cls.push('induced');
           else if (st.pendingLinkIds.length > 0) cls.push('pending');
           else cls.push('inactive');
@@ -310,8 +316,14 @@ export class MapView {
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
       });
     nMerged.select('circle')
-      .attr('fill', (d) => this.nodeColor(d, month, opts))
-      .attr('stroke', (d) => (d.kind === 'driver' ? (d.id !== opts.driverId && month.nodes[d.id].viaLinkIds.length ? '#1f2328' : '#ffffff') : stateColor(d, month.nodes[d.id].value === 0 ? 1 : month.nodes[d.id].value)))
+      .attr('fill', (d) => this.nodeFill(d, month, opts))
+      .attr('stroke', (d) => {
+        const st = month.nodes[d.id];
+        if (d.kind === 'driver') return !opts.chosen.has(d.id) && st.viaLinkIds.length ? '#1f2328' : '#ffffff';
+        if (st.conflicting && st.value === 0) return '#1f2328';
+        if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return stateColor(d, 1); // hollow: the axis colour as a ring
+        return this.nodeColor(d, month, opts); // pending: the expected colour; applied: the state colour
+      })
       .attr('stroke-opacity', (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6));
     nMerged.select('text')
       .attr('x', (d) => (d.kind === 'driver' ? 0 : 10))
@@ -320,12 +332,21 @@ export class MapView {
       .text((d) => d.label ?? d.name);
   }
 
-  /** Marker/area colour for a node in a month: phase colour for the scenario's
+  /** Fill for a marker or area: the node colour, or the grey hatch when
+   *  opposite pushes cancel out (conflicting at 0). */
+  private nodeFill(d: GraphNode, month: MonthState, opts: RenderOptions): string {
+    const st = month.nodes[d.id];
+    if (st.conflicting && st.value === 0 && !opts.chosen.has(d.id)) return 'url(#conflict-hatch)';
+    return this.nodeColor(d, month, opts);
+  }
+
+  /** Marker/area colour for a node in a month: phase colour for a chosen
    *  driver, phase colour for a driver pushed there by a link (grey when
    *  nothing pushes it), state colour for outcomes, and the expected colour
    *  for pending ones. */
   private nodeColor(d: GraphNode, month: MonthState, opts: RenderOptions): string {
-    if (d.kind === 'driver' && d.id === opts.driverId) return opts.phaseColor;
+    const chosenColor = opts.chosen.get(d.id);
+    if (d.kind === 'driver' && chosenColor) return chosenColor;
     const st = month.nodes[d.id];
     if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) {
       const pendingLink = this.linkById.get(st.pendingLinkIds[0])!;

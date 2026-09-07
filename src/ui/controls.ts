@@ -1,4 +1,5 @@
-// Left panel: driver picker, phase buttons, start month, confidence filter, legend.
+// Left panel: driver picker, phase buttons, optional second driver (M11),
+// start month, confidence filter, legend.
 
 import type { DriverNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
@@ -14,6 +15,8 @@ export interface ControlState {
   showAreas: boolean;
   /** follow links through drivers the scenario driver has pushed (M10) */
   chain: boolean;
+  /** a second driver chosen by hand, entering its phase in the same month (M11); null = none */
+  second: { driverId: string; phaseId: string } | null;
 }
 
 export class ControlsView {
@@ -21,6 +24,14 @@ export class ControlsView {
   private phaseBox: HTMLDivElement;
   private driverSelect: HTMLSelectElement | null = null;
   private driverHeading: HTMLHeadingElement;
+  /** second-driver picker and its phase buttons (only with more than one driver) */
+  private secondSelect: HTMLSelectElement | null = null;
+  private secondBox: HTMLDivElement | null = null;
+  private secondPhaseButtons = new Map<string, HTMLButtonElement>();
+  /** driver whose options the second-driver picker currently excludes */
+  private secondOptionsFor: string | null = null;
+  /** driver whose phase buttons are in the second box ('' = none) */
+  private renderedSecondId: string | null = null;
   private onsetHint: HTMLParagraphElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
@@ -71,9 +82,11 @@ export class ControlsView {
       }
       sel.addEventListener('change', () => {
         // A new driver starts in its first phase and in the month its events
-        // usually begin (a winter pattern should not start in June).
+        // usually begin (a winter pattern should not start in June). If it
+        // was the second driver, the second slot empties: no driver twice.
         const d = this.driverById(sel.value);
-        this.update({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month });
+        const second = this.state.second?.driverId === d.id ? null : this.state.second;
+        this.update({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, second });
       });
       container.append(sel);
       this.driverSelect = sel;
@@ -81,6 +94,30 @@ export class ControlsView {
     this.phaseBox = document.createElement('div');
     this.phaseBox.className = 'phase-buttons';
     container.append(this.phaseBox);
+
+    // Second driver (M11): optional, chosen by hand, enters its phase in the
+    // same month as the first. Offered only when there is more than one driver.
+    if (drivers.length > 1) {
+      const h2s = document.createElement('h2');
+      h2s.textContent = 'Second driver (optional)';
+      container.append(h2s);
+      const sel2 = document.createElement('select');
+      sel2.setAttribute('aria-label', 'Pick a second driver phenomenon, or none');
+      sel2.addEventListener('change', () => {
+        if (!sel2.value) { this.update({ second: null }); return; }
+        const d = this.driverById(sel2.value);
+        this.update({ second: { driverId: d.id, phaseId: d.phases[0].id } });
+      });
+      container.append(sel2);
+      this.secondSelect = sel2;
+      this.secondBox = document.createElement('div');
+      this.secondBox.className = 'phase-buttons';
+      container.append(this.secondBox);
+      const hint2nd = document.createElement('p');
+      hint2nd.className = 'hint';
+      hint2nd.textContent = 'Both drivers enter their phase in the month below and hold it all year. Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by the other; choose its neutral phase to hold it out of play.';
+      container.append(hint2nd);
+    }
 
     const h2 = document.createElement('h2');
     h2.textContent = 'Event begins in';
@@ -180,6 +217,42 @@ export class ControlsView {
     this.storySelect.value = storyId ?? '';
   }
 
+  /** Rebuild the second-driver picker's options: none, then every driver but the main one. */
+  private renderSecondOptions(mainId: string): void {
+    if (!this.secondSelect || this.secondOptionsFor === mainId) return;
+    this.secondOptionsFor = mainId;
+    this.secondSelect.innerHTML = '';
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = 'None';
+    this.secondSelect.append(none);
+    for (const d of this.drivers) {
+      if (d.id === mainId) continue;
+      const o = document.createElement('option');
+      o.value = d.id;
+      o.textContent = d.name.replace(/\s*\(.*\)$/, '');
+      this.secondSelect.append(o);
+    }
+  }
+
+  /** Rebuild the second driver's phase buttons (only when it changed); empty when none. */
+  private renderSecondPhases(driver: DriverNode | null): void {
+    if (!this.secondBox || this.renderedSecondId === (driver?.id ?? '')) return;
+    this.renderedSecondId = driver?.id ?? '';
+    this.secondBox.innerHTML = '';
+    this.secondPhaseButtons.clear();
+    if (!driver) return;
+    for (const p of driver.phases) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn';
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
+      b.addEventListener('click', () => this.update({ second: { driverId: driver.id, phaseId: p.id } }));
+      this.secondBox.append(b);
+      this.secondPhaseButtons.set(p.id, b);
+    }
+  }
+
   /** Rebuild the phase buttons for the current driver (only when it changed). */
   private renderPhases(driver: DriverNode): void {
     if (this.renderedDriverId === driver.id) return;
@@ -204,6 +277,13 @@ export class ControlsView {
     this.renderPhases(driver);
     if (this.driverSelect) this.driverSelect.value = driver.id;
     for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === this.state.phaseId));
+    if (this.secondSelect) {
+      this.renderSecondOptions(driver.id);
+      const second = this.state.second ? this.driverById(this.state.second.driverId) : null;
+      this.secondSelect.value = second?.id ?? '';
+      this.renderSecondPhases(second);
+      for (const [id, b] of this.secondPhaseButtons) b.setAttribute('aria-pressed', String(id === this.state.second?.phaseId));
+    }
     this.monthSelect.value = String(this.state.startMonth);
   }
 }

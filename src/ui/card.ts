@@ -46,12 +46,17 @@ interface Ctx {
   sources: Map<string, Source>;
   nodeById: Map<string, GraphNode>;
   linkById: Map<string, Link>;
+  /** drivers chosen by hand: id -> phase id (one, or two since M11) */
+  chosen: Map<string, string>;
 }
 
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: LinkState | null): string {
   const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   const from = ctx.nodeById.get(link.from);
-  const via = ls && ls.depth > 1 && from ? ` <span class="via">through ${esc(shortName(from))}</span>` : '';
+  // Say where the link comes from when that is not obvious: "through" a
+  // pushed driver, or "from" one of two chosen drivers.
+  const fromLabel = !from || !ls ? '' : ls.depth > 1 ? `through ${esc(shortName(from))}` : ctx.chosen.size > 1 ? `from ${esc(shortName(from))}` : '';
+  const via = fromLabel ? ` <span class="via">${fromLabel}</span>` : '';
   const toDriver = ctx.nodeById.get(link.to)?.kind === 'driver';
   const heading = status === 'pending' ? 'Expected, but out of season right now' : toDriver ? 'What pushes it there' : 'Why this happens';
   const onsetNote = ls && ls.depth > 1 && from ? ` Month 0 here is when ${esc(shortName(from))} was pushed into this phase.` : '';
@@ -64,21 +69,23 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: Link
   </div>`;
 }
 
-/** Links from other drivers into this driver: never drawn when it is the
- *  scenario driver (they would loop back onto the chosen phase), so the
+/** Links from other drivers into this driver: never drawn when it is a
+ *  chosen driver (they would loop back onto the chosen phase), so the
  *  card tells them in words. */
 function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
   const incoming = graph.links.filter((l) => l.to === node.id);
   if (incoming.length === 0) return '';
   let html = `<h2>Feedback from other drivers</h2>
-    <p class="hint">Not drawn: an effect is never allowed to loop back onto the driver you picked. Pick the other driver to see these links in action.</p>`;
+    <p class="hint">Not drawn: an effect is never allowed to loop back onto a driver you picked. Pick the other driver on its own to see these links in action.</p>`;
   for (const l of incoming) {
     const from = ctx.nodeById.get(l.from);
     if (!from || from.kind !== 'driver') continue;
     const fromPhase = from.phases.find((p) => p.id === l.when);
     const toPhase = phaseForValue(node, l.effect);
+    const alsoChosen = ctx.chosen.has(from.id) ? `<p class="hint">${esc(shortName(from))} is also chosen by hand in this scenario, so this link is skipped: you have set both phases.</p>` : '';
     html += `<div class="link-block">
       <h4>${esc(fromPhase?.label ?? l.when)} tends to push toward ${esc(toPhase?.label ?? String(l.effect))} <span class="badge ${l.confidence}">${l.confidence}</span></h4>
+      ${alsoChosen}
       <p>${esc(l.mechanism.trim())}</p>
       <p class="hint">Expected from month ${l.lag_months[0]}${l.lag_months[1] !== l.lag_months[0] ? `–${l.lag_months[1]}` : ''} after ${esc(shortName(from))} enters that phase; season: ${seasonText(l)}.</p>
       ${sureBlock(l, null)}
@@ -88,12 +95,14 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
   return html;
 }
 
-function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState, driverId: string, phaseId: string): string {
+function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState): string {
   let html = '';
   const st = month.nodes[node.id];
-  if (node.id === driverId) {
-    const phase = node.phases.find((p) => p.id === phaseId);
-    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${esc(phase?.label ?? phaseId)}</div>`;
+  const chosenPhaseId = ctx.chosen.get(node.id);
+  if (chosenPhaseId) {
+    const phase = node.phases.find((p) => p.id === chosenPhaseId);
+    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${esc(phase?.label ?? chosenPhaseId)}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
+    if (ctx.chosen.size > 1) html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.</p>`;
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     html += feedbackBlock(node, graph, ctx);
@@ -127,13 +136,14 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState,
     return html;
   }
   html += `<div class="state-line zero" style="background:#f0f2f5">Not part of the current scenario</div>`;
-  html += `<p class="empty">Pick it under "Driver" in the left panel to see its phases and connections.</p>`;
+  html += `<p class="empty">Pick it under "Driver" or "Second driver" in the left panel to see its phases and connections.</p>`;
   html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
   html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
   return html;
 }
 
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, driverId: string, phaseId: string): void {
+/** `chosen` maps each driver chosen by hand to its phase id (one, or two since M11). */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, string>): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on the map to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
@@ -142,11 +152,12 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     sources: new Map(graph.sources.map((s) => [s.key, s])),
     nodeById: new Map(graph.nodes.map((n) => [n.id, n])),
     linkById: new Map(graph.links.map((l) => [l.id, l])),
+    chosen,
   };
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
 
   if (node.kind === 'driver') {
-    container.innerHTML = html + driverCard(node, graph, ctx, month, driverId, phaseId);
+    container.innerHTML = html + driverCard(node, graph, ctx, month);
     return;
   }
 
@@ -156,10 +167,10 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   const bg = st.value === 0 ? '#f0f2f5' : stateColor(node, st.value);
   html += `<div class="state-line ${cls}" style="background:${bg}">${esc(label)}${st.conflicting ? ' (conflicting influences)' : ''}</div>`;
   if (st.conflicting) {
-    html += `<p class="hint">Two or more links push this place opposite ways this month. The map adds them up; here they ${st.value === 0 ? 'cancel out' : 'do not fully cancel'}. Read each link’s "How sure are we?" to judge which is likelier to win.</p>`;
+    html += `<p class="hint">Two or more links push this place opposite ways this month. The map adds them up; here they ${st.value === 0 ? 'cancel out, so the marker is hatched' : 'do not fully cancel'}. Read each link’s "How sure are we?" to judge which is likelier to win.</p>`;
   }
   if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) {
-    html += `<p class="empty">No known effect from the current driver phase at this point in the timeline.</p>`;
+    html += `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
   }
   html += `<p>${esc(node.summary.trim())}</p>`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);

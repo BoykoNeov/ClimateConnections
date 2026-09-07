@@ -88,6 +88,10 @@ export interface Story {
   start_month: number;
   /** calendar year of month index 0, for stories about a real event */
   start_year?: number;
+  /** a second driver chosen by hand for the whole story, with its phase (M11);
+   *  both or neither */
+  second_driver?: string;
+  second_phase?: string;
   steps: StoryStep[];
 }
 
@@ -99,12 +103,22 @@ export interface Graph {
 }
 
 // ---------------------------------------------------------------- engine
+/** A driver whose phase the scenario fixes by hand. */
+export interface ScenarioDriver {
+  driverId: string;
+  phaseId: string;
+}
+
 export interface Scenario {
   driverId: string;
   phaseId: string;
   /** 1–12; calendar month of month index 0 */
   startMonth: number;
   horizonMonths: number;
+  /** a second driver chosen by hand (M11). It enters its phase at month 0
+   *  like the first, fires its own links at the first hop, and is never
+   *  pushed by a link. Must not name the same driver as `driverId`. */
+  secondary?: ScenarioDriver;
   /** how many hops of links to follow (M10). 1 = only the scenario driver's
    *  own links, the version-1 behaviour and the default; 2 lets a driver that
    *  was set off by the scenario driver fire its own links, and so on. */

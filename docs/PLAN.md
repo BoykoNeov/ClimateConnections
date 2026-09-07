@@ -89,8 +89,9 @@ data/*.yaml  --(scripts/build-data.mjs: validate + convert)-->  public/data/grap
   schema, writes a single JSON file the app loads at startup. Fails the build
   on any error.
 - **Engine** (`src/engine/`): pure TypeScript with no DOM access. Takes the
-  graph plus a scenario (driver id, phase, start month) and returns a
-  per-month state table. Fully unit-testable.
+  graph plus a scenario (driver id, phase, start month, and since M11 an
+  optional second driver and phase) and returns a per-month state table.
+  Fully unit-testable.
 - **UI** (`src/ui/`): D3 for the map and arrows, hand-rolled DOM for the
   panels. Reads engine output; never reads YAML directly.
 
@@ -314,6 +315,20 @@ Semantics (implement exactly this; do not improvise):
    The app runs with `maxDepth` 3 (every driver can appear once) when
    "Follow links through other drivers" is on, and 1 when it is off.
 7. The function is pure. No Date, no randomness, no DOM.
+8. Two chosen drivers (M11). The optional `secondary` scenario field names a
+   second driver and phase, chosen by hand:
+   - Both chosen drivers enter their phase at month 0 and hold it for the
+     whole horizon. Both fire their links at the first hop, at full
+     confidence; rules 3–5 apply unchanged, so at a shared target the two
+     drivers' effects add up and opposite signs set `conflicting`.
+   - A chosen driver is never pushed: a link into it from the other chosen
+     driver (or from a pushed driver) is skipped and not reported, the same
+     loop guard as rule 6. Drivers that are not chosen can still be pushed
+     by either chosen driver and followed at depth.
+   - The same driver cannot be chosen twice; the engine throws.
+   - A neutral second phase applies nothing but still pins the driver: it
+     cannot be pushed, so the result is the single-driver scenario with that
+     driver held out of play (its chain is cut).
 
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
@@ -338,8 +353,9 @@ and lowest-confidence selection.
   axis (wet/dry: blue/brown; warm/cool: red/blue; active/quiet: orange/grey;
   high/low: purple/green). `0` is neutral grey. Not yet affected: hollow.
 - Out-of-season nodes are drawn at reduced opacity and their arrow is muted.
-- Conflicting nodes get a hatched fill or a ring, and the card says
-  "conflicting influences".
+- Conflicting nodes get a dashed ring, and the card says "conflicting
+  influences". When the pushes cancel to 0 the fill is a grey hatch (M11),
+  so a tie is not read as "near normal".
 
 ### 5.3 Arrows
 - One arrow per active link, from driver to target, drawn as a great-circle
@@ -382,6 +398,9 @@ phase description and the timescale.
 
 ### 5.6 Controls (top-left)
 - Driver phase selector: three buttons (El Niño / Neutral / La Niña).
+- Second driver (M11): a dropdown ("None" or any other driver) with its own
+  phase buttons. Both drivers share the start month. Picking the second
+  driver as the main one empties the second slot.
 - Start month selector (default: June, because El Niño events typically
   begin to develop in boreal late spring/summer).
 - Confidence filter: all / probable and above / established only (section 3.4).
@@ -538,6 +557,40 @@ is fully green.
 - Not in M10 (later v2 items): multi-driver scenarios (two chosen phases at
   once), season dial, compare mode.
 
+### M11 — Two chosen drivers (signed off 2026-09-07)
+- Engine: section 4 rule 8. `Scenario.secondary` names a second driver and
+  phase; both chosen drivers start at month 0, fire at the first hop at full
+  confidence, add up under the existing sum-and-clamp rule, and are never
+  pushed. No new combination rule: the conflict flag from rule 4 is the
+  teaching point.
+- Schema: a story may carry `second_driver` and `second_phase` (both or
+  neither). The validator checks the driver exists, differs from the main
+  one, and has the phase, and treats links from either chosen driver as
+  direct when checking story steps.
+- Data: one story, "2010–11: La Niña and a negative dipole together" (June
+  2010 start), with one new source (Dutra et al. 2013 on the Horn of Africa
+  drought). It shows two same-sign pushes on East Africa's short rains, a
+  region lit by the second driver alone, one lit by the first alone, and
+  says plainly that holding a chosen dipole for twelve months is a
+  simplification.
+- Rendering: `RenderOptions.chosen` (driver id to phase colour) replaces the
+  single driver; a chosen driver keeps its plain white ring, a pushed one
+  the dark dashed ring. Conflicting markers that cancel to 0 get a grey
+  hatch fill and a dark dashed ring (legend row added).
+- Cards: a chosen driver's card says "chosen by hand" when two are chosen;
+  with two chosen drivers every link block says "from <driver>"; a
+  feedback link whose source is the other chosen driver says it is skipped.
+- Controls: "Second driver (optional)" dropdown and phase buttons; the print
+  caption names both drivers.
+- Tests: engine unit block (both held, first-hop links, sum and conflict,
+  chosen drivers never pushed, neutral second driver, same driver twice
+  refused), acceptance blocks for El Niño + negative dipole (conflicts in
+  Indonesia and East Africa), La Niña + negative dipole (the story), and
+  general cases (neutral, NAO chosen alongside El Niño); the stories test
+  passes the second driver to the engine.
+- Not in M11 (later v2 items): season dial, compare mode, a separate start
+  month for the second driver.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -608,7 +661,7 @@ writing mechanism text):
 |---|---|
 | Effects are tendencies, not certainties | Confidence tiers in data, line-style encoding, caveat on every card, permanent disclaimer |
 | Feedback loops between drivers (v2) | Bounded depth, each link fires once, confidence downgrade per hop, loops explained in text not animated (done in M10: the scenario driver's card lists incoming links under "Feedback from other drivers") |
-| Two drivers pushing one region opposite ways (v2) | Sum-and-clamp with a "conflicting" flag; the flag is a teaching point |
+| Two drivers pushing one region opposite ways (v2) | Sum-and-clamp with a "conflicting" flag; the flag is a teaching point (done in M11: two chosen drivers, hatched marker when the pushes cancel) |
 | Students trust a polished map too much | Disclaimer, caveats, and the contested tier shown rather than hidden |
 | Pacific split on standard maps | Rotated projection from day one |
 | Wildly different time scales across phenomena | Monthly is the home scale; faster/slower phenomena are context nodes without animation |
@@ -619,8 +672,9 @@ writing mechanism text):
 ## 10. Roadmap beyond version 1 (do not start without sign-off)
 
 - **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation
-  (done, M9) as drivers; driver-to-driver links (done, M10); season dial;
-  compare mode (two maps side by side); multi-driver scenarios with
-  conflict flags; spreadsheet-to-YAML importer if outside contributors join.
+  (done, M9) as drivers; driver-to-driver links (done, M10); multi-driver
+  scenarios with conflict flags (done, M11: two chosen drivers); season
+  dial; compare mode (two maps side by side); spreadsheet-to-YAML importer
+  if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

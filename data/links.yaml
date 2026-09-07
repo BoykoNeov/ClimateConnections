@@ -1458,6 +1458,9 @@ sources:
   - key: bom_scs24
     citation: "Australian Bureau of Meteorology (2011). Special Climate Statement 24: Frequent heavy rain events in late 2010/early 2011 lead to widespread flooding across eastern Australia."
     url: http://www.bom.gov.au/climate/current/statements/scs24.pdf
+  - key: dutra_2013
+    citation: "Dutra, E., Magnusson, L., Wetterhall, F., Cloke, H. L., Balsamo, G., Boussetta, S., & Pappenberger, F. (2013). The 2010–2011 drought in the Horn of Africa in ECMWF reanalysis and seasonal forecast products. International Journal of Climatology, 33(7), 1720–1729."
+    url: https://doi.org/10.1002/joc.3545
   - key: boening_2012
     citation: "Boening, C., Willis, J. K., Landerer, F. W., Nerem, R. S., & Fasullo, J. (2012). The 2011 La Niña: So strong, the oceans fell. Geophysical Research Letters, 39(19), L19602."
     url: https://doi.org/10.1029/2012GL053055
