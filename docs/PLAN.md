@@ -917,6 +917,27 @@ Outcome nodes (ids are suggestions; keep them if nothing better):
 | global_mean_temperature | Global | warm_cool | warm (+), lag 3–6 mo | cool (−) |
 | east_asia_winter | Japan / E China | warm_cool | mild (+), probable | cold (−), probable |
 
+Outcome nodes added on 2026-09-07 (content only: no engine or UI change;
+every link cited and caveated as above, asymmetric where the literature is):
+
+| id | region | axis | driver | main + phase tendency | main − phase tendency |
+|---|---|---|---|---|---|
+| canadian_prairies_winter | Prairies / N Plains | warm_cool | ENSO | El Niño mild (+), established | La Niña cold (−), probable |
+| hawaii_winter_rainfall | Hawaii | wet_dry | ENSO | El Niño dry (−), probable | La Niña wet (+), probable |
+| northern_amazon_rainfall | N Amazon, Colombia, Venezuela | wet_dry | ENSO | El Niño dry (−), established | La Niña wet (+), probable |
+| central_america_rainfall | Central America / Caribbean | wet_dry | ENSO | El Niño dry (−), probable | La Niña wet (+), probable |
+| us_southwest_winter | US Southwest / N Mexico | wet_dry | ENSO | El Niño wet (+), established | La Niña dry (−), established |
+| south_pacific_cyclones | Fiji to French Polynesia | active_quiet | ENSO | El Niño more, further east (+), established | La Niña fewer (−), probable |
+| north_australia_cyclones | Australian region | active_quiet | ENSO | El Niño fewer (−), established | La Niña more (+), probable |
+| west_pacific_typhoons | Western North Pacific | active_quiet | ENSO | El Niño further east, stronger (+), probable | La Niña closer to Asia, weaker (−), probable |
+| south_china_rainfall | Southern China | wet_dry | ENSO | El Niño wet winter–spring (+), established | La Niña dry (−), probable |
+| ethiopia_summer_rains | Ethiopian highlands | wet_dry | ENSO | El Niño weak Kiremt (−), probable | La Niña full (+), probable |
+| new_zealand_summer | New Zealand | warm_cool | ENSO | El Niño cool (−), probable | La Niña warm (+), probable |
+| micronesia_dry_season | Guam to the Marshalls | wet_dry | ENSO | El Niño severe dry season next year (−), lag 7–11, probable | (no La Niña link) |
+| nw_europe_winter_storms | British Isles / North Sea | active_quiet | NAO | positive more storms (+), established | negative fewer (−), established |
+| alpine_snow | The Alps | high_low | NAO | positive scarce (−), probable | negative deep (+), probable |
+| western_russia_winter | European Russia / W Siberia | warm_cool | NAO | positive mild (+), established | negative cold (−), probable |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic

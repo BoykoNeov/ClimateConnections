@@ -1367,6 +1367,594 @@ links:
       opposite. Shown as contested because the literature does not agree.
     sources: [pozo_vazquez_2001, bronnimann_2007]
 
+  # ================================================ EL NIÑO, added 2026-09-07
+  - id: el_nino_canadian_prairies
+    from: enso
+    when: el_nino
+    to: canadian_prairies_winter
+    effect: 1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      El Niño strengthens and stretches the Pacific jet stream so that it
+      crosses North America further north and stronger than usual. Mild
+      Pacific air flows across the Prairies and the Arctic air that normally
+      pools there is held back.
+    caveat: >
+      A single Arctic outbreak can still make headlines in an El Niño
+      winter; the tendency is for the season as a whole to average milder,
+      not for cold snaps to vanish.
+    evidence_note: >
+      Shabbar and Khandekar found the winter warming over western and central
+      Canada in almost every El Niño since 1900, and it is among the
+      strongest ENSO temperature signals outside the tropics.
+    sources: [shabbar_khandekar_1996, halpert_ropelewski_1992, noaa_cpc_north_america]
+
+  - id: el_nino_hawaii
+    from: enso
+    when: el_nino
+    to: hawaii_winter_rainfall
+    effect: -1
+    lag_months: [5, 8]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      Rising air over the warm central Pacific to the south of Hawaii is
+      balanced by sinking air over the islands, which suppresses showers,
+      while the storms of the north Pacific tend to pass north of them.
+    caveat: >
+      Not every El Niño winter is dry, and rainfall on the islands varies
+      enormously from one valley to the next, so a wet windward slope can
+      sit beside a parched leeward one.
+    evidence_note: >
+      Chu found dry winters following most El Niño onsets since the 1950s,
+      with the driest conditions in the second winter of a long event.
+    sources: [chu_1995, chu_chen_2005]
+
+  - id: el_nino_northern_amazon
+    from: enso
+    when: el_nino
+    to: northern_amazon_rainfall
+    effect: -1
+    lag_months: [2, 8]
+    season: [9, 10, 11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      The rising branch of the tropical circulation moves out into the
+      Pacific, and the compensating sinking air settles over the northern
+      Amazon and the Caribbean coast of South America, cutting off the deep
+      clouds that bring the rain.
+    caveat: >
+      The southern Amazon often escapes or even turns wetter, and the size
+      of the drought also depends on the Atlantic, which decides how far
+      north the rain belt sits.
+    evidence_note: >
+      The Ropelewski and Halpert maps show northern South America as one of
+      the most consistent dry regions in El Niño; the 1997–98 and 2015–16
+      events brought record low river levels and widespread forest fires in
+      Roraima and the northeastern Amazon.
+    sources: [ropelewski_halpert_1987, poveda_mesa_1997, jimenez_munoz_2016]
+
+  - id: el_nino_central_america
+    from: enso
+    when: el_nino
+    to: central_america_rainfall
+    effect: -1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      A warm eastern Pacific strengthens the trade winds and the sinking air
+      over the Caribbean and Central America, and the mid-summer break in
+      the rains lengthens, so the rainy season delivers less than usual,
+      above all on the Pacific side.
+    caveat: >
+      The Caribbean coast, fed by moist trade winds, often sees little
+      change or even more rain, and a warm tropical Atlantic can cancel the
+      Pacific's drying.
+    evidence_note: >
+      The dry-season signal is strongest in the late rainy season
+      (August–October); Giannini and colleagues found the Caribbean turns
+      wetter in the early rainy season of the following year, which is not
+      shown here.
+    sources: [magana_2003, enfield_alfaro_1999, giannini_2000]
+
+  - id: el_nino_us_southwest
+    from: enso
+    when: el_nino
+    to: us_southwest_winter
+    effect: 1
+    lag_months: [5, 8]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: established
+    mechanism: >
+      El Niño strengthens the subtropical jet stream across northern Mexico
+      and the southern United States, steering a steady supply of Pacific
+      storms across the desert Southwest that would otherwise pass further
+      north.
+    caveat: >
+      The tendency is strongest in strong events; weak and central-Pacific
+      El Niños have brought ordinary or even dry winters to Arizona and New
+      Mexico.
+    sources: [ropelewski_halpert_1986, redmond_koch_1991, magana_2003]
+
+  - id: el_nino_south_pacific_cyclones
+    from: enso
+    when: el_nino
+    to: south_pacific_cyclones
+    effect: 1
+    lag_months: [5, 9]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: established
+    mechanism: >
+      The band of warm water and rising air where South Pacific cyclones are
+      born shifts east and toward the equator in El Niño, so storms tend to
+      form near Fiji, Samoa and the Cook Islands, and further east, rather
+      than in the Coral Sea.
+    caveat: >
+      It is where cyclones form that changes most reliably; the total count
+      for the whole South Pacific rises only a little, and any one island
+      can still be missed in a busy season.
+    sources: [basher_zheng_1995, kuleshov_2008]
+
+  - id: el_nino_north_australia_cyclones
+    from: enso
+    when: el_nino
+    to: north_australia_cyclones
+    effect: -1
+    lag_months: [5, 9]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: established
+    mechanism: >
+      In El Niño the warm water and rising air move away from northern
+      Australia toward the central Pacific, taking the conditions cyclones
+      need with them, so fewer form in the Australian region and the first
+      one tends to arrive later.
+    caveat: >
+      Fewer does not mean none: Cyclone Tracy, the most destructive in
+      Australia's history, struck Darwin during the El Niño summer of
+      1974–75, so a quiet season can still contain a bad storm.
+    evidence_note: >
+      Nicholls showed in the 1970s and 1980s that the coming season's
+      cyclone count could be foretold from the Southern Oscillation, one of
+      the first seasonal forecasts of its kind.
+    sources: [nicholls_1984, kuleshov_2008, bom_enso_australia]
+
+  - id: el_nino_west_pacific_typhoons
+    from: enso
+    when: el_nino
+    to: west_pacific_typhoons
+    effect: 1
+    lag_months: [0, 4]
+    season: [7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Warm water and rising air spread east along the equator, so typhoons
+      tend to form further southeast in the open Pacific. That gives them a
+      longer track over warm water before they meet land or cold air, and
+      more of them reach the highest intensities.
+    caveat: >
+      The number of typhoons in a season hardly changes with ENSO, only where
+      they form and how long they live, and the Philippines and Japan can
+      still be hit hard in any year.
+    evidence_note: >
+      Wang and Chan and Camargo and Sobel both find more long-lived, intense
+      storms in El Niño years; the 2015 season, with an unusually large
+      number of very intense typhoons, fits the pattern.
+    sources: [wang_chan_2002, camargo_sobel_2005, chan_1985]
+
+  - id: el_nino_south_china
+    from: enso
+    when: el_nino
+    to: south_china_rainfall
+    effect: 1
+    lag_months: [4, 8]
+    season: [11, 12, 1, 2, 3, 4, 5]
+    confidence: established
+    mechanism: >
+      Cool water and sinking air over the western Pacific in El Niño set up a
+      persistent high-pressure area over the sea east of the Philippines.
+      Its southwesterly winds pump warm, moist air onto the coast of southern
+      China through the winter and spring.
+    caveat: >
+      The wet signal fades if the event ends early, and the following summer
+      is far less predictable: the great Yangtze flood of 1998 followed an El
+      Niño but many other post-El Niño summers were unremarkable.
+    sources: [wang_2000, zhang_1996, zhang_1999]
+
+  - id: el_nino_ethiopia
+    from: enso
+    when: el_nino
+    to: ethiopia_summer_rains
+    effect: -1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9]
+    confidence: probable
+    mechanism: >
+      The Kiremt rains are part of the same summer rain belt as the Indian
+      monsoon. El Niño weakens the rising air over that whole belt and
+      shifts the tropical easterly jet that feeds moisture into the
+      highlands, so the rains come late and fall short.
+    caveat: >
+      Roughly a third of El Niño summers have brought near-normal Kiremt
+      rain, and the western highlands are affected less than the northeast
+      and the Rift Valley.
+    evidence_note: >
+      Korecha and Barnston found the state of the Pacific to be the best
+      single predictor of Kiremt rainfall; the failures of 1984, 1987 and
+      2015 all came with El Niño.
+    sources: [segele_lamb_2005, korecha_barnston_2007, gissila_2004]
+
+  - id: el_nino_new_zealand
+    from: enso
+    when: el_nino
+    to: new_zealand_summer
+    effect: -1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      El Niño strengthens the westerly and southwesterly winds over New
+      Zealand in summer. They bring cooler air from the Southern Ocean, more
+      rain to the west coast and drier weather to the north and east.
+    caveat: >
+      The temperature change is small, a fraction of a degree on average,
+      and the rainfall signal reverses between the west and east coasts, so
+      no single word describes a New Zealand El Niño summer.
+    sources: [gordon_1986, mullan_1995]
+
+  - id: el_nino_micronesia
+    from: enso
+    when: el_nino
+    to: micronesia_dry_season
+    effect: -1
+    lag_months: [7, 11]
+    season: [1, 2, 3, 4, 5]
+    confidence: probable
+    mechanism: >
+      As an El Niño peaks and fades, the rain belt that had swung east
+      toward the central Pacific leaves the western Pacific under sinking
+      air and cooler-than-usual water, and the dry season in Micronesia turns
+      severe and long.
+    caveat: >
+      The drought follows only strong events reliably; after a weak El Niño
+      the dry season may be ordinary, and the islands nearest the equator
+      are hit harder than the northern Marianas.
+    evidence_note: >
+      Guam, Palau and the Marshall Islands declared water emergencies in the
+      early months of 1983, 1998 and 2016, each following a strong El Niño;
+      this delayed signal is used for drought warnings across the region.
+    sources: [he_barnston_1996, kruk_2015]
+
+  # ================================================ LA NIÑA, added 2026-09-07
+  - id: la_nina_canadian_prairies
+    from: enso
+    when: la_nina
+    to: canadian_prairies_winter
+    effect: -1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      La Niña weakens the Pacific jet and favours a ridge of high pressure
+      over the eastern Pacific, downstream of which cold Arctic air is drawn
+      south across the Prairies and the northern Plains more often.
+    caveat: >
+      The cold signal in La Niña is weaker and less consistent than the warm
+      signal in El Niño, and some La Niña winters on the Prairies have been
+      close to normal.
+    sources: [shabbar_khandekar_1996, halpert_ropelewski_1992, noaa_cpc_north_america]
+
+  - id: la_nina_hawaii
+    from: enso
+    when: la_nina
+    to: hawaii_winter_rainfall
+    effect: 1
+    lag_months: [5, 8]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      With the central Pacific cool, the sinking air that dries Hawaii in El
+      Niño is absent, and winter fronts and cut-off lows tend to reach the
+      islands more often.
+    caveat: >
+      The wet tendency in La Niña is weaker than the dry tendency in El
+      Niño, and the islands' rain depends heavily on a few large storms
+      whose timing no seasonal pattern controls.
+    sources: [chu_1995, chu_chen_2005]
+
+  - id: la_nina_northern_amazon
+    from: enso
+    when: la_nina
+    to: northern_amazon_rainfall
+    effect: 1
+    lag_months: [2, 8]
+    season: [9, 10, 11, 12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      Rising air concentrates over the warm western Pacific and South
+      America, and the northern Amazon, Colombia and Venezuela tend to sit
+      under more active rain clouds than usual.
+    caveat: >
+      The wet response is less regular than the El Niño drought, and much of
+      the region's flooding depends on the Atlantic and on the strength of
+      the local rainy season.
+    evidence_note: >
+      Colombia's floods of 2010–11, during a strong La Niña, were the
+      country's costliest weather disaster and fit the pattern.
+    sources: [poveda_mesa_1997, marengo_1992]
+
+  - id: la_nina_central_america
+    from: enso
+    when: la_nina
+    to: central_america_rainfall
+    effect: 1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      A cool eastern Pacific weakens the sinking air over the Caribbean and
+      Central America and shortens the mid-summer break in the rains, so the
+      rainy season tends to deliver more, and Atlantic hurricanes, which La
+      Niña also favours, add to it.
+    caveat: >
+      The extra rain can be modest, and whether it turns into floods depends
+      on hurricane tracks that no seasonal tendency predicts.
+    sources: [enfield_alfaro_1999, giannini_2000, magana_2003]
+
+  - id: la_nina_us_southwest
+    from: enso
+    when: la_nina
+    to: us_southwest_winter
+    effect: -1
+    lag_months: [5, 8]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: established
+    mechanism: >
+      La Niña shifts the storm track north into the Pacific Northwest and
+      weakens the subtropical jet, so Pacific storms rarely reach the
+      Southwest and northern Mexico and the winter tends to be dry.
+    caveat: >
+      Dry winters have many origins, and a single slow-moving storm can
+      rescue a La Niña season; the persistent Southwest drought of the early
+      2000s spanned La Niña and neutral years alike.
+    sources: [ropelewski_halpert_1989, redmond_koch_1991]
+
+  - id: la_nina_south_pacific_cyclones
+    from: enso
+    when: la_nina
+    to: south_pacific_cyclones
+    effect: -1
+    lag_months: [5, 9]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      In La Niña the warm water and rising air retreat west toward the Coral
+      Sea, so cyclones tend to form near Australia and Vanuatu and seldom
+      reach the islands east of Fiji.
+    caveat: >
+      Cyclones can still develop near Fiji and Tonga in La Niña years, and
+      the eastern islands' counts are small enough that one storm changes
+      the season's story.
+    sources: [basher_zheng_1995, kuleshov_2008]
+
+  - id: la_nina_north_australia_cyclones
+    from: enso
+    when: la_nina
+    to: north_australia_cyclones
+    effect: 1
+    lag_months: [5, 9]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      Warm water and the rising air of the Pacific rain belt sit close to
+      northern Australia in La Niña, so more cyclones form in the region and
+      the first one tends to arrive earlier in the season.
+    caveat: >
+      Cyclone numbers in the Australian region have fallen over recent
+      decades for reasons that are still debated, so a La Niña season today
+      may only match what an average season brought fifty years ago.
+    sources: [nicholls_1984, kuleshov_2008, bom_enso_australia]
+
+  - id: la_nina_west_pacific_typhoons
+    from: enso
+    when: la_nina
+    to: west_pacific_typhoons
+    effect: -1
+    lag_months: [0, 4]
+    season: [7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Typhoons in La Niña tend to form further northwest, close to the
+      Philippines and the South China Sea, and so have less time over warm
+      water to strengthen before reaching land.
+    caveat: >
+      Forming closer to Asia can mean more landfalls even though storms are
+      weaker on average, so a quieter season by this measure is not
+      necessarily a safer one for the coast.
+    sources: [wang_chan_2002, camargo_sobel_2005]
+
+  - id: la_nina_south_china
+    from: enso
+    when: la_nina
+    to: south_china_rainfall
+    effect: -1
+    lag_months: [4, 8]
+    season: [11, 12, 1, 2, 3, 4, 5]
+    confidence: probable
+    mechanism: >
+      A warm western Pacific in La Niña favours low pressure east of the
+      Philippines, so the moist southwesterly feed onto southern China is
+      replaced by dry northerly winter monsoon air.
+    caveat: >
+      The dry La Niña signal is weaker and less regular than the wet El Niño
+      one, and cold northerly outbreaks can bring snow and freezing rain to
+      the south, as in January 2008.
+    sources: [wang_2000, zhang_1999]
+
+  - id: la_nina_ethiopia
+    from: enso
+    when: la_nina
+    to: ethiopia_summer_rains
+    effect: 1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9]
+    confidence: probable
+    mechanism: >
+      A cool Pacific strengthens the rising air over Africa and South Asia
+      and the tropical easterly jet that carries moisture to the Ethiopian
+      highlands, so the Kiremt rains tend to be full.
+    caveat: >
+      Wetter summers bring their own harm, with floods along the Awash and
+      in the lowlands, and the signal is weaker than the El Niño drought.
+    sources: [korecha_barnston_2007, segele_lamb_2005]
+
+  - id: la_nina_new_zealand
+    from: enso
+    when: la_nina
+    to: new_zealand_summer
+    effect: 1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      La Niña brings more northeasterly winds over New Zealand in summer,
+      carrying warm, humid air from the subtropics, so summers tend to be
+      warmer, with more rain in the north and east.
+    caveat: >
+      Warm summers in New Zealand also come from warm seas around the
+      country and from the Southern Annular Mode, so a La Niña is neither
+      needed nor enough for one.
+    evidence_note: >
+      The record-warm summer of 2017–18 came with a weak La Niña and
+      unusually warm seas around the country; both are usually credited with
+      the record.
+    sources: [gordon_1986, mullan_1995]
+
+  # ============================================ POSITIVE NAO, added 2026-09-07
+  - id: positive_nao_winter_storms
+    from: nao
+    when: positive
+    to: nw_europe_winter_storms
+    effect: 1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      A positive North Atlantic Oscillation means a strong pressure contrast
+      between Iceland and the Azores. That contrast drives a fast jet stream
+      aimed at the British Isles and the North Sea, and storm after storm
+      rides along it.
+    caveat: >
+      A positive winter has more and stronger storms on average, but the
+      most damaging single storm of a decade can still fall in an ordinary
+      winter; the count changes, not the possibility.
+    sources: [hurrell_1995, pinto_2009]
+
+  - id: positive_nao_alpine_snow
+    from: nao
+    when: positive
+    to: alpine_snow
+    effect: -1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      The strong westerlies of a positive winter carry mild Atlantic air over
+      the Alps and leave high pressure sitting over them, so precipitation
+      falls as rain rather than snow at low and middle altitudes and what
+      snow there is melts sooner.
+    caveat: >
+      High-altitude resorts often do well in a positive winter, since the
+      storms still bring moisture, and a single cold spell in a mild winter
+      can lay down a season's worth of snow in the valleys.
+    evidence_note: >
+      Beniston tied the run of snow-poor Alpine winters in the late 1980s and
+      1990s to the strongly positive North Atlantic Oscillation of those
+      years; later work finds the link clear below about 1,500 metres and
+      weaker above.
+    sources: [beniston_1997, scherrer_2004]
+
+  - id: positive_nao_western_russia
+    from: nao
+    when: positive
+    to: western_russia_winter
+    effect: 1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      The strong westerlies of a positive winter carry mild, moist Atlantic
+      air far inland across Scandinavia and European Russia toward the Urals
+      and western Siberia, holding off the Siberian cold.
+    caveat: >
+      The mild tendency fades with distance east; in central Siberia and
+      beyond other patterns matter more, and even a positive winter can
+      contain a deep cold spell when the westerlies pause.
+    sources: [hurrell_1995, hurrell_1996, thompson_wallace_1998]
+
+  # ============================================ NEGATIVE NAO, added 2026-09-07
+  - id: negative_nao_winter_storms
+    from: nao
+    when: negative
+    to: nw_europe_winter_storms
+    effect: -1
+    lag_months: [0, 0]
+    season: [11, 12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      In a negative winter the pressure contrast across the Atlantic
+      weakens, the jet stream slows and wanders south, and northwest Europe
+      often sits under a blocking high with calm, cold weather while the
+      storms go to Iberia and the Mediterranean.
+    caveat: >
+      A quiet stormy season is not a calm winter: negative phases bring
+      their own hazards, with cold spells, snow and freezing fog in place of
+      wind.
+    sources: [hurrell_1995, pinto_2009]
+
+  - id: negative_nao_alpine_snow
+    from: nao
+    when: negative
+    to: alpine_snow
+    effect: 1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      A negative winter lets cold continental air settle over the Alps and
+      sends storms along a southern track that brings heavy snow to the
+      southern and western Alps in particular, so snow tends to be deep and
+      to last.
+    caveat: >
+      If the negative phase brings dry, blocked weather rather than southern
+      storms, the winter can be cold but snow-poor, so the sign is less
+      certain than the temperature signal.
+    sources: [beniston_1997, scherrer_2004]
+
+  - id: negative_nao_western_russia
+    from: nao
+    when: negative
+    to: western_russia_winter
+    effect: -1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      When the westerlies falter in a negative winter the Siberian high can
+      extend west, and cold continental air spreads over European Russia
+      instead of being pushed back by mild air from the Atlantic.
+    caveat: >
+      Russia's coldest winters often owe as much to a blocking high over the
+      Urals, which the North Atlantic Oscillation does not control, so a
+      negative phase raises the odds of cold without deciding it.
+    evidence_note: >
+      The winter of 2009–10, a record negative phase, was one of the coldest
+      in Moscow for decades; the record-warm Russian summer that followed it
+      had nothing to do with the North Atlantic Oscillation.
+    sources: [hurrell_1995, hurrell_1996]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -1596,3 +2184,96 @@ sources:
   - key: noaa_cpc_oni
     citation: "NOAA Climate Prediction Center. Cold and warm episodes by season: the Oceanic Niño Index (ONI), ERSST version 6."
     url: https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/oni/v6/
+
+  # ---- outcomes added 2026-09-07 (ENSO)
+  - key: shabbar_khandekar_1996
+    citation: "Shabbar, A., & Khandekar, M. (1996). The impact of El Niño-Southern Oscillation on the temperature field over Canada. Atmosphere-Ocean, 34(2), 401–416."
+    url: https://doi.org/10.1080/07055900.1996.9649570
+  - key: chu_1995
+    citation: "Chu, P.-S. (1995). Hawaii rainfall anomalies and El Niño. Journal of Climate, 8(6), 1697–1703."
+    url: https://doi.org/10.1175/1520-0442(1995)008<1697:HRAAEN>2.0.CO;2
+  - key: chu_chen_2005
+    citation: "Chu, P.-S., & Chen, H. (2005). Interannual and interdecadal rainfall variations in the Hawaiian Islands. Journal of Climate, 18(22), 4796–4813."
+    url: https://doi.org/10.1175/JCLI3578.1
+  - key: poveda_mesa_1997
+    citation: "Poveda, G., & Mesa, O. J. (1997). Feedbacks between hydrological processes in tropical South America and large-scale ocean–atmospheric phenomena. Journal of Climate, 10(10), 2690–2702."
+    url: https://doi.org/10.1175/1520-0442(1997)010<2690:FBHPIT>2.0.CO;2
+  - key: marengo_1992
+    citation: "Marengo, J. A. (1992). Interannual variability of surface climate in the Amazon basin. International Journal of Climatology, 12(8), 853–863."
+    url: https://doi.org/10.1002/joc.3370120808
+  - key: jimenez_munoz_2016
+    citation: "Jiménez-Muñoz, J. C., Mattar, C., Barichivich, J., Santamaría-Artigas, A., Takahashi, K., Malhi, Y., Sobrino, J. A., & van der Schrier, G. (2016). Record-breaking warming and extreme drought in the Amazon rainforest during the course of El Niño 2015–2016. Scientific Reports, 6, 33130."
+    url: https://doi.org/10.1038/srep33130
+  - key: magana_2003
+    citation: "Magaña, V. O., Vázquez, J. L., Pérez, J. L., & Pérez, J. B. (2003). Impact of El Niño on precipitation in Mexico. Geofísica Internacional, 42(3), 313–330."
+  - key: enfield_alfaro_1999
+    citation: "Enfield, D. B., & Alfaro, E. J. (1999). The dependence of Caribbean rainfall on the interaction of the tropical Atlantic and Pacific Oceans. Journal of Climate, 12(7), 2093–2103."
+    url: https://doi.org/10.1175/1520-0442(1999)012<2093:TDOCRO>2.0.CO;2
+  - key: giannini_2000
+    citation: "Giannini, A., Kushnir, Y., & Cane, M. A. (2000). Interannual variability of Caribbean rainfall, ENSO, and the Atlantic Ocean. Journal of Climate, 13(2), 297–311."
+    url: https://doi.org/10.1175/1520-0442(2000)013<0297:IVOCRE>2.0.CO;2
+  - key: redmond_koch_1991
+    citation: "Redmond, K. T., & Koch, R. W. (1991). Surface climate and streamflow variability in the western United States and their relationship to large-scale circulation indices. Water Resources Research, 27(9), 2381–2399."
+    url: https://doi.org/10.1029/91WR00690
+  - key: basher_zheng_1995
+    citation: "Basher, R. E., & Zheng, X. (1995). Tropical cyclones in the southwest Pacific: Spatial patterns and relationships to Southern Oscillation and sea surface temperature. Journal of Climate, 8(5), 1249–1260."
+    url: https://doi.org/10.1175/1520-0442(1995)008<1249:TCITSP>2.0.CO;2
+  - key: kuleshov_2008
+    citation: "Kuleshov, Y., Qi, L., Fawcett, R., & Jones, D. (2008). On tropical cyclone activity in the Southern Hemisphere: Trends and the ENSO connection. Geophysical Research Letters, 35, L14S08."
+    url: https://doi.org/10.1029/2007GL032983
+  - key: nicholls_1984
+    citation: "Nicholls, N. (1984). The Southern Oscillation, sea-surface-temperature, and interannual fluctuations in Australian tropical cyclone activity. Journal of Climatology, 4(6), 661–670."
+    url: https://doi.org/10.1002/joc.3370040609
+  - key: wang_chan_2002
+    citation: "Wang, B., & Chan, J. C. L. (2002). How strong ENSO events affect tropical storm activity over the western North Pacific. Journal of Climate, 15(13), 1643–1658."
+    url: https://doi.org/10.1175/1520-0442(2002)015<1643:HSEEAT>2.0.CO;2
+  - key: camargo_sobel_2005
+    citation: "Camargo, S. J., & Sobel, A. H. (2005). Western North Pacific tropical cyclone intensity and ENSO. Journal of Climate, 18(15), 2996–3006."
+    url: https://doi.org/10.1175/JCLI3457.1
+  - key: chan_1985
+    citation: "Chan, J. C. L. (1985). Tropical cyclone activity in the northwest Pacific in relation to the El Niño/Southern Oscillation phenomenon. Monthly Weather Review, 113(4), 599–606."
+    url: https://doi.org/10.1175/1520-0493(1985)113<0599:TCAITN>2.0.CO;2
+  - key: zhang_1996
+    citation: "Zhang, R., Sumi, A., & Kimoto, M. (1996). Impact of El Niño on the East Asian monsoon: A diagnostic study of the '86/87 and '91/92 events. Journal of the Meteorological Society of Japan, 74(1), 49–62."
+    url: https://doi.org/10.2151/jmsj1965.74.1_49
+  - key: zhang_1999
+    citation: "Zhang, R., Sumi, A., & Kimoto, M. (1999). A diagnostic study of the impact of El Niño on the precipitation in China. Advances in Atmospheric Sciences, 16(2), 229–241."
+    url: https://doi.org/10.1007/BF02973084
+  - key: segele_lamb_2005
+    citation: "Segele, Z. T., & Lamb, P. J. (2005). Characterization and variability of Kiremt rainy season over Ethiopia. Meteorology and Atmospheric Physics, 89, 153–180."
+    url: https://doi.org/10.1007/s00703-005-0127-x
+  - key: korecha_barnston_2007
+    citation: "Korecha, D., & Barnston, A. G. (2007). Predictability of June–September rainfall in Ethiopia. Monthly Weather Review, 135(2), 628–650."
+    url: https://doi.org/10.1175/MWR3304.1
+  - key: gissila_2004
+    citation: "Gissila, T., Black, E., Grimes, D. I. F., & Slingo, J. M. (2004). Seasonal forecasting of the Ethiopian summer rains. International Journal of Climatology, 24(11), 1345–1358."
+    url: https://doi.org/10.1002/joc.1078
+  - key: gordon_1986
+    citation: "Gordon, N. D. (1986). The Southern Oscillation and New Zealand weather. Monthly Weather Review, 114(2), 371–387."
+    url: https://doi.org/10.1175/1520-0493(1986)114<0371:TSOANZ>2.0.CO;2
+  - key: mullan_1995
+    citation: "Mullan, A. B. (1995). On the linearity and stability of Southern Oscillation-climate relationships for New Zealand. International Journal of Climatology, 15(12), 1365–1386."
+    url: https://doi.org/10.1002/joc.3370151205
+  - key: he_barnston_1996
+    citation: "He, Y., & Barnston, A. G. (1996). Long-lead forecasts of seasonal precipitation in the tropical Pacific islands using CCA. Journal of Climate, 9(9), 2020–2035."
+    url: https://doi.org/10.1175/1520-0442(1996)009<2020:LLFOSP>2.0.CO;2
+  - key: kruk_2015
+    citation: "Kruk, M. C., Lorrey, A. M., Griffiths, G. M., Lander, M., Gibney, E. J., Diamond, H. J., & Marra, J. J. (2015). On the state of the knowledge of rainfall extremes in the western and northern Pacific basin. International Journal of Climatology, 35(3), 321–336."
+    url: https://doi.org/10.1002/joc.3990
+
+  # ---- outcomes added 2026-09-07 (NAO)
+  - key: pinto_2009
+    citation: "Pinto, J. G., Zacharias, S., Fink, A. H., Leckebusch, G. C., & Ulbrich, U. (2009). Factors contributing to the development of extreme North Atlantic cyclones and their relationship with the NAO. Climate Dynamics, 32, 711–737."
+    url: https://doi.org/10.1007/s00382-008-0396-4
+  - key: beniston_1997
+    citation: "Beniston, M. (1997). Variations of snow depth and duration in the Swiss Alps over the last 50 years: Links to changes in large-scale climatic forcings. Climatic Change, 36, 281–300."
+    url: https://doi.org/10.1023/A:1005310214361
+  - key: scherrer_2004
+    citation: "Scherrer, S. C., Appenzeller, C., & Laternser, M. (2004). Trends in Swiss Alpine snow days: The role of local- and large-scale climate variability. Geophysical Research Letters, 31, L13215."
+    url: https://doi.org/10.1029/2004GL020255
+  - key: hurrell_1996
+    citation: "Hurrell, J. W. (1996). Influence of variations in extratropical wintertime teleconnections on Northern Hemisphere temperature. Geophysical Research Letters, 23(6), 665–668."
+    url: https://doi.org/10.1029/96GL00459
+  - key: thompson_wallace_1998
+    citation: "Thompson, D. W. J., & Wallace, J. M. (1998). The Arctic Oscillation signature in the wintertime geopotential height and temperature fields. Geophysical Research Letters, 25(9), 1297–1300."
+    url: https://doi.org/10.1029/98GL00950

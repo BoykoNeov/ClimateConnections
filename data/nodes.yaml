@@ -710,8 +710,8 @@ nodes:
     name: Iberia and Mediterranean winter rainfall
     label: Mediterranean
     kind: outcome
-    lat: 39
-    lon: -4
+    lat: 37
+    lon: -5
     area: [[-10, 44], [24, 44], [24, 31], [-10, 31]]
     region: Spain, Portugal, Morocco, Italy, the western and central Mediterranean
     timescale: November–March
@@ -792,3 +792,338 @@ nodes:
       studies find the connection in river flows of the Tigris and
       Euphrates; others find it faint or only in some decades.
     sources: [cullen_demenocal_2000, turkes_erlat_2003]
+
+  # --------------------------------------- outcomes added 2026-09-07 (ENSO)
+  - id: canadian_prairies_winter
+    name: Canadian Prairies and northern Plains winter temperature
+    label: Canadian Prairies
+    kind: outcome
+    lat: 54
+    lon: -100
+    area: [[-120, 60], [-88, 60], [-88, 44], [-120, 44]]
+    region: Alberta, Saskatchewan, Manitoba, Montana, the Dakotas
+    timescale: December–March
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual
+    summary: >
+      Winter over the Canadian Prairies and the northern Great Plains is set
+      by how often Arctic air spills south. El Niño tends to steer the
+      Pacific jet stream across the continent further north than usual,
+      which keeps the coldest air bottled up; La Niña tends to do the
+      opposite. The signal here is among the strongest ENSO has anywhere
+      outside the tropics.
+    sources: [shabbar_khandekar_1996, halpert_ropelewski_1992]
+
+  - id: hawaii_winter_rainfall
+    name: Hawaii winter rainfall
+    label: Hawaii
+    kind: outcome
+    lat: 21
+    lon: -157
+    area: [[-161, 23], [-154, 23], [-154, 18], [-161, 18]]
+    region: The Hawaiian Islands
+    timescale: November–April, the wet season
+    axis: wet_dry
+    labels:
+      plus: Wet season tends to be wetter than usual
+      zero: Near normal
+      minus: Wet season tends to be drier than usual, with raised drought risk
+    summary: >
+      Most of Hawaii's rain falls in winter, when storms and fronts reach the
+      islands from the north Pacific. In an El Niño winter a broad band of
+      sinking air tends to sit over the islands and the rain-bearing systems
+      pass by, so the wet season is often the driest of the year's cycle.
+    sources: [chu_1995, chu_chen_2005]
+
+  - id: northern_amazon_rainfall
+    name: Northern Amazon and Colombia–Venezuela rainfall
+    label: Northern Amazon
+    kind: outcome
+    lat: 4
+    lon: -63
+    area: [[-78, 10], [-52, 10], [-52, -4], [-78, -4]]
+    region: Northern Brazil, Colombia, Venezuela, the Guianas
+    timescale: Strongest from the late year into the following March
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual, with raised flood risk
+      zero: Near normal
+      minus: Tends to be drier than usual, with raised drought and fire risk
+    summary: >
+      The northern half of the Amazon basin and the Andean countries to its
+      north receive their rain from air that rises over warm tropical
+      waters. When El Niño moves the rising air out into the Pacific, the
+      region tends to dry out, rivers fall and the forest burns more
+      readily; the droughts of 1997–98 and 2015–16 both came with El Niño.
+    sources: [ropelewski_halpert_1987, poveda_mesa_1997, jimenez_munoz_2016]
+
+  - id: central_america_rainfall
+    name: Central America and Caribbean rainy season
+    label: Central America
+    kind: outcome
+    lat: 9
+    lon: -85
+    area: [[-93, 19], [-60, 19], [-60, 7], [-93, 7]]
+    region: Guatemala to Panama, southern Mexico, the Caribbean islands
+    timescale: May–November rainy season
+    axis: wet_dry
+    labels:
+      plus: Rainy season tends to be wetter than usual
+      zero: Near normal
+      minus: Rainy season tends to be weaker than usual, with raised drought risk
+    summary: >
+      The rainy season that feeds Central America's farms runs from May to
+      November. In an El Niño year the trade winds and the sinking air over
+      the Caribbean tend to strengthen, and the rains weaken, most of all
+      along the Pacific side known as the Dry Corridor. The Caribbean
+      islands tend to share the dry late season.
+    sources: [magana_2003, enfield_alfaro_1999, giannini_2000]
+
+  - id: us_southwest_winter
+    name: US Southwest and northern Mexico winter rainfall
+    label: SW US
+    kind: outcome
+    lat: 29
+    lon: -109
+    area: [[-116, 37], [-100, 37], [-100, 25], [-116, 25]]
+    region: Arizona, New Mexico, west Texas, Sonora, Chihuahua
+    timescale: November–April
+    axis: wet_dry
+    labels:
+      plus: Winter tends to be wetter than usual
+      zero: Near normal
+      minus: Winter tends to be drier than usual
+    summary: >
+      The desert Southwest and the north of Mexico get much of their scarce
+      water from winter storms that come in from the Pacific. El Niño tends
+      to strengthen and shift south the jet stream that carries them, so
+      winters are wetter; La Niña winters tend to be dry. Unlike California
+      just to the west, the signal here is steady enough to be counted on.
+    sources: [ropelewski_halpert_1986, redmond_koch_1991, magana_2003]
+
+  - id: south_pacific_cyclones
+    name: South Pacific tropical cyclones
+    label: S. Pacific cyclones
+    kind: outcome
+    lat: -18
+    lon: -178
+    area: [[165, -8], [-140, -8], [-140, -25], [165, -25]]
+    region: Fiji, Tonga, Samoa, the Cook Islands, French Polynesia
+    timescale: November–April cyclone season
+    axis: active_quiet
+    labels:
+      plus: Cyclones tend to be more frequent, reaching islands further east than usual
+      zero: Near normal
+      minus: Cyclones tend to be fewer, staying west near the Coral Sea
+    summary: >
+      Tropical cyclones in the South Pacific form near the band of warm water
+      and rising air that stretches southeast from the Solomon Islands. In
+      El Niño that band shifts east and north, so cyclones tend to form
+      closer to Fiji, Samoa and French Polynesia, islands that in other
+      years see few of them.
+    sources: [basher_zheng_1995, kuleshov_2008]
+
+  - id: north_australia_cyclones
+    name: Australian region tropical cyclones
+    label: N. Australia cyclones
+    kind: outcome
+    lat: -14
+    lon: 128
+    area: [[105, -8], [160, -8], [160, -25], [105, -25]]
+    region: Northern Australia, the Coral Sea, the Timor Sea
+    timescale: November–April cyclone season
+    axis: active_quiet
+    labels:
+      plus: Cyclone season tends to be busier and to start earlier
+      zero: Near normal
+      minus: Cyclone season tends to be quieter and to start later
+    summary: >
+      Cyclones form around northern Australia when the sea is warm and the
+      rising air of the Pacific rain belt sits nearby. In La Niña years the
+      warm water and the rain belt press up against Australia and the season
+      tends to be busy; in El Niño years both move away to the east and the
+      season tends to be quiet.
+    sources: [nicholls_1984, kuleshov_2008, bom_enso_australia]
+
+  - id: west_pacific_typhoons
+    name: Western North Pacific typhoons
+    label: W. Pacific typhoons
+    kind: outcome
+    lat: 19
+    lon: 140
+    area: [[120, 30], [175, 30], [175, 5], [120, 5]]
+    region: The Philippine Sea and the open western Pacific
+    timescale: July–November peak season
+    axis: active_quiet
+    labels:
+      plus: Typhoons tend to form further east, travel longer and grow stronger
+      zero: Near normal
+      minus: Typhoons tend to form closer to Asia, live shorter and stay weaker
+    summary: >
+      The western Pacific breeds more tropical cyclones than any other
+      ocean. ENSO changes less the number of typhoons than where they are
+      born: in El Niño years they tend to form far out to the southeast,
+      which gives them a longer run over warm water to grow, so more of them
+      reach the highest categories.
+    sources: [wang_chan_2002, camargo_sobel_2005, chan_1985]
+
+  - id: south_china_rainfall
+    name: Southern China winter–spring rainfall
+    label: South China
+    kind: outcome
+    lat: 27
+    lon: 114
+    area: [[100, 30], [122, 30], [122, 20], [100, 20]]
+    region: Guangdong, Guangxi, Fujian, Hunan, Jiangxi, the lower Yangtze
+    timescale: November–May
+    axis: wet_dry
+    labels:
+      plus: Winter and spring tend to be wetter than usual
+      zero: Near normal
+      minus: Winter and spring tend to be drier than usual
+    summary: >
+      In the winter of an El Niño a persistent area of high pressure tends to
+      settle over the sea east of the Philippines. Its winds carry warm,
+      moist air onto the coast of southern China, so winters and springs
+      there tend to be wet and grey, sometimes into a flood-prone early
+      summer as the event fades.
+    sources: [wang_2000, zhang_1996, zhang_1999]
+
+  - id: ethiopia_summer_rains
+    name: Ethiopian highlands summer rains
+    label: Ethiopia
+    kind: outcome
+    lat: 9
+    lon: 39
+    area: [[33, 15], [45, 15], [45, 5], [33, 5]]
+    region: The Ethiopian highlands, Eritrea, eastern Sudan
+    timescale: June–September (the Kiremt rains)
+    axis: wet_dry
+    labels:
+      plus: Summer rains tend to be stronger than usual
+      zero: Near normal
+      minus: Summer rains tend to be weaker than usual, with raised drought risk
+    summary: >
+      The Kiremt rains of June to September feed most of Ethiopia's farming
+      and the Blue Nile. They belong to the same summer rain belt as the
+      Sahel and the Indian monsoon, and El Niño tends to weaken all three at
+      once; the droughts of 1984, 1987 and 2015 came in El Niño years. Note
+      that this is the opposite season and sign from the East Africa short
+      rains further south.
+    sources: [segele_lamb_2005, korecha_barnston_2007, gissila_2004]
+
+  - id: new_zealand_summer
+    name: New Zealand summer temperature
+    label: New Zealand
+    kind: outcome
+    lat: -41
+    lon: 172
+    area: [[166, -34], [179, -34], [179, -47], [166, -47]]
+    region: New Zealand
+    timescale: December–March
+    axis: warm_cool
+    labels:
+      plus: Summer tends to be warmer than usual, with more northeasterly winds
+      zero: Near normal
+      minus: Summer tends to be cooler than usual, with more southwesterly winds
+    summary: >
+      New Zealand's weather is governed by the westerly winds that circle
+      the Southern Ocean. El Niño tends to strengthen and shift them so that
+      more cool southwesterly air reaches the country in summer; La Niña
+      tends to bring more warm, humid northeasterlies instead. The effect on
+      temperature is modest and on rainfall differs from coast to coast.
+    sources: [gordon_1986, mullan_1995]
+
+  - id: micronesia_dry_season
+    name: Micronesia dry season after an El Niño
+    label: Micronesia
+    kind: outcome
+    lat: 8
+    lon: 152
+    area: [[134, 12], [172, 12], [172, 3], [134, 3]]
+    region: Guam, Palau, the Federated States of Micronesia, the Marshall Islands
+    timescale: January–May of the year after an El Niño develops
+    axis: wet_dry
+    labels:
+      plus: Dry season tends to be wetter than usual
+      zero: Near normal
+      minus: Dry season tends to be severe, with raised drought risk
+    summary: >
+      The small islands of Micronesia depend on rain for fresh water. An El
+      Niño tends to bring them extra rain while it develops, but once the
+      rain belt swings back the following winter and spring turn very dry,
+      and the atolls have run out of water in the wake of the 1982–83,
+      1997–98 and 2015–16 events. This is one of the clearest examples of a
+      delayed effect on this map.
+    sources: [he_barnston_1996, kruk_2015]
+
+  # ---------------------------------------- outcomes added 2026-09-07 (NAO)
+  - id: nw_europe_winter_storms
+    name: Northwest Europe winter storms
+    label: Storm track
+    kind: outcome
+    lat: 43.5
+    lon: -14
+    area: [[-25, 62], [10, 62], [10, 47], [-25, 47]]
+    region: The British Isles, the North Sea coasts, northern France, the Low Countries
+    timescale: November–March
+    axis: active_quiet
+    labels:
+      plus: Winter storms tend to be more frequent and stronger
+      zero: Near normal
+      minus: Winter storms tend to be fewer, with calmer, blocked weather
+    summary: >
+      The storms that cross the North Atlantic in winter follow the jet
+      stream. When the North Atlantic Oscillation is positive the jet is
+      strong and aimed at the British Isles and the North Sea, so gales
+      arrive one after another; when it is negative the jet weakens and
+      wanders south, and northwest Europe sits under quiet, often frosty,
+      high pressure.
+    sources: [hurrell_1995, pinto_2009]
+
+  - id: alpine_snow
+    name: Alpine snow cover
+    label: Alpine snow
+    kind: outcome
+    lat: 46.5
+    lon: 16
+    area: [[5, 48], [16, 48], [16, 44], [5, 44]]
+    region: The Alps of France, Switzerland, Italy, Austria and Germany
+    timescale: December–March
+    axis: high_low
+    labels:
+      plus: Snow tends to be deeper and to last longer, especially at low altitude
+      zero: Near normal
+      minus: Snow tends to be scarce, especially below about 1,500 metres
+    summary: >
+      Snow in the Alps depends on winters being both cold and stormy. A
+      positive North Atlantic Oscillation brings mild westerly air and high
+      pressure over the Alps, so snow is scarce below the tree line even
+      when the high peaks do well; a negative one lets cold air and southern
+      storms in and tends to bury the valleys.
+    sources: [beniston_1997, scherrer_2004]
+
+  - id: western_russia_winter
+    name: Western Russia and Siberia winter temperature
+    label: Western Russia
+    kind: outcome
+    lat: 55
+    lon: 54
+    area: [[30, 66], [90, 66], [90, 50], [30, 50]]
+    region: European Russia, the Urals, western Siberia
+    timescale: December–March
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual
+    summary: >
+      The mild Atlantic air that a positive North Atlantic Oscillation drives
+      into Scandinavia does not stop there: it carries on east across
+      Russia into Siberia, and winters from Moscow to the Urals tend to be
+      several degrees milder. In negative winters the westerlies falter and
+      the Siberian cold spreads west instead.
+    sources: [hurrell_1995, hurrell_1996, thompson_wallace_1998]
