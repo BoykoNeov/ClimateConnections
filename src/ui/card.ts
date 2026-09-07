@@ -20,6 +20,11 @@ function shortName(node: GraphNode): string {
   return node.name.replace(/\s*\(.*\)$/, '');
 }
 
+/** "a month", "4 months". */
+function monthsWord(n: number): string {
+  return n === 1 ? 'a month' : `${n} months`;
+}
+
 function sourcesHtml(keys: string[], sources: Map<string, Source>): string {
   const items = keys.map((k) => {
     const s = sources.get(k);
@@ -44,10 +49,11 @@ function sureBlock(link: Link, ls: LinkState | null): string {
 }
 
 /** A driver chosen by hand: its phase, and when it enters it (M12: the
- *  second driver may start later than month 0). */
+ *  second driver may start later than month 0; M15: or before it). */
 export interface ChosenPhase {
   phaseId: string;
-  /** month index at which the driver enters the phase (0 for the main driver) */
+  /** month index at which the driver enters the phase (0 for the main
+   *  driver; negative when the second driver began before the first) */
   onset: number;
   /** calendar month (1–12) of that onset */
   startMonth: number;
@@ -74,7 +80,8 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: Link
   // it was pushed there, or the second chosen driver's own start month (M12).
   const chosenFrom = from ? ctx.chosen.get(from.id) : undefined;
   const onsetNote = ls && ls.depth > 1 && from ? ` Month 0 here is when ${esc(shortName(from))} was pushed into this phase.`
-    : ls && from && chosenFrom && chosenFrom.onset > 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase (month ${chosenFrom.onset} on the timeline).` : '';
+    : ls && from && chosenFrom && chosenFrom.onset > 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase (month ${chosenFrom.onset} on the timeline).`
+    : ls && from && chosenFrom && chosenFrom.onset < 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase, ${monthsWord(-chosenFrom.onset)} before the year shown begins.` : '';
   return `<div class="link-block">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
@@ -127,7 +134,17 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
       return html;
     }
     html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
-    if (ctx.chosen.size > 1) html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${info.onset > 0 ? ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]} (month ${info.onset} on the timeline); its links count their lag from then.` : ''}</p>`;
+    if (ctx.chosen.size > 1) {
+      let when = '';
+      if (info.onset > 0) when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]} (month ${info.onset} on the timeline); its links count their lag from then.`;
+      else if (info.onset < 0) {
+        // Began before the first driver (M15): already under way at month 0.
+        const held = month.index - info.onset;
+        when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]}, ${monthsWord(-info.onset)} before the year shown begins, and has held it since: ${monthsWord(held)} so far. Its links count their lag from then, so some of its effects were already being felt at month 0.`;
+        if (held > 12) when += ` That is more than a year in one phase, longer than most real events last: treat the later months as a teaching convenience.`;
+      }
+      html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}</p>`;
+    }
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     html += feedbackBlock(node, graph, ctx);

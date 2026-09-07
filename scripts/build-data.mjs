@@ -107,10 +107,14 @@ const Story = z.object({
   second_phase: Id.optional(),
   /** calendar month the second driver enters its phase (M12); defaults to start_month */
   second_start_month: Month.optional(),
+  /** the second driver began before the first (M15): second_start_month is read
+   *  backwards from start_month, so the driver is already in its phase at month 0 */
+  second_starts_before: z.boolean().optional(),
   steps: z.array(StoryStep).min(3),
 }).strict()
   .refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together')
-  .refine((s) => s.second_start_month === undefined || s.second_driver !== undefined, 'second_start_month needs a second_driver');
+  .refine((s) => s.second_start_month === undefined || s.second_driver !== undefined, 'second_start_month needs a second_driver')
+  .refine((s) => s.second_starts_before === undefined || s.second_driver !== undefined, 'second_starts_before needs a second_driver');
 
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
@@ -199,10 +203,14 @@ if (nodesFile && linksFile && storiesFile) {
   /** The drivers a story fixes by hand: [driverId, phaseId, onset month index]
    *  for the main one (onset 0) and, if any, the second (M11), which enters
    *  its phase at month 0 or in its own start month (M12), read within the
-   *  twelve months shown. */
+   *  twelve months shown, or backwards from the start (M15: a negative onset,
+   *  already in phase at month 0). */
   const chosenOf = (s) => {
     const out = [[s.driver, s.phase, 0]];
-    if (s.second_driver) out.push([s.second_driver, s.second_phase, ((s.second_start_month ?? s.start_month) - s.start_month + 12) % 12]);
+    if (s.second_driver) {
+      const after = ((s.second_start_month ?? s.start_month) - s.start_month + 12) % 12;
+      out.push([s.second_driver, s.second_phase, s.second_starts_before ? after - 12 : after]);
+    }
     return out;
   };
   /** Drivers pushed into a phase at month m: [driverId, phaseId, onset month]. */

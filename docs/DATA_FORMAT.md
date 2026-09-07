@@ -120,6 +120,8 @@ stories:
     second_phase: negative              #   for the whole story; both fields or neither
     second_start_month: 9               # optional (M12): the month the second driver enters
                                         #   its phase; defaults to start_month
+    second_starts_before: true          # optional (M15): read that month backwards, so the
+                                        #   second driver is already in its phase at month 0
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -137,7 +139,13 @@ Rules enforced by the validator:
   `start_month`, so a month earlier than `start_month` falls in the
   following year. Before it the second driver is out of play (no phase, no
   links, still never pushed); from it its links count their lag.
-  `second_start_month` needs a `second_driver`.
+  `second_start_month` needs a `second_driver`. With
+  `second_starts_before: true` (M15) the month is read backwards instead:
+  the last time it came up before `start_month`, so the second driver is
+  already in its phase at month 0 and its lags are counted from that
+  earlier month (a lag that has already run is felt from month 0). The
+  same month, read backwards, means a year earlier. Needs a
+  `second_driver`.
 - Every `focus` must be a node id. If it is not a chosen driver, it must
   actually be affected at that month: some link from a chosen driver/phase
   to it (or from a driver a chosen driver has pushed) has

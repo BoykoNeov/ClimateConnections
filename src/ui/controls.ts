@@ -17,8 +17,9 @@ export interface ScenarioSettings {
   /** follow links through drivers the scenario driver has pushed (M10) */
   chain: boolean;
   /** a second driver chosen by hand (M11) with its own calendar start month
-   *  (M12; read within the twelve months shown); null = none */
-  second: { driverId: string; phaseId: string; startMonth: number } | null;
+   *  (M12; read within the twelve months shown, or backwards from the first
+   *  driver's start when `startsBefore` is set, M15); null = none */
+  second: { driverId: string; phaseId: string; startMonth: number; startsBefore: boolean } | null;
 }
 
 export type Side = 'a' | 'b';
@@ -73,6 +74,8 @@ export class ControlsView {
   /** the second driver's own start month (M12): heading, picker and hint, shown only with a second driver */
   private secondMonthBox: HTMLDivElement | null = null;
   private secondMonthSelect: HTMLSelectElement | null = null;
+  /** before / after the first driver (M15) */
+  private orderButtons = new Map<'after' | 'before', HTMLButtonElement>();
   private secondOnsetHint: HTMLParagraphElement | null = null;
   private onsetHint: HTMLParagraphElement;
   /** empty box under the start-month control for the season dial (M13) */
@@ -201,7 +204,7 @@ export class ControlsView {
         if (!sel2.value) { this.updateScenario({ second: null }); return; }
         // Like the main driver: first phase, and the month its events usually begin.
         const d = this.driverById(sel2.value);
-        this.updateScenario({ second: { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month } });
+        this.updateScenario({ second: { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, startsBefore: false } });
       });
       container.append(sel2);
       this.secondSelect = sel2;
@@ -210,11 +213,12 @@ export class ControlsView {
       container.append(this.secondBox);
       const hint2nd = document.createElement('p');
       hint2nd.className = 'hint';
-      hint2nd.textContent = 'Each driver enters its phase in its own month and holds it to the end of the year shown. Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by the other; choose its neutral phase to hold it out of play.';
+      hint2nd.textContent = 'Each driver enters its phase in its own month, after or before the first, and holds it to the end of the year shown. Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by the other; choose its neutral phase to hold it out of play.';
       container.append(hint2nd);
 
       // The second driver's own start month, read within the twelve months
-      // shown (a month before the first driver's start falls in the next year).
+      // shown (a month before the first driver's start falls in the next year)
+      // or, with "Before the first driver" (M15), backwards from the start.
       const box2 = document.createElement('div');
       box2.className = 'second-month';
       box2.hidden = true;
@@ -236,6 +240,25 @@ export class ControlsView {
       });
       box2.append(month2);
       this.secondMonthSelect = month2;
+      const order = document.createElement('div');
+      order.className = 'phase-buttons second-order';
+      order.setAttribute('role', 'group');
+      order.setAttribute('aria-label', 'Does the second driver begin after or before the first?');
+      for (const [key, label] of [['after', 'After the first driver'], ['before', 'Before the first driver']] as const) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'phase-btn order-btn';
+        b.dataset.order = key;
+        b.textContent = label;
+        b.addEventListener('click', () => {
+          const second = this.edited().second;
+          if (!second) return;
+          this.updateScenario({ second: { ...second, startsBefore: key === 'before' } });
+        });
+        order.append(b);
+        this.orderButtons.set(key, b);
+      }
+      box2.append(order);
       this.secondOnsetHint = document.createElement('p');
       this.secondOnsetHint.className = 'hint';
       box2.append(this.secondOnsetHint);
@@ -395,7 +418,10 @@ export class ControlsView {
       b.type = 'button';
       b.className = 'phase-btn';
       b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.updateScenario({ second: { driverId: driver.id, phaseId: p.id, startMonth: this.edited().second?.startMonth ?? driver.default_start_month } }));
+      b.addEventListener('click', () => {
+        const cur = this.edited().second;
+        this.updateScenario({ second: { driverId: driver.id, phaseId: p.id, startMonth: cur?.startMonth ?? driver.default_start_month, startsBefore: cur?.startsBefore ?? false } });
+      });
       this.secondBox.append(b);
       this.secondPhaseButtons.set(p.id, b);
     }
@@ -444,8 +470,17 @@ export class ControlsView {
         this.secondMonthBox.hidden = !second;
         if (second && s.second) {
           this.secondMonthSelect.value = String(s.second.startMonth);
-          const offset = (s.second.startMonth - s.startMonth + 12) % 12;
-          const when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${s.second.startMonth < s.startMonth ? ', in the following year' : ''}.`;
+          for (const [key, b] of this.orderButtons) b.setAttribute('aria-pressed', String((key === 'before') === s.second.startsBefore));
+          let when: string;
+          if (s.second.startsBefore) {
+            // Read backwards (M15): the last time the month came up before the start.
+            const back = (s.startMonth - s.second.startMonth + 12) % 12;
+            const ago = back === 0 ? 'A year before the first driver' : back === 1 ? 'One month before the first driver' : `${back} months before the first driver${s.second.startMonth > s.startMonth ? ', in the previous year' : ''}`;
+            when = `${ago}: already under way when the year shown begins, so its effects can be felt from month 0.`;
+          } else {
+            const offset = (s.second.startMonth - s.startMonth + 12) % 12;
+            when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${s.second.startMonth < s.startMonth ? ', in the following year' : ''}.`;
+          }
           this.secondOnsetHint.textContent = `${when} ${second.onset_hint}`;
         }
       }

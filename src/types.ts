@@ -96,6 +96,10 @@ export interface Story {
    *  `start_month`. Read within the twelve months shown: a month earlier
    *  than `start_month` falls in the following year. */
   second_start_month?: number;
+  /** the second driver began before the first (M15): `second_start_month`
+   *  is read backwards from `start_month`, so the driver is already in its
+   *  phase when the story's year begins. Needs `second_driver`. */
+  second_starts_before?: boolean;
   steps: StoryStep[];
 }
 
@@ -117,6 +121,12 @@ export interface ScenarioDriver {
    *  time this calendar month comes up at or after month 0, so a month
    *  earlier than `startMonth` falls in the following year. */
   startMonth?: number;
+  /** the driver began before the first one (M15): `startMonth` is read
+   *  backwards from the scenario's start, so the onset is a month index
+   *  from -12 (the same calendar month a year earlier) to -1. The driver is
+   *  already in its phase at month 0 and its links count their lag from
+   *  that earlier onset. */
+  startsBefore?: boolean;
 }
 
 export interface Scenario {

@@ -605,3 +605,109 @@ stories:
           sea level dropped for a while; the study that found this called
           the event "so strong, the oceans fell".
         sources: [boening_2012, noaa_climate_gov_enso]
+
+  # ---- M15: the second driver begins before the first
+  - id: negative_iod_then_la_nina_2016
+    title: "2016: a negative dipole first, then a weak La Niña"
+    intro: >
+      The first story where the second driver comes first. In 2016 a negative
+      Indian Ocean Dipole formed in May, months before the Pacific cooled
+      into a weak La Niña in the spring. The year shown begins in September
+      with La Niña; the dipole is set to begin "before the first driver", so
+      it is already in its phase at month 0 and its lags are counted from
+      May. Watch East Africa: the dipole's arrow arrives before La Niña's,
+      because its clock started earlier.
+    driver: enso
+    phase: la_nina
+    second_driver: iod
+    second_phase: negative
+    second_start_month: 5
+    second_starts_before: true
+    start_month: 9
+    start_year: 2016
+    steps:
+      - month: 0
+        focus: iod
+        text: >
+          Green from the very first frame. The dipole developed from May 2016,
+          matured in July to September and was the strongest negative event in
+          sixty years of records: warm water off Sumatra, cool water off
+          Africa. On the timeline it is already four months old at month 0;
+          the hollow dot on the season dial marks May as already past, and
+          the first tick carries a small arrow to say the same.
+        sources: [lim_hendon_2017, bom_iod]
+
+      - month: 0
+        focus: southeast_australia_rainfall
+        text: >
+          The dipole's link to Victoria and South Australia has no lag, so
+          this marker is wet at month 0 rather than lighting up later in the
+          year. Much of Australia was extremely wet from May 2016 onward,
+          well before the Pacific had cooled: the dipole did this on its own,
+          with La Niña nowhere in sight.
+        sources: [lim_hendon_2017, ummenhofer_2009]
+
+      - month: 1
+        focus: indonesia_rainfall
+        text: >
+          Two arrows, pointing the same way: a warm eastern Indian Ocean and
+          a cooling Pacific both feed rain into Indonesia. In 2016 the
+          dipole's share came first, from May, and the usual dry season
+          largely failed to arrive. La Niña's arrow, counted from September,
+          is here from month 0 as well, because its own lag is zero.
+        sources: [lim_hendon_2017, pan_2018]
+
+      - month: 1
+        focus: east_africa_short_rains
+        text: >
+          Here is the point of starting the dipole early. Its link to the
+          short rains needs three months, and that clock started in May, so
+          the arrow arrives in October, just as the short rains begin. La
+          Niña's link needs three months too, counted from September, so La
+          Niña's arrow is still missing. Had the dipole begun in September
+          with La Niña, this marker would be hollow now.
+        sources: [behera_2005, black_2003]
+
+      - month: 2
+        focus: enso
+        text: >
+          The Pacific cooled slowly after the huge 2015–16 El Niño. NOAA's
+          index only reached the La Niña threshold in the September to
+          November season, and the event stayed weak. Lim and Hendon argue
+          the dipole helped it along by strengthening the easterly winds over
+          the Pacific. That same-season push has no link on this map; the
+          map's dipole-to-Pacific link is the contested one about the
+          following year, and it is skipped anyway because you chose La Niña
+          by hand.
+        sources: [noaa_cpc_oni, lim_hendon_2017]
+
+      - month: 3
+        focus: east_africa_short_rains
+        text: >
+          Now both arrows are in, pointing the same way, and the marker stays
+          "drier" without a conflict flag. The 2016 short rains failed across
+          Kenya and Somalia and a severe drought followed. An attribution
+          study found that La Niña conditions, and the sea surface
+          temperatures that went with them, made the failure more likely,
+          with no clear sign of a climate-change effect on the rain itself.
+        sources: [uhe_2018, behera_2005]
+
+      - month: 6
+        focus: iod
+        text: >
+          Still green, ten months on. A chosen phase holds until the end of
+          the year shown, and this one started before it, so the card counts
+          how long it has been held. The real dipole broke down in late 2016
+          as the monsoon winds reversed. Every dipole arrow is faint now, out
+          of season; the marker is a teaching convenience, not a claim.
+        sources: [bom_iod, lim_hendon_2017]
+
+      - month: 12
+        focus: enso
+        text: >
+          La Niña faded almost as soon as it was declared: the index was back
+          near neutral by early 2017, and by this September the Pacific was
+          neutral again, leaning toward La Niña once more late in the year.
+          The dipole marker has now held one phase for sixteen months, which
+          is why its card warns that real events do not last that long.
+        sources: [noaa_cpc_oni, noaa_climate_gov_enso]

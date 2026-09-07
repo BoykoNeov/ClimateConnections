@@ -63,6 +63,9 @@ html, body { margin: 0; height: 100%; }
 }
 .phase-btn .swatch { width: 14px; height: 14px; border-radius: 50%; flex: none; }
 .phase-btn[aria-pressed="true"] { border-color: var(--ink); background: #eef1f5; font-weight: 600; }
+/* before / after the first driver (M15): two buttons in one row under the month picker */
+.second-order { flex-direction: row; margin-top: 6px; }
+.second-order .order-btn { flex: 1; justify-content: center; padding: 5px 6px; font-size: 12px; }
 #controls select { width: 100%; padding: 6px; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
 .hint { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
 .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -235,6 +238,9 @@ html, body { margin: 0; height: 100%; }
 .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 .ticks span { width: 0; text-align: center; white-space: nowrap; }
 .ticks span.second-onset { color: #1f2328; font-weight: 700; text-decoration: underline dotted; }
+/* the second driver was already under way when the year shown began (M15) */
+.ticks span.second-before { color: #1f2328; font-weight: 700; text-decoration: underline dotted; }
+.ticks span.second-before::before { content: '◂'; margin-right: 1px; }
 .key-hint { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
 .key-hint kbd {
   display: inline-block; font: inherit; font-size: 10px; line-height: 1; padding: 2px 5px; margin-right: 2px;

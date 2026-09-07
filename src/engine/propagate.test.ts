@@ -423,3 +423,94 @@ describe('propagate: second driver with its own start month', () => {
     expect(same.months).toEqual(none.months);
   });
 });
+
+// M15: the second driver began before the first. `startsBefore` reads the
+// start month backwards from the scenario's June start: March is month -3,
+// September month -9, June itself a year earlier (-12). The driver is in its
+// phase from month 0 and its links count their lag from that earlier onset.
+const early: Scenario = { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true } };
+
+describe('propagate: second driver that begins before the first', () => {
+  it('reads the onset backwards from the start month: an index from -12 to -1', () => {
+    expect(chosenOnset(early, 'd2')).toBe(-3);
+    expect(chosenOnset(early, 'drv')).toBe(0);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 9, startsBefore: true } }, 'd2')).toBe(-9);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 5, startsBefore: true } }, 'd2')).toBe(-1);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 6, startsBefore: true } }, 'd2')).toBe(-12);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startsBefore: true } }, 'd2')).toBe(-12);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: false } }, 'd2')).toBe(9);
+    expect(chosenDrivers(early)).toEqual([{ driverId: 'drv', phaseId: 'warm' }, { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true }]);
+    expect(chosenDrivers({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: false } }))
+      .toEqual([{ driverId: 'drv', phaseId: 'warm' }, { driverId: 'd2', phaseId: 'up', startMonth: 3 }]);
+  });
+
+  it('holds the second driver in its phase from month 0 to the end', () => {
+    const t = propagate(graphWith([]), early);
+    for (const m of t.months) {
+      expect(m.nodes.drv.value).toBe(1);
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.d2.viaLinkIds).toEqual([]);
+    }
+  });
+
+  it("counts the second driver's lags from its earlier onset: a lag that has already run is felt at month 0, a longer one later", () => {
+    const t = propagate(graphWith([
+      { id: 'ran', from: 'd2', when: 'up', to: 'c', effect: -1, lag_months: [2, 2] }, // available from month -1
+      { id: 'later', from: 'd2', when: 'up', to: 'b', effect: 1, lag_months: [5, 5] }, // available from month 2
+    ]), early);
+    expect(t.months[0].nodes.c.value).toBe(-1);
+    expect(t.months[0].links.ran).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[0].nodes.b.value).toBe(0);
+    expect(t.months[0].links.later).toBeUndefined();
+    expect(t.months[1].links.later).toBeUndefined();
+    expect(t.months[2].nodes.b.value).toBe(1);
+    expect(t.months[2].links.later?.status).toBe('applied');
+    // Past its lag but out of season at month 0: pending from the first frame.
+    const seasonal = propagate(graphWith([
+      { id: 'winter', from: 'd2', when: 'up', to: 'c', effect: -1, season: [12, 1, 2] },
+    ]), early);
+    expect(seasonal.months[0].links.winter?.status).toBe('pending');
+    expect(seasonal.months[0].nodes.c.pendingLinkIds).toEqual(['winter']);
+    expect(seasonal.months[6].links.winter?.status).toBe('applied'); // December
+  });
+
+  it('a shared target conflicts from month 0', () => {
+    const t = propagate(graphWith([
+      { id: 'x', to: 'a', effect: 1 }, { id: 'y', from: 'd2', when: 'up', to: 'a', effect: -1 },
+    ]), early);
+    for (const m of t.months) {
+      expect(m.nodes.a.value).toBe(0);
+      expect(m.nodes.a.conflicting).toBe(true);
+      expect(m.nodes.a.viaLinkIds).toEqual(['x', 'y']);
+    }
+  });
+
+  it('never pushes it, and its link back into the first driver, whose lag has long run, is still skipped', () => {
+    const t = propagate(graphWith([
+      { id: 'push', to: 'd2', effect: -1 },
+      { id: 'back', from: 'd2', when: 'up', to: 'drv', effect: -1, lag_months: [1, 1] },
+      { id: 'second', from: 'd2', when: 'up', to: 'c', effect: -1 },
+    ]), { ...early, maxDepth: 3 });
+    for (const m of t.months) {
+      expect(m.links.push, `month ${m.index}`).toBeUndefined();
+      expect(m.links.back, `month ${m.index}`).toBeUndefined();
+      expect(m.nodes.d2.viaLinkIds).toEqual([]);
+      expect(m.nodes.d2.value).toBe(1);
+      expect(m.nodes.drv.value).toBe(1);
+      expect(m.nodes.c.value).toBe(-1);
+    }
+  });
+
+  it('startsBefore false is the M12 result exactly; a year before is felt from month 0 unless the lag is longer than the head start', () => {
+    const g = graphWith([{ id: 'x', to: 'a', effect: 1 }, { id: 'y', from: 'd2', when: 'up', to: 'b', effect: -1, lag_months: [1, 1] }]);
+    const off = propagate(g, { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: false } });
+    const after = propagate(g, { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3 } });
+    expect(off.months).toEqual(after.months);
+    const yearBefore = propagate(g, { ...base, secondary: { driverId: 'd2', phaseId: 'up', startsBefore: true } });
+    expect(yearBefore.months[0].nodes.b.value).toBe(-1);
+    const long = propagate(graphWith([{ id: 'y', from: 'd2', when: 'up', to: 'b', effect: -1, lag_months: [13, 13] }]), { ...base, secondary: { driverId: 'd2', phaseId: 'up', startsBefore: true } });
+    expect(long.months[0].links.y).toBeUndefined();
+    expect(long.months[0].nodes.b.value).toBe(0);
+    expect(long.months[1].nodes.b.value).toBe(-1);
+  });
+});

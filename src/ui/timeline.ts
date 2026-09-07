@@ -9,7 +9,8 @@ export class TimelineView {
   private ticks: HTMLDivElement;
   private timer: number | null = null;
   private horizon: number;
-  /** month index at which a second driver enters its phase (M12); null = none or month 0 */
+  /** month index at which a second driver enters its phase (M12), negative
+   *  when it began before the first (M15); null = none or month 0 */
   private secondOnset: number | null = null;
   onChange: (index: number) => void = () => {};
 
@@ -77,9 +78,11 @@ export class TimelineView {
     this.input.setAttribute('aria-valuetext', this.valueText(this.index));
   }
 
-  /** Mark the tick where a second driver enters its phase (null or 0 = no mark). */
+  /** Mark the tick where a second driver enters its phase (null or 0 = no
+   *  mark). A negative index (M15) marks the first tick instead: the driver
+   *  was already under way when the year shown began. */
   setSecondOnset(index: number | null): void {
-    this.secondOnset = index && index > 0 ? index : null;
+    this.secondOnset = index && index !== 0 ? index : null;
     this.renderTicks();
   }
 
@@ -91,6 +94,10 @@ export class TimelineView {
       if (i === this.secondOnset) {
         s.className = 'second-onset';
         s.title = 'The second driver enters its phase here';
+      } else if (i === 0 && this.secondOnset !== null && this.secondOnset < 0) {
+        const ago = -this.secondOnset;
+        s.className = 'second-before';
+        s.title = `The second driver entered its phase ${ago === 1 ? 'a month' : `${ago} months`} before this and is already under way`;
       }
       this.ticks.append(s);
     }

@@ -90,8 +90,9 @@ data/*.yaml  --(scripts/build-data.mjs: validate + convert)-->  public/data/grap
   on any error.
 - **Engine** (`src/engine/`): pure TypeScript with no DOM access. Takes the
   graph plus a scenario (driver id, phase, start month, since M11 an
-  optional second driver and phase, and since M12 that driver's own start
-  month) and returns a per-month state table.
+  optional second driver and phase, since M12 that driver's own start
+  month and since M15 whether that month lies before the first driver's)
+  and returns a per-month state table.
   Fully unit-testable.
 - **UI** (`src/ui/`): D3 for the map and arrows, hand-rolled DOM for the
   panels. Reads engine output; never reads YAML directly.
@@ -343,6 +344,19 @@ Semantics (implement exactly this; do not improvise):
      end of the horizon and its links count their lag from that onset, as
      a pushed driver's do from the month it was pushed. Exported as
      `chosenOnset(scenario, driverId)` (0 for the main driver).
+   - Begins before the first (M15). `secondary.startsBefore` (optional
+     boolean) reads `startMonth` backwards instead: the onset is
+     `(startMonth - scenario.startMonth + 12) % 12 - 12`, an index from -12
+     (the same calendar month a year earlier; also the result when
+     `startMonth` is omitted) to -1. Month index 0 is still the first
+     driver's onset and the horizon is unchanged: the second driver is
+     simply already in its phase at month 0 and holds it to the end, and
+     its links count their lag from the negative onset, so a link whose lag
+     has already run is available (applied or pending) from month 0 and
+     one whose lag is longer than the head start arrives at
+     `onset + lag`. Everything else in rule 8 stands: never pushed, sum
+     and clamp, one hop at full confidence. `startsBefore: false` is the
+     M12 result exactly.
 
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
@@ -421,7 +435,16 @@ phase description and the timescale.
   driver's `default_start_month`; a hint under it says how many months
   after the first driver that is ("in the following year" when the month
   wraps) and repeats the driver's onset hint. Picking the second driver as
-  the main one empties the second slot.
+  the main one empties the second slot. Under the month picker (M15) two
+  buttons, "After the first driver" and "Before the first driver", say
+  which way the month is read; with "before" the hint says how many
+  months earlier that is ("in the previous year" when the month wraps, "A
+  year before" for the same month) and that the driver is already under
+  way at month 0. The timeline's first tick then carries a small arrow and
+  a tooltip instead of an underlined later tick; the map colours the
+  driver from month 0; the pane title says "since May" rather than "from
+  May"; the print caption says "already under way since May, 4 months
+  earlier".
 - Start month selector (default: June, because El Niño events typically
   begin to develop in boreal late spring/summer). Its heading reads "Event
   begins in", or "First driver begins in" while a second driver is chosen.
@@ -429,7 +452,8 @@ phase description and the timescale.
   of twelve month sectors, January at the top, clockwise. The month on
   screen is filled and follows the timeline; a dark triangle outside the
   ring marks where the year shown begins, a dot in the phase colour where a
-  second driver begins. Inside, one ring for the whole scenario: each
+  second driver begins (hollow, M15, when it began before the year shown:
+  the tooltip says since when). Inside, one ring for the whole scenario: each
   month shaded by how many of the links in play (applied or pending at
   some month; ghosts excluded) pass the season gate, against the busiest
   month, with the count "k of N in season now" in the centre. While a
@@ -783,7 +807,63 @@ is fully green.
   two columns, titles, hidden side switch and the two-part caption
   (`m14-print.pdf`).
 - Not in M14 (later v2 items): a second driver that begins before the
-  first; the spreadsheet importer.
+  first (done in M15); the spreadsheet importer.
+
+### M15 — A second driver that begins before the first (signed off 2026-09-07)
+- Engine: section 4 rule 8, last bullet. `ScenarioDriver.startsBefore`
+  reads the second driver's start month backwards, giving an onset from
+  -12 to -1; `chosenOnset` returns it. Month 0 stays the first driver's
+  onset (the timeline is not moved or lengthened): the second driver is in
+  its phase from month 0 and its links count their lag from the negative
+  onset, so lags that have already run are felt from the first frame.
+  Nothing else in `propagate` changes.
+- Schema: a story may carry `second_starts_before: true` (needs
+  `second_driver`). The validator's story-step check reads the onset the
+  same way.
+- Data: one story, "2016: a negative dipole first, then a weak La Niña"
+  (La Niña from September 2016, the dipole negative since May), with three
+  new sources: Lim and Hendon 2017 on the 2016 dipole and its part in the
+  La Niña, Uhe et al. 2018 on the 2016 Kenyan drought, and NOAA's ONI
+  table. Its teaching point is East Africa: the dipole's arrow arrives in
+  October because its three-month clock started in May, La Niña's only in
+  December. It says plainly that a dipole held for sixteen months is a
+  convenience.
+- Rendering: the map needs no change (a negative onset is "in phase" from
+  month 0). The timeline marks the first tick (`.second-before`, a small
+  arrow and a tooltip) instead of underlining a later one. The dial's
+  second-driver dot is hollow, with a "since May" tooltip. The pane title
+  says "since May"; the print caption says "already under way since May,
+  4 months earlier".
+- Cards: the second driver's card says when it entered its phase, how many
+  months before the year shown, how long it has held it so far, that its
+  lags count from then, and, past twelve months, that no real event lasts
+  that long. Each of its link blocks says "Month 0 here is May, when the
+  dipole entered its phase, 4 months before the year shown begins".
+- Controls: "After the first driver" / "Before the first driver" buttons
+  under the second driver's month picker; the hint under it counts
+  backwards ("4 months before the first driver: already under way when the
+  year shown begins"). Compare mode carries the flag per side like any
+  other scenario setting.
+- Tests: engine unit block (onset arithmetic from -1 to -12 including the
+  omitted month, in phase from month 0, lags that have and have not run,
+  pending from the first frame, conflict from month 0, never pushed even
+  with a short lag back into the first driver, `false` = M12 exactly),
+  acceptance blocks for the 2016 scenario (the dipole from month 0 against
+  month 8 with "after", southeast Australia at month 0, East Africa's two
+  arrivals, Indonesia's two pushes, the next-year push skipped, agreement
+  with a shared start from December on, the shipped story's fields), El
+  Niño with a positive NAO since the previous December (in phase from
+  June with its winter links pending, matching "after" in winter), and
+  general cases (a year before changes only what is pending, a neutral
+  driver still pinned, story fields); the stories test passes the flag.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m15.mjs`): the
+  order buttons hidden without a second driver and defaulting to "after";
+  "before" with May under a June start: the hint, the first tick's mark,
+  the dipole coloured at month 0 with a plain ring, southeast Australia wet
+  at month 0, the cards, the hollow dial dot, the pane title and print
+  caption; the 2016 story's steps; switching back to "after" pins the
+  dipole; compare mode with "before" on one side only.
+- Not in M15: the spreadsheet importer (only if outside contributors join).
 
 ---
 
@@ -868,8 +948,8 @@ writing mechanism text):
 - **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation
   (done, M9) as drivers; driver-to-driver links (done, M10); multi-driver
   scenarios with conflict flags (done, M11: two chosen drivers; M12: the
-  second driver's own start month); season dial (done, M13); compare mode
-  (done, M14: two maps side by side); spreadsheet-to-YAML importer if
-  outside contributors join.
+  second driver's own start month; M15: a second driver that begins before
+  the first); season dial (done, M13); compare mode (done, M14: two maps
+  side by side); spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

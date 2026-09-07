@@ -10,7 +10,8 @@ teleconnections (ENSO, since M8 the Indian Ocean Dipole, since M9 the
 North Atlantic Oscillation, since M10 the links between those drivers,
 since M11 two drivers chosen at once, since M12 a start month of its
 own for the second one, since M13 a season dial showing the calendar
-year as a circle, and since M14 two scenarios compared side by side) on a
+year as a circle, since M14 two scenarios compared side by side, and
+since M15 a second driver that may begin before the first) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -29,7 +30,11 @@ one.
   chosen drivers (§4 rule 8) add up under the same sum-and-clamp rule and
   are never pushed; no new combination rule. The second driver's own start
   month (M12) is read within the twelve months shown and the driver is held
-  out of play (pinned, no phase) before it. The season dial (M13) shows
+  out of play (pinned, no phase) before it. With `startsBefore` (M15) that
+  month is read backwards to a negative onset: month 0 stays the first
+  driver's onset, the timeline is never moved or lengthened, and the
+  second driver is simply in phase from month 0 with its lags counted
+  from the earlier month. The season dial (M13) shows
   the season gate only, read from each link's `season`; it never
   recomputes states and must not hide the lag (its hint says a month can
   be in season and still empty). Compare mode (M14) runs the engine once
@@ -41,9 +46,10 @@ one.
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
   sign-off; the Indian Ocean Dipole (M8), the North Atlantic Oscillation
   (M9), driver-to-driver links (M10), two chosen drivers (M11), the
-  second driver's own start month (M12), the season dial (M13) and
-  compare mode (M14) were signed off on 2026-09-07. Do not start another
-  version 2 item without sign-off.
+  second driver's own start month (M12), the season dial (M13), compare
+  mode (M14) and a second driver that begins before the first (M15) were
+  signed off on 2026-09-07. Do not start another version 2 item without
+  sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow

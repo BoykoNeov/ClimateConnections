@@ -1585,3 +1585,14 @@ sources:
   - key: pozo_vazquez_2001
     citation: "Pozo-Vázquez, D., Esteban-Parra, M. J., Rodrigo, F. S., & Castro-Díez, Y. (2001). The association between ENSO and winter atmospheric circulation and temperature in the North Atlantic region. Journal of Climate, 14(16), 3408–3420."
     url: https://doi.org/10.1175/1520-0442(2001)014<3408:TABEAW>2.0.CO;2
+
+  # ---- the 2016 story (M15): a negative dipole first, then a weak La Niña
+  - key: lim_hendon_2017
+    citation: "Lim, E.-P., & Hendon, H. H. (2017). Causes and predictability of the negative Indian Ocean Dipole and its impact on La Niña during 2016. Scientific Reports, 7, 12619."
+    url: https://doi.org/10.1038/s41598-017-12674-z
+  - key: uhe_2018
+    citation: "Uhe, P., Philip, S., Kew, S., Shah, K., Kimutai, J., Mwangi, E., van Oldenborgh, G. J., Singh, R., Arrighi, J., Jjemba, E., Cullen, H., & Otto, F. (2018). Attributing drivers of the 2016 Kenyan drought. International Journal of Climatology, 38(S1), e554–e568."
+    url: https://doi.org/10.1002/joc.5389
+  - key: noaa_cpc_oni
+    citation: "NOAA Climate Prediction Center. Cold and warm episodes by season: the Oceanic Niño Index (ONI), ERSST version 6."
+    url: https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso/oni/v6/

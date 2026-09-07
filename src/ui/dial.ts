@@ -26,8 +26,9 @@ export interface DialModel {
   startMonth: number;
   /** calendar month on screen */
   currentMonth: number;
-  /** a second driver's own start month and phase colour (M12), or null */
-  second: { month: number; color: string; name: string } | null;
+  /** a second driver's own start month and phase colour (M12), or null;
+   *  `before` (M15) when it began before the year shown, `onset` its month index */
+  second: { month: number; color: string; name: string; before: boolean; onset: number } | null;
   /** the season gate for every link in play, January first */
   profile: SeasonMonth[];
   /** the links acting on the selected place, or null when nothing is selected */
@@ -145,7 +146,8 @@ export class SeasonDialView {
       });
 
     // Onset marks: a dark triangle where the year shown begins, a dot in the
-    // second driver's phase colour where it begins.
+    // second driver's phase colour where it begins (a hollow one when it
+    // began before the year shown, M15: that month came up last year).
     this.marks.selectAll('*').remove();
     const a = (startMonth - 0.5) * 30;
     const [tx, ty] = point(R_MARK, a);
@@ -157,11 +159,16 @@ export class SeasonDialView {
     if (model.second && model.second.month !== startMonth) {
       const b = (model.second.month - 0.5) * 30;
       const [sx, sy] = point(R_MARK, b);
+      const { before, onset, name, color, month } = model.second;
       this.marks.append('circle')
-        .attr('class', 'dial-second')
+        .attr('class', before ? 'dial-second before' : 'dial-second')
         .attr('cx', sx.toFixed(2)).attr('cy', sy.toFixed(2)).attr('r', 4.5)
-        .attr('fill', model.second.color)
-        .append('title').text(`${model.second.name} begins here: ${MONTH_NAMES[model.second.month - 1]}, month ${index(model.second.month)}`);
+        .attr('fill', before ? '#ffffff' : color)
+        .attr('stroke', before ? color : null)
+        .attr('stroke-width', before ? 2 : null)
+        .append('title').text(before
+          ? `${name} has been in its phase since ${MONTH_NAMES[month - 1]}, ${-onset === 1 ? 'a month' : `${-onset} months`} before the year shown begins (month ${onset})`
+          : `${name} begins here: ${MONTH_NAMES[month - 1]}, month ${index(month)}`);
     }
 
     this.inner.selectAll('*').remove();

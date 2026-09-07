@@ -22,7 +22,7 @@ describe('stories', () => {
       const timeline = propagate(graph, {
         driverId: story.driver, phaseId: story.phase, startMonth: story.start_month, horizonMonths: 12, maxDepth: 3,
         secondary: story.second_driver && story.second_phase
-          ? { driverId: story.second_driver, phaseId: story.second_phase, startMonth: story.second_start_month ?? story.start_month }
+          ? { driverId: story.second_driver, phaseId: story.second_phase, startMonth: story.second_start_month ?? story.start_month, startsBefore: !!story.second_starts_before }
           : undefined,
       });
       const chosen = new Set([story.driver, story.second_driver].filter((x): x is string => !!x));

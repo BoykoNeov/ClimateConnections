@@ -38,8 +38,11 @@ export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
     if (scenario.secondary.driverId === scenario.driverId) {
       throw new Error(`scenario chooses driver "${scenario.driverId}" twice`);
     }
-    const { driverId, phaseId, startMonth } = scenario.secondary;
-    out.push(startMonth === undefined ? { driverId, phaseId } : { driverId, phaseId, startMonth });
+    const { driverId, phaseId, startMonth, startsBefore } = scenario.secondary;
+    const d: ScenarioDriver = { driverId, phaseId };
+    if (startMonth !== undefined) d.startMonth = startMonth;
+    if (startsBefore) d.startsBefore = true;
+    out.push(d);
   }
   return out;
 }
@@ -48,11 +51,15 @@ export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
  *  driver and for a second driver without a start month of its own; otherwise
  *  the first month index at or after 0 whose calendar month is the second
  *  driver's start month (M12). A start month earlier in the calendar than the
- *  scenario's therefore falls in the following year. */
+ *  scenario's therefore falls in the following year. With `startsBefore`
+ *  (M15) the month is read backwards instead: the last time it came up
+ *  before month 0, an index from -12 to -1, so the driver is already in its
+ *  phase when the year shown begins. */
 export function chosenOnset(scenario: Scenario, driverId: string): number {
   const s = scenario.secondary;
-  if (!s || s.driverId !== driverId || s.startMonth === undefined) return 0;
-  return (s.startMonth - scenario.startMonth + 12) % 12;
+  if (!s || s.driverId !== driverId) return 0;
+  const after = s.startMonth === undefined ? 0 : (s.startMonth - scenario.startMonth + 12) % 12;
+  return s.startsBefore ? after - 12 : after;
 }
 
 /** Links that belong to a chosen driver + phase (the first hop). */
@@ -87,10 +94,12 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
   }
 
   // First month index at which a driver entered a phase. A chosen driver
-  // enters its phase at month 0 (the second one in its own start month, M12);
-  // a driver set off by a link enters its phase the first month that link is
-  // applied, and keeps that onset for the rest of the scenario (each link
-  // fires once: its lag is counted from that onset).
+  // enters its phase at month 0 (the second one in its own start month, M12,
+  // which may lie before month 0, M15: a negative onset, so links whose lag
+  // has already run are available from month 0); a driver set off by a link
+  // enters its phase the first month that link is applied, and keeps that
+  // onset for the rest of the scenario (each link fires once: its lag is
+  // counted from that onset).
   const onset = new Map<string, number>(chosen.map((c) => [`${c.driverId}|${c.phaseId}`, chosenOnset(scenario, c.driverId)]));
   const months: MonthState[] = [];
 
@@ -100,7 +109,8 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     for (const n of graph.nodes) nodes[n.id] = emptyState();
     const links: Record<string, LinkState> = {};
     // Chosen drivers already in their phase this month. A second driver with
-    // a later start month holds no phase before it: value 0, no links.
+    // a later start month holds no phase before it: value 0, no links. One
+    // that began before the first (negative onset) is in phase throughout.
     const inPhase = chosen.filter((c) => index >= chosenOnset(scenario, c.driverId));
     for (const c of inPhase) {
       const value = chosenValue.get(c.driverId);

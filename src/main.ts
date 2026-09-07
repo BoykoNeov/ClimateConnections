@@ -120,7 +120,8 @@ async function main(): Promise<void> {
 
   /** The drivers chosen by hand on one side: id -> phase colour for the map
    *  (only once the driver is in its phase: a second driver with a later start
-   *  month is drawn grey until then), id -> phase and onset for the card. */
+   *  month is drawn grey until then; one that began before the first, M15, is
+   *  in phase throughout), id -> phase and onset for the card. */
   function chosenFor(s: ScenarioSettings, timeline: Timeline, month: MonthState): Chosen {
     const driver = driverById(s.driverId);
     const phase = driver.phases.find((p) => p.id === s.phaseId)!;
@@ -136,10 +137,11 @@ async function main(): Promise<void> {
     return { driver, phase, second, secondPhase, colors, phases };
   }
 
-  /** "El Niño from June + Negative IOD from September · direct links only" */
+  /** "El Niño from June + Negative IOD from September · direct links only";
+   *  "since May" for a second driver that began before the first (M15). */
   function scenarioTitle(s: ScenarioSettings, c: Chosen): string {
     let t = `${c.phase.label} from ${MONTH_NAMES[s.startMonth - 1]}`;
-    if (c.second && c.secondPhase && s.second) t += ` + ${c.secondPhase.label} from ${MONTH_NAMES[s.second.startMonth - 1]}`;
+    if (c.second && c.secondPhase && s.second) t += ` + ${c.secondPhase.label} ${s.second.startsBefore ? 'since' : 'from'} ${MONTH_NAMES[s.second.startMonth - 1]}`;
     if (s.filter !== 'all') t += s.filter === 'established' ? ' · established only' : ' · probable and above';
     if (!s.chain) t += ' · direct links only';
     return t;
@@ -228,7 +230,7 @@ async function main(): Promise<void> {
     dial.render({
       startMonth: s.startMonth,
       currentMonth: month.calendarMonth,
-      second: c.second && c.secondPhase && s.second ? { month: s.second.startMonth, color: c.secondPhase.color, name: shortName(c.second) } : null,
+      second: c.second && c.secondPhase && s.second ? { month: s.second.startMonth, color: c.secondPhase.color, name: shortName(c.second), before: s.second.startsBefore, onset: c.phases.get(c.second.id)!.onset } : null,
       profile: pane(edited).profile,
       rings: node ? ringsFor(node.id, pane(edited).inPlay) : null,
       selectedName: node ? node.name.replace(/\s*\(.*\)$/, '') : null,
@@ -262,7 +264,7 @@ async function main(): Promise<void> {
     controls.driverId = s.driver;
     controls.phaseId = s.phase;
     controls.startMonth = s.start_month;
-    controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase, startMonth: s.second_start_month ?? s.start_month } : null;
+    controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase, startMonth: s.second_start_month ?? s.start_month, startsBefore: !!s.second_starts_before } : null;
     controls.compare = null;
     ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, second: controls.second, compare: null });
     tl.pause();
@@ -306,9 +308,16 @@ async function main(): Promise<void> {
     const driverName = shortName(c.driver);
     const when = MONTH_NAMES[s.startMonth - 1];
     const when2 = s.second ? MONTH_NAMES[s.second.startMonth - 1] : when;
-    const who = c.second && c.secondPhase
-      ? (when2 === when ? `${driverName}: ${c.phase.label} and ${shortName(c.second)}: ${c.secondPhase.label}, both beginning in ${when}. ` : `${driverName}: ${c.phase.label} beginning in ${when}, and ${shortName(c.second)}: ${c.secondPhase.label} beginning in ${when2}. `)
-      : `${driverName}: ${c.phase.label}, event beginning in ${when}. `;
+    let who: string;
+    if (c.second && c.secondPhase && s.second?.startsBefore) {
+      // The second driver began before the first (M15): under way since then.
+      const ago = -c.phases.get(c.second.id)!.onset;
+      who = `${driverName}: ${c.phase.label} beginning in ${when}, and ${shortName(c.second)}: ${c.secondPhase.label} already under way since ${when2}, ${ago === 1 ? 'a month' : `${ago} months`} earlier. `;
+    } else if (c.second && c.secondPhase) {
+      who = when2 === when ? `${driverName}: ${c.phase.label} and ${shortName(c.second)}: ${c.secondPhase.label}, both beginning in ${when}. ` : `${driverName}: ${c.phase.label} beginning in ${when}, and ${shortName(c.second)}: ${c.secondPhase.label} beginning in ${when2}. `;
+    } else {
+      who = `${driverName}: ${c.phase.label}, event beginning in ${when}. `;
+    }
     return who +
       `Shown: ${MONTH_NAMES[month.calendarMonth - 1]}, month ${month.index} after onset. Showing ${filterText}` +
       `${s.chain ? ', following links through other drivers' : ', direct links only'}. `;
