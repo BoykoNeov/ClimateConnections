@@ -2331,6 +2331,222 @@ links:
     sources: [lheureux_thompson_2006, fogt_bromwich_2006, hendon_2007]
 
 
+  # ---- Pacific Decadal Oscillation (M17). The oscillation is defined by a
+  # regression pattern, so every target gets a link per phase. Its own
+  # effects are ENSO-like and weaker, and much of the PDO is ENSO's footprint,
+  # so nothing here is rated established.
+  - id: positive_pdo_alaska
+    from: pdo
+    when: positive
+    to: alaska_winter
+    effect: 1
+    lag_months: [0, 1]
+    season: [10, 11, 12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      Warm water in the Gulf of Alaska and a deep Aleutian low pump mild
+      Pacific air north over Alaska through the winter.
+    caveat: >
+      The oscillation is a decade-scale average; any one winter inside a
+      positive phase can be cold if the Aleutian low sits in the wrong place
+      for a few weeks, and much of the signal is El Niño's own winter
+      pattern.
+    evidence_note: >
+      The warm-phase regression shows Alaska and northwest North America
+      warm in winter, and Alaska's climate stepped warmer at the 1976–77
+      flip; the mixed causes of the oscillation mean the tendency is rated
+      probable rather than established.
+    sources: [mantua_1997, mantua_hare_2002, newman_2016]
+
+  - id: negative_pdo_alaska
+    from: pdo
+    when: negative
+    to: alaska_winter
+    effect: -1
+    lag_months: [0, 1]
+    season: [10, 11, 12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      Cool water in the Gulf of Alaska and a weak Aleutian low leave Alaska
+      under its own cold air through the winter.
+    caveat: >
+      A single winter inside a negative phase can still be mild; the
+      tendency is over the decade, and a strong El Niño can override it.
+    sources: [mantua_1997, mantua_hare_2002]
+
+  - id: positive_pdo_pacific_northwest
+    from: pdo
+    when: positive
+    to: pacific_northwest_winter
+    effect: 1
+    lag_months: [0, 1]
+    season: [12, 1, 2]
+    confidence: probable
+    mechanism: >
+      Warm coastal water and a deep Aleutian low steer mild Pacific air onto
+      the Northwest coast and shift the storms away from it, so winters tend
+      to be milder and drier, with less mountain snow.
+    caveat: >
+      ENSO acts on the same region in the same months and its swings are
+      larger; inside a positive phase a La Niña winter can still be cold
+      and snowy.
+    evidence_note: >
+      The warm-phase regression shows northwest North America warm and the
+      Pacific Northwest dry in winter; the 2014–15 winter, after the 2014
+      swing to positive, brought record-low snowpack to Oregon and
+      Washington with near-normal precipitation falling as rain.
+    sources: [mantua_1997, mote_2016, bond_2015]
+
+  - id: negative_pdo_pacific_northwest
+    from: pdo
+    when: negative
+    to: pacific_northwest_winter
+    effect: -1
+    lag_months: [0, 1]
+    season: [12, 1, 2]
+    confidence: probable
+    mechanism: >
+      Cool coastal water and a weak Aleutian low leave the Northwest coast
+      under cooler air with the storm track on top of it, so winters tend to
+      be cooler and wetter, with more mountain snow.
+    caveat: >
+      An El Niño winter inside a negative phase can still be mild and dry;
+      ENSO's signal is the larger one.
+    sources: [mantua_1997, mantua_hare_2002]
+
+  - id: positive_pdo_canadian_prairies
+    from: pdo
+    when: positive
+    to: canadian_prairies_winter
+    effect: 1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      The deep Aleutian low of the warm phase sets up a ridge over western
+      Canada that carries mild Pacific air across the Rockies onto the
+      Prairies in winter.
+    caveat: >
+      This is El Niño's winter pattern held on average for a decade, and it
+      is weaker than El Niño's own; a cold winter is still possible inside
+      a positive phase.
+    evidence_note: >
+      Northwest North America, including western Canada, is warm in the
+      warm-phase winter regression; El Niño's own effects over North
+      America are stronger and steadier in the warm phase of the North
+      Pacific.
+    sources: [mantua_1997, gershunov_barnett_1998]
+
+  - id: negative_pdo_canadian_prairies
+    from: pdo
+    when: negative
+    to: canadian_prairies_winter
+    effect: -1
+    lag_months: [0, 1]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      With a weak Aleutian low and no ridge over western Canada, Arctic air
+      sits over the Prairies more often in winter.
+    caveat: >
+      Weaker than La Niña's own cold tendency here and easily overridden by
+      an El Niño winter inside the phase.
+    sources: [mantua_1997, gershunov_barnett_1998]
+
+  - id: positive_pdo_us_southwest
+    from: pdo
+    when: positive
+    to: us_southwest_winter
+    effect: 1
+    lag_months: [0, 1]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: contested
+    mechanism: >
+      The deep Aleutian low of the warm phase strengthens the subtropical
+      jet across the southern United States in winter and steers Pacific
+      storms into the Southwest and northern Mexico.
+    caveat: >
+      Rainfall signals of the oscillation are weaker and patchier than the
+      temperature ones, and the 2014–15 winter of a freshly positive phase
+      left California in drought.
+    evidence_note: >
+      The warm-phase regression shows the Southwest and northern Mexico wet
+      in winter, and multidecadal droughts in the United States cluster in
+      the cool phase; but the precipitation signal is weak and El Niño does
+      most of the work, so the link is shown as contested.
+    sources: [mantua_1997, mccabe_2004, mote_2016]
+
+  - id: negative_pdo_us_southwest
+    from: pdo
+    when: negative
+    to: us_southwest_winter
+    effect: -1
+    lag_months: [0, 1]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: contested
+    mechanism: >
+      With a weak Aleutian low the subtropical jet is weak and the winter
+      storms stay north of the Southwest, so winters tend to be drier.
+    caveat: >
+      Weak in any one year; the droughts of the 1950s and of 1999–2002 fell
+      in the cool phase, but a single El Niño winter inside it can be very
+      wet.
+    evidence_note: >
+      Half of the multidecadal variation in drought frequency over the
+      United States is tied to the Pacific and Atlantic oscillations
+      together, with the cool Pacific phase favouring drought; the link is
+      shown as contested because the year-to-year signal is small.
+    sources: [mccabe_2004, mantua_1997]
+
+  # ENSO tends to set the PDO: El Niño toward positive, La Niña toward negative.
+  - id: el_nino_positive_pdo
+    from: enso
+    when: el_nino
+    to: pdo
+    effect: 1
+    lag_months: [3, 6]
+    season: []
+    confidence: probable
+    mechanism: >
+      El Niño deepens the Aleutian low through the "atmospheric bridge",
+      which cools the central North Pacific and warms the water along the
+      North American coast, the pattern of a positive oscillation; the
+      ocean then remembers it from one winter to the next.
+    caveat: >
+      The oscillation also has its own North Pacific sources and a
+      decade-long memory, so a single El Niño tips the index for a season
+      or a year rather than flipping the phase; the 1997–98 El Niño was
+      followed by a cool phase, not a warm one.
+    evidence_note: >
+      A simple model of ENSO forcing plus the re-emergence of last winter's
+      anomalies plus noise reproduces the index well, and the current view
+      is that the oscillation is a mix of processes rather than one, with
+      the tropics supplying much of it.
+    sources: [newman_2003, alexander_2002, newman_2016]
+
+  - id: la_nina_negative_pdo
+    from: enso
+    when: la_nina
+    to: pdo
+    effect: -1
+    lag_months: [3, 6]
+    season: []
+    confidence: probable
+    mechanism: >
+      La Niña weakens the Aleutian low through the same bridge, which warms
+      the central North Pacific and cools the coastal water, the pattern of
+      a negative oscillation.
+    caveat: >
+      One La Niña nudges the index; the phase itself turns on the ocean's
+      decade-long memory, so a La Niña inside a warm phase does not end
+      it.
+    evidence_note: >
+      The same bridge as the El Niño link, read the other way; the run of
+      La Niña years around 1999–2001 and 2010–12 fell in a mostly cool
+      phase, but the fit is loose year by year.
+    sources: [newman_2003, alexander_2002, newman_2016]
+
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -2711,3 +2927,43 @@ sources:
   - key: lim_2021
     citation: "Lim, E.-P., Hendon, H. H., Butler, A. H., Thompson, D. W. J., et al. (2021). The 2019 Southern Hemisphere stratospheric polar vortex weakening and its impacts. Bulletin of the American Meteorological Society, 102(6), E1150–E1171."
     url: https://doi.org/10.1175/BAMS-D-20-0112.1
+  # ---- Pacific Decadal Oscillation (M17)
+  - key: mantua_1997
+    citation: "Mantua, N. J., Hare, S. R., Zhang, Y., Wallace, J. M., & Francis, R. C. (1997). A Pacific interdecadal climate oscillation with impacts on salmon production. Bulletin of the American Meteorological Society, 78(6), 1069–1079."
+    url: https://doi.org/10.1175/1520-0477(1997)078<1069:APICOW>2.0.CO;2
+  - key: mantua_hare_2002
+    citation: "Mantua, N. J., & Hare, S. R. (2002). The Pacific Decadal Oscillation. Journal of Oceanography, 58, 35–44."
+    url: https://doi.org/10.1023/A:1015820616384
+  - key: newman_2016
+    citation: "Newman, M., Alexander, M. A., Ault, T. R., Cobb, K. M., et al. (2016). The Pacific Decadal Oscillation, revisited. Journal of Climate, 29(12), 4399–4427."
+    url: https://doi.org/10.1175/JCLI-D-15-0508.1
+  - key: newman_2003
+    citation: "Newman, M., Compo, G. P., & Alexander, M. A. (2003). ENSO-forced variability of the Pacific Decadal Oscillation. Journal of Climate, 16(23), 3853–3857."
+    url: https://doi.org/10.1175/1520-0442(2003)016<3853:EVOTPD>2.0.CO;2
+  - key: alexander_2002
+    citation: "Alexander, M. A., Bladé, I., Newman, M., Lanzante, J. R., Lau, N.-C., & Scott, J. D. (2002). The atmospheric bridge: The influence of ENSO teleconnections on air–sea interaction over the global oceans. Journal of Climate, 15(16), 2205–2231."
+    url: https://doi.org/10.1175/1520-0442(2002)015<2205:TABTIO>2.0.CO;2
+  - key: gershunov_barnett_1998
+    citation: "Gershunov, A., & Barnett, T. P. (1998). Interdecadal modulation of ENSO teleconnections. Bulletin of the American Meteorological Society, 79(12), 2715–2725."
+    url: https://doi.org/10.1175/1520-0477(1998)079<2715:IMOET>2.0.CO;2
+  - key: power_1999
+    citation: "Power, S., Casey, T., Folland, C., Colman, A., & Mehta, V. (1999). Inter-decadal modulation of the impact of ENSO on Australia. Climate Dynamics, 15, 319–324."
+    url: https://doi.org/10.1007/s003820050284
+  - key: mccabe_2004
+    citation: "McCabe, G. J., Palecki, M. A., & Betancourt, J. L. (2004). Pacific and Atlantic Ocean influences on multidecadal drought frequency in the United States. Proceedings of the National Academy of Sciences, 101(12), 4136–4141."
+    url: https://doi.org/10.1073/pnas.0306738101
+  - key: noaa_ncei_pdo
+    citation: "NOAA National Centers for Environmental Information. Pacific Decadal Oscillation (PDO): monitoring page and monthly index."
+    url: https://www.ncei.noaa.gov/access/monitoring/pdo/
+  - key: bond_2015
+    citation: "Bond, N. A., Cronin, M. F., Freeland, H., & Mantua, N. (2015). Causes and impacts of the 2014 warm anomaly in the NE Pacific. Geophysical Research Letters, 42(9), 3414–3420."
+    url: https://doi.org/10.1002/2015GL063306
+  - key: mote_2016
+    citation: "Mote, P. W., Rupp, D. E., Li, S., Sharp, D. J., et al. (2016). Perspectives on the causes of exceptionally low 2015 snowpack in the western United States. Geophysical Research Letters, 43(20), 10980–10988."
+    url: https://doi.org/10.1002/2016GL069965
+  - key: di_lorenzo_mantua_2016
+    citation: "Di Lorenzo, E., & Mantua, N. (2016). Multi-year persistence of the 2014/15 North Pacific marine heatwave. Nature Climate Change, 6, 1042–1047."
+    url: https://doi.org/10.1038/nclimate3082
+  - key: zhang_wallace_battisti_1997
+    citation: "Zhang, Y., Wallace, J. M., & Battisti, D. S. (1997). ENSO-like interdecadal variability: 1900–93. Journal of Climate, 10(5), 1004–1020."
+    url: https://doi.org/10.1175/1520-0442(1997)010<1004:ELIV>2.0.CO;2

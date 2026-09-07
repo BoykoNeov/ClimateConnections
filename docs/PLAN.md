@@ -918,6 +918,55 @@ is fully green.
   2019 story stepped to its end, the print caption.
 - Not in M16: the Pacific Decadal Oscillation (M17).
 
+### M17 — Fifth driver: Pacific Decadal Oscillation (signed off 2026-09-07)
+- Data: `pdo` driver node with positive / neutral / negative phases (marker
+  in the North Pacific at 42°N 165°W, area across the basin from 145°E to
+  125°W, `default_start_month` 11); one new outcome node (Alaska winter
+  temperature); eight outcome links, four per phase, on Alaska and three
+  existing nodes (Pacific Northwest winter, Canadian Prairies winter, US
+  Southwest winter rainfall), all with lag 0–1 and winter seasons. None is
+  rated established: the oscillation is a mix of processes and much of it
+  is ENSO's footprint in the North Pacific (Newman et al. 2016), so the
+  temperature links are probable and the Southwest rain links contested.
+  Two driver-to-driver links, ENSO to the PDO through the atmospheric
+  bridge (El Niño toward positive, La Niña toward negative; probable, lag
+  3–6, all year), so El Niño with the chain on reaches Alaska through the
+  PDO only, one tier down, and "established only" ghosts it. Thirteen
+  sources, every one resolved on Crossref before use. One story, "2014–15:
+  the North Pacific flips warm" (PDO positive from November 2014, El Niño
+  from March 2015 as the second driver), five steps: the Blob, the
+  Northwest snow drought, the Southwest where the pattern broke, El
+  Niño's arrival as a chosen driver, and November 2015 with both arrows on
+  the Southwest.
+- Honesty note carried in the data: a phase lasts a decade or more, so the
+  year shown is one year inside a phase (driver summary, onset hint, the
+  story's first step), and the driver card says what the map cannot show,
+  the PDO's modulation of ENSO's own effects (no new combination rule,
+  section 4).
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for positive PDO from November (Alaska and the
+  Southwest from month 0, the Northwest and the Prairies from December,
+  nothing applied May–September but pending, no established tier, other
+  drivers' regions hollow), the negative reversal, El Niño pushing the PDO
+  from September with second pushes on the Northwest, the Prairies and the
+  Southwest, Alaska via the PDO only at the downgraded tier, the ghost
+  under "established only", La Niña's two dry pushes on the Southwest, and
+  the 2014–15 scenario (El Niño onset 4 and never pushed, February through
+  the PDO alone, November 2015 with both arrows rated by the weaker line,
+  the shipped story's fields). Existing expectations updated: five
+  drivers, ten driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m17.mjs`, 47
+  checks): the two new markers placed with no label overlap, the driver
+  dropdown jumping to November, positive PDO in November and February
+  (pending markers, the dotted Southwest arrow), the Southwest and PDO
+  cards, the negative reversal, El Niño pushing the PDO (induced marker,
+  Alaska reached through it, the ghost under "established only"), the
+  2014–15 story stepped to its end, the print caption.
+- Not in M17: further drivers. Candidates that fit a monthly timeline are
+  the Atlantic Multidecadal Oscillation and the Atlantic Niño; the
+  Madden–Julian Oscillation does not (it swings within weeks). Each needs
+  sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -1003,6 +1052,14 @@ probable) and southeast_south_america (spring, −/+, contested):
 | antarctic_peninsula_summer | Northern Antarctic Peninsula | warm_cool | SAM | positive warm summer (+), established | negative cool summer (−), established |
 | western_cape_winter_rainfall | Cape Town / Western Cape | wet_dry | SAM | positive dry winter (−), probable | negative wet winter (+), probable |
 
+Outcome nodes added with the Pacific Decadal Oscillation (M17); the PDO also
+acts on pacific_northwest_winter (+/−, probable), canadian_prairies_winter
+(+/−, probable) and us_southwest_winter (+/−, contested):
+
+| id | region | axis | driver | main + phase tendency | main − phase tendency |
+|---|---|---|---|---|---|
+| alaska_winter | Alaska / Yukon | warm_cool | PDO | positive mild winter (+), probable | negative cold winter (−), probable |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1036,7 +1093,8 @@ writing mechanism text):
   scenarios with conflict flags (done, M11: two chosen drivers; M12: the
   second driver's own start month; M15: a second driver that begins before
   the first); season dial (done, M13); compare mode (done, M14: two maps
-  side by side); more drivers (done, M16: the Southern Annular Mode);
+  side by side); more drivers (done, M16: the Southern Annular Mode; M17:
+  the Pacific Decadal Oscillation);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

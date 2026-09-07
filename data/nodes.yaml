@@ -222,6 +222,64 @@ nodes:
           the most strongly negative on record.
     sources: [thompson_wallace_2000, marshall_2003, gong_wang_1999, bom_sam]
 
+  - id: pdo
+    name: Pacific Decadal Oscillation (PDO)
+    label: PDO
+    kind: driver
+    lat: 42
+    lon: -165
+    area: [[145, 58], [-125, 58], [-125, 22], [145, 22]]
+    region: North Pacific Ocean, north of about 20°N
+    timescale: Phases last a decade or more, with swings of a year or two inside them
+    summary: >
+      The leading pattern of sea-surface temperature in the North Pacific. In
+      the positive (warm) phase the water along the North American coast and
+      in the Gulf of Alaska is warmer than usual while the central and
+      western North Pacific are cool, and the winter low near the Aleutians
+      is deep; the negative phase is the reverse. Phases have lasted twenty
+      to thirty years, with flips around 1925, 1947 and 1977 and a swing to
+      positive in 2014. It is not one thing: much of it is El Niño's
+      footprint carried into the North Pacific by the atmosphere, plus the
+      ocean's memory from one winter to the next, so its own effects are
+      ENSO-like and weaker. The map shows one year inside a phase. What it
+      cannot show is the PDO's better-known role: making ENSO's effects on
+      North America and Australia stronger in some decades and weaker in
+      others.
+    onset_hint: The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase; start in November to see its winter effects first.
+    default_start_month: 11
+    phases:
+      - id: positive
+        value: 1
+        label: Positive PDO
+        color: "#fd8d3c"
+        summary: >
+          Warm water along the coast from California to the Gulf of Alaska,
+          cool water in the central North Pacific, and a deep Aleutian low
+          in winter. Winters tend to be mild in Alaska and the Pacific
+          Northwest and wet in the Southwest, and El Niño's own winter
+          pattern over North America tends to come through strongly. The
+          warm phase ran from 1977 to the late 1990s and returned in 2014.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The North Pacific is close to its average pattern and none of the
+          Pacific Decadal Oscillation tendencies on this map are expected.
+          ENSO and the other drivers still shape the weather.
+      - id: negative
+        value: -1
+        label: Negative PDO
+        color: "#4a1486"
+        summary: >
+          Cool water along the North American coast, warm water in the
+          central North Pacific, and a weak Aleutian low. Winters tend to be
+          cold in Alaska and the Pacific Northwest and dry in the Southwest,
+          and La Niña's winter pattern tends to come through strongly. The
+          cool phase ran from 1947 to 1976 and, less cleanly, from about
+          1999 to 2013.
+    sources: [mantua_1997, mantua_hare_2002, zhang_wallace_battisti_1997, newman_2016, power_1999, noaa_ncei_pdo]
+
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1278,3 +1336,26 @@ nodes:
       Annular Mode, and Cape Town's "Day Zero" drought of 2015–2017 came
       with a poleward shift of the moisture corridor.
     sources: [reason_rouault_2005, sousa_2018]
+
+  # ---------------------------------------------------------------- outcomes added with the Pacific Decadal Oscillation (M17)
+  - id: alaska_winter
+    name: Alaska winter temperature
+    label: Alaska
+    kind: outcome
+    lat: 62
+    lon: -150
+    area: [[-168, 71], [-140, 71], [-140, 55], [-168, 55]]
+    region: Alaska and the Yukon
+    timescale: October–March
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual
+    summary: >
+      Alaska's winters follow the Gulf of Alaska. When the water there is
+      warm and the Aleutian low is deep, mild Pacific air is pumped north
+      over the state; when the water is cool and the low weak, the cold sits.
+      Alaska's climate stepped warmer after the Pacific flipped in 1976–77,
+      one of the clearest regional marks of the oscillation.
+    sources: [mantua_1997, mantua_hare_2002]

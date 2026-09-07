@@ -798,3 +798,81 @@ stories:
           helped it along, or the Pacific was heading there anyway, is
           exactly what the dotted line is for.
         sources: [izumo_2010, noaa_cpc_oni]
+
+  - id: positive_pdo_2014_15
+    title: "2014–15: the North Pacific flips warm"
+    intro: >
+      After a mostly cool decade, the Pacific Decadal Oscillation swung
+      positive in 2014. A huge patch of warm water, nicknamed "the Blob", had
+      built up in the northeast Pacific the winter before and spread to the
+      coast, and by late 2014 the whole basin wore the warm-phase pattern.
+      The year shown begins in November 2014 with the oscillation positive;
+      El Niño is set to begin in March 2015, when it did. Watch the Pacific
+      Northwest, and watch the Southwest for the place where the map's
+      tendency and the real winter parted ways.
+    driver: pdo
+    phase: positive
+    second_driver: enso
+    second_phase: el_nino
+    second_start_month: 3
+    start_month: 11
+    start_year: 2014
+    steps:
+      - month: 0
+        focus: pdo
+        text: >
+          In the winter of 2013–14 a strong, stubborn ridge of high pressure
+          sat over the northeast Pacific. Under it the ocean lost less heat
+          than usual and the water warmed by the largest amount seen there
+          since at least the 1980s. The warm patch spread to the coast in
+          spring and summer 2014, and NOAA's index for the oscillation
+          turned positive and stayed there. The map holds the phase for a
+          year; the real one lasted several.
+        sources: [bond_2015, di_lorenzo_mantua_2016, noaa_ncei_pdo]
+
+      - month: 3
+        focus: pacific_northwest_winter
+        text: >
+          The map expects a mild, dry winter in the Northwest, and the
+          winter of 2014–15 was mild above all. Near-normal precipitation
+          fell as rain instead of snow, and by spring more than four fifths
+          of the snow-measuring sites in the far west were at record lows. The warm sea surface, not a lack of storms, was the main
+          cause: model experiments put its share at about twice that of
+          human warming.
+        sources: [mote_2016, bond_2015]
+
+      - month: 3
+        focus: us_southwest_winter
+        text: >
+          Here the pattern broke. The dotted line says the Southwest tends
+          to be wetter in a warm phase, and the map paints it wet. The
+          winter of 2014–15 instead kept California in its exceptional
+          2011–2015 drought: the wet winter the dotted line promises did
+          not reach it. The oscillation's rainfall signals are weak; El
+          Niño does most of the work, and El Niño had not yet arrived.
+        sources: [mote_2016, mccabe_2004]
+
+      - month: 4
+        focus: enso
+        text: >
+          In March 2015 NOAA declared an El Niño, which grew through the year
+          into one of the three strongest on record. On this map it is a
+          chosen driver, entering its phase four months after the start, so
+          nothing pushes it. Notice that a positive oscillation and an El
+          Niño are the usual pairing, not a coincidence: much of the
+          oscillation is El Niño's footprint in the North Pacific, and the
+          warm water of 2014 had helped set the stage.
+        sources: [noaa_cpc_oni, newman_2016, di_lorenzo_mantua_2016]
+
+      - month: 12
+        focus: us_southwest_winter
+        text: >
+          A year on, in November 2015, two arrows point at the Southwest the
+          same way, wet: the oscillation's dotted one and El Niño's solid
+          one, whose lag has now run. Where two drivers agree the map simply
+          holds the state, and the card rates the pair by the weaker line.
+          This is the pairing the research singles out: El Niño's winter
+          pattern over North America comes through most reliably when the
+          North Pacific is in its warm phase. Whether the rain delivers is
+          for the record to say; the map only says the odds have lined up.
+        sources: [gershunov_barnett_1998, mantua_1997]
