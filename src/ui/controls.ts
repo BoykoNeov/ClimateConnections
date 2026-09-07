@@ -1,4 +1,4 @@
-// Left panel: phase buttons, start month, confidence filter, legend.
+// Left panel: driver picker, phase buttons, start month, confidence filter, legend.
 
 import type { DriverNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
@@ -7,6 +7,7 @@ import { renderLegend } from './legend';
 export type ConfidenceFilter = 'all' | 'probable' | 'established';
 
 export interface ControlState {
+  driverId: string;
   phaseId: string;
   startMonth: number;
   filter: ConfidenceFilter;
@@ -15,13 +16,19 @@ export interface ControlState {
 
 export class ControlsView {
   private phaseButtons = new Map<string, HTMLButtonElement>();
+  private phaseBox: HTMLDivElement;
+  private driverSelect: HTMLSelectElement | null = null;
+  private driverHeading: HTMLHeadingElement;
+  private onsetHint: HTMLParagraphElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
+  /** driver whose phase buttons are currently in the DOM */
+  private renderedDriverId: string | null = null;
   onChange: (s: ControlState) => void = () => {};
   /** a story was picked from the dropdown (null = "none") */
   onStory: (storyId: string | null) => void = () => {};
 
-  constructor(container: HTMLElement, driver: DriverNode, stories: Story[], private state: ControlState) {
+  constructor(container: HTMLElement, private drivers: DriverNode[], stories: Story[], private state: ControlState) {
     container.innerHTML = '';
 
     const hs = document.createElement('h2');
@@ -46,21 +53,29 @@ export class ControlsView {
     hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
     container.append(hintS);
 
-    const h1 = document.createElement('h2');
-    h1.textContent = driver.name.replace(/\s*\(.*\)$/, '');
-    container.append(h1);
-    const phases = document.createElement('div');
-    phases.className = 'phase-buttons';
-    for (const p of driver.phases) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'phase-btn';
-      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.update({ phaseId: p.id }));
-      phases.append(b);
-      this.phaseButtons.set(p.id, b);
+    // Driver: a dropdown when there is more than one, otherwise just a heading.
+    this.driverHeading = document.createElement('h2');
+    container.append(this.driverHeading);
+    if (drivers.length > 1) {
+      this.driverHeading.textContent = 'Driver';
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', 'Pick a driver phenomenon');
+      for (const d of drivers) {
+        const o = document.createElement('option');
+        o.value = d.id;
+        o.textContent = d.name;
+        sel.append(o);
+      }
+      sel.addEventListener('change', () => {
+        const d = this.driverById(sel.value);
+        this.update({ driverId: d.id, phaseId: d.phases[0].id });
+      });
+      container.append(sel);
+      this.driverSelect = sel;
     }
-    container.append(phases);
+    this.phaseBox = document.createElement('div');
+    this.phaseBox.className = 'phase-buttons';
+    container.append(this.phaseBox);
 
     const h2 = document.createElement('h2');
     h2.textContent = 'Event begins in';
@@ -76,10 +91,9 @@ export class ControlsView {
     month.addEventListener('change', () => this.update({ startMonth: Number(month.value) }));
     container.append(month);
     this.monthSelect = month;
-    const hint = document.createElement('p');
-    hint.className = 'hint';
-    hint.textContent = 'El Niño and La Niña events usually start to develop between May and July.';
-    container.append(hint);
+    this.onsetHint = document.createElement('p');
+    this.onsetHint.className = 'hint';
+    container.append(this.onsetHint);
 
     const h3 = document.createElement('h2');
     h3.textContent = 'Show connections';
@@ -126,6 +140,12 @@ export class ControlsView {
     this.reflect();
   }
 
+  private driverById(id: string): DriverNode {
+    const d = this.drivers.find((x) => x.id === id);
+    if (!d) throw new Error(`unknown driver ${id}`);
+    return d;
+  }
+
   private update(patch: Partial<ControlState>): void {
     this.state = { ...this.state, ...patch };
     this.reflect();
@@ -143,7 +163,29 @@ export class ControlsView {
     this.storySelect.value = storyId ?? '';
   }
 
+  /** Rebuild the phase buttons for the current driver (only when it changed). */
+  private renderPhases(driver: DriverNode): void {
+    if (this.renderedDriverId === driver.id) return;
+    this.renderedDriverId = driver.id;
+    this.phaseBox.innerHTML = '';
+    this.phaseButtons.clear();
+    for (const p of driver.phases) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn';
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
+      b.addEventListener('click', () => this.update({ phaseId: p.id }));
+      this.phaseBox.append(b);
+      this.phaseButtons.set(p.id, b);
+    }
+    if (!this.driverSelect) this.driverHeading.textContent = driver.name.replace(/\s*\(.*\)$/, '');
+    this.onsetHint.textContent = driver.onset_hint;
+  }
+
   private reflect(): void {
+    const driver = this.driverById(this.state.driverId);
+    this.renderPhases(driver);
+    if (this.driverSelect) this.driverSelect.value = driver.id;
     for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === this.state.phaseId));
     this.monthSelect.value = String(this.state.startMonth);
   }

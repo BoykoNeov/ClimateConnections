@@ -1,4 +1,4 @@
-// Version-1 acceptance checks from docs/PLAN.md section 7, run against the
+// Acceptance checks from docs/PLAN.md section 7 (version 1) and M8 (second driver), run against the
 // shipped data with the real engine. Each expected effect must be applied
 // with the right sign at some month of a June-start scenario; effects are
 // season-gated, so "by month 12" means "at some point in the year", and the
@@ -87,4 +87,82 @@ describe('acceptance: every link is sourced and caveated', () => {
       expect(link.caveat.trim().length).toBeGreaterThan(0);
     });
   }
+});
+
+// ---------------------------------------------------------------- M8: second driver (Indian Ocean Dipole)
+function runIod(phaseId: string): Timeline {
+  return propagate(graph, { driverId: 'iod', phaseId, startMonth: 6, horizonMonths: HORIZON });
+}
+
+const POSITIVE_IOD: Array<[string, Value, string]> = [
+  ['southeast_australia_rainfall', -1, 'southeast Australia dry'],
+  ['indonesia_rainfall', -1, 'Indonesia dry'],
+  ['east_africa_short_rains', 1, 'East Africa short rains wet'],
+  ['south_india_northeast_monsoon', 1, 'south India northeast monsoon wet'],
+];
+
+describe('acceptance: positive IOD, June start', () => {
+  const tl = runIod('positive');
+  for (const [id, sign, label] of POSITIVE_IOD) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the short rains are pending, not applied, before October', () => {
+    for (const m of tl.months.slice(0, 4)) {
+      expect(m.nodes.east_africa_short_rains.viaLinkIds, `applied at month ${m.index}`).toHaveLength(0);
+    }
+    expect(tl.months[4].calendarMonth).toBe(10);
+    expect(tl.months[4].nodes.east_africa_short_rains.value).toBe(1);
+  });
+  it('ENSO-only regions stay hollow: the map does not fake an IOD effect', () => {
+    for (const id of ['peru_coast_rainfall', 'atlantic_hurricanes', 'us_gulf_coast_winter']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: negative IOD, June start', () => {
+  const tl = runIod('negative');
+  it('reverses the positive phase wherever a negative link exists, and never copies its sign', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'iod' && l.when === 'negative').map((l) => l.to));
+    expect(targets.size).toBeGreaterThan(0);
+    for (const [id, sign] of POSITIVE_IOD) {
+      if (!targets.has(id)) continue;
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the positive phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the positive sign`).toHaveLength(0);
+    }
+  });
+  it('regions with no negative link stay untouched (no faked symmetry)', () => {
+    const targets = new Set(graph.links.filter((l) => l.from === 'iod' && l.when === 'negative').map((l) => l.to));
+    for (const node of graph.nodes) {
+      if (node.kind !== 'outcome' || targets.has(node.id)) continue;
+      for (const m of tl.months) {
+        expect(m.nodes[node.id].value, `${node.id} at month ${m.index}`).toBe(0);
+        expect(m.nodes[node.id].viaLinkIds).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: drivers', () => {
+  it('ships ENSO and the IOD as drivers, each with a neutral phase and an onset hint', () => {
+    const drivers = graph.nodes.filter((n) => n.kind === 'driver');
+    expect(drivers.map((d) => d.id).sort()).toEqual(['enso', 'iod']);
+    for (const d of drivers) {
+      if (d.kind !== 'driver') continue;
+      expect(d.phases.some((p) => p.id === 'neutral')).toBe(true);
+      expect(d.onset_hint.length).toBeGreaterThan(20);
+    }
+  });
+  it('a neutral phase applies nothing', () => {
+    for (const driverId of ['enso', 'iod']) {
+      const tl = propagate(graph, { driverId, phaseId: 'neutral', startMonth: 6, horizonMonths: HORIZON });
+      for (const m of tl.months) for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
+    }
+  });
 });

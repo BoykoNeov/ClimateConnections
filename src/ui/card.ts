@@ -42,7 +42,7 @@ function linkBlock(link: Link, sources: Map<string, Source>, status: 'applied' |
   </div>`;
 }
 
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, phaseId: string): void {
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, driverId: string, phaseId: string): void {
   const sources = new Map(graph.sources.map((s) => [s.key, s]));
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on the map to read what tends to happen there, why, and how sure the science is.</p>`;
@@ -52,6 +52,14 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
 
   if (node.kind === 'driver') {
+    if (node.id !== driverId) {
+      html += `<div class="state-line zero" style="background:#f0f2f5">Not part of the current scenario</div>`;
+      html += `<p class="empty">Pick it under "Driver" in the left panel to see its phases and connections.</p>`;
+      html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
+      html += `<h2>Sources</h2>${sourcesHtml(node.sources, sources)}`;
+      container.innerHTML = html;
+      return;
+    }
     const phase = node.phases.find((p) => p.id === phaseId);
     html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${esc(phase?.label ?? phaseId)}</div>`;
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;

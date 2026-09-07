@@ -25,6 +25,8 @@ nodes:
     summary: >                 # 1–3 sentences, plain language
       ...
     sources: [key, key]        # optional; keys from links.yaml `sources`
+    onset_hint: >              # drivers only: one plain sentence shown under the
+      ...                      # "Event begins in" control, saying when events usually start
     phases:                    # drivers only, at least 2
       - id: el_nino
         label: El Niño
@@ -44,8 +46,10 @@ nodes:
 ```
 
 Rules enforced by the validator:
-- Drivers have `phases` and no `axis`/`labels`; outcomes have `axis` and
-  `labels` and no `phases`.
+- Drivers have `phases` and `onset_hint` and no `axis`/`labels`; outcomes
+  have `axis` and `labels` and no `phases`.
+- Any number of drivers is allowed. The app offers a driver dropdown when
+  there is more than one; a scenario is always one driver in one phase.
 - `lat` in [-90, 90], `lon` in [-180, 180].
 - Unknown fields are errors (typos get caught).
 - Ids are permanent. Rename via `name`, never via `id`.
@@ -78,6 +82,7 @@ sources:
 
 Rules enforced by the validator:
 - `from` must be a driver, `when` one of its phases, `to` an outcome.
+  Driver-to-driver links are not supported yet (see docs/PLAN.md §10).
 - Only one link per (from, when, to) triple.
 - Every source key must resolve; every link needs at least one.
 - `mechanism` and `caveat` are at least 20 characters. Absolute wording

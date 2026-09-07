@@ -17,6 +17,8 @@ export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   high_low: { plus: '#762a83', minus: '#1b7837' },
 };
 const NEUTRAL = '#9a9a9a';
+/** marker colour for a driver that is not part of the current scenario */
+const INACTIVE_DRIVER = '#c7c9cf';
 
 export function stateColor(node: GraphNode, value: Value): string {
   if (node.kind !== 'outcome' || value === 0) return NEUTRAL;
@@ -24,6 +26,8 @@ export function stateColor(node: GraphNode, value: Value): string {
 }
 
 export interface RenderOptions {
+  /** the driver whose phase the scenario is about; other drivers are drawn inactive */
+  driverId: string;
   phaseColor: string;
   /** links for this phase that are hidden by the confidence filter */
   ghostLinks: Link[];
@@ -183,7 +187,7 @@ export class MapView {
   }
 
   render(month: MonthState, opts: RenderOptions): void {
-    const driver = this.graph.nodes.find((n) => n.kind === 'driver');
+    const driver = this.nodeById.get(opts.driverId);
     if (!driver) return;
 
     // ---- affected areas (under the arrows, same colour/state as the marker)
@@ -201,11 +205,12 @@ export class MapView {
           else if (st.viaLinkIds.length === 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
         }
+        if (d.kind === 'driver' && d.id !== opts.driverId) cls.push('inactive');
         if (opts.selectedNodeId === d.id) cls.push('selected');
         return cls.join(' ');
       })
-      .attr('fill', (d) => this.nodeColor(d, month, opts.phaseColor))
-      .attr('stroke', (d) => this.nodeColor(d, month, opts.phaseColor))
+      .attr('fill', (d) => this.nodeColor(d, month, opts))
+      .attr('stroke', (d) => this.nodeColor(d, month, opts))
       .attr('d', (d) => this.path(this.areas.get(d.id)!));
     // Global outcomes (no area) tint the edge of the whole map instead.
     const globalNode = this.graph.nodes.find((n) => n.kind === 'outcome' && n.global);
@@ -278,6 +283,7 @@ export class MapView {
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
         }
+        if (d.kind === 'driver' && d.id !== opts.driverId) cls.push('inactive');
         if (opts.selectedNodeId === d.id) cls.push('selected');
         if (opts.focusNodeId === d.id) cls.push('focus');
         return cls.join(' ');
@@ -287,7 +293,7 @@ export class MapView {
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
       });
     nMerged.select('circle')
-      .attr('fill', (d) => this.nodeColor(d, month, opts.phaseColor))
+      .attr('fill', (d) => this.nodeColor(d, month, opts))
       .attr('stroke', (d) => (d.kind === 'driver' ? '#ffffff' : stateColor(d, month.nodes[d.id].value === 0 ? 1 : month.nodes[d.id].value)))
       .attr('stroke-opacity', (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6));
     nMerged.select('text')
@@ -297,10 +303,11 @@ export class MapView {
       .text((d) => d.label ?? d.name);
   }
 
-  /** Marker/area colour for a node in a month: phase colour for the driver,
-   *  state colour for outcomes, and the expected colour for pending ones. */
-  private nodeColor(d: GraphNode, month: MonthState, phaseColor: string): string {
-    if (d.kind === 'driver') return phaseColor;
+  /** Marker/area colour for a node in a month: phase colour for the scenario's
+   *  driver, grey for any other driver, state colour for outcomes, and the
+   *  expected colour for pending ones. */
+  private nodeColor(d: GraphNode, month: MonthState, opts: RenderOptions): string {
+    if (d.kind === 'driver') return d.id === opts.driverId ? opts.phaseColor : INACTIVE_DRIVER;
     const st = month.nodes[d.id];
     if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) {
       const pendingLink = this.graph.links.find((l) => l.id === st.pendingLinkIds[0])!;

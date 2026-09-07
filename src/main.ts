@@ -15,10 +15,15 @@ async function main(): Promise<void> {
   const res = await fetch(`${import.meta.env.BASE_URL}data/graph.json`);
   if (!res.ok) throw new Error(`Could not load graph.json (${res.status}). Run: npm run build:data`);
   const graph = (await res.json()) as Graph;
-  const driver = graph.nodes.find((n): n is DriverNode => n.kind === 'driver');
-  if (!driver) throw new Error('graph has no driver node');
+  const drivers = graph.nodes.filter((n): n is DriverNode => n.kind === 'driver');
+  if (drivers.length === 0) throw new Error('graph has no driver node');
+  const driverById = (id: string): DriverNode => {
+    const d = drivers.find((x) => x.id === id);
+    if (!d) throw new Error(`unknown driver ${id}`);
+    return d;
+  };
 
-  const controls: ControlState = { phaseId: driver.phases[0].id, startMonth: 6, filter: 'all', showAreas: true };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: 6, filter: 'all', showAreas: true };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -33,11 +38,11 @@ async function main(): Promise<void> {
 
   const map = new MapView(mapEl, graph);
   const tl = new TimelineView(document.getElementById('timeline')!, HORIZON, controls.startMonth);
-  const ctl = new ControlsView(document.getElementById('controls')!, driver, graph.stories, controls);
+  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, controls);
   const story = new StoryView(document.getElementById('story')!, new Map(graph.sources.map((s) => [s.key, s])));
 
   function recompute(): void {
-    const scenario: Scenario = { driverId: driver!.id, phaseId: controls.phaseId, startMonth: controls.startMonth, horizonMonths: HORIZON };
+    const scenario: Scenario = { driverId: controls.driverId, phaseId: controls.phaseId, startMonth: controls.startMonth, horizonMonths: HORIZON };
     const min = FILTER_MIN[controls.filter];
     const visible: Graph = { ...graph, links: graph.links.filter((l) => CONFIDENCE_ORDER[l.confidence] >= min) };
     timeline = propagate(visible, scenario);
@@ -51,17 +56,18 @@ async function main(): Promise<void> {
     for (const st of Object.values(month.nodes)) for (const id of st.viaLinkIds) applied.add(id);
     const arrivals = new Set([...applied].filter((id) => !prevApplied.has(id)));
     prevApplied = applied;
-    const phase = driver!.phases.find((p) => p.id === controls.phaseId)!;
-    map.render(month, { phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
+    const driver = driverById(controls.driverId);
+    const phase = driver.phases.find((p) => p.id === controls.phaseId)!;
+    map.render(month, { driverId: driver.id, phaseColor: phase.color, ghostLinks, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas });
     monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
-    captionEl.textContent = printCaption(phase.label, month.index, month.calendarMonth);
+    captionEl.textContent = printCaption(driver, phase.label, month.index, month.calendarMonth);
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
-    renderCard(cardEl, graph, node, month, controls.phaseId);
+    renderCard(cardEl, graph, node, month, controls.driverId, controls.phaseId);
   }
 
   ctl.onChange = (s) => {
     const monthChanged = s.startMonth !== controls.startMonth;
-    const scenarioChanged = monthChanged || s.phaseId !== controls.phaseId;
+    const scenarioChanged = monthChanged || s.phaseId !== controls.phaseId || s.driverId !== controls.driverId;
     Object.assign(controls, s);
     if (monthChanged) tl.setStartMonth(s.startMonth);
     // Changing the scenario by hand ends the story; the filter and areas
@@ -77,9 +83,10 @@ async function main(): Promise<void> {
     const s = id ? graph.stories.find((x) => x.id === id) : undefined;
     if (!s) { story.exit(); return; }
     // Set the scenario the story needs, silently, then let the first step draw.
+    controls.driverId = s.driver;
     controls.phaseId = s.phase;
     controls.startMonth = s.start_month;
-    ctl.setState({ phaseId: s.phase, startMonth: s.start_month });
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month });
     tl.setStartMonth(s.start_month);
     tl.pause();
     recompute();
@@ -116,9 +123,10 @@ async function main(): Promise<void> {
     if (used) e.preventDefault();
   });
 
-  function printCaption(phaseLabel: string, index: number, calendarMonth: number): string {
+  function printCaption(driver: DriverNode, phaseLabel: string, index: number, calendarMonth: number): string {
     const filterText = { all: 'all connections, including contested ones', probable: 'probable and established connections', established: 'established connections only' }[controls.filter];
-    return `${phaseLabel}, event beginning in ${MONTH_NAMES[controls.startMonth - 1]}. ` +
+    const driverName = driver.name.replace(/\s*\(.*\)$/, '');
+    return `${driverName}: ${phaseLabel}, event beginning in ${MONTH_NAMES[controls.startMonth - 1]}. ` +
       `Shown: ${MONTH_NAMES[calendarMonth - 1]}, month ${index} after onset. Showing ${filterText}. ` +
       `Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }

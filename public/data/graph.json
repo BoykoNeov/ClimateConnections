@@ -37,6 +37,7 @@
         "trenberth_1997"
       ],
       "kind": "driver",
+      "onset_hint": "El Niño and La Niña events usually start to develop between May and July.",
       "phases": [
         {
           "id": "el_nino",
@@ -55,6 +56,61 @@
           "label": "La Niña",
           "color": "#2b8cbe",
           "summary": "The cool phase. Surface water in the central and eastern tropical Pacific is cooler than usual, the trade winds strengthen, and the heaviest rain piles up over Indonesia and the western Pacific. La Niña often follows an El Niño and can persist for two or three winters in a row.\n"
+        }
+      ]
+    },
+    {
+      "id": "iod",
+      "name": "Indian Ocean Dipole (IOD)",
+      "label": "IOD",
+      "area": [
+        [
+          46,
+          8
+        ],
+        [
+          100,
+          8
+        ],
+        [
+          100,
+          -10
+        ],
+        [
+          46,
+          -10
+        ]
+      ],
+      "lat": -4,
+      "lon": 70,
+      "region": "Tropical Indian Ocean",
+      "timescale": "Events every few years, each lasting about 4–8 months",
+      "summary": "A see-saw in sea temperature between the two ends of the tropical Indian Ocean. In a positive event the water off Sumatra turns unusually cool and the water off East Africa unusually warm; the winds along the equator swing toward the west and the rain follows them. A negative event is the reverse. Events grow through the northern summer, peak around September–November and collapse when the monsoon winds reverse in December. Positive events often fall in the same year as an El Niño, which makes their separate effects hard to untangle.\n",
+      "sources": [
+        "saji_1999",
+        "webster_1999",
+        "bom_iod"
+      ],
+      "kind": "driver",
+      "onset_hint": "Indian Ocean Dipole events usually start to develop between May and July and are over by December.",
+      "phases": [
+        {
+          "id": "positive",
+          "label": "Positive IOD",
+          "color": "#e6550d",
+          "summary": "The western Indian Ocean is warmer than usual and the water off Sumatra and Java is cooler. Rising air and rain shift toward East Africa and away from Indonesia and Australia. Events usually begin around May–July, peak in September–November and end by December. The strongest recent cases were 1994, 1997, 2006 and 2019.\n"
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "Neither end of the ocean is unusually warm or cool. None of the Indian Ocean Dipole tendencies on this map are expected. ENSO and other drivers still shape the weather.\n"
+        },
+        {
+          "id": "negative",
+          "label": "Negative IOD",
+          "color": "#238b45",
+          "summary": "The water off Sumatra is warmer than usual and the western Indian Ocean cooler. Rain shifts toward Indonesia and Australia and away from East Africa. Negative events are somewhat rarer and weaker than positive ones; recent cases include 1998, 2010 and 2016.\n"
         }
       ]
     },
@@ -898,6 +954,141 @@
         "plus": "Winter tends to be milder than usual",
         "zero": "Near normal",
         "minus": "Winter tends to be colder than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "southeast_australia_rainfall",
+      "name": "Southeast Australia winter–spring rainfall",
+      "label": "SE Australia",
+      "area": [
+        [
+          128,
+          -30
+        ],
+        [
+          146,
+          -30
+        ],
+        [
+          150,
+          -37
+        ],
+        [
+          147,
+          -41
+        ],
+        [
+          140,
+          -39
+        ],
+        [
+          128,
+          -34
+        ]
+      ],
+      "lat": -35,
+      "lon": 141,
+      "region": "South Australia, Victoria, southern New South Wales, Tasmania",
+      "timescale": "June–November",
+      "summary": "The cool-season rain that fills the Murray–Darling rivers and southern Australia's reservoirs arrives mostly on cloud bands and cold fronts that sweep in from the northwest. The Indian Ocean Dipole sets how much moisture those systems carry, and its positive events line up with many of the region's worst droughts, including the dry years before the 2019–20 bushfires.\n",
+      "sources": [
+        "ummenhofer_2009",
+        "bom_iod"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Winter and spring tend to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Winter and spring tend to be drier than usual, with drought and fire risk"
+      },
+      "global": false
+    },
+    {
+      "id": "south_india_northeast_monsoon",
+      "name": "South India and Sri Lanka northeast monsoon",
+      "label": "South India",
+      "area": [
+        [
+          76,
+          13
+        ],
+        [
+          80,
+          13
+        ],
+        [
+          82,
+          9
+        ],
+        [
+          82,
+          5
+        ],
+        [
+          79,
+          5
+        ],
+        [
+          76,
+          9
+        ]
+      ],
+      "lat": 10,
+      "lon": 79,
+      "region": "Tamil Nadu, southern Andhra Pradesh, Kerala, Sri Lanka",
+      "timescale": "October–December",
+      "summary": "The far south of India and Sri Lanka get much of their rain not in the summer monsoon but in October–December, when the winds reverse and blow in off the Bay of Bengal. This \"northeast monsoon\", called the Maha season in Sri Lanka, answers to the tropical Indian Ocean more than the summer rains do.\n",
+      "sources": [
+        "kripalani_kumar_2004",
+        "zubair_2003"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Northeast monsoon rains tend to be heavier than usual",
+        "zero": "Near normal",
+        "minus": "Northeast monsoon rains tend to be lighter than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "east_asia_summer",
+      "name": "East Asia summer temperature",
+      "label": "East Asia summer",
+      "area": [
+        [
+          126,
+          43
+        ],
+        [
+          146,
+          43
+        ],
+        [
+          146,
+          33
+        ],
+        [
+          126,
+          33
+        ]
+      ],
+      "lat": 38,
+      "lon": 140,
+      "region": "Japan, Korea, northeast China",
+      "timescale": "June–August",
+      "summary": "Summer heat over Japan and Korea depends on how strong and how far north the subtropical high pressure over the western Pacific sits. A few studies trace unusually hot, dry summers, above all the record summer of 1994, back to rain patterns over the Indian Ocean. The link is shown here because it is a live research question, not because it is settled.\n",
+      "sources": [
+        "guan_yamagata_2003"
+      ],
+      "kind": "outcome",
+      "axis": "warm_cool",
+      "labels": {
+        "plus": "Summer tends to be hotter and drier than usual",
+        "zero": "Near normal",
+        "minus": "Summer tends to be cooler than usual"
       },
       "global": false
     }
@@ -1888,6 +2079,257 @@
       "sources": [
         "wang_2000"
       ]
+    },
+    {
+      "id": "positive_iod_east_africa_short_rains",
+      "from": "iod",
+      "when": "positive",
+      "to": "east_africa_short_rains",
+      "effect": 1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        10,
+        11,
+        12
+      ],
+      "confidence": "established",
+      "mechanism": "Warm water off East Africa and easterly winds along the equator pile moist, rising air against the Horn of Africa just as the short rains begin, so the October–December rains tend to run heavy.\n",
+      "caveat": "The effect is concentrated near the coast and in these three months. Many positive events fall in El Niño years, so a wet season is not always the Indian Ocean's doing alone, and a weak event can pass with ordinary rains.\n",
+      "evidence_note": "Several studies find the Indian Ocean, not the Pacific, is the direct cause of the very wet short rains, with El Niño acting mostly through it; the flood years 1961, 1997 and 2019 all had strong positive events.\n",
+      "sources": [
+        "saji_1999",
+        "black_2003",
+        "behera_2005"
+      ]
+    },
+    {
+      "id": "positive_iod_indonesia",
+      "from": "iod",
+      "when": "positive",
+      "to": "indonesia_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "Cool water off Sumatra and Java suppresses the rising air that usually brings rain, and the winds along the equator blow the moisture away to the west, so the dry season deepens and runs late.\n",
+      "caveat": "The drying is strongest in Sumatra, Java and the islands facing the Indian Ocean; eastern Indonesia answers more to ENSO. When a positive event coincides with El Niño the two add up, and it is hard to say how much is which.\n",
+      "evidence_note": "Fire seasons in Sumatra and Borneo have been worst when a positive dipole and El Niño occur together (1997, 2015), but a strong dipole on its own, as in 2019, has also brought a severe fire season.\n",
+      "sources": [
+        "saji_1999",
+        "pan_2018",
+        "bom_iod"
+      ]
+    },
+    {
+      "id": "positive_iod_southeast_australia",
+      "from": "iod",
+      "when": "positive",
+      "to": "southeast_australia_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "The cloud bands that feed rain-bearing systems over southern Australia draw their moisture from the ocean northwest of the continent. Cool water there in a positive event starves them, so winter and spring rain tends to fall short.\n",
+      "caveat": "The influence stops in December when the event breaks down, so a dry cool season is not a dry year. Single events vary a lot, and southern Australia has had ordinary winters during weak positive events.\n",
+      "evidence_note": "Long droughts in the Murray–Darling basin have coincided with runs of positive events with no negative ones in between, and the 2019 event, one of the strongest on record, preceded the Black Summer fires.\n",
+      "sources": [
+        "ummenhofer_2009",
+        "cai_2011",
+        "bom_iod"
+      ]
+    },
+    {
+      "id": "positive_iod_indian_monsoon",
+      "from": "iod",
+      "when": "positive",
+      "to": "indian_summer_monsoon",
+      "effect": 1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "Warm water in the western Indian Ocean strengthens the moist flow toward India and the rising air over the Bay of Bengal, which tends to nudge the summer monsoon toward more rain.\n",
+      "caveat": "The direct effect is modest and studies disagree on whether it exists at all. Positive events often coincide with El Niño, which pushes the other way; the result is more often a near-normal monsoon than a strong one.\n",
+      "evidence_note": "The best-known finding is that a positive dipole cancels part of El Niño's drying, as in 1997, rather than boosting the monsoon on its own.\n",
+      "sources": [
+        "ashok_2001",
+        "saji_yamagata_2003"
+      ]
+    },
+    {
+      "id": "positive_iod_south_india_northeast_monsoon",
+      "from": "iod",
+      "when": "positive",
+      "to": "south_india_northeast_monsoon",
+      "effect": 1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        10,
+        11,
+        12
+      ],
+      "confidence": "probable",
+      "mechanism": "The warm western and central Indian Ocean feeds extra moisture into the winds that bring the October–December rains to southern India and Sri Lanka, so the season tends to run wet.\n",
+      "caveat": "The relationship holds in most, not all, strong events, and El Niño tends to push this season in the same direction, which makes it hard to credit the Indian Ocean alone.\n",
+      "sources": [
+        "kripalani_kumar_2004",
+        "zubair_2003"
+      ]
+    },
+    {
+      "id": "positive_iod_east_asia_summer",
+      "from": "iod",
+      "when": "positive",
+      "to": "east_asia_summer",
+      "effect": 1,
+      "lag_months": [
+        0,
+        2
+      ],
+      "season": [
+        6,
+        7,
+        8
+      ],
+      "confidence": "contested",
+      "mechanism": "Extra rain over the Bay of Bengal in a positive event sets off a wave in the upper atmosphere that strengthens high pressure over Japan and Korea, favouring hot, dry summer weather.\n",
+      "caveat": "This rests on a handful of events, above all the record summer of 1994, and several summers with a positive dipole have been unremarkable. It is included to show where the research is still open.\n",
+      "sources": [
+        "guan_yamagata_2003",
+        "saji_yamagata_2003"
+      ]
+    },
+    {
+      "id": "negative_iod_southeast_australia",
+      "from": "iod",
+      "when": "negative",
+      "to": "southeast_australia_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "established",
+      "mechanism": "Warm water northwest of Australia in a negative event loads the cloud bands and cold fronts that cross the south of the continent with extra moisture, so winter and spring tend to run wet.\n",
+      "caveat": "Negative events are weaker and rarer than positive ones, and the extra rain depends on weather systems actually arriving to use the moisture. The 2016 event brought a very wet winter; others have been milder.\n",
+      "sources": [
+        "ummenhofer_2009",
+        "cai_2011",
+        "bom_iod"
+      ]
+    },
+    {
+      "id": "negative_iod_east_africa_short_rains",
+      "from": "iod",
+      "when": "negative",
+      "to": "east_africa_short_rains",
+      "effect": -1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        10,
+        11,
+        12
+      ],
+      "confidence": "probable",
+      "mechanism": "Cool water off East Africa and westerly winds along the equator carry moisture away from the Horn of Africa, so the short rains tend to be weak or late.\n",
+      "caveat": "The drying is less reliable than the flooding of a positive event, and negative events often coincide with La Niña, which pushes the same way, so the Indian Ocean's own share is uncertain.\n",
+      "sources": [
+        "behera_2005",
+        "black_2003"
+      ]
+    },
+    {
+      "id": "negative_iod_indonesia",
+      "from": "iod",
+      "when": "negative",
+      "to": "indonesia_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        3
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "probable",
+      "mechanism": "Warm water off Sumatra and Java feeds rising air and rain over western Indonesia during what is normally the dry season, so the dry season tends to be short and wet.\n",
+      "caveat": "Western Indonesia is rarely short of rain, so the change is easier to see in the data than on the ground, and eastern Indonesia answers more to ENSO than to the Indian Ocean.\n",
+      "sources": [
+        "saji_1999",
+        "bom_iod"
+      ]
+    },
+    {
+      "id": "negative_iod_south_india_northeast_monsoon",
+      "from": "iod",
+      "when": "negative",
+      "to": "south_india_northeast_monsoon",
+      "effect": -1,
+      "lag_months": [
+        3,
+        5
+      ],
+      "season": [
+        10,
+        11,
+        12
+      ],
+      "confidence": "probable",
+      "mechanism": "A cool western Indian Ocean feeds less moisture into the winds that bring the October–December rains to southern India and Sri Lanka, so the season tends to run dry.\n",
+      "caveat": "There are fewer strong negative events to check this against, and La Niña, which often comes with them, also acts on this season.\n",
+      "sources": [
+        "zubair_2003",
+        "kripalani_kumar_2004"
+      ]
     }
   ],
   "sources": [
@@ -2045,6 +2487,86 @@
       "key": "boening_2012",
       "citation": "Boening, C., Willis, J. K., Landerer, F. W., Nerem, R. S., & Fasullo, J. (2012). The 2011 La Niña: So strong, the oceans fell. Geophysical Research Letters, 39(19), L19602.",
       "url": "https://doi.org/10.1029/2012GL053055"
+    },
+    {
+      "key": "saji_1999",
+      "citation": "Saji, N. H., Goswami, B. N., Vinayachandran, P. N., & Yamagata, T. (1999). A dipole mode in the tropical Indian Ocean. Nature, 401, 360–363.",
+      "url": "https://doi.org/10.1038/43854"
+    },
+    {
+      "key": "webster_1999",
+      "citation": "Webster, P. J., Moore, A. M., Loschnigg, J. P., & Leben, R. R. (1999). Coupled ocean–atmosphere dynamics in the Indian Ocean during 1997–98. Nature, 401, 356–360.",
+      "url": "https://doi.org/10.1038/43848"
+    },
+    {
+      "key": "saji_yamagata_2003",
+      "citation": "Saji, N. H., & Yamagata, T. (2003). Possible impacts of Indian Ocean Dipole mode events on global climate. Climate Research, 25, 151–169.",
+      "url": "https://doi.org/10.3354/cr025151"
+    },
+    {
+      "key": "ashok_2001",
+      "citation": "Ashok, K., Guan, Z., & Yamagata, T. (2001). Impact of the Indian Ocean Dipole on the relationship between the Indian monsoon rainfall and ENSO. Geophysical Research Letters, 28(23), 4499–4502.",
+      "url": "https://doi.org/10.1029/2001GL013294"
+    },
+    {
+      "key": "black_2003",
+      "citation": "Black, E., Slingo, J., & Sperber, K. R. (2003). An observational study of the relationship between excessively strong short rains in coastal East Africa and Indian Ocean SST. Monthly Weather Review, 131(1), 74–94.",
+      "url": "https://doi.org/10.1175/1520-0493(2003)131<0074:AOSOTR>2.0.CO;2"
+    },
+    {
+      "key": "behera_2005",
+      "citation": "Behera, S. K., Luo, J.-J., Masson, S., Delecluse, P., Gualdi, S., Navarra, A., & Yamagata, T. (2005). Paramount impact of the Indian Ocean Dipole on the East African short rains: A CGCM study. Journal of Climate, 18(21), 4514–4530.",
+      "url": "https://doi.org/10.1175/JCLI3541.1"
+    },
+    {
+      "key": "ummenhofer_2009",
+      "citation": "Ummenhofer, C. C., England, M. H., McIntosh, P. C., Meyers, G. A., Pook, M. J., Risbey, J. S., Sen Gupta, A., & Taschetto, A. S. (2009). What causes southeast Australia's worst droughts? Geophysical Research Letters, 36, L04706.",
+      "url": "https://doi.org/10.1029/2008GL036801"
+    },
+    {
+      "key": "cai_2011",
+      "citation": "Cai, W., van Rensch, P., Cowan, T., & Hendon, H. H. (2011). Teleconnection pathways of ENSO and the Indian Ocean Dipole and the mechanisms for impacts on Australian rainfall. Journal of Climate, 24(15), 3910–3923.",
+      "url": "https://doi.org/10.1175/2011JCLI4129.1"
+    },
+    {
+      "key": "guan_yamagata_2003",
+      "citation": "Guan, Z., & Yamagata, T. (2003). The unusual summer of 1994 in East Asia: IOD teleconnections. Geophysical Research Letters, 30(10), 1544.",
+      "url": "https://doi.org/10.1029/2002GL016831"
+    },
+    {
+      "key": "zubair_2003",
+      "citation": "Zubair, L., Rao, S. A., & Yamagata, T. (2003). Modulation of Sri Lankan Maha rainfall by the Indian Ocean Dipole. Geophysical Research Letters, 30(2), 1063.",
+      "url": "https://doi.org/10.1029/2002GL015639"
+    },
+    {
+      "key": "kripalani_kumar_2004",
+      "citation": "Kripalani, R. H., & Kumar, P. (2004). Northeast monsoon rainfall variability over south peninsular India vis-à-vis the Indian Ocean Dipole mode. International Journal of Climatology, 24(10), 1267–1282.",
+      "url": "https://doi.org/10.1002/joc.1071"
+    },
+    {
+      "key": "pan_2018",
+      "citation": "Pan, X., Chin, M., Ichoku, C. M., & Field, R. D. (2018). Connecting Indonesian fires and drought with the type of El Niño and phase of the Indian Ocean Dipole during 1979–2016. Journal of Geophysical Research: Atmospheres, 123(15), 7974–7988.",
+      "url": "https://doi.org/10.1029/2018JD028402"
+    },
+    {
+      "key": "bom_iod",
+      "citation": "Australian Bureau of Meteorology. Indian Ocean Dipole: what it is and how it affects Australia's climate.",
+      "url": "http://www.bom.gov.au/climate/iod/"
+    },
+    {
+      "key": "doi_2020",
+      "citation": "Doi, T., Behera, S. K., & Yamagata, T. (2020). Predictability of the super IOD event in 2019 and its link with El Niño Modoki. Geophysical Research Letters, 47(7), e2019GL086713.",
+      "url": "https://doi.org/10.1029/2019GL086713"
+    },
+    {
+      "key": "wang_cai_2020",
+      "citation": "Wang, G., & Cai, W. (2020). Two-year consecutive concurrences of positive Indian Ocean Dipole and Central Pacific El Niño preconditioned the 2019/2020 Australian \"black summer\" bushfires. Geoscience Letters, 7, 19.",
+      "url": "https://doi.org/10.1186/s40562-020-00168-2"
+    },
+    {
+      "key": "wainwright_2021",
+      "citation": "Wainwright, C. M., Finney, D. L., Kilavi, M., Black, E., & Marsham, J. H. (2021). Extreme rainfall in East Africa, October 2019–January 2020 and context under future climate change. Weather, 76(1), 26–31.",
+      "url": "https://doi.org/10.1002/wea.3824"
     }
   ],
   "stories": [
@@ -2260,6 +2782,76 @@
           "text": "La Niña events often last longer than El Niño and frequently return for a second year, so the twelve months shown here can repeat. Markers that stay hollow in this scenario have no La Niña link in the literature collected here. That is a real gap, not an oversight.\n",
           "sources": [
             "noaa_climate_gov_enso"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "positive_iod_2019",
+      "title": "The 2019 positive Indian Ocean Dipole",
+      "intro": "One of the strongest Indian Ocean Dipole events on record, and a rare one: the Pacific stayed close to neutral, so this year shows the Indian Ocean acting largely on its own. Follow it from the dry season in Indonesia to floods in East Africa and the run-up to Australia's Black Summer fires.\n",
+      "driver": "iod",
+      "phase": "positive",
+      "start_month": 6,
+      "start_year": 2019,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "iod",
+          "text": "By June 2019 the sea off Sumatra was cooling while the western Indian Ocean warmed, and the difference between the two kept growing until October, when it reached the largest value since 1997. With El Niño absent, forecasters watched the Indian Ocean as the main driver of the second half of the year.\n",
+          "sources": [
+            "doi_2020"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "indonesia_rainfall",
+          "text": "With cool water off Sumatra, the dry season deepened and dragged on. Fires lit to clear land spread through peat and forest in Sumatra and Borneo through August and September, and haze closed schools and airports in Indonesia, Malaysia and Singapore. It was the worst fire season since the El Niño year of 2015.\n",
+          "sources": [
+            "pan_2018",
+            "doi_2020"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "indian_summer_monsoon",
+          "text": "The link to the Indian summer monsoon is marked contested, and 2019 shows why it is on the map at all. After a slow start the monsoon finished well above normal, with an unusually wet September. The Indian Ocean is one of several explanations offered; the map shows a tendency that the science has not settled.\n",
+          "sources": [
+            "ashok_2001"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "southeast_australia_rainfall",
+          "text": "Across southern Australia the winter rains fell short, and spring was drier still. The Murray–Darling basin was already deep in a multi-year drought, and forests from Queensland to Victoria dried out. This is the textbook positive-dipole footprint, and 2019 was among the clearest cases on record.\n",
+          "sources": [
+            "bom_iod",
+            "wang_cai_2020"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "east_africa_short_rains",
+          "text": "In East Africa the short rains arrived early and heavy. From October to December floods and landslides struck Kenya, Somalia, Ethiopia and South Sudan, displacing hundreds of thousands of people. The unusually wet ground then let desert locusts breed in numbers not seen for decades.\n",
+          "sources": [
+            "wainwright_2021"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "south_india_northeast_monsoon",
+          "text": "Southern India and Sri Lanka had a wet end to the year, in line with the map's tendency for the northeast monsoon. The link is rated probable: it appears in most strong events but the Pacific also has a say in this season.\n",
+          "sources": [
+            "kripalani_kumar_2004"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "iod",
+          "text": "In December the monsoon winds reversed and the event collapsed within weeks. The Indian Ocean's own push was over, but the dried landscape it left behind in Australia burned on into January in the Black Summer fires. The map stops where the driver's influence stops; what came next was the legacy of a dry year.\n",
+          "sources": [
+            "doi_2020",
+            "wang_cai_2020"
           ]
         }
       ]

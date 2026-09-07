@@ -30,6 +30,8 @@ interface NodeBase {
 
 export interface DriverNode extends NodeBase {
   kind: 'driver';
+  /** one plain sentence shown under the start-month control: when events usually begin */
+  onset_hint: string;
   phases: Phase[];
 }
 

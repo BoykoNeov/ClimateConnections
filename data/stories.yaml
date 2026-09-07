@@ -254,3 +254,85 @@ stories:
           Markers that stay hollow in this scenario have no La Niña link in
           the literature collected here. That is a real gap, not an oversight.
         sources: [noaa_climate_gov_enso]
+
+  - id: positive_iod_2019
+    title: "The 2019 positive Indian Ocean Dipole"
+    intro: >
+      One of the strongest Indian Ocean Dipole events on record, and a rare
+      one: the Pacific stayed close to neutral, so this year shows the Indian
+      Ocean acting largely on its own. Follow it from the dry season in
+      Indonesia to floods in East Africa and the run-up to Australia's Black
+      Summer fires.
+    driver: iod
+    phase: positive
+    start_month: 6
+    start_year: 2019
+    steps:
+      - month: 0
+        focus: iod
+        text: >
+          By June 2019 the sea off Sumatra was cooling while the western
+          Indian Ocean warmed, and the difference between the two kept
+          growing until October, when it reached the largest value since
+          1997. With El Niño absent, forecasters watched the Indian Ocean as
+          the main driver of the second half of the year.
+        sources: [doi_2020]
+
+      - month: 2
+        focus: indonesia_rainfall
+        text: >
+          With cool water off Sumatra, the dry season deepened and dragged on.
+          Fires lit to clear land spread through peat and forest in Sumatra
+          and Borneo through August and September, and haze closed schools
+          and airports in Indonesia, Malaysia and Singapore. It was the worst
+          fire season since the El Niño year of 2015.
+        sources: [pan_2018, doi_2020]
+
+      - month: 3
+        focus: indian_summer_monsoon
+        text: >
+          The link to the Indian summer monsoon is marked contested, and 2019
+          shows why it is on the map at all. After a slow start the monsoon
+          finished well above normal, with an unusually wet September. The
+          Indian Ocean is one of several explanations offered; the map shows
+          a tendency that the science has not settled.
+        sources: [ashok_2001]
+
+      - month: 3
+        focus: southeast_australia_rainfall
+        text: >
+          Across southern Australia the winter rains fell short, and spring
+          was drier still. The Murray–Darling basin was already deep in a
+          multi-year drought, and forests from Queensland to Victoria dried
+          out. This is the textbook positive-dipole footprint, and 2019 was
+          among the clearest cases on record.
+        sources: [bom_iod, wang_cai_2020]
+
+      - month: 4
+        focus: east_africa_short_rains
+        text: >
+          In East Africa the short rains arrived early and heavy. From
+          October to December floods and landslides struck Kenya, Somalia,
+          Ethiopia and South Sudan, displacing hundreds of thousands of
+          people. The unusually wet ground then let desert locusts breed in
+          numbers not seen for decades.
+        sources: [wainwright_2021]
+
+      - month: 5
+        focus: south_india_northeast_monsoon
+        text: >
+          Southern India and Sri Lanka had a wet end to the year, in line
+          with the map's tendency for the northeast monsoon. The link is
+          rated probable: it appears in most strong events but the Pacific
+          also has a say in this season.
+        sources: [kripalani_kumar_2004]
+
+      - month: 6
+        focus: iod
+        text: >
+          In December the monsoon winds reversed and the event collapsed
+          within weeks. The Indian Ocean's own push was over, but the dried
+          landscape it left behind in Australia burned on into January in the
+          Black Summer fires. The map stops where the driver's influence
+          stops; what came next was the legacy of a dry year.
+        sources: [doi_2020, wang_cai_2020]

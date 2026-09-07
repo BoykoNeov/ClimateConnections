@@ -1,8 +1,9 @@
 # ClimateConnections — Implementation Plan
 
 A teaching tool that draws known climate teleconnections on a world map. The user
-picks a driver phenomenon (ENSO in version 1), sets its phase, and watches the
-consequences ripple outward across the map over a twelve-month timeline.
+picks a driver phenomenon (ENSO in version 1; the Indian Ocean Dipole was added
+in M8), sets its phase, and watches the consequences ripple outward across the
+map over a twelve-month timeline.
 
 This is **not** a climate simulator. Nothing is computed from physics. Every
 effect shown comes from a hand-written, cited knowledge base. The app is a
@@ -416,6 +417,23 @@ Do them in order. Each has acceptance criteria; all must pass before moving on.
 Version 1 is done when M1–M7 pass and the acceptance checklist in section 7
 is fully green.
 
+### M8 — Second driver: Indian Ocean Dipole (first version-2 item; signed off 2026-09-07)
+- Data: `iod` driver node with positive / neutral / negative phases; three new
+  outcome nodes (southeast Australia winter–spring rainfall, south India and
+  Sri Lanka northeast monsoon, East Asia summer temperature); ten cited links
+  (six positive, four negative, asymmetric on purpose); one story (the 2019
+  positive event).
+- Schema: drivers carry `onset_hint`, the sentence shown under the start-month
+  control, so no climate fact stays in `src/`.
+- UI: driver dropdown above the phase buttons; phase buttons rebuild per
+  driver; the driver not in play is drawn grey and its card says so; the
+  print caption names the driver.
+- Engine: unchanged. A scenario is still one driver in one phase.
+- Tests: acceptance block for positive and negative IOD (June start), neutral
+  phases apply nothing, ENSO-only regions stay hollow under the IOD.
+- Not in M8 (later v2 items): driver-to-driver links, multi-driver scenarios
+  with conflict flags, compare mode.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -496,9 +514,9 @@ writing mechanism text):
 
 ## 10. Roadmap beyond version 1 (do not start without sign-off)
 
-- **v2:** Indian Ocean Dipole and North Atlantic Oscillation as drivers;
-  driver-to-driver links; season dial; compare mode (two maps side by side);
-  multi-driver scenarios with conflict flags; spreadsheet-to-YAML importer
-  if outside contributors join.
+- **v2:** Indian Ocean Dipole (done, M8) and North Atlantic Oscillation as
+  drivers; driver-to-driver links; season dial; compare mode (two maps side
+  by side); multi-driver scenarios with conflict flags; spreadsheet-to-YAML
+  importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

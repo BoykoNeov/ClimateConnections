@@ -6,8 +6,9 @@ schema, engine semantics, and milestones.
 
 ## What this project is
 A static, browser-based teaching tool that draws known climate
-teleconnections (version 1: ENSO only) on a Pacific-centered world map and
-animates their arrival over a twelve-month timeline. It is a hand-curated,
+teleconnections (ENSO, and since M8 the Indian Ocean Dipole) on a
+Pacific-centered world map and animates their arrival over a twelve-month
+timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
 one.
 
@@ -20,8 +21,10 @@ one.
   hide contested links; that is the point of showing them.
 - The engine (`src/engine/`) is pure and DOM-free. Three-level states only.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
-- Scope is version 1 (`docs/PLAN.md` section 6–7) until the acceptance
-  checklist is green. Do not start version 2 items without sign-off.
+- Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
+  (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
+  sign-off; the Indian Ocean Dipole (M8) was signed off on 2026-09-07. Do
+  not start another version 2 item without sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow

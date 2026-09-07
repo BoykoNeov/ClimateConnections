@@ -1,13 +1,15 @@
 # Climate Connections
 
 An interactive teaching map of how the big climate oscillations affect
-weather around the world. Pick a phase of ENSO (El Niño, neutral, La Niña),
-press play, and watch the known consequences arrive across a Pacific-centered
-world map over twelve months. Click any region to read what tends to happen,
-why, how sure the science is, and where that comes from.
+weather around the world. Pick a driver (ENSO or the Indian Ocean Dipole) and
+a phase (El Niño, La Niña, positive or negative dipole), press play, and watch
+the known consequences arrive across a Pacific-centered world map over twelve
+months. Click any region to read what tends to happen, why, how sure the
+science is, and where that comes from.
 
-Version 1 covers ENSO only: one driver, 21 outcome regions, 42 cited links,
-and two guided stories.
+The map currently holds two drivers, 24 outcome regions, 52 cited links and
+three guided stories. Each scenario is one driver in one phase; the two
+drivers are not yet combined (see the roadmap in `docs/PLAN.md`).
 
 ## What it is
 
@@ -58,10 +60,14 @@ any static file server.
 
 ## Use it
 
-- **Phase buttons** (top left) pick El Niño, neutral, or La Niña.
+- **Driver** (top left) picks the phenomenon: ENSO or the Indian Ocean
+  Dipole. The other driver's marker turns grey; its card says it is not part
+  of the scenario.
+- **Phase buttons** pick the phase of that driver: El Niño, neutral or La
+  Niña; positive, neutral or negative dipole.
 - **Event begins in** picks the calendar month of onset. June is the default
-  because ENSO events usually start to develop in late boreal spring or
-  summer.
+  because both ENSO and dipole events usually start to develop in late
+  boreal spring or summer; the note under the control comes from the data.
 - **Show connections** filters by confidence. Hidden links stay on the map as
   faint grey lines so you can see what was left out.
 - **Timeline** (bottom) scrubs from month 0 to month 12. Play advances one
@@ -94,7 +100,7 @@ and whichever card is open. The interactive controls are dropped.
 ## How it works
 
 ```
-data/nodes.yaml      the phenomena on the map (one driver, many outcomes)
+data/nodes.yaml      the phenomena on the map (drivers and outcomes)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
 scripts/build-data.mjs   validates the YAML and writes public/data/graph.json
@@ -114,8 +120,9 @@ drawn muted. Opposite pushes on the same node are flagged as conflicting.
 Nothing else happens: there is no feedback, no chaining beyond one hop, and
 no randomness.
 
-Climate facts live only in `data/`. Nothing in `src/` knows what El Niño does
-to anyone.
+Climate facts live only in `data/`. Nothing in `src/` knows what El Niño or
+the Indian Ocean Dipole does to anyone; even the "events usually begin in"
+note under the month control is a field on the driver node.
 
 ## Confidence tiers
 
@@ -135,8 +142,8 @@ to anyone.
 
    ```yaml
    - id: el_nino_example_region       # unique, permanent
-     from: enso
-     when: el_nino                     # a phase id of the driver
+     from: enso                        # a driver id (enso or iod)
+     when: el_nino                     # a phase id of that driver
      to: example_region                # a node id
      effect: -1                        # +1 or -1 on the target's axis
      lag_months: [2, 5]                # first and last month after onset it can start
