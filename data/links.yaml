@@ -2859,6 +2859,168 @@ links:
     sources: [peings_magnusdottir_2014, omrani_2014]
 
 
+  # ---- Atlantic Niño (M19). Events peak in June–August, in the West
+  # African monsoon season, and fade by autumn; the map holds the phase
+  # for the year, so the winter links (into ENSO) count their lag from a
+  # May start.
+  - id: atlantic_nino_guinea_coast
+    from: atlantic_nino
+    when: warm
+    to: guinea_coast_rainfall
+    effect: 1
+    lag_months: [0, 1]
+    season: [5, 6, 7]
+    confidence: established
+    mechanism: >
+      Warm water in the Gulf of Guinea feeds the rain clouds over the
+      coast directly and holds the tropical rain belt at the coast through
+      its main rainy season, so the coast tends to be wetter.
+    caveat: >
+      The coast's rains also depend on when the rain belt jumps north to
+      the Sahel; a weak or late event adds little, and a single wet month
+      can come from the weather alone.
+    evidence_note: >
+      Wet years on the Guinea coast come with a weaker-than-usual cold
+      tongue in early summer, the leading pattern of tropical Atlantic
+      sea-temperature variability is coupled to rain on the Gulf of Guinea
+      coast, and the review of the mode names the coast as its clearest
+      rainfall footprint.
+    sources: [wagner_da_silva_1994, polo_2008, lubbecke_2018]
+
+  - id: atlantic_nina_guinea_coast
+    from: atlantic_nino
+    when: cool
+    to: guinea_coast_rainfall
+    effect: -1
+    lag_months: [0, 1]
+    season: [5, 6, 7]
+    confidence: established
+    mechanism: >
+      A strong cold tongue off the Gulf of Guinea cools the air over the
+      coast, starves the rain clouds and lets the rain belt leave the
+      coast early, so the coast's rainy season tends to be weaker.
+    caveat: >
+      A single season can still be wet if the rain belt lingers; the
+      tendency is clearest in strong events.
+    sources: [wagner_da_silva_1994, lubbecke_2018]
+
+  - id: atlantic_nino_sahel
+    from: atlantic_nino
+    when: warm
+    to: sahel_rainfall
+    effect: -1
+    lag_months: [0, 2]
+    season: [7, 8, 9]
+    confidence: contested
+    mechanism: >
+      Warm water in the Gulf of Guinea holds the rain belt at the coast and
+      keeps it from moving as far north as usual, so the Sahel tends to
+      get less rain in a warm summer.
+    caveat: >
+      This coast–Sahel see-saw was clear before the 1970s and then nearly
+      vanished: since then the Pacific and Indian Oceans have pulled the
+      Sahel the other way in the same summers, and a warm Atlantic summer
+      has often come with a wet Sahel.
+    evidence_note: >
+      Models forced with a warm equatorial Atlantic shift the rain belt
+      toward the coast and dry the Sahel, and the pattern is in the older
+      observations; but the see-saw broke down after the 1970s as the
+      Sahel came to follow the whole tropics rather than the Atlantic
+      alone, so the link is shown as contested.
+    sources: [losada_2010, losada_2012, lamb_1978, nicholson_2013]
+
+  - id: atlantic_nina_sahel
+    from: atlantic_nino
+    when: cool
+    to: sahel_rainfall
+    effect: 1
+    lag_months: [0, 2]
+    season: [7, 8, 9]
+    confidence: contested
+    mechanism: >
+      A strong cold tongue in the Gulf of Guinea pushes the rain belt off
+      the coast and further north than usual in summer, so the Sahel tends
+      to get more rain.
+    caveat: >
+      Clear only in the older record; since the 1970s the Sahel has
+      followed the Pacific and the Indian Ocean more than the Atlantic,
+      and the see-saw with the coast has faded.
+    sources: [losada_2010, losada_2012, lamb_1978]
+
+  - id: atlantic_nino_indian_monsoon
+    from: atlantic_nino
+    when: warm
+    to: indian_summer_monsoon
+    effect: -1
+    lag_months: [0, 1]
+    season: [6, 7, 8, 9]
+    confidence: contested
+    mechanism: >
+      Rain clouds rising over a warm equatorial Atlantic set up a wave in
+      the upper air that reaches around the globe and sinks over India,
+      which is proposed to hold back the monsoon a little.
+    caveat: >
+      A small effect next to ENSO's, found mainly in models and in the part
+      of the monsoon record that ENSO does not explain; not every warm
+      Atlantic summer brings a weak monsoon.
+    evidence_note: >
+      The part of Indian monsoon rainfall not tied to ENSO correlates with
+      south equatorial Atlantic sea temperature in observations and model
+      ensembles, and a simple wave mechanism reproduces the teleconnection;
+      the signal is small and the link is shown as contested.
+    sources: [kucharski_2008, kucharski_2009, lubbecke_2018]
+
+  # A summer Atlantic Niño tends to be followed by a Pacific La Niña the
+  # next winter, and an Atlantic Niña by an El Niño; seen since the 1970s.
+  - id: atlantic_nino_la_nina
+    from: atlantic_nino
+    when: warm
+    to: enso
+    effect: -1
+    lag_months: [5, 7]
+    season: []
+    confidence: probable
+    mechanism: >
+      Rain rising over a warm equatorial Atlantic in summer strengthens
+      the east–west overturning of the tropical air, with air sinking over
+      the central Pacific; the stronger trade winds there lift the cool
+      water in the east and start the Pacific toward a La Niña by the
+      following winter.
+    caveat: >
+      Seen since the late 1960s and not before, and a nudge rather than a
+      trigger: the Pacific has its own timing, and a warm Atlantic summer
+      inside a developing El Niño does not stop it.
+    evidence_note: >
+      Since the late 1960s summer Atlantic Niños have favoured
+      following-winter Pacific La Niñas, and Atlantic Niñas Pacific El
+      Niños, in the observations and in model runs where only the
+      Atlantic is set from observations; the reverse link, from the
+      Pacific to the Atlantic, is weak and inconsistent.
+    sources: [rodriguez_fonseca_2009, ding_2012, lubbecke_2018, chang_2006]
+
+  - id: atlantic_nina_el_nino
+    from: atlantic_nino
+    when: cool
+    to: enso
+    effect: 1
+    lag_months: [5, 7]
+    season: []
+    confidence: probable
+    mechanism: >
+      A cold equatorial Atlantic in summer weakens the rain rising over it,
+      which loosens the trade winds over the central Pacific and lets warm
+      water spread east, starting the Pacific toward an El Niño by the
+      following winter.
+    caveat: >
+      Seen since the late 1960s and not before; a nudge to the Pacific's
+      own timing, not a trigger.
+    evidence_note: >
+      The same study that found Atlantic Niños ahead of Pacific La Niñas
+      found Atlantic Niñas ahead of Pacific El Niños over the same decades,
+      with the same mechanism in reverse.
+    sources: [rodriguez_fonseca_2009, ding_2012]
+
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -3343,3 +3505,55 @@ sources:
   - key: noaa_psl_amo
     citation: "NOAA Physical Sciences Laboratory. Atlantic Multidecadal Oscillation (AMO): index description and monthly time series."
     url: https://psl.noaa.gov/data/timeseries/AMO/
+  # ---- Atlantic Niño (M19)
+  - key: zebiak_1993
+    citation: "Zebiak, S. E. (1993). Air–sea interaction in the equatorial Atlantic region. Journal of Climate, 6(8), 1567–1586."
+    url: https://doi.org/10.1175/1520-0442(1993)006<1567:AIITEA>2.0.CO;2
+  - key: lubbecke_2018
+    citation: "Lübbecke, J. F., Rodríguez-Fonseca, B., Richter, I., Martín-Rey, M., Losada, T., Polo, I., & Keenlyside, N. S. (2018). Equatorial Atlantic variability—Modes, mechanisms, and global teleconnections. WIREs Climate Change, 9(4), e527."
+    url: https://doi.org/10.1002/wcc.527
+  - key: keenlyside_latif_2007
+    citation: "Keenlyside, N. S., & Latif, M. (2007). Understanding equatorial Atlantic interannual variability. Journal of Climate, 20(1), 131–142."
+    url: https://doi.org/10.1175/JCLI3992.1
+  - key: carton_huang_1994
+    citation: "Carton, J. A., & Huang, B. (1994). Warm events in the tropical Atlantic. Journal of Physical Oceanography, 24(5), 888–903."
+    url: https://doi.org/10.1175/1520-0485(1994)024<0888:WEITTA>2.0.CO;2
+  - key: philander_1986
+    citation: "Philander, S. G. H. (1986). Unusual conditions in the tropical Atlantic Ocean in 1984. Nature, 322, 236–238."
+    url: https://doi.org/10.1038/322236a0
+  - key: horel_1986
+    citation: "Horel, J. D., Kousky, V. E., & Kagano, M. T. (1986). Atmospheric conditions in the Atlantic sector during 1983 and 1984. Nature, 322, 248–251."
+    url: https://doi.org/10.1038/322248a0
+  - key: wagner_da_silva_1994
+    citation: "Wagner, R. G., & da Silva, A. M. (1994). Surface conditions associated with anomalous rainfall in the Guinea coastal region. International Journal of Climatology, 14(2), 179–199."
+    url: https://doi.org/10.1002/joc.3370140205
+  - key: polo_2008
+    citation: "Polo, I., Rodríguez-Fonseca, B., Losada, T., & García-Serrano, J. (2008). Tropical Atlantic variability modes (1979–2002). Part I: Time-evolving SST modes related to West African rainfall. Journal of Climate, 21(24), 6457–6475."
+    url: https://doi.org/10.1175/2008JCLI2607.1
+  - key: losada_2010
+    citation: "Losada, T., Rodríguez-Fonseca, B., Janicot, S., Gervois, S., Chauvin, F., & Ruti, P. (2010). A multi-model approach to the Atlantic Equatorial mode: Impact on the West African monsoon. Climate Dynamics, 35, 29–43."
+    url: https://doi.org/10.1007/s00382-009-0625-5
+  - key: losada_2012
+    citation: "Losada, T., Rodríguez-Fonseca, B., Mohino, E., Bader, J., Janicot, S., & Mechoso, C. R. (2012). Tropical SST and Sahel rainfall: A non-stationary relationship. Geophysical Research Letters, 39, L12705."
+    url: https://doi.org/10.1029/2012GL052423
+  - key: lamb_1978
+    citation: "Lamb, P. J. (1978). Large-scale tropical Atlantic surface circulation patterns associated with Subsaharan weather anomalies. Tellus, 30(3), 240–251."
+    url: https://doi.org/10.1111/j.2153-3490.1978.tb00839.x
+  - key: nicholson_2013
+    citation: "Nicholson, S. E. (2013). The West African Sahel: A review of recent studies on the rainfall regime and its interannual variability. ISRN Meteorology, 2013, 453521."
+    url: https://doi.org/10.1155/2013/453521
+  - key: kucharski_2008
+    citation: "Kucharski, F., Bracco, A., Yoo, J. H., & Molteni, F. (2008). Atlantic forced component of the Indian monsoon interannual variability. Geophysical Research Letters, 35, L04706."
+    url: https://doi.org/10.1029/2007GL033037
+  - key: kucharski_2009
+    citation: "Kucharski, F., Bracco, A., Yoo, J. H., Tompkins, A. M., Feudale, L., Ruti, P., & Dell'Aquila, A. (2009). A Gill–Matsuno-type mechanism explains the tropical Atlantic influence on African and Indian monsoon rainfall. Quarterly Journal of the Royal Meteorological Society, 135(640), 569–579."
+    url: https://doi.org/10.1002/qj.406
+  - key: rodriguez_fonseca_2009
+    citation: "Rodríguez-Fonseca, B., Polo, I., García-Serrano, J., Losada, T., Mohino, E., Mechoso, C. R., & Kucharski, F. (2009). Are Atlantic Niños enhancing Pacific ENSO events in recent decades? Geophysical Research Letters, 36, L20705."
+    url: https://doi.org/10.1029/2009GL040048
+  - key: ding_2012
+    citation: "Ding, H., Keenlyside, N. S., & Latif, M. (2012). Impact of the equatorial Atlantic on the El Niño Southern Oscillation. Climate Dynamics, 38, 1965–1972."
+    url: https://doi.org/10.1007/s00382-011-1097-y
+  - key: chang_2006
+    citation: "Chang, P., Fang, Y., Saravanan, R., Ji, L., & Seidel, H. (2006). The cause of the fragile relationship between the Pacific El Niño and the Atlantic Niño. Nature, 443, 324–328."
+    url: https://doi.org/10.1038/nature05053

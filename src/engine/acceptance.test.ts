@@ -221,8 +221,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'enso', 'iod', 'nao', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO and the AMO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_nino', 'enso', 'iod', 'nao', 'pdo', 'sam'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO and the Atlantic Niño as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -242,6 +242,7 @@ describe('acceptance: drivers', () => {
     expect(start('sam')).toBe(6);
     expect(start('pdo')).toBe(11);
     expect(start('amo')).toBe(6);
+    expect(start('atlantic_nino')).toBe(5);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -382,9 +383,9 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships twelve driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships fourteen driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
       'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year',
     ]);
     for (const l of d2d) {
@@ -1216,5 +1217,152 @@ describe('acceptance: the 1995 story, a positive AMO with La Niña from Septembe
     expect(s).toBeDefined();
     expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
       .toEqual(['amo', 'positive', 'enso', 'la_nina', 9, undefined, 6, 1995]);
+  });
+});
+
+// ---------------------------------------------------------------- M19: seventh driver (Atlantic Niño)
+// An Atlantic Niño peaks in June–August, in the West African monsoon season,
+// so its scenarios start in May; the map holds the phase for the year.
+function runAtl(phaseId: string, startMonth = 5, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'atlantic_nino', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+const ATLANTIC_NINO: Array<[string, Value, string]> = [
+  ['guinea_coast_rainfall', 1, 'the Guinea coast wet'],
+  ['sahel_rainfall', -1, 'the Sahel dry'],
+  ['indian_summer_monsoon', -1, 'the Indian monsoon weaker'],
+];
+
+describe('acceptance: Atlantic Niño, May start', () => {
+  const tl = runAtl('warm');
+  for (const [id, sign, label] of ATLANTIC_NINO) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the Guinea coast is applied from month 0 (May), the monsoon from June, the Sahel from July, and the coast is done by August', () => {
+    expect(tl.months[0].calendarMonth).toBe(5);
+    expect(tl.months[0].nodes.guinea_coast_rainfall.value).toBe(1);
+    expect(tl.months[0].nodes.indian_summer_monsoon.value).toBe(0);
+    expect(tl.months[0].nodes.indian_summer_monsoon.pendingLinkIds).toEqual(['atlantic_nino_indian_monsoon']);
+    expect(tl.months[1].nodes.indian_summer_monsoon.value).toBe(-1);
+    expect(tl.months[1].nodes.sahel_rainfall.value).toBe(0);
+    expect(tl.months[2].nodes.sahel_rainfall.value).toBe(-1);
+    expect(tl.months[3].calendarMonth).toBe(8);
+    expect(tl.months[3].nodes.guinea_coast_rainfall.viaLinkIds).toHaveLength(0);
+    expect(tl.months[3].nodes.guinea_coast_rainfall.pendingLinkIds).toEqual(['atlantic_nino_guinea_coast']);
+  });
+  it('tiers: the coast established, the Sahel and the monsoon contested, the push on ENSO probable; the cool phase has no monsoon link', () => {
+    const own = graph.links.filter((l) => l.from === 'atlantic_nino');
+    expect(own).toHaveLength(7);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => l.confidence);
+    expect(tier('guinea_coast_rainfall')).toEqual(['established', 'established']);
+    expect(tier('sahel_rainfall')).toEqual(['contested', 'contested']);
+    expect(tier('indian_summer_monsoon')).toEqual(['contested']);
+    expect(tier('enso')).toEqual(['probable', 'probable']);
+    expect(own.filter((l) => l.when === 'cool').map((l) => l.to).sort()).toEqual(['enso', 'guinea_coast_rainfall', 'sahel_rainfall']);
+    expect(tl.months[2].nodes.sahel_rainfall.confidence).toBe('contested');
+    expect(tl.months[0].nodes.guinea_coast_rainfall.confidence).toBe('established');
+  });
+  it('at depth 1 ENSO is pushed toward La Niña from October (lag 5) but its links do not fire', () => {
+    for (const m of tl.months) expect(m.nodes.enso.value, `month ${m.index}`).toBe(m.index >= 5 ? -1 : 0);
+    expect(tl.months[5].calendarMonth).toBe(10);
+    for (const m of tl.months) expect(m.nodes.atlantic_hurricanes.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+  });
+  it('regions of the other drivers stay hollow: the map does not fake an Atlantic Niño effect', () => {
+    for (const id of ['peru_coast_rainfall', 'indonesia_rainfall', 'east_australia_rainfall', 'alaska_winter', 'northern_europe_winter', 'western_europe_summer', 'us_great_plains_summer', 'northeast_brazil']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: Atlantic Niña, May start', () => {
+  const tl = runAtl('cool');
+  it('reverses the coast and the Sahel, and never copies the warm sign', () => {
+    for (const [id, sign] of ATLANTIC_NINO.filter(([id]) => id !== 'indian_summer_monsoon')) {
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the warm phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the warm sign`).toHaveLength(0);
+    }
+  });
+  it('leaves the monsoon hollow: the literature supports the warm phase only', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.indian_summer_monsoon.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      expect(m.nodes.indian_summer_monsoon.pendingLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+  it('pushes ENSO toward El Niño from October', () => {
+    expect(tl.months[5].nodes.enso.value).toBe(1);
+    expect(tl.months[4].nodes.enso.value).toBe(0);
+  });
+});
+
+describe('acceptance: the Atlantic Niño nudges the Pacific (May start, chain on)', () => {
+  const tl = runAtl('warm', 5, 3);
+  it('the pushed La Niña fires its own links one tier down: hurricanes active in October and November, rated probable', () => {
+    const oct = tl.months[5];
+    expect(oct.calendarMonth).toBe(10);
+    expect(oct.links.atlantic_nino_la_nina?.status).toBe('applied');
+    expect(oct.nodes.enso.confidence).toBe('probable');
+    expect(oct.nodes.atlantic_hurricanes.value).toBe(1);
+    expect(oct.nodes.atlantic_hurricanes.viaLinkIds).toEqual(['la_nina_atlantic_hurricanes']);
+    expect(oct.nodes.atlantic_hurricanes.confidence).toBe('probable');
+    expect(oct.links.la_nina_atlantic_hurricanes?.depth).toBe(2);
+    expect(tl.months[7].nodes.atlantic_hurricanes.viaLinkIds).toHaveLength(0);
+  });
+  it('the pushed La Niña arrives after the Sahel and monsoon seasons, so it never conflicts with the Atlantic Niño there', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.sahel_rainfall.conflicting, `month ${m.index}`).toBe(false);
+      expect(m.nodes.indian_summer_monsoon.conflicting, `month ${m.index}`).toBe(false);
+      expect(m.nodes.sahel_rainfall.viaLinkIds.some((l) => l.startsWith('la_nina_')), `month ${m.index}`).toBe(false);
+    }
+  });
+  it('under "established only" the push is a ghost and the Sahel is hollow, while the coast is still applied', () => {
+    const est = propagate(graph, { driverId: 'atlantic_nino', phaseId: 'warm', startMonth: 5, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    expect(est.months[5].links.atlantic_nino_la_nina?.status).toBe('ghost');
+    expect(est.months[5].nodes.enso.value).toBe(0);
+    expect(est.months[2].nodes.sahel_rainfall.value).toBe(0);
+    expect(est.months[2].links.atlantic_nino_sahel?.status).toBe('ghost');
+    expect(est.months[0].nodes.guinea_coast_rainfall.value).toBe(1);
+  });
+  it('nothing on the map pushes the Atlantic Niño', () => {
+    expect(graph.links.filter((l) => l.to === 'atlantic_nino')).toHaveLength(0);
+  });
+});
+
+describe('acceptance: the 1984 story, an Atlantic Niño inside a cool AMO', () => {
+  const tl = runTwo(['atlantic_nino', 'warm'], ['amo', 'negative'], 5, 5, true);
+  it('the AMO is in phase from month 0 with an onset a year back', () => {
+    expect(chosenOnset(tl.scenario, 'amo')).toBe(-12);
+    expect(tl.months[0].nodes.amo.value).toBe(-1);
+    expect(tl.months[0].nodes.atlantic_nino.value).toBe(1);
+  });
+  it('June: the Guinea coast wet through the Atlantic Niño alone', () => {
+    expect(tl.months[1].calendarMonth).toBe(6);
+    expect(tl.months[1].nodes.guinea_coast_rainfall.viaLinkIds).toEqual(['atlantic_nino_guinea_coast']);
+    expect(tl.months[1].nodes.guinea_coast_rainfall.value).toBe(1);
+  });
+  it('August: the Sahel dry with both arrows, same sign, rated by the weaker (contested) line', () => {
+    const aug = tl.months[3];
+    expect(aug.calendarMonth).toBe(8);
+    expect([...aug.nodes.sahel_rainfall.viaLinkIds].sort()).toEqual(['atlantic_nino_sahel', 'negative_amo_sahel']);
+    expect(aug.nodes.sahel_rainfall.value).toBe(-1);
+    expect(aug.nodes.sahel_rainfall.conflicting).toBe(false);
+    expect(aug.nodes.sahel_rainfall.confidence).toBe('contested');
+  });
+  it('October: ENSO pushed toward La Niña by the Atlantic Niño; the cool AMO tilts the NAO positive from December', () => {
+    expect(tl.months[5].nodes.enso.value).toBe(-1);
+    expect(tl.months[5].nodes.enso.viaLinkIds).toEqual(['atlantic_nino_la_nina']);
+    expect(tl.months[7].calendarMonth).toBe(12);
+    expect(tl.months[7].nodes.nao.value).toBe(1);
+  });
+  it('the shipped story uses these settings', () => {
+    const s = graph.stories.find((x) => x.id === 'atlantic_nino_1984')!;
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
+      .toEqual(['atlantic_nino', 'warm', 'amo', 'negative', 5, true, 5, 1984]);
   });
 });

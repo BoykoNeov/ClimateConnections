@@ -1017,6 +1017,59 @@ is fully green.
   reversal, the 1995 story stepped to its end, the print caption.
 - Not in M18: the Atlantic Niño (M19).
 
+### M19 — Seventh driver: Atlantic Niño (signed off 2026-09-08)
+- Data: `atlantic_nino` driver node with warm (Atlantic Niño) / neutral /
+  cool (Atlantic Niña) phases (marker in the Gulf of Guinea at 2°S 6°W,
+  area along the equator from 30°W to 10°E, `default_start_month` 5); one
+  new outcome node (Gulf of Guinea coast rainfall, May–July); five outcome
+  links on the coast (+/−, established, lag 0–1, May–July), the Sahel
+  (−/+, contested, lag 0–2, July–September: the coast–Sahel see-saw broke
+  down after the 1970s) and the Indian monsoon (warm phase only, −,
+  contested, June–September; the literature supports one sign, so only
+  that one is shipped). Two driver-to-driver links, a summer Atlantic
+  Niño nudging the Pacific toward La Niña the following winter and an
+  Atlantic Niña toward El Niño (probable, lag 5–7, all year; seen since
+  the late 1960s), so with the chain on the pushed La Niña arrives in
+  October, after the Sahel and monsoon seasons, and fires its own links one
+  tier down. Nothing pushes the Atlantic Niño (ENSO's reach into the
+  Atlantic is fragile; said on the card, not drawn). Seventeen sources,
+  every one resolved on Crossref before use. One story, "1984: the
+  Atlantic's own Niño" (Atlantic Niño from May 1984, the cool AMO as a
+  second driver that began a year earlier with `second_starts_before`),
+  five steps: the 1984 event, the Guinea coast, August with both arrows on
+  the Sahel rated by the weaker line, ENSO pushed toward La Niña in
+  October, and May 1985 with the cautions.
+- Honesty note carried in the data: a real event lasts three to five
+  months and has faded by autumn, so the twelve-month hold is a
+  simplification (driver summary, onset hint, the story's last step); the
+  Sahel link is shown contested because the relationship is not steady.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the Atlantic Niño from May (the coast from
+  month 0 and done by August, the monsoon from June, the Sahel from July,
+  the tiers and the one-sided monsoon link, ENSO pushed at depth 1 without
+  its links firing, other drivers' regions hollow), the Atlantic Niña
+  (coast and Sahel reversed, the monsoon hollow, ENSO pushed toward El
+  Niño), the chain (hurricanes active through the pushed La Niña in
+  October at the probable tier, no conflict at the Sahel or the monsoon,
+  the ghost under "established only" with the coast still applied,
+  nothing pushing the Atlantic Niño), and the 1984 scenario (AMO onset
+  -12, the coast through the Atlantic Niño alone in June, August with both
+  Sahel arrows rated contested, ENSO pushed in October, the NAO tilted
+  positive from December, the shipped story's fields). Existing
+  expectations updated: seven drivers, fourteen driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m19.mjs`, 46
+  checks): the two new markers placed with no label overlap and the
+  driver label inside the map's left edge (the marker moved east to
+  6°W to clear it), the driver dropdown jumping to May, the phase button
+  labels, May and July states (dotted Sahel and monsoon arrows, solid
+  coast arrow), the Sahel and driver cards, October with ENSO induced and
+  the hurricanes reached through it, the ghost under "established only",
+  the Atlantic Niña reversal with the monsoon hollow, the 1984 story
+  stepped to its end with the "before" order set, the print caption.
+- Not in M19: further drivers. The plan's candidates are now exhausted; the
+  Madden–Julian Oscillation does not fit a monthly timeline. Anything else
+  needs sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -1120,6 +1173,14 @@ indian_summer_monsoon (+/−, contested):
 | western_europe_summer | British Isles to Germany | warm_cool | AMO | positive warm summer (+), probable | negative cool summer (−), probable |
 | us_great_plains_summer | Dakotas to Texas | wet_dry | AMO | positive dry summer (−), probable | negative wet summer (+), probable |
 
+Outcome node added with the Atlantic Niño (M19); the Atlantic Niño also acts
+on sahel_rainfall (−/+, contested) and indian_summer_monsoon (warm phase
+only, −, contested):
+
+| id | region | axis | driver | main warm-phase tendency | main cool-phase tendency |
+|---|---|---|---|---|---|
+| guinea_coast_rainfall | Liberia to Nigeria | wet_dry | Atlantic Niño | wet May–July (+), established | dry May–July (−), established |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1155,7 +1216,7 @@ writing mechanism text):
   the first); season dial (done, M13); compare mode (done, M14: two maps
   side by side); more drivers (done, M16: the Southern Annular Mode; M17:
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
-  Oscillation);
+  Oscillation; M19: the Atlantic Niño);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** globe view; historical index data overlay from NOAA (ONI, DMI,
   NAO); quiz mode ("predict the map, then reveal").

@@ -3,15 +3,15 @@
 An interactive teaching map of how the big climate oscillations affect
 weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole,
 the North Atlantic Oscillation, the Southern Annular Mode, the Pacific
-Decadal Oscillation or the Atlantic Multidecadal Oscillation) and a phase
-(El Niño or La Niña, a positive or negative dipole, NAO, SAM, PDO or AMO),
-press play, and watch the
+Decadal Oscillation, the Atlantic Multidecadal Oscillation or the Atlantic
+Niño) and a phase (El Niño or La Niña, a positive or negative dipole, NAO,
+SAM, PDO or AMO, an Atlantic Niño or Niña), press play, and watch the
 known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds six drivers, 52 outcome regions, 141 cited links
-(twelve of them between the drivers) and ten guided stories. A scenario is
+The map currently holds seven drivers, 53 outcome regions, 148 cited links
+(fourteen of them between the drivers) and eleven guided stories. A scenario is
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -72,13 +72,14 @@ any static file server.
   see-saw that tightens or loosens the belt of westerly winds around
   Antarctica), the Pacific Decadal Oscillation (the decade-long warm or
   cool pattern of the North Pacific; the year shown is one year inside
-  such a phase) or the Atlantic Multidecadal Oscillation (the slow warming
+  such a phase), the Atlantic Multidecadal Oscillation (the slow warming
   and cooling of the whole North Atlantic over decades; again one year
-  inside a phase). The other drivers' markers turn grey; their cards say
-  they are not part of the scenario.
+  inside a phase) or the Atlantic Niño (the equatorial Atlantic's smaller
+  cousin of El Niño, peaking in the northern summer). The other drivers'
+  markers turn grey; their cards say they are not part of the scenario.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
   Niña; positive, neutral or negative dipole; positive, neutral or negative
-  NAO, SAM, PDO or AMO.
+  NAO, SAM, PDO or AMO; Atlantic Niño, neutral or Atlantic Niña.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
@@ -102,9 +103,10 @@ any static file server.
   moves it to that driver's usual start: June for ENSO and the dipole, which
   develop in late boreal spring or summer, December for the NAO, which
   is a winter pattern, June for the SAM, whose winter rain effects come
-  first, November for the PDO, ahead of its winter effects, and June for
-  the AMO, ahead of the hurricane season and the Sahel's rains. Both the
-  default and the note under the control come from the data.
+  first, November for the PDO, ahead of its winter effects, June for the
+  AMO, ahead of the hurricane season and the Sahel's rains, and May for
+  the Atlantic Niño, which peaks in June–August. Both the default and the
+  note under the control come from the data.
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase
@@ -231,7 +233,7 @@ Pacific as a curve.
 
    ```yaml
    - id: el_nino_example_region       # unique, permanent
-     from: enso                        # a driver id (enso, iod, nao, sam, pdo or amo)
+     from: enso                        # a driver id (enso, iod, nao, sam, pdo, amo or atlantic_nino)
      when: el_nino                     # a phase id of that driver
      to: example_region                # a node id: an outcome, or another driver
      effect: -1                        # +1 or -1 on the target's axis; for a driver

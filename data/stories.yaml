@@ -960,3 +960,86 @@ stories:
           from the warm ocean to the weather and hold whichever camp is
           right; the phase's next turn is the open question.
         sources: [knight_2005, booth_2012, clement_2015]
+
+  - id: atlantic_nino_1984
+    title: "1984: the Atlantic's own Niño"
+    intro: >
+      In early 1984 the trade winds over the equatorial Atlantic slackened
+      and warm water spread east to the Gulf of Guinea, the strongest warm
+      event in the Atlantic's record to that date. It came in the depths
+      of the Sahel drought, with the North Atlantic in its cool phase, and
+      it was followed by a weak La Niña in the Pacific. The year shown
+      begins in May 1984 with the Atlantic Niño in its warm phase; the
+      cool Atlantic Multidecadal Oscillation is set as a second driver
+      that began a year earlier, the nearest the map can come to a phase
+      that had held since the 1960s.
+    driver: atlantic_nino
+    phase: warm
+    second_driver: amo
+    second_phase: negative
+    second_start_month: 5
+    second_starts_before: true
+    start_month: 5
+    start_year: 1984
+    steps:
+      - month: 0
+        focus: atlantic_nino
+        text: >
+          In most years the eastern equatorial Atlantic cools sharply in
+          May and June as the trade winds push the warm water west. In 1984
+          the trades weakened in the early months of the year, the cooling
+          failed and the sea off the Gulf of Guinea ran unusually warm
+          through the northern summer. Unusual enough to get its own paper
+          in Nature: the Atlantic's small cousin of El Niño, seen at full
+          size.
+        sources: [philander_1986, carton_huang_1994, horel_1986]
+
+      - month: 1
+        focus: guinea_coast_rainfall
+        text: >
+          The coast from Liberia to Nigeria has its main rains in May–July,
+          and the map's solid line says a warm Gulf of Guinea feeds them.
+          That is the clearest footprint of an Atlantic Niño: wet years on
+          the coast come with a weak or missing cold tongue offshore, and
+          the coast's rains, unlike the Sahel's, follow the sea just
+          offshore rather than the whole tropics.
+        sources: [wagner_da_silva_1994, polo_2008, lubbecke_2018]
+
+      - month: 3
+        focus: sahel_rainfall
+        text: >
+          Two arrows point at the Sahel the same way, dry: the cool North
+          Atlantic's solid line and the Atlantic Niño's dotted one, and the
+          card rates the pair by the weaker line. 1984 was the worst year
+          of the long drought. The dotted line is dotted for a reason: the
+          old see-saw, in which a warm Gulf of Guinea meant a dry Sahel,
+          faded after the 1970s as the Sahel came to follow the Pacific
+          and the Indian Ocean as much as the Atlantic. In 1984 the
+          Atlantic's two patterns and the wider tropics all leaned the
+          same way.
+        sources: [nicholson_2013, losada_2012, folland_1986]
+
+      - month: 5
+        focus: enso
+        text: >
+          With the chain on, the Atlantic Niño has pushed ENSO toward La
+          Niña from October: rain rising over a warm Atlantic in summer
+          strengthens the trade winds over the central Pacific, and the
+          Pacific answers by winter. A weak La Niña did form in the Pacific
+          in late 1984 and lasted into 1985. The link is dashed, not solid:
+          it shows up in the record only since the late 1960s, and it
+          nudges the Pacific rather than steering it.
+        sources: [rodriguez_fonseca_2009, ding_2012, noaa_cpc_oni]
+
+      - month: 12
+        focus: atlantic_nino
+        text: >
+          A year on, in May 1985, the map still holds the Atlantic Niño in
+          its warm phase. The real event had faded by the autumn of 1984;
+          an Atlantic Niño lasts three to five months, and the map's
+          twelve-month hold is a simplification. Two more cautions travel
+          with this driver. The Pacific's own El Niño barely reaches the
+          Atlantic, so nothing on this map pushes the Atlantic Niño; and
+          the models used for seasonal forecasts still struggle to
+          reproduce it at all.
+        sources: [lubbecke_2018, keenlyside_latif_2007, chang_2006]

@@ -333,6 +333,59 @@ nodes:
           quiet hurricane decades before 1995.
     sources: [kerr_2000, enfield_2001, knight_2005, schlesinger_ramankutty_1994, booth_2012, clement_2015, noaa_psl_amo]
 
+  - id: atlantic_nino
+    name: Atlantic Niño
+    label: Atlantic Niño
+    kind: driver
+    lat: -2
+    lon: -6
+    area: [[-30, 5], [10, 5], [10, -5], [-30, -5]]
+    region: Equatorial Atlantic Ocean, from the Gulf of Guinea west along the equator
+    timescale: Events every few years, peaking June–August and lasting three to five months
+    summary: >
+      The Atlantic's smaller cousin of El Niño. In most years the eastern
+      equatorial Atlantic cools sharply in early summer as the trade winds
+      push warm water west; in an Atlantic Niño the trades slacken in
+      spring, the cooling fails and the water off the Gulf of Guinea runs
+      about a degree warm from May to August. An Atlantic Niña is the
+      reverse, an unusually strong cold tongue. The events are weaker and
+      shorter than the Pacific's, and unlike El Niño they peak in the
+      northern summer, right in the West African monsoon season. Since the
+      1970s a summer Atlantic Niño has tended to be followed by a Pacific
+      La Niña the next winter. The map holds the phase for a year; a real
+      event has usually faded by autumn.
+    onset_hint: An Atlantic Niño builds in spring and peaks in June–August, then fades by autumn; start in May to watch the Gulf of Guinea coast's rainy season and the Sahel's summer rains.
+    default_start_month: 5
+    phases:
+      - id: warm
+        value: 1
+        label: Atlantic Niño
+        color: "#e7298a"
+        summary: >
+          The eastern equatorial Atlantic is warmer than usual in early
+          summer. The Gulf of Guinea coast tends to be wetter, the Sahel to
+          the north drier, the Indian monsoon a little weaker, and the
+          Pacific tends to swing toward La Niña by the following winter. The
+          event of 1984 was the strongest of its kind on record at the time.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The equatorial Atlantic runs its usual seasonal cycle, with the
+          cold tongue forming in early summer, and none of the Atlantic Niño
+          tendencies on this map are expected.
+      - id: cool
+        value: -1
+        label: Atlantic Niña
+        color: "#253494"
+        summary: >
+          The eastern equatorial Atlantic is colder than usual in early
+          summer, with a strong cold tongue. The Gulf of Guinea coast tends
+          to be drier, the Sahel wetter, and the Pacific tends to swing
+          toward El Niño by the following winter.
+    sources: [zebiak_1993, lubbecke_2018, keenlyside_latif_2007, carton_huang_1994]
+
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1458,3 +1511,26 @@ nodes:
       decades, and the wet years of the early twentieth century in a cool
       one.
     sources: [enfield_2001, nigam_2011, mccabe_2004]
+
+  # ---- Atlantic Niño outcomes (M19)
+  - id: guinea_coast_rainfall
+    name: Gulf of Guinea coast rainfall
+    label: Guinea coast
+    kind: outcome
+    lat: 6
+    lon: -3
+    area: [[-10, 9], [8, 9], [8, 4], [-10, 4]]
+    region: The coast from Liberia to Nigeria, including Côte d'Ivoire and Ghana
+    timescale: May–July, the coast's main rainy season
+    axis: wet_dry
+    labels:
+      plus: Tends to be wetter than usual
+      zero: Near normal
+      minus: Tends to be drier than usual
+    summary: >
+      The Guinea coast has its main rains in May–July, before the rain belt
+      jumps north to the Sahel. Those rains follow the sea just offshore: a
+      warm Gulf of Guinea feeds them and holds the rain belt at the coast,
+      a cold one starves them. On year-to-year timescales the coast and the
+      Sahel do not rise and fall together.
+    sources: [wagner_da_silva_1994, lubbecke_2018, polo_2008]

@@ -367,6 +367,66 @@
       ]
     },
     {
+      "id": "atlantic_nino",
+      "name": "Atlantic Niño",
+      "label": "Atlantic Niño",
+      "area": [
+        [
+          -30,
+          5
+        ],
+        [
+          10,
+          5
+        ],
+        [
+          10,
+          -5
+        ],
+        [
+          -30,
+          -5
+        ]
+      ],
+      "lat": -2,
+      "lon": -6,
+      "region": "Equatorial Atlantic Ocean, from the Gulf of Guinea west along the equator",
+      "timescale": "Events every few years, peaking June–August and lasting three to five months",
+      "summary": "The Atlantic's smaller cousin of El Niño. In most years the eastern equatorial Atlantic cools sharply in early summer as the trade winds push warm water west; in an Atlantic Niño the trades slacken in spring, the cooling fails and the water off the Gulf of Guinea runs about a degree warm from May to August. An Atlantic Niña is the reverse, an unusually strong cold tongue. The events are weaker and shorter than the Pacific's, and unlike El Niño they peak in the northern summer, right in the West African monsoon season. Since the 1970s a summer Atlantic Niño has tended to be followed by a Pacific La Niña the next winter. The map holds the phase for a year; a real event has usually faded by autumn.\n",
+      "sources": [
+        "zebiak_1993",
+        "lubbecke_2018",
+        "keenlyside_latif_2007",
+        "carton_huang_1994"
+      ],
+      "kind": "driver",
+      "onset_hint": "An Atlantic Niño builds in spring and peaks in June–August, then fades by autumn; start in May to watch the Gulf of Guinea coast's rainy season and the Sahel's summer rains.",
+      "default_start_month": 5,
+      "phases": [
+        {
+          "id": "warm",
+          "label": "Atlantic Niño",
+          "color": "#e7298a",
+          "summary": "The eastern equatorial Atlantic is warmer than usual in early summer. The Gulf of Guinea coast tends to be wetter, the Sahel to the north drier, the Indian monsoon a little weaker, and the Pacific tends to swing toward La Niña by the following winter. The event of 1984 was the strongest of its kind on record at the time.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "The equatorial Atlantic runs its usual seasonal cycle, with the cold tongue forming in early summer, and none of the Atlantic Niño tendencies on this map are expected.\n",
+          "value": 0
+        },
+        {
+          "id": "cool",
+          "label": "Atlantic Niña",
+          "color": "#253494",
+          "summary": "The eastern equatorial Atlantic is colder than usual in early summer, with a strong cold tongue. The Gulf of Guinea coast tends to be drier, the Sahel wetter, and the Pacific tends to swing toward El Niño by the following winter.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -2473,6 +2533,47 @@
         "plus": "Summer tends to be wetter than usual",
         "zero": "Near normal",
         "minus": "Summer tends to be drier than usual, with drought risk"
+      },
+      "global": false
+    },
+    {
+      "id": "guinea_coast_rainfall",
+      "name": "Gulf of Guinea coast rainfall",
+      "label": "Guinea coast",
+      "area": [
+        [
+          -10,
+          9
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          -10,
+          4
+        ]
+      ],
+      "lat": 6,
+      "lon": -3,
+      "region": "The coast from Liberia to Nigeria, including Côte d'Ivoire and Ghana",
+      "timescale": "May–July, the coast's main rainy season",
+      "summary": "The Guinea coast has its main rains in May–July, before the rain belt jumps north to the Sahel. Those rains follow the sea just offshore: a warm Gulf of Guinea feeds them and holds the rain belt at the coast, a cold one starves them. On year-to-year timescales the coast and the Sahel do not rise and fall together.\n",
+      "sources": [
+        "wagner_da_silva_1994",
+        "lubbecke_2018",
+        "polo_2008"
+      ],
+      "kind": "outcome",
+      "axis": "wet_dry",
+      "labels": {
+        "plus": "Tends to be wetter than usual",
+        "zero": "Near normal",
+        "minus": "Tends to be drier than usual"
       },
       "global": false
     }
@@ -5966,6 +6067,172 @@
         "peings_magnusdottir_2014",
         "omrani_2014"
       ]
+    },
+    {
+      "id": "atlantic_nino_guinea_coast",
+      "from": "atlantic_nino",
+      "when": "warm",
+      "to": "guinea_coast_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7
+      ],
+      "confidence": "established",
+      "mechanism": "Warm water in the Gulf of Guinea feeds the rain clouds over the coast directly and holds the tropical rain belt at the coast through its main rainy season, so the coast tends to be wetter.\n",
+      "caveat": "The coast's rains also depend on when the rain belt jumps north to the Sahel; a weak or late event adds little, and a single wet month can come from the weather alone.\n",
+      "evidence_note": "Wet years on the Guinea coast come with a weaker-than-usual cold tongue in early summer, the leading pattern of tropical Atlantic sea-temperature variability is coupled to rain on the Gulf of Guinea coast, and the review of the mode names the coast as its clearest rainfall footprint.\n",
+      "sources": [
+        "wagner_da_silva_1994",
+        "polo_2008",
+        "lubbecke_2018"
+      ]
+    },
+    {
+      "id": "atlantic_nina_guinea_coast",
+      "from": "atlantic_nino",
+      "when": "cool",
+      "to": "guinea_coast_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        5,
+        6,
+        7
+      ],
+      "confidence": "established",
+      "mechanism": "A strong cold tongue off the Gulf of Guinea cools the air over the coast, starves the rain clouds and lets the rain belt leave the coast early, so the coast's rainy season tends to be weaker.\n",
+      "caveat": "A single season can still be wet if the rain belt lingers; the tendency is clearest in strong events.\n",
+      "sources": [
+        "wagner_da_silva_1994",
+        "lubbecke_2018"
+      ]
+    },
+    {
+      "id": "atlantic_nino_sahel",
+      "from": "atlantic_nino",
+      "when": "warm",
+      "to": "sahel_rainfall",
+      "effect": -1,
+      "lag_months": [
+        0,
+        2
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "Warm water in the Gulf of Guinea holds the rain belt at the coast and keeps it from moving as far north as usual, so the Sahel tends to get less rain in a warm summer.\n",
+      "caveat": "This coast–Sahel see-saw was clear before the 1970s and then nearly vanished: since then the Pacific and Indian Oceans have pulled the Sahel the other way in the same summers, and a warm Atlantic summer has often come with a wet Sahel.\n",
+      "evidence_note": "Models forced with a warm equatorial Atlantic shift the rain belt toward the coast and dry the Sahel, and the pattern is in the older observations; but the see-saw broke down after the 1970s as the Sahel came to follow the whole tropics rather than the Atlantic alone, so the link is shown as contested.\n",
+      "sources": [
+        "losada_2010",
+        "losada_2012",
+        "lamb_1978",
+        "nicholson_2013"
+      ]
+    },
+    {
+      "id": "atlantic_nina_sahel",
+      "from": "atlantic_nino",
+      "when": "cool",
+      "to": "sahel_rainfall",
+      "effect": 1,
+      "lag_months": [
+        0,
+        2
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "A strong cold tongue in the Gulf of Guinea pushes the rain belt off the coast and further north than usual in summer, so the Sahel tends to get more rain.\n",
+      "caveat": "Clear only in the older record; since the 1970s the Sahel has followed the Pacific and the Indian Ocean more than the Atlantic, and the see-saw with the coast has faded.\n",
+      "sources": [
+        "losada_2010",
+        "losada_2012",
+        "lamb_1978"
+      ]
+    },
+    {
+      "id": "atlantic_nino_indian_monsoon",
+      "from": "atlantic_nino",
+      "when": "warm",
+      "to": "indian_summer_monsoon",
+      "effect": -1,
+      "lag_months": [
+        0,
+        1
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "contested",
+      "mechanism": "Rain clouds rising over a warm equatorial Atlantic set up a wave in the upper air that reaches around the globe and sinks over India, which is proposed to hold back the monsoon a little.\n",
+      "caveat": "A small effect next to ENSO's, found mainly in models and in the part of the monsoon record that ENSO does not explain; not every warm Atlantic summer brings a weak monsoon.\n",
+      "evidence_note": "The part of Indian monsoon rainfall not tied to ENSO correlates with south equatorial Atlantic sea temperature in observations and model ensembles, and a simple wave mechanism reproduces the teleconnection; the signal is small and the link is shown as contested.\n",
+      "sources": [
+        "kucharski_2008",
+        "kucharski_2009",
+        "lubbecke_2018"
+      ]
+    },
+    {
+      "id": "atlantic_nino_la_nina",
+      "from": "atlantic_nino",
+      "when": "warm",
+      "to": "enso",
+      "effect": -1,
+      "lag_months": [
+        5,
+        7
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "Rain rising over a warm equatorial Atlantic in summer strengthens the east–west overturning of the tropical air, with air sinking over the central Pacific; the stronger trade winds there lift the cool water in the east and start the Pacific toward a La Niña by the following winter.\n",
+      "caveat": "Seen since the late 1960s and not before, and a nudge rather than a trigger: the Pacific has its own timing, and a warm Atlantic summer inside a developing El Niño does not stop it.\n",
+      "evidence_note": "Since the late 1960s summer Atlantic Niños have favoured following-winter Pacific La Niñas, and Atlantic Niñas Pacific El Niños, in the observations and in model runs where only the Atlantic is set from observations; the reverse link, from the Pacific to the Atlantic, is weak and inconsistent.\n",
+      "sources": [
+        "rodriguez_fonseca_2009",
+        "ding_2012",
+        "lubbecke_2018",
+        "chang_2006"
+      ]
+    },
+    {
+      "id": "atlantic_nina_el_nino",
+      "from": "atlantic_nino",
+      "when": "cool",
+      "to": "enso",
+      "effect": 1,
+      "lag_months": [
+        5,
+        7
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "A cold equatorial Atlantic in summer weakens the rain rising over it, which loosens the trade winds over the central Pacific and lets warm water spread east, starting the Pacific toward an El Niño by the following winter.\n",
+      "caveat": "Seen since the late 1960s and not before; a nudge to the Pacific's own timing, not a trigger.\n",
+      "evidence_note": "The same study that found Atlantic Niños ahead of Pacific La Niñas found Atlantic Niñas ahead of Pacific El Niños over the same decades, with the same mechanism in reverse.\n",
+      "sources": [
+        "rodriguez_fonseca_2009",
+        "ding_2012"
+      ]
     }
   ],
   "sources": [
@@ -6752,6 +7019,91 @@
       "key": "noaa_psl_amo",
       "citation": "NOAA Physical Sciences Laboratory. Atlantic Multidecadal Oscillation (AMO): index description and monthly time series.",
       "url": "https://psl.noaa.gov/data/timeseries/AMO/"
+    },
+    {
+      "key": "zebiak_1993",
+      "citation": "Zebiak, S. E. (1993). Air–sea interaction in the equatorial Atlantic region. Journal of Climate, 6(8), 1567–1586.",
+      "url": "https://doi.org/10.1175/1520-0442(1993)006<1567:AIITEA>2.0.CO;2"
+    },
+    {
+      "key": "lubbecke_2018",
+      "citation": "Lübbecke, J. F., Rodríguez-Fonseca, B., Richter, I., Martín-Rey, M., Losada, T., Polo, I., & Keenlyside, N. S. (2018). Equatorial Atlantic variability—Modes, mechanisms, and global teleconnections. WIREs Climate Change, 9(4), e527.",
+      "url": "https://doi.org/10.1002/wcc.527"
+    },
+    {
+      "key": "keenlyside_latif_2007",
+      "citation": "Keenlyside, N. S., & Latif, M. (2007). Understanding equatorial Atlantic interannual variability. Journal of Climate, 20(1), 131–142.",
+      "url": "https://doi.org/10.1175/JCLI3992.1"
+    },
+    {
+      "key": "carton_huang_1994",
+      "citation": "Carton, J. A., & Huang, B. (1994). Warm events in the tropical Atlantic. Journal of Physical Oceanography, 24(5), 888–903.",
+      "url": "https://doi.org/10.1175/1520-0485(1994)024<0888:WEITTA>2.0.CO;2"
+    },
+    {
+      "key": "philander_1986",
+      "citation": "Philander, S. G. H. (1986). Unusual conditions in the tropical Atlantic Ocean in 1984. Nature, 322, 236–238.",
+      "url": "https://doi.org/10.1038/322236a0"
+    },
+    {
+      "key": "horel_1986",
+      "citation": "Horel, J. D., Kousky, V. E., & Kagano, M. T. (1986). Atmospheric conditions in the Atlantic sector during 1983 and 1984. Nature, 322, 248–251.",
+      "url": "https://doi.org/10.1038/322248a0"
+    },
+    {
+      "key": "wagner_da_silva_1994",
+      "citation": "Wagner, R. G., & da Silva, A. M. (1994). Surface conditions associated with anomalous rainfall in the Guinea coastal region. International Journal of Climatology, 14(2), 179–199.",
+      "url": "https://doi.org/10.1002/joc.3370140205"
+    },
+    {
+      "key": "polo_2008",
+      "citation": "Polo, I., Rodríguez-Fonseca, B., Losada, T., & García-Serrano, J. (2008). Tropical Atlantic variability modes (1979–2002). Part I: Time-evolving SST modes related to West African rainfall. Journal of Climate, 21(24), 6457–6475.",
+      "url": "https://doi.org/10.1175/2008JCLI2607.1"
+    },
+    {
+      "key": "losada_2010",
+      "citation": "Losada, T., Rodríguez-Fonseca, B., Janicot, S., Gervois, S., Chauvin, F., & Ruti, P. (2010). A multi-model approach to the Atlantic Equatorial mode: Impact on the West African monsoon. Climate Dynamics, 35, 29–43.",
+      "url": "https://doi.org/10.1007/s00382-009-0625-5"
+    },
+    {
+      "key": "losada_2012",
+      "citation": "Losada, T., Rodríguez-Fonseca, B., Mohino, E., Bader, J., Janicot, S., & Mechoso, C. R. (2012). Tropical SST and Sahel rainfall: A non-stationary relationship. Geophysical Research Letters, 39, L12705.",
+      "url": "https://doi.org/10.1029/2012GL052423"
+    },
+    {
+      "key": "lamb_1978",
+      "citation": "Lamb, P. J. (1978). Large-scale tropical Atlantic surface circulation patterns associated with Subsaharan weather anomalies. Tellus, 30(3), 240–251.",
+      "url": "https://doi.org/10.1111/j.2153-3490.1978.tb00839.x"
+    },
+    {
+      "key": "nicholson_2013",
+      "citation": "Nicholson, S. E. (2013). The West African Sahel: A review of recent studies on the rainfall regime and its interannual variability. ISRN Meteorology, 2013, 453521.",
+      "url": "https://doi.org/10.1155/2013/453521"
+    },
+    {
+      "key": "kucharski_2008",
+      "citation": "Kucharski, F., Bracco, A., Yoo, J. H., & Molteni, F. (2008). Atlantic forced component of the Indian monsoon interannual variability. Geophysical Research Letters, 35, L04706.",
+      "url": "https://doi.org/10.1029/2007GL033037"
+    },
+    {
+      "key": "kucharski_2009",
+      "citation": "Kucharski, F., Bracco, A., Yoo, J. H., Tompkins, A. M., Feudale, L., Ruti, P., & Dell'Aquila, A. (2009). A Gill–Matsuno-type mechanism explains the tropical Atlantic influence on African and Indian monsoon rainfall. Quarterly Journal of the Royal Meteorological Society, 135(640), 569–579.",
+      "url": "https://doi.org/10.1002/qj.406"
+    },
+    {
+      "key": "rodriguez_fonseca_2009",
+      "citation": "Rodríguez-Fonseca, B., Polo, I., García-Serrano, J., Losada, T., Mohino, E., Mechoso, C. R., & Kucharski, F. (2009). Are Atlantic Niños enhancing Pacific ENSO events in recent decades? Geophysical Research Letters, 36, L20705.",
+      "url": "https://doi.org/10.1029/2009GL040048"
+    },
+    {
+      "key": "ding_2012",
+      "citation": "Ding, H., Keenlyside, N. S., & Latif, M. (2012). Impact of the equatorial Atlantic on the El Niño Southern Oscillation. Climate Dynamics, 38, 1965–1972.",
+      "url": "https://doi.org/10.1007/s00382-011-1097-y"
+    },
+    {
+      "key": "chang_2006",
+      "citation": "Chang, P., Fang, Y., Saravanan, R., Ji, L., & Seidel, H. (2006). The cause of the fragile relationship between the Pacific El Niño and the Atlantic Niño. Nature, 443, 324–328.",
+      "url": "https://doi.org/10.1038/nature05053"
     }
   ],
   "stories": [
@@ -7542,6 +7894,71 @@
             "knight_2005",
             "booth_2012",
             "clement_2015"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atlantic_nino_1984",
+      "title": "1984: the Atlantic's own Niño",
+      "intro": "In early 1984 the trade winds over the equatorial Atlantic slackened and warm water spread east to the Gulf of Guinea, the strongest warm event in the Atlantic's record to that date. It came in the depths of the Sahel drought, with the North Atlantic in its cool phase, and it was followed by a weak La Niña in the Pacific. The year shown begins in May 1984 with the Atlantic Niño in its warm phase; the cool Atlantic Multidecadal Oscillation is set as a second driver that began a year earlier, the nearest the map can come to a phase that had held since the 1960s.\n",
+      "driver": "atlantic_nino",
+      "phase": "warm",
+      "start_month": 5,
+      "start_year": 1984,
+      "second_driver": "amo",
+      "second_phase": "negative",
+      "second_start_month": 5,
+      "second_starts_before": true,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "atlantic_nino",
+          "text": "In most years the eastern equatorial Atlantic cools sharply in May and June as the trade winds push the warm water west. In 1984 the trades weakened in the early months of the year, the cooling failed and the sea off the Gulf of Guinea ran unusually warm through the northern summer. Unusual enough to get its own paper in Nature: the Atlantic's small cousin of El Niño, seen at full size.\n",
+          "sources": [
+            "philander_1986",
+            "carton_huang_1994",
+            "horel_1986"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "guinea_coast_rainfall",
+          "text": "The coast from Liberia to Nigeria has its main rains in May–July, and the map's solid line says a warm Gulf of Guinea feeds them. That is the clearest footprint of an Atlantic Niño: wet years on the coast come with a weak or missing cold tongue offshore, and the coast's rains, unlike the Sahel's, follow the sea just offshore rather than the whole tropics.\n",
+          "sources": [
+            "wagner_da_silva_1994",
+            "polo_2008",
+            "lubbecke_2018"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "sahel_rainfall",
+          "text": "Two arrows point at the Sahel the same way, dry: the cool North Atlantic's solid line and the Atlantic Niño's dotted one, and the card rates the pair by the weaker line. 1984 was the worst year of the long drought. The dotted line is dotted for a reason: the old see-saw, in which a warm Gulf of Guinea meant a dry Sahel, faded after the 1970s as the Sahel came to follow the Pacific and the Indian Ocean as much as the Atlantic. In 1984 the Atlantic's two patterns and the wider tropics all leaned the same way.\n",
+          "sources": [
+            "nicholson_2013",
+            "losada_2012",
+            "folland_1986"
+          ]
+        },
+        {
+          "month": 5,
+          "focus": "enso",
+          "text": "With the chain on, the Atlantic Niño has pushed ENSO toward La Niña from October: rain rising over a warm Atlantic in summer strengthens the trade winds over the central Pacific, and the Pacific answers by winter. A weak La Niña did form in the Pacific in late 1984 and lasted into 1985. The link is dashed, not solid: it shows up in the record only since the late 1960s, and it nudges the Pacific rather than steering it.\n",
+          "sources": [
+            "rodriguez_fonseca_2009",
+            "ding_2012",
+            "noaa_cpc_oni"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "atlantic_nino",
+          "text": "A year on, in May 1985, the map still holds the Atlantic Niño in its warm phase. The real event had faded by the autumn of 1984; an Atlantic Niño lasts three to five months, and the map's twelve-month hold is a simplification. Two more cautions travel with this driver. The Pacific's own El Niño barely reaches the Atlantic, so nothing on this map pushes the Atlantic Niño; and the models used for seasonal forecasts still struggle to reproduce it at all.\n",
+          "sources": [
+            "lubbecke_2018",
+            "keenlyside_latif_2007",
+            "chang_2006"
           ]
         }
       ]
