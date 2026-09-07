@@ -1070,6 +1070,80 @@ is fully green.
   Madden–Julian Oscillation does not fit a monthly timeline. Anything else
   needs sign-off.
 
+### M20 — Eighth driver: Indian Ocean Basin Mode (version 3, signed off 2026-09-08)
+The first item of `docs/PLAN_V3.md`, recorded here so the list of shipped
+drivers stays in one place.
+- Data: `indian_ocean_basin` driver node with warm / neutral / cool phases
+  (marker in the central Indian Ocean at 13°S 87°E, clear of the IOD at
+  4°S 70°E; area the whole tropical Indian Ocean 40°E–100°E, 15°N–15°S;
+  `default_start_month` 2). Two new outcome nodes: Yangtze valley summer
+  rainfall (wet_dry, June–August, marker 32.5°N 107°E, moved west twice
+  to clear the East Asia winter marker) and North Indian Ocean
+  pre-monsoon cyclones (active_quiet, April–June, marker in the Arabian
+  Sea at 15.5°N 64°E). Nine outcome links: the Yangtze (+ established /
+  − probable, lag 3–5, June–August), the western Pacific typhoons (−
+  probable / + contested, lag 3–6, June–October), South China (+/−
+  probable, lag 0–2, April–June, overlapping ENSO's own spring arrow),
+  the Indian monsoon (warm only, + contested, June–September: the
+  studies disagree on sign and size, said on the card) and the cyclones
+  (warm only, − contested, April–June, the least certain arrow, with the
+  short satellite-era record said on the node and the link). Three
+  driver-to-driver links: El Niño pushes the basin warm (established, lag
+  3–5, all year) and La Niña pushes it cool (probable, same lag), the
+  atmospheric bridge; a warm basin nudges ENSO toward La Niña (probable,
+  lag 4–8, all year). The cool basin does not push ENSO, because the
+  Indian Ocean's feedback on a La Niña is weaker and La Niñas linger.
+  Twenty sources, every one resolved on Crossref before use, fifteen with
+  abstracts read. One story, "1998: the Yangtze floods" (warm basin from
+  February 1998, no second driver, chain on), six steps: the capacitor,
+  the contested cyclone arrow and the June 1998 Kandla cyclone that broke
+  it, the June flood, ENSO pushed toward La Niña in July, August with both
+  quiet-typhoon arrows, and February 1999 with the cautions.
+- Departures from the version 3 plan, each for a reason: the Yangtze has
+  its own node because `east_asia_summer` is a temperature axis over
+  Japan and Korea and cannot say "wetter"; the monsoon link is drawn as
+  heavier rain (+), not weaker, because the verified sources lean that
+  way, with the delayed onset in the caveat; the story runs the basin
+  alone rather than with the El Niño that began before, because the map
+  would hold that El Niño through a summer in which it had ended and show
+  false conflicts at the typhoons and the monsoon (the two-driver
+  scenario is kept as an acceptance test, and M32's phase duration would
+  let the story add it later).
+- Honesty note carried in the data: the basin mode is mostly the echo of
+  an El Niño, so choosing it alone is a way of looking at the second half
+  of an El Niño story; the dipole and the basin mode are different things
+  (a west–east contrast in autumn versus the whole ocean warming in
+  spring); the real warmth fades by autumn while the map holds it.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the warm basin from February (the Yangtze
+  from June and done by September, South China from April, the cyclones
+  April–June, the monsoon from June, the tiers, the hollow ghosts under
+  "probable and above", ENSO pushed at depth 1 without its links firing,
+  the IOD not pushed at depth 1, other drivers' regions hollow), the cool
+  basin (the Yangtze, typhoons and South China reversed, the monsoon and
+  cyclones hollow, ENSO not pushed), the chain from an El Niño in June
+  (the basin pushed in September at depth 1 rated established, the
+  Yangtze pending until the last month shown and applied at month 12 one
+  tier down, South China in April with both arrows rated by the weaker,
+  the basin's monsoon arrow joining the dipole's conflict at month 12,
+  the loop guard on ENSO, a La Niña pushing the basin cool), the basin's
+  own chain (the pushed La Niña's typhoon arrow reinforcing in August,
+  Indonesia wet in June, no conflict at the monsoon, the loop guard, the
+  ghost under "established only"), and the 1998 two-driver scenario (ENSO
+  onset -8, the Yangtze at full tier, the typhoon conflict that keeps it
+  out of the story, the shipped story's fields). Existing expectations
+  updated: eight drivers, seventeen driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m20.mjs`, 60
+  checks): the three new markers placed with no label overlap, the driver
+  dropdown jumping to February, the phase button labels, February, May and
+  June states with the arrow styles, the cyclone, Yangtze, ENSO and basin
+  cards, the ghost under "established only", the cool reversal, the El
+  Niño chain with the basin induced in September and the Yangtze wet at
+  month 12, the 1998 story stepped to its end, the print caption.
+- Not in M20: any change to how the IOD is described; the Indian Ocean
+  subtropical dipole. Next in `docs/PLAN_V3.md`: M21, the Atlantic
+  Meridional Mode.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -1181,6 +1255,15 @@ only, −, contested):
 |---|---|---|---|---|---|
 | guinea_coast_rainfall | Liberia to Nigeria | wet_dry | Atlantic Niño | wet May–July (+), established | dry May–July (−), established |
 
+Outcome nodes added with the Indian Ocean Basin Mode (M20); the basin also
+acts on west_pacific_typhoons (−/+, probable/contested), south_china_rainfall
+(+/−, probable) and indian_summer_monsoon (warm phase only, +, contested):
+
+| id | region | axis | driver | main warm-phase tendency | main cool-phase tendency |
+|---|---|---|---|---|---|
+| yangtze_summer_rainfall | Sichuan basin to Shanghai | wet_dry | Indian Ocean basin | heavier Meiyu June–August (+), established | lighter (−), probable |
+| north_indian_ocean_cyclones | Arabian Sea and Bay of Bengal | active_quiet | Indian Ocean basin | fewer pre-monsoon storms April–June (−), contested | none drawn |
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1216,7 +1299,8 @@ writing mechanism text):
   the first); season dial (done, M13); compare mode (done, M14: two maps
   side by side); more drivers (done, M16: the Southern Annular Mode; M17:
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
-  Oscillation; M19: the Atlantic Niño);
+  Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
+  the first version 3 driver);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

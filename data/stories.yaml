@@ -1043,3 +1043,98 @@ stories:
           the models used for seasonal forecasts still struggle to
           reproduce it at all.
         sources: [lubbecke_2018, keenlyside_latif_2007, chang_2006]
+
+  - id: warm_basin_1998_yangtze
+    title: "1998: the Yangtze floods"
+    intro: >
+      The great El Niño of 1997–98 peaked in the Pacific in December and
+      had collapsed by May. What it left behind was a tropical Indian
+      Ocean warmed through the winter, at its warmest in February–April
+      1998 and still warm into the summer. This story follows that warmth:
+      the year shown begins in February 1998 with the basin in its warm
+      phase and the chain on, so the map can show the basin nudging the
+      Pacific toward the La Niña that followed. The El Niño itself is not
+      set as a second driver, because the map would hold it through a
+      summer in which it had already ended.
+    driver: indian_ocean_basin
+    phase: warm
+    start_month: 2
+    start_year: 1998
+    steps:
+      - month: 0
+        focus: indian_ocean_basin
+        text: >
+          Through the winter of 1997–98 the El Niño's sinking air sat over
+          the Indian Ocean, with clear skies and weak winds, and the whole
+          basin gathered heat. By February 1998 the sea from East Africa to
+          Sumatra was running unusually warm, and it stayed warm long after
+          the Pacific had cooled: the ocean acts like a capacitor, storing
+          the El Niño's signal and releasing it onto Asia the following
+          summer. Most of the arrows from this marker point at that summer.
+        sources: [xie_2009, du_2009, klein_1999]
+
+      - month: 3
+        focus: north_indian_ocean_cyclones
+        text: >
+          The dotted arrow to the Arabian Sea and Bay of Bengal says fewer
+          storms than usual before the monsoon, and dotted means contested.
+          Here is why. On 9 June 1998 a cyclone came ashore at Kandla in
+          Gujarat and killed thousands of people, one of the deadliest
+          Arabian Sea storms on record, in exactly the season and the
+          year the arrow points to quiet. A tendency is not a forecast,
+          the reliable record of these storms is short, and the studies
+          behind this arrow are few; it is the least certain on the map.
+        sources: [evan_camargo_2011, ng_chan_2011, felton_2013]
+
+      - month: 4
+        focus: yangtze_summer_rainfall
+        text: >
+          In June the summer rain front settled over the Yangtze valley and
+          stayed. The warm Indian Ocean had built a strong high over the
+          western Pacific, and its winds pumped moist air up the valley for
+          weeks. The river rose to its highest since 1954 and the floods of
+          July and August took thousands of lives and drove millions from
+          their homes. The map's solid arrow is this mechanism: the summer
+          after an El Niño, carried into summer by the ocean the El Niño
+          left warm.
+        sources: [xie_2009, zong_chen_2000, xie_2016]
+
+      - month: 5
+        focus: enso
+        text: >
+          With the chain on, the warm basin has pushed ENSO toward La Niña
+          from June: rain rising over a warm Indian Ocean drives an
+          easterly wind over the far western Pacific, which pushes the warm
+          water west and ends the El Niño quickly. In 1998 the Pacific
+          swung from the strongest El Niño on record to La Niña within a
+          few months, and by July it was there. The arrow is dashed: the
+          push works mostly after strong El Niños, and the Pacific has its
+          own reasons for ending one.
+        sources: [kug_kang_2006, ohba_ueda_2007, noaa_cpc_oni]
+
+      - month: 6
+        focus: west_pacific_typhoons
+        text: >
+          Two arrows point at the typhoon grounds and both say quiet: the
+          warm basin's, through the strong high and the sinking air over
+          the Philippine Sea, and the pushed La Niña's own. The 1998
+          typhoon season was one of the quietest on record over the open
+          western Pacific, even though the sea there was as warm as ever,
+          which is what first led researchers to look for the cause in the
+          Indian Ocean rather than the Pacific.
+        sources: [du_2011, xie_2009]
+
+      - month: 12
+        focus: indian_ocean_basin
+        text: >
+          A year on, in February 1999, the map still holds the basin warm.
+          The real warmth had faded by the autumn of 1998, as it usually
+          does; the map's twelve-month hold is a simplification. Two more
+          cautions travel with this driver. The basin mode is mostly the
+          echo of an El Niño, not an independent force, so choosing it
+          alone is a way of looking at the second half of an El Niño
+          story. And the 1998 flood was not only the weather's doing: the
+          study of the flood also points to the lakes and forests that had
+          once held the water. The map shows the tendency; the damage
+          depends on what people have done on the ground.
+        sources: [kosaka_2013, zong_chen_2000, xie_2016]

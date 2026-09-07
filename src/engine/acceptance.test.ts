@@ -221,8 +221,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_nino', 'enso', 'iod', 'nao', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO and the Atlantic Niño as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pdo', 'sam'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño and the Indian Ocean basin mode as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -243,6 +243,7 @@ describe('acceptance: drivers', () => {
     expect(start('pdo')).toBe(11);
     expect(start('amo')).toBe(6);
     expect(start('atlantic_nino')).toBe(5);
+    expect(start('indian_ocean_basin')).toBe(2);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -383,10 +384,10 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships fourteen driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships seventeen driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
-      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'la_nina_cool_basin', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
+      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'warm_basin_la_nina',
     ]);
     for (const l of d2d) {
       expect(l.from).not.toBe(l.to);
@@ -1364,5 +1365,220 @@ describe('acceptance: the 1984 story, an Atlantic Niño inside a cool AMO', () =
     expect(s).toBeDefined();
     expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
       .toEqual(['atlantic_nino', 'warm', 'amo', 'negative', 5, true, 5, 1984]);
+  });
+});
+
+
+// ---------------------------------------------------------------- M20: eighth driver (Indian Ocean Basin Mode)
+// The basin warms a season after an El Niño begins, peaks in February–April
+// and lasts into the summer, so its scenarios start in February.
+function runIob(phaseId: string, startMonth = 2, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'indian_ocean_basin', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+const WARM_BASIN: Array<[string, Value, string]> = [
+  ['yangtze_summer_rainfall', 1, 'the Yangtze wet'],
+  ['west_pacific_typhoons', -1, 'the typhoon season quiet'],
+  ['south_china_rainfall', 1, 'South China wet'],
+  ['indian_summer_monsoon', 1, 'the Indian monsoon stronger'],
+  ['north_indian_ocean_cyclones', -1, 'the pre-monsoon cyclones fewer'],
+];
+
+describe('acceptance: warm Indian Ocean basin, February start', () => {
+  const tl = runIob('warm');
+  for (const [id, sign, label] of WARM_BASIN) {
+    it(`${label} within twelve months`, () => {
+      expect(monthsWith(tl, id, sign).length, `${id} never reaches ${sign}`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, (-sign) as Value), `${id} also shows the opposite sign`).toHaveLength(0);
+    });
+  }
+  it('the Yangtze from June (month 4), pending before; South China from April; the cyclones April–June; the monsoon from June', () => {
+    expect(tl.months[0].calendarMonth).toBe(2);
+    expect(tl.months[3].nodes.yangtze_summer_rainfall.value).toBe(0);
+    expect(tl.months[3].nodes.yangtze_summer_rainfall.pendingLinkIds).toEqual(['warm_basin_yangtze']);
+    expect(tl.months[4].calendarMonth).toBe(6);
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.value).toBe(1);
+    expect(tl.months[6].nodes.yangtze_summer_rainfall.value).toBe(1);
+    expect(tl.months[7].nodes.yangtze_summer_rainfall.value).toBe(0);
+    expect(tl.months[1].nodes.south_china_rainfall.value).toBe(0);
+    expect(tl.months[2].nodes.south_china_rainfall.value).toBe(1);
+    expect(tl.months[2].nodes.north_indian_ocean_cyclones.value).toBe(-1);
+    expect(tl.months[4].nodes.north_indian_ocean_cyclones.value).toBe(-1);
+    expect(tl.months[5].nodes.north_indian_ocean_cyclones.value).toBe(0);
+    expect(tl.months[3].nodes.indian_summer_monsoon.value).toBe(0);
+    expect(tl.months[4].nodes.indian_summer_monsoon.value).toBe(1);
+    expect(tl.months[4].nodes.west_pacific_typhoons.value).toBe(-1);
+  });
+  it('tiers: the Yangtze established, typhoons and South China probable, the monsoon and the cyclones contested, the push on ENSO probable', () => {
+    const own = graph.links.filter((l) => l.from === 'indian_ocean_basin');
+    expect(own).toHaveLength(9);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => `${l.when}:${l.confidence}`).sort();
+    expect(tier('yangtze_summer_rainfall')).toEqual(['cool:probable', 'warm:established']);
+    expect(tier('west_pacific_typhoons')).toEqual(['cool:contested', 'warm:probable']);
+    expect(tier('south_china_rainfall')).toEqual(['cool:probable', 'warm:probable']);
+    expect(tier('indian_summer_monsoon')).toEqual(['warm:contested']);
+    expect(tier('north_indian_ocean_cyclones')).toEqual(['warm:contested']);
+    expect(tier('enso')).toEqual(['warm:probable']);
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.confidence).toBe('established');
+    expect(tl.months[4].nodes.indian_summer_monsoon.confidence).toBe('contested');
+    expect(tl.months[3].nodes.north_indian_ocean_cyclones.confidence).toBe('contested');
+  });
+  it('under "probable and above" the monsoon and the cyclones are hollow ghosts while the Yangtze and the typhoons still apply', () => {
+    const prob = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON, maxDepth: 1, minConfidence: 'probable' });
+    expect(prob.months[4].nodes.indian_summer_monsoon.value).toBe(0);
+    expect(prob.months[4].links.warm_basin_indian_monsoon?.status).toBe('ghost');
+    expect(prob.months[3].nodes.north_indian_ocean_cyclones.value).toBe(0);
+    expect(prob.months[3].links.warm_basin_north_indian_ocean_cyclones?.status).toBe('ghost');
+    expect(prob.months[4].nodes.yangtze_summer_rainfall.value).toBe(1);
+    expect(prob.months[4].nodes.west_pacific_typhoons.value).toBe(-1);
+  });
+  it('at depth 1 ENSO is pushed toward La Niña from June (lag 4) but its links do not fire', () => {
+    for (const m of tl.months) expect(m.nodes.enso.value, `month ${m.index}`).toBe(m.index >= 4 ? -1 : 0);
+    expect(tl.months[4].calendarMonth).toBe(6);
+    for (const m of tl.months) expect(m.nodes.indonesia_rainfall.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+  });
+  it('the IOD is not pushed by the basin and the regions of the other drivers stay hollow', () => {
+    for (const m of tl.months) expect(m.nodes.iod.value, `month ${m.index}`).toBe(0);
+    for (const id of ['east_africa_short_rains', 'peru_coast_rainfall', 'northern_europe_winter', 'alaska_winter', 'sahel_rainfall', 'guinea_coast_rainfall', 'east_asia_summer']) {
+      for (const m of tl.months) {
+        expect(m.nodes[id].viaLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} at month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+});
+
+describe('acceptance: cool Indian Ocean basin, February start', () => {
+  const tl = runIob('cool');
+  it('reverses the Yangtze, the typhoons and South China, and never copies the warm sign', () => {
+    for (const [id, sign] of WARM_BASIN.filter(([id]) => id !== 'indian_summer_monsoon' && id !== 'north_indian_ocean_cyclones')) {
+      expect(monthsWith(tl, id, (-sign) as Value).length, `${id} should reverse the warm phase`).toBeGreaterThan(0);
+      expect(monthsWith(tl, id, sign), `${id} copies the warm sign`).toHaveLength(0);
+    }
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.confidence).toBe('probable');
+    expect(tl.months[4].nodes.west_pacific_typhoons.confidence).toBe('contested');
+  });
+  it('leaves the monsoon and the cyclones hollow, and does not push ENSO: the literature supports the warm phase only', () => {
+    for (const m of tl.months) {
+      for (const id of ['indian_summer_monsoon', 'north_indian_ocean_cyclones']) {
+        expect(m.nodes[id].viaLinkIds, `${id} month ${m.index}`).toHaveLength(0);
+        expect(m.nodes[id].pendingLinkIds, `${id} month ${m.index}`).toHaveLength(0);
+      }
+      expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
+    }
+  });
+});
+
+describe('acceptance: El Niño pushes the basin warm (June start, chain on): the capacitor chain', () => {
+  const tl = runDeep('enso', 'el_nino', 6);
+  it('the basin is pushed warm in September (lag 3) at depth 1, rated established', () => {
+    expect(tl.months[2].nodes.indian_ocean_basin.value).toBe(0);
+    expect(tl.months[3].calendarMonth).toBe(9);
+    expect(tl.months[3].nodes.indian_ocean_basin.value).toBe(1);
+    expect(tl.months[3].nodes.indian_ocean_basin.viaLinkIds).toEqual(['el_nino_warm_basin']);
+    expect(tl.months[3].links.el_nino_warm_basin?.depth).toBe(1);
+    expect(tl.months[3].nodes.indian_ocean_basin.confidence).toBe('established');
+  });
+  it('the Yangtze link reaches only the last month shown (June, month 12), one tier down; before that it is pending, the honest result', () => {
+    for (const m of tl.months.slice(0, 12)) {
+      expect(m.nodes.yangtze_summer_rainfall.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      expect(m.links.warm_basin_yangtze?.status ?? 'absent', `month ${m.index}`).not.toBe('applied');
+    }
+    expect(tl.months[6].nodes.yangtze_summer_rainfall.pendingLinkIds).toEqual(['warm_basin_yangtze']);
+    const jun = tl.months[12];
+    expect(jun.calendarMonth).toBe(6);
+    expect(jun.nodes.yangtze_summer_rainfall.viaLinkIds).toEqual(['warm_basin_yangtze']);
+    expect(jun.nodes.yangtze_summer_rainfall.confidence).toBe('probable');
+    expect(jun.links.warm_basin_yangtze?.depth).toBe(2);
+  });
+  it('the pushed basin reaches South China in April and May one tier down, alongside El Niño’s own arrow, same sign, rated by the weaker', () => {
+    const apr = tl.months[10];
+    expect(apr.calendarMonth).toBe(4);
+    expect([...apr.nodes.south_china_rainfall.viaLinkIds].sort()).toEqual(['el_nino_south_china', 'warm_basin_south_china']);
+    expect(apr.nodes.south_china_rainfall.value).toBe(1);
+    expect(apr.nodes.south_china_rainfall.conflicting).toBe(false);
+    expect(apr.links.warm_basin_south_china?.depth).toBe(2);
+    expect(apr.links.warm_basin_south_china?.confidence).toBe('contested');
+    expect(apr.nodes.south_china_rainfall.confidence).toBe('contested');
+    expect(tl.months[9].nodes.south_china_rainfall.viaLinkIds).toEqual(['el_nino_south_china']);
+  });
+  it('the dipole and the basin are both pushed; the basin’s monsoon arrow reaches only month 12 and joins the conflict the dipole already makes there', () => {
+    expect(tl.months[3].nodes.iod.value).toBe(1);
+    for (const m of tl.months.slice(0, 12)) expect(m.links.warm_basin_indian_monsoon?.status ?? 'absent', `month ${m.index}`).not.toBe('applied');
+    // El Niño's own weaker-monsoon arrow and the pushed dipole's stronger-monsoon arrow already conflict in June (month 0).
+    expect(tl.months[0].nodes.indian_summer_monsoon.conflicting).toBe(true);
+    const jun = tl.months[12];
+    expect(jun.links.warm_basin_indian_monsoon?.status).toBe('applied');
+    expect(jun.nodes.indian_summer_monsoon.conflicting).toBe(true);
+    expect([...jun.nodes.indian_summer_monsoon.viaLinkIds].sort()).toEqual(['el_nino_indian_monsoon', 'positive_iod_indian_monsoon', 'warm_basin_indian_monsoon']);
+  });
+  it('the basin’s push back on ENSO is guarded: ENSO stays El Niño all year', () => {
+    for (const m of tl.months) expect(m.nodes.enso.value, `month ${m.index}`).toBe(1);
+    for (const m of tl.months) expect(m.links.warm_basin_la_nina?.status ?? 'absent', `month ${m.index}`).not.toBe('applied');
+  });
+  it('a La Niña from June pushes the basin cool in September, rated probable, and the cool basin pushes nothing back', () => {
+    const ln = runDeep('enso', 'la_nina', 6);
+    expect(ln.months[3].nodes.indian_ocean_basin.value).toBe(-1);
+    expect(ln.months[3].nodes.indian_ocean_basin.confidence).toBe('probable');
+    for (const m of ln.months) expect(m.nodes.enso.value, `month ${m.index}`).toBe(-1);
+  });
+});
+
+describe('acceptance: the warm basin nudges the Pacific (February start, chain on)', () => {
+  const tl = runIob('warm', 2, 3);
+  it('the pushed La Niña fires its own links one tier down: the typhoons quiet through both arrows in August, Indonesia wet in June', () => {
+    const jun = tl.months[4];
+    expect(jun.links.warm_basin_la_nina?.status).toBe('applied');
+    expect(jun.nodes.enso.confidence).toBe('probable');
+    expect(jun.nodes.indonesia_rainfall.value).toBe(1);
+    expect(jun.links.la_nina_indonesia?.depth).toBe(2);
+    const aug = tl.months[6];
+    expect(aug.calendarMonth).toBe(8);
+    expect([...aug.nodes.west_pacific_typhoons.viaLinkIds].sort()).toEqual(['la_nina_west_pacific_typhoons', 'warm_basin_west_pacific_typhoons']);
+    expect(aug.nodes.west_pacific_typhoons.value).toBe(-1);
+    expect(aug.nodes.west_pacific_typhoons.conflicting).toBe(false);
+  });
+  it('the pushed La Niña reinforces the contested monsoon arrow rather than conflicting with it', () => {
+    for (const m of tl.months) expect(m.nodes.indian_summer_monsoon.conflicting, `month ${m.index}`).toBe(false);
+    expect(tl.months[5].nodes.indian_summer_monsoon.value).toBe(1);
+  });
+  it('the loop guard holds: the pushed La Niña does not push the basin cool', () => {
+    for (const m of tl.months) expect(m.nodes.indian_ocean_basin.value, `month ${m.index}`).toBe(1);
+  });
+  it('under "established only" the push is a ghost and only the Yangtze is applied', () => {
+    const est = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    expect(est.months[4].links.warm_basin_la_nina?.status).toBe('ghost');
+    expect(est.months[4].nodes.enso.value).toBe(0);
+    expect(est.months[4].nodes.yangtze_summer_rainfall.value).toBe(1);
+    expect(est.months[4].nodes.west_pacific_typhoons.value).toBe(0);
+    expect(est.months[4].links.warm_basin_west_pacific_typhoons?.status).toBe('ghost');
+  });
+});
+
+describe('acceptance: the 1998 scenario, a warm basin with the El Niño that began before', () => {
+  // The plan's original design: the basin from February 1998 with El Niño
+  // as a second driver from June 1997. It puts the Yangtze at full tier
+  // through the chosen basin, but the map holds the El Niño through a
+  // summer in which it had ended, so the shipped story leaves it out.
+  const tl = runTwo(['indian_ocean_basin', 'warm'], ['enso', 'el_nino'], 2, 6, true);
+  it('ENSO onset -8, the Yangtze from month 4 at full tier through the chosen basin', () => {
+    expect(chosenOnset(tl.scenario, 'enso')).toBe(-8);
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.viaLinkIds).toEqual(['warm_basin_yangtze']);
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.confidence).toBe('established');
+  });
+  it('neither chosen driver is pushed by the other', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.enso.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.indian_ocean_basin.value, `month ${m.index}`).toBe(1);
+    }
+  });
+  it('the held El Niño conflicts with the warm basin at the typhoons in August, the reason the shipped story omits it', () => {
+    expect(tl.months[6].nodes.west_pacific_typhoons.conflicting).toBe(true);
+  });
+  it('the shipped story uses the basin alone from February 1998', () => {
+    const s = graph.stories.find((x) => x.id === 'warm_basin_1998_yangtze')!;
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 3, 4, 5, 6, 12]);
   });
 });

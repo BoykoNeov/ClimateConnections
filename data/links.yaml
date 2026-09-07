@@ -3021,6 +3021,284 @@ links:
     sources: [rodriguez_fonseca_2009, ding_2012]
 
 
+  # ---- Indian Ocean Basin Mode (M20). The basin warms a season after an
+  # El Niño begins, peaks in February–April and lasts into the summer, so
+  # its scenarios start in February and its summer links count their lag
+  # from there. The cool phase is mirrored only where the literature
+  # supports it, one tier lower where the evidence is thinner.
+  - id: warm_basin_yangtze
+    from: indian_ocean_basin
+    when: warm
+    to: yangtze_summer_rainfall
+    effect: 1
+    lag_months: [3, 5]
+    season: [6, 7, 8]
+    confidence: established
+    mechanism: >
+      Rain rising over the warm Indian Ocean warms the air high above the
+      tropics, and that warmth spreads east as a wave along the equator.
+      Over the western Pacific it dries the air and builds a strong
+      high-pressure area, whose winds pump moist air up the Yangtze valley
+      and hold the summer rain front there.
+    caveat: >
+      The strength of the high, not just whether there was an El Niño the
+      winter before, decides how heavy the rains are; a weak or short-lived
+      basin warming adds little, and the front's position in any one week
+      is weather.
+    evidence_note: >
+      The summer after an El Niño brings a warm tropical Indian Ocean, an
+      anomalous high over the subtropical northwest Pacific and heavier
+      Meiyu–Baiu rain over East Asia; model runs with only the Indian
+      Ocean warming reproduce the high, and the review of the mechanism
+      treats the basin warming as the memory that carries the pattern into
+      summer.
+    sources: [xie_2009, xie_2016, yang_2007, huang_2010]
+
+  - id: cool_basin_yangtze
+    from: indian_ocean_basin
+    when: cool
+    to: yangtze_summer_rainfall
+    effect: -1
+    lag_months: [3, 5]
+    season: [6, 7, 8]
+    confidence: probable
+    mechanism: >
+      A cool Indian Ocean gives less rain and a cooler upper air over the
+      tropics, so the western Pacific high stays weak and sits further
+      east, and less moist air is pumped up the Yangtze valley in summer.
+    caveat: >
+      The cooling after a La Niña is weaker and shorter than the warming
+      after an El Niño, so the dry tendency is less reliable than the wet
+      one; shown one tier lower for that reason.
+    evidence_note: >
+      Statistical studies that regress the Asian summer monsoon on the
+      basin-mode index find the wet and dry signs together; the physical
+      work is mostly on the warm phase, and El Niño and La Niña differ in
+      how strongly they reach the Indian Ocean.
+    sources: [yang_2010, yang_2007, okumura_2011]
+
+  - id: warm_basin_west_pacific_typhoons
+    from: indian_ocean_basin
+    when: warm
+    to: west_pacific_typhoons
+    effect: -1
+    lag_months: [3, 6]
+    season: [6, 7, 8, 9, 10]
+    confidence: probable
+    mechanism: >
+      The warm air spreading east from the Indian Ocean dries the western
+      Pacific and sets up a high-pressure area over the Philippine Sea,
+      with sinking air and stronger wind shear where typhoons usually form,
+      so fewer of them form in the summer after an El Niño.
+    caveat: >
+      Clearest after strong El Niños, and the effect is on the number of
+      storms over the open Pacific: the South China Sea can be busier at
+      the same time, and any one typhoon can still strike.
+    evidence_note: >
+      In the summer following a strong El Niño typhoon numbers fall over
+      the northwest Pacific despite little change in the local sea
+      temperature, and the analysis traces the fall to the El Niño-induced
+      Indian Ocean warming through the high and the shear it sets up.
+    sources: [du_2011, xie_2009, xie_2016]
+
+  - id: cool_basin_west_pacific_typhoons
+    from: indian_ocean_basin
+    when: cool
+    to: west_pacific_typhoons
+    effect: 1
+    lag_months: [3, 6]
+    season: [6, 7, 8, 9, 10]
+    confidence: contested
+    mechanism: >
+      A cool Indian Ocean leaves the western Pacific high weak, with more
+      rising air and weaker wind shear over the Philippine Sea, which is
+      proposed to allow a busier typhoon season.
+    caveat: >
+      Studied mainly for the warm phase after strong El Niños; the cool
+      phase is weaker and the reverse effect is an inference from the
+      mechanism rather than a well-tested result.
+    evidence_note: >
+      The typhoon study covers summers after strong El Niños only; the
+      reverse is drawn as contested because the physical argument runs
+      both ways but the cool-phase evidence is thin.
+    sources: [du_2011, okumura_2011]
+
+  - id: warm_basin_south_china
+    from: indian_ocean_basin
+    when: warm
+    to: south_china_rainfall
+    effect: 1
+    lag_months: [0, 2]
+    season: [4, 5, 6]
+    confidence: probable
+    mechanism: >
+      The high-pressure area over the Philippine Sea that the warm basin
+      sustains carries warm, moist air onto the coast of southern China
+      through spring and into early summer, keeping the rainy season wet.
+    caveat: >
+      In spring this arrow overlaps El Niño's own wet signal on the same
+      coast, and much of what it shows is the tail of that; a weak basin
+      warming adds little once the El Niño has faded.
+    evidence_note: >
+      Model runs with the basin warming alone reproduce the anticyclone
+      over the Philippine and South China Seas and more rain along the East
+      Asian front through spring, and the observational analysis of the
+      mode finds the same anticyclone in early summer.
+    sources: [annamalai_2005, yang_2007, xie_2016]
+
+  - id: cool_basin_south_china
+    from: indian_ocean_basin
+    when: cool
+    to: south_china_rainfall
+    effect: -1
+    lag_months: [0, 2]
+    season: [4, 5, 6]
+    confidence: probable
+    mechanism: >
+      With a cool basin the high over the Philippine Sea is weak or absent,
+      so less moist air is carried onto the coast of southern China in
+      spring and early summer.
+    caveat: >
+      The tail of a La Niña's own dry signal covers the same months; the
+      cool phase is the weaker of the two.
+    evidence_note: >
+      The regression studies find both signs; the model work is on the
+      warm phase.
+    sources: [yang_2010, annamalai_2005]
+
+  - id: warm_basin_indian_monsoon
+    from: indian_ocean_basin
+    when: warm
+    to: indian_summer_monsoon
+    effect: 1
+    lag_months: [3, 5]
+    season: [6, 7, 8, 9]
+    confidence: contested
+    mechanism: >
+      A warm Arabian Sea and Bay of Bengal give up more moisture to the
+      monsoon winds, which carry it onto the subcontinent, so the summer
+      rains tend to be heavier once the monsoon is under way.
+    caveat: >
+      The studies disagree: one finds the onset delayed by about a week
+      when the basin is warm, others find heavier rain through the season,
+      and the warm basin usually arrives as an El Niño is fading into a La
+      Niña, which favours a good monsoon on its own. Shown as contested
+      for that reason; the card says so.
+    evidence_note: >
+      The observational analysis of the basin mode finds the southwest
+      monsoon strengthened over the Arabian Sea, and the covariance study
+      finds more South Asian summer rain with a warm basin, while the model
+      study with the December–May warming finds the onset delayed by six to
+      seven days; the sign and the size are both open.
+    sources: [yang_2010, yang_2007, annamalai_2005]
+
+  - id: warm_basin_north_indian_ocean_cyclones
+    from: indian_ocean_basin
+    when: warm
+    to: north_indian_ocean_cyclones
+    effect: -1
+    lag_months: [0, 3]
+    season: [4, 5, 6]
+    confidence: contested
+    mechanism: >
+      In the spring after an El Niño the air over the North Indian Ocean
+      sinks more and the winds aloft shear more, and the monsoon's arrival
+      tends to be late, which is proposed to leave fewer of the storms that
+      form in the weeks before the monsoon.
+    caveat: >
+      The least certain arrow from this driver: reliable storm counts
+      begin with the satellite era, the studies are few, none of them
+      isolates the basin itself, and the Bay of Bengal's spring storms are
+      admitted to be unexplained on so small a sample. The cyclone that
+      struck Gujarat in June 1998, a warm-basin year, is the standing
+      warning.
+    evidence_note: >
+      Bay of Bengal storm activity is negatively correlated with the
+      Pacific's El Niño index at a lead of about five months, which is the
+      season the basin is warm; Arabian Sea storms in May and June go with
+      an early and a late monsoon onset respectively; but the study of the
+      whole basin says the causes of April–June variability have yet to be
+      found, so the link is shown as contested.
+    sources: [felton_2013, evan_camargo_2011, ng_chan_2011, girishkumar_2012]
+
+  # A warm basin hastens the El Niño's end and the turn toward La Niña; the
+  # cool basin is not mirrored, because the Indian Ocean's feedback on a
+  # La Niña is weaker and La Niñas tend to linger instead.
+  - id: warm_basin_la_nina
+    from: indian_ocean_basin
+    when: warm
+    to: enso
+    effect: -1
+    lag_months: [4, 8]
+    season: []
+    confidence: probable
+    mechanism: >
+      Rain rising over the warm Indian Ocean drives an easterly wind over
+      Indonesia and the far western Pacific. That wind pushes warm surface
+      water west and sends a wave of cooler water east along the equator,
+      which ends the El Niño quickly and tips the Pacific toward La Niña
+      by the summer.
+    caveat: >
+      Works mostly after strong El Niños, and the Pacific has its own
+      timing: some El Niños fade without a La Niña following, and the
+      basin's push is one of several reasons an El Niño ends.
+    evidence_note: >
+      Indian Ocean warming produces the easterly wind over the western
+      Pacific in the mature phase of El Niño, which helps its rapid
+      termination and a fast transition to La Niña, mostly for relatively
+      strong El Niños and typically a year after the peak; models show the
+      Indian Ocean is the main source of that wind.
+    sources: [kug_kang_2006, ohba_ueda_2007, okumura_2011, xie_2016]
+
+  # ---- ENSO pushes the basin: the atmospheric bridge into the Indian Ocean.
+  - id: el_nino_warm_basin
+    from: enso
+    when: el_nino
+    to: indian_ocean_basin
+    effect: 1
+    lag_months: [3, 5]
+    season: []
+    confidence: established
+    mechanism: >
+      El Niño shifts the tropical rain east and puts sinking, clear air over
+      the Indian Ocean, with weaker winds; more sunshine and less
+      evaporation let the whole basin gather heat through the winter, and a
+      slow wave in the ocean south of the equator keeps the warmth into the
+      following summer.
+    caveat: >
+      The warming trails the El Niño by about a season and is strongest
+      when a positive Indian Ocean Dipole falls in the same year; a weak El
+      Niño may warm the basin only a little.
+    evidence_note: >
+      The Indian Ocean warms basin-wide during El Niño with a lag of one
+      season through the atmospheric bridge, sustained by surface heat
+      fluxes and, when a dipole coincides, by ocean waves in the west; the
+      north Indian Ocean's second warming peak persists through the summer.
+    sources: [klein_1999, du_2009, chowdary_gnanaseelan_2007, lau_nath_2003]
+
+  - id: la_nina_cool_basin
+    from: enso
+    when: la_nina
+    to: indian_ocean_basin
+    effect: -1
+    lag_months: [3, 5]
+    season: []
+    confidence: probable
+    mechanism: >
+      La Niña pulls the tropical rain west, so more cloud and stronger winds
+      sit over the Indian Ocean, which cools the basin through the winter
+      after a La Niña begins.
+    caveat: >
+      The cooling is weaker and shorter than the warming after an El Niño:
+      the tropical rain answers a cold Pacific less strongly than a warm
+      one, which is also why La Niñas tend to linger.
+    evidence_note: >
+      The bridge works in both directions in the observations, but El Niño
+      and La Niña are not mirror images: the atmosphere's response to a cold
+      Pacific is weaker, which the asymmetry study links to the different
+      durations of the two.
+    sources: [klein_1999, okumura_2011, xie_2016]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -3557,3 +3835,64 @@ sources:
   - key: chang_2006
     citation: "Chang, P., Fang, Y., Saravanan, R., Ji, L., & Seidel, H. (2006). The cause of the fragile relationship between the Pacific El Niño and the Atlantic Niño. Nature, 443, 324–328."
     url: https://doi.org/10.1038/nature05053
+  # ---- Indian Ocean Basin Mode (M20)
+  - key: xie_2009
+    citation: "Xie, S.-P., Hu, K., Hafner, J., Tokinaga, H., Du, Y., Huang, G., & Sampe, T. (2009). Indian Ocean capacitor effect on Indo–western Pacific climate during the summer following El Niño. Journal of Climate, 22(3), 730–747."
+    url: https://doi.org/10.1175/2008JCLI2544.1
+  - key: klein_1999
+    citation: "Klein, S. A., Soden, B. J., & Lau, N.-C. (1999). Remote sea surface temperature variations during ENSO: Evidence for a tropical atmospheric bridge. Journal of Climate, 12(4), 917–932."
+    url: https://doi.org/10.1175/1520-0442(1999)012<0917:RSSTVD>2.0.CO;2
+  - key: du_2009
+    citation: "Du, Y., Xie, S.-P., Huang, G., & Hu, K. (2009). Role of air–sea interaction in the long persistence of El Niño–induced North Indian Ocean warming. Journal of Climate, 22(8), 2023–2038."
+    url: https://doi.org/10.1175/2008JCLI2590.1
+  - key: du_2011
+    citation: "Du, Y., Yang, L., & Xie, S.-P. (2011). Tropical Indian Ocean influence on Northwest Pacific tropical cyclones in summer following strong El Niño. Journal of Climate, 24(1), 315–322."
+    url: https://doi.org/10.1175/2010JCLI3890.1
+  - key: yang_2007
+    citation: "Yang, J., Liu, Q., Xie, S.-P., Liu, Z., & Wu, L. (2007). Impact of the Indian Ocean SST basin mode on the Asian summer monsoon. Geophysical Research Letters, 34, L02708."
+    url: https://doi.org/10.1029/2006GL028571
+  - key: kug_kang_2006
+    citation: "Kug, J.-S., & Kang, I.-S. (2006). Interactive feedback between ENSO and the Indian Ocean. Journal of Climate, 19(9), 1784–1801."
+    url: https://doi.org/10.1175/JCLI3660.1
+  - key: ohba_ueda_2007
+    citation: "Ohba, M., & Ueda, H. (2007). An impact of SST anomalies in the Indian Ocean in acceleration of the El Niño to La Niña transition. Journal of the Meteorological Society of Japan, 85(3), 335–348."
+    url: https://doi.org/10.2151/jmsj.85.335
+  - key: xie_2016
+    citation: "Xie, S.-P., Kosaka, Y., Du, Y., Hu, K., Chowdary, J. S., & Huang, G. (2016). Indo-western Pacific ocean capacitor and coherent climate anomalies in post-ENSO summer: A review. Advances in Atmospheric Sciences, 33(4), 411–432."
+    url: https://doi.org/10.1007/s00376-015-5192-6
+  - key: annamalai_2005
+    citation: "Annamalai, H., Liu, P., & Xie, S.-P. (2005). Southwest Indian Ocean SST variability: Its local effect and remote influence on Asian monsoons. Journal of Climate, 18(20), 4150–4167."
+    url: https://doi.org/10.1175/JCLI3533.1
+  - key: huang_2010
+    citation: "Huang, G., Hu, K., & Xie, S.-P. (2010). Strengthening of tropical Indian Ocean teleconnection to the Northwest Pacific since the mid-1970s: An atmospheric GCM study. Journal of Climate, 23(19), 5294–5304."
+    url: https://doi.org/10.1175/2010JCLI3577.1
+  - key: yang_2010
+    citation: "Yang, J., Liu, Q., & Liu, Z. (2010). Linking observations of the Asian monsoon to the Indian Ocean SST: Possible roles of Indian Ocean basin mode and dipole mode. Journal of Climate, 23(21), 5889–5902."
+    url: https://doi.org/10.1175/2010JCLI2962.1
+  - key: lau_nath_2003
+    citation: "Lau, N.-C., & Nath, M. J. (2003). Atmosphere–ocean variations in the Indo-Pacific sector during ENSO episodes. Journal of Climate, 16(1), 3–20."
+    url: https://doi.org/10.1175/1520-0442(2003)016<0003:AOVITI>2.0.CO;2
+  - key: felton_2013
+    citation: "Felton, C. S., Subrahmanyam, B., & Murty, V. S. N. (2013). ENSO-modulated cyclogenesis over the Bay of Bengal. Journal of Climate, 26(24), 9806–9818."
+    url: https://doi.org/10.1175/JCLI-D-13-00134.1
+  - key: evan_camargo_2011
+    citation: "Evan, A. T., & Camargo, S. J. (2011). A climatology of Arabian Sea cyclonic storms. Journal of Climate, 24(1), 140–158."
+    url: https://doi.org/10.1175/2010JCLI3611.1
+  - key: ng_chan_2011
+    citation: "Ng, E. K. W., & Chan, J. C. L. (2012). Interannual variations of tropical cyclone activity over the north Indian Ocean. International Journal of Climatology, 32(6), 819–830."
+    url: https://doi.org/10.1002/joc.2304
+  - key: girishkumar_2012
+    citation: "Girishkumar, M. S., & Ravichandran, M. (2012). The influences of ENSO on tropical cyclone activity in the Bay of Bengal during October–December. Journal of Geophysical Research: Oceans, 117, C02033."
+    url: https://doi.org/10.1029/2011JC007417
+  - key: zong_chen_2000
+    citation: "Zong, Y., & Chen, X. (2000). The 1998 flood on the Yangtze, China. Natural Hazards, 22(2), 165–184."
+    url: https://doi.org/10.1023/A:1008119805106
+  - key: kosaka_2013
+    citation: "Kosaka, Y., Xie, S.-P., Lau, N.-C., & Vecchi, G. A. (2013). Origin of seasonal predictability for summer climate over the Northwestern Pacific. Proceedings of the National Academy of Sciences, 110(19), 7574–7579."
+    url: https://doi.org/10.1073/pnas.1215582110
+  - key: chowdary_gnanaseelan_2007
+    citation: "Chowdary, J. S., & Gnanaseelan, C. (2007). Basin-wide warming of the Indian Ocean during El Niño and Indian Ocean dipole years. International Journal of Climatology, 27(11), 1421–1438."
+    url: https://doi.org/10.1002/joc.1482
+  - key: okumura_2011
+    citation: "Okumura, Y. M., Ohba, M., Deser, C., & Ueda, H. (2011). A proposed mechanism for the asymmetric duration of El Niño and La Niña. Journal of Climate, 24(15), 3822–3829."
+    url: https://doi.org/10.1175/2011JCLI3999.1

@@ -95,6 +95,22 @@ browser script decides the final position, as it did in M19.
 
 ### M20 — Eighth driver: the Indian Ocean Basin Mode
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§10 under M20. Four departures from the text below, each with its reason
+there: the Yangtze got its own outcome node (`east_asia_summer` is a
+temperature axis over Japan and Korea and cannot say "wetter"); the
+monsoon link is drawn as heavier rain, contested, because the verified
+sources lean that way, with the delayed onset in the caveat; the story
+runs the basin alone with the chain on, because holding the El Niño as a
+second driver through the summer of 1998 would show conflicts at the
+typhoons and the monsoon in a season the El Niño had already ended (the
+two-driver scenario is an acceptance test instead, and M32's phase
+duration would let the story add it); and the cool basin does not push
+ENSO. One correction to the reasoning below: the timeline shows thirteen
+months (index 0 to 12), so from a June El Niño the Yangtze link is
+pending through the year and applied at month 12, the following June,
+one tier down; the tests assert that.
+
 The basin-wide warming (or cooling) of the whole tropical Indian Ocean that
 follows an El Niño (or La Niña) by a few months, peaks in the spring, and
 lasts into the summer. It is the textbook "capacitor": the Indian Ocean

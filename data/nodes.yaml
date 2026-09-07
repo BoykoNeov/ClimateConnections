@@ -386,6 +386,62 @@ nodes:
           toward El Niño by the following winter.
     sources: [zebiak_1993, lubbecke_2018, keenlyside_latif_2007, carton_huang_1994]
 
+  - id: indian_ocean_basin
+    name: Indian Ocean Basin Mode
+    label: Indian Ocean basin
+    kind: driver
+    lat: -13
+    lon: 87
+    area: [[40, 15], [100, 15], [100, -15], [40, -15]]
+    region: The whole tropical Indian Ocean, from East Africa to Sumatra
+    timescale: Follows ENSO, one season behind; peaks February–April and lasts into the summer
+    summary: >
+      A warming, or cooling, of the whole tropical Indian Ocean at once.
+      It is mostly not the Indian Ocean's own doing: in the winter of an El
+      Niño the Pacific's changed winds and clouds let the Indian Ocean
+      gather heat, and the whole basin runs warm from late winter into the
+      following summer, after the El Niño itself has faded. The ocean acts
+      like a capacitor, storing the El Niño's signal and releasing it onto
+      East Asia the next summer through a strong high-pressure area over
+      the western Pacific. After a La Niña the basin cools, though less
+      reliably. This is not the Indian Ocean Dipole: the dipole is a
+      contrast between the two ends of the ocean in autumn, the basin mode
+      is the whole ocean warming together in spring. Most warm years are
+      the year after an El Niño, so choosing this driver alone is a way of
+      looking at the second half of an El Niño story.
+    onset_hint: The basin warms a season after an El Niño begins and peaks in February–April; start in February to watch the East Asian summer that follows.
+    default_start_month: 2
+    phases:
+      - id: warm
+        value: 1
+        label: Warm basin
+        color: "#8c510a"
+        summary: >
+          The whole tropical Indian Ocean is warmer than usual, typically
+          the spring after an El Niño. Rain rises over the warm basin and
+          sets up a strong high over the western Pacific: the Yangtze's
+          summer rains tend to be heavy, the typhoon season quiet, and the
+          Pacific is nudged toward La Niña. The summers of 1983, 1998 and
+          2016 followed this pattern.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The tropical Indian Ocean is near its usual temperature and none
+          of the basin-mode tendencies on this map are expected. ENSO and
+          the Indian Ocean Dipole still shape the region's weather.
+      - id: cool
+        value: -1
+        label: Cool basin
+        color: "#00acc1"
+        summary: >
+          The whole tropical Indian Ocean is cooler than usual, typically
+          the spring after a La Niña. The western Pacific high tends to be
+          weak, the Yangtze's summer rains lighter and the typhoon season
+          busier. The cooling after a La Niña is weaker and less reliable
+          than the warming after an El Niño, so fewer links are drawn.
+    sources: [klein_1999, xie_2009, xie_2016, du_2009, chowdary_gnanaseelan_2007]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1534,3 +1590,53 @@ nodes:
       a cold one starves them. On year-to-year timescales the coast and the
       Sahel do not rise and fall together.
     sources: [wagner_da_silva_1994, lubbecke_2018, polo_2008]
+
+  # ---- Indian Ocean Basin Mode outcomes (M20)
+  - id: yangtze_summer_rainfall
+    name: Yangtze valley summer rainfall
+    label: Yangtze
+    kind: outcome
+    lat: 32.5
+    lon: 107
+    area: [[105, 34], [122, 34], [122, 28], [105, 28]]
+    region: The Yangtze valley from the Sichuan basin to Shanghai
+    timescale: June–August, the Meiyu ("plum rain") season and the summer after it
+    axis: wet_dry
+    labels:
+      plus: Summer rains tend to be heavier than usual
+      zero: Near normal
+      minus: Summer rains tend to be lighter than usual
+    summary: >
+      Each June a stationary front settles over the Yangtze valley and
+      brings the Meiyu, the "plum rains", that fill the river and the
+      paddies. How heavy they are depends on the high-pressure area over
+      the western Pacific: when that high is strong and lies far to the
+      west, it pumps moist air up the valley and the rains run heavy, as in
+      the flood summer of 1998. The summer after an El Niño is the classic
+      case, and the warm Indian Ocean the El Niño leaves behind is the
+      reason the pattern lasts into summer.
+    sources: [xie_2009, xie_2016, zong_chen_2000]
+
+  - id: north_indian_ocean_cyclones
+    name: North Indian Ocean cyclones, pre-monsoon season
+    label: N Indian Ocean cyclones
+    kind: outcome
+    lat: 15.5
+    lon: 64
+    area: [[55, 25], [95, 25], [95, 5], [55, 5]]
+    region: The Arabian Sea and the Bay of Bengal
+    timescale: April–June, the storm season before the monsoon (a second season follows it in October–November)
+    axis: active_quiet
+    labels:
+      plus: More pre-monsoon storms than usual
+      zero: Near normal
+      minus: Fewer pre-monsoon storms than usual
+    summary: >
+      The North Indian Ocean breeds only a handful of cyclones a year, in
+      two short seasons either side of the monsoon, but they strike some of
+      the most crowded coasts on Earth. The reliable record is short, since
+      trustworthy storm counts begin with the satellite era, so the
+      year-to-year science rests on few storms. The autumn season is known
+      to answer to ENSO; the spring season is less understood, and the
+      arrow pointing here is the least certain on this map.
+    sources: [evan_camargo_2011, ng_chan_2011, felton_2013]

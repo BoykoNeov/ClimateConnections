@@ -14,8 +14,8 @@ year as a circle, since M14 two scenarios compared side by side,
 since M15 a second driver that may begin before the first, and since
 M16 the Southern Annular Mode as a fourth driver, since M17 the
 Pacific Decadal Oscillation as a fifth, since M18 the Atlantic
-Multidecadal Oscillation as a sixth, and since M19 the Atlantic Niño as a
-seventh) on a
+Multidecadal Oscillation as a sixth, since M19 the Atlantic Niño as a
+seventh, and since M20 the Indian Ocean Basin Mode as an eighth) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -55,10 +55,12 @@ one.
   Southern Annular Mode as a fourth driver (M16) and the Pacific Decadal
   Oscillation as a fifth (M17) were signed off on 2026-09-07, and the
   Atlantic Multidecadal Oscillation as a sixth (M18) and the Atlantic
-  Niño as a seventh (M19) on 2026-09-08. A new driver is data only (a driver node, its outcome
+  Niño as a seventh (M19) on 2026-09-08, and the Indian Ocean Basin Mode
+  as an eighth (M20, the first version 3 item, `docs/PLAN_V3.md`) on
+  2026-09-08. A new driver is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
-  everything from the data. Do not start another version 2 item without
-  sign-off.
+  everything from the data. Do not start another version 2 or version 3
+  item without sign-off.
 - Plain language in user-facing text. Students read the cards.
 
 ## Workflow
