@@ -47,8 +47,9 @@ dependencies between milestones.
 
 Each milestone has the same headings as the version-2 milestones: Data,
 Schema/Engine/UI, Tests, Browser check, Honesty note, Not in this
-milestone. Where a milestone needs a decision at sign-off, it is marked
-**Decide at sign-off**.
+milestone. Where a milestone needed a decision at sign-off, it is marked
+**Decided 2026-09-08** with the answer; the five open questions in the
+first draft were all answered by the user on that date.
 
 ---
 
@@ -123,8 +124,10 @@ it fills the gap the M19 note left ("candidates exhausted").
     - New outcome node **North Indian Ocean cyclones** (Arabian Sea + Bay
       of Bengal, `north_indian_ocean_cyclones`, axis active_quiet, marker
       about 12°N 68°E): fewer pre-monsoon storms in a warm basin, contested.
-      **Decide at sign-off** whether the evidence is enough to ship this
-      node; drop it if not.
+      **Decided 2026-09-08: ship it**, contested, with a note on the node's
+      card and in the link's evidence note saying the record is short
+      (reliable storm counts start in the satellite era) and the studies
+      few, so this is the least certain arrow from this driver.
   - Links in: ENSO El Niño → basin warm, established, lag 3–5, all year
     (Klein, Soden & Lau 1999; Xie et al. 2009); La Niña → basin cool,
     probable, same lag. These are the chain: with "Follow links through
@@ -238,7 +241,8 @@ into a winter El Niño and its whole map.
   - Links out, positive phase: ENSO → El Niño, probable, lag 6–9, all year
     (Chiang & Vimont 2004; Chang et al. 2007; Larson & Kirtman 2013);
     negative → La Niña, contested (the negative side is weaker in the
-    record; ship it contested or not at all, **decide at sign-off**).
+    record; **decided 2026-09-08: ship it contested**, with an evidence
+    note saying the positive side is the well-studied one).
     West Pacific typhoons: more active, probable, lag 2–5, June–November
     (Zhang et al. 2016). Eastern Pacific hurricanes: more, contested.
     Hawaii: no supportable link; leave hollow.
@@ -539,12 +543,16 @@ keeps its phase only in months where the pushing link is applied, as rule
 happens after a fade; the driver is not pushed back into a phase by its own
 fade. Sums, clamps, conflicts, tiers: unchanged.
 
-**Decide at sign-off**: whether a link with `lag_months[0]` beyond the hold
-should still fire (the physical case is an effect carried by the ocean
-after the atmospheric phase has ended, such as a basin-mode link). The
-proposed answer is **no**, because the alternative reintroduces a hidden
-memory the student cannot see; the honest way to show ocean memory is the
-M20 chain, where the memory is a driver on the map.
+**Decided 2026-09-08**: a link with `lag_months[0]` beyond the hold does
+**not** fire (the physical case is an effect carried by the ocean after the
+atmospheric phase has ended, such as a basin-mode link). The alternative
+would reintroduce a hidden memory the student cannot see; the honest way to
+show ocean memory is the M20 chain, where the memory is a driver on the
+map. A note is required in the UI, not only in the data: the card of a
+faded link says "this effect needs N months to arrive and the event was
+set to last M, so on this map it never arrives; in reality the ocean can
+carry such an effect past the end of the event", and the "Event lasts"
+control's hint says the same in one sentence.
 
 - **Data.** Drivers gain `typical_duration_months: [min, max]` (required
   once M32 ships; the validator errors on a driver without it). The
@@ -637,9 +645,10 @@ way rule 16 allows: a hand-curated, committed table, not a data feed.
   NOAA PSL ATL3 for the Atlantic Niño), each with the threshold used to
   call a phase written in the citation ("phase called when the
   three-month mean exceeded ±0.5 °C for five overlapping seasons", i.e.
-  the NOAA definition). Coverage: ENSO 1950 onward, the others from where
-  their index starts; **decide at sign-off** how far back to go (proposal:
-  1980–2025 for all seven, ENSO alone back to 1950).
+  the NOAA definition). Coverage, **decided 2026-09-08**: 1980–2025 for
+  all seven drivers, ENSO alone back to 1950; a driver whose index starts
+  later than 1980 (none of the seven, as far as known) is "not recorded"
+  for the missing years.
 - **Validator.** Every driver and phase exists; years are unique and the
   onset month is 1–12; every row has a source that resolves; a year's set
   of chosen drivers is a valid M33 scenario (no driver twice).
@@ -752,8 +761,12 @@ phase.
   a sub-choice that opens only when El Niño is selected; the default is
   the parent, so the page opens as today. The card for the variant phase
   starts with what is different. Stories may name a variant (2004–05 and
-  2009–10 were central-Pacific events; **decide at sign-off** whether to
-  add a 2009–10 story).
+  2009–10 were central-Pacific events). **Decided 2026-09-08**: add a
+  2009–10 story, "2009–10: an El Niño in the wrong place", central-Pacific
+  El Niño from July 2009, with a weak Indian monsoon in the summer of
+  2009, the cold and snowy European and eastern US winter (the negative
+  NAO doing more than the El Niño; use the NAO as a second driver from
+  December) and the closing point that the Peru coast stayed dry.
 - **Tests.** Parent links fire for the variant, `except` stops them,
   variant-only links do not fire for the parent, a push lands on the
   parent, validator errors for a variant with the wrong value or a
