@@ -118,6 +118,8 @@ stories:
     start_year: 1997                    # optional; dates the steps ("December 1997")
     second_driver: iod                  # optional (M11): a second driver chosen by hand
     second_phase: negative              #   for the whole story; both fields or neither
+    second_start_month: 9               # optional (M12): the month the second driver enters
+                                        #   its phase; defaults to start_month
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -129,7 +131,13 @@ stories:
 Rules enforced by the validator:
 - `driver` must be a driver and `phase` one of its phases. `second_driver`,
   if given, must be a different driver with `second_phase` as one of its
-  phases; both chosen drivers enter their phase at month 0.
+  phases. The main driver enters its phase at month 0; the second one at
+  month 0 too, or in `second_start_month` (M12), read within the twelve
+  months shown: the first time that calendar month comes up at or after
+  `start_month`, so a month earlier than `start_month` falls in the
+  following year. Before it the second driver is out of play (no phase, no
+  links, still never pushed); from it its links count their lag.
+  `second_start_month` needs a `second_driver`.
 - Every `focus` must be a node id. If it is not a chosen driver, it must
   actually be affected at that month: some link from a chosen driver/phase
   to it (or from a driver a chosen driver has pushed) has

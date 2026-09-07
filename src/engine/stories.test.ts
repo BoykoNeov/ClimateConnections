@@ -21,7 +21,9 @@ describe('stories', () => {
     describe(story.title, () => {
       const timeline = propagate(graph, {
         driverId: story.driver, phaseId: story.phase, startMonth: story.start_month, horizonMonths: 12, maxDepth: 3,
-        secondary: story.second_driver && story.second_phase ? { driverId: story.second_driver, phaseId: story.second_phase } : undefined,
+        secondary: story.second_driver && story.second_phase
+          ? { driverId: story.second_driver, phaseId: story.second_phase, startMonth: story.second_start_month ?? story.start_month }
+          : undefined,
       });
       const chosen = new Set([story.driver, story.second_driver].filter((x): x is string => !!x));
       story.steps.forEach((step, i) => {

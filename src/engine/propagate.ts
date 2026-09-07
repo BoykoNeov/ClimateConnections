@@ -30,16 +30,29 @@ function emptyState(): NodeState {
 }
 
 /** The drivers whose phases the scenario fixes by hand: the main driver and,
- *  since M11, an optional second one. Both enter their phase at month 0. */
+ *  since M11, an optional second one. The main driver enters its phase at
+ *  month 0; the second one at month 0 too, or in its own start month (M12). */
 export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
   const out: ScenarioDriver[] = [{ driverId: scenario.driverId, phaseId: scenario.phaseId }];
   if (scenario.secondary) {
     if (scenario.secondary.driverId === scenario.driverId) {
       throw new Error(`scenario chooses driver "${scenario.driverId}" twice`);
     }
-    out.push({ driverId: scenario.secondary.driverId, phaseId: scenario.secondary.phaseId });
+    const { driverId, phaseId, startMonth } = scenario.secondary;
+    out.push(startMonth === undefined ? { driverId, phaseId } : { driverId, phaseId, startMonth });
   }
   return out;
+}
+
+/** Month index at which a chosen driver enters its phase: 0 for the main
+ *  driver and for a second driver without a start month of its own; otherwise
+ *  the first month index at or after 0 whose calendar month is the second
+ *  driver's start month (M12). A start month earlier in the calendar than the
+ *  scenario's therefore falls in the following year. */
+export function chosenOnset(scenario: Scenario, driverId: string): number {
+  const s = scenario.secondary;
+  if (!s || s.driverId !== driverId || s.startMonth === undefined) return 0;
+  return (s.startMonth - scenario.startMonth + 12) % 12;
 }
 
 /** Links that belong to a chosen driver + phase (the first hop). */
@@ -74,10 +87,11 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
   }
 
   // First month index at which a driver entered a phase. A chosen driver
-  // enters its phase at month 0; a driver set off by a link enters its phase
-  // the first month that link is applied, and keeps that onset for the rest of
-  // the scenario (each link fires once: its lag is counted from that onset).
-  const onset = new Map<string, number>(chosen.map((c) => [`${c.driverId}|${c.phaseId}`, 0]));
+  // enters its phase at month 0 (the second one in its own start month, M12);
+  // a driver set off by a link enters its phase the first month that link is
+  // applied, and keeps that onset for the rest of the scenario (each link
+  // fires once: its lag is counted from that onset).
+  const onset = new Map<string, number>(chosen.map((c) => [`${c.driverId}|${c.phaseId}`, chosenOnset(scenario, c.driverId)]));
   const months: MonthState[] = [];
 
   for (let index = 0; index <= scenario.horizonMonths; index++) {
@@ -85,14 +99,20 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     const nodes: Record<string, NodeState> = {};
     for (const n of graph.nodes) nodes[n.id] = emptyState();
     const links: Record<string, LinkState> = {};
-    for (const [id, value] of chosenValue) if (nodes[id]) nodes[id].value = value;
+    // Chosen drivers already in their phase this month. A second driver with
+    // a later start month holds no phase before it: value 0, no links.
+    const inPhase = chosen.filter((c) => index >= chosenOnset(scenario, c.driverId));
+    for (const c of inPhase) {
+      const value = chosenValue.get(c.driverId);
+      if (value !== undefined && nodes[c.driverId]) nodes[c.driverId].value = value;
+    }
 
     // Drivers whose phase is already fixed this month. A link into one of them
-    // is skipped: a chosen driver is never pushed (not by its own effects, and
-    // not by the other chosen driver), and a driver set off at a shallower hop
-    // is not pushed again (loop guard).
+    // is skipped: a chosen driver is never pushed (not by its own effects, not
+    // by the other chosen driver, and not before its own start month), and a
+    // driver set off at a shallower hop is not pushed again (loop guard).
     const settled = new Set<string>(chosen.map((c) => c.driverId));
-    let frontier: Hop[] = chosen.map((c) => ({ driverId: c.driverId, phaseId: c.phaseId, confidence: null }));
+    let frontier: Hop[] = inPhase.map((c) => ({ driverId: c.driverId, phaseId: c.phaseId, confidence: null }));
 
     // Sum of effects and sign bookkeeping per target for the conflict flag,
     // accumulated across hops: a first-hop push and a second-hop push on the

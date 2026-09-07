@@ -42,12 +42,22 @@ function sureBlock(link: Link, ls: LinkState | null): string {
   </div>`;
 }
 
+/** A driver chosen by hand: its phase, and when it enters it (M12: the
+ *  second driver may start later than month 0). */
+export interface ChosenPhase {
+  phaseId: string;
+  /** month index at which the driver enters the phase (0 for the main driver) */
+  onset: number;
+  /** calendar month (1–12) of that onset */
+  startMonth: number;
+}
+
 interface Ctx {
   sources: Map<string, Source>;
   nodeById: Map<string, GraphNode>;
   linkById: Map<string, Link>;
-  /** drivers chosen by hand: id -> phase id (one, or two since M11) */
-  chosen: Map<string, string>;
+  /** drivers chosen by hand: id -> phase and onset (one, or two since M11) */
+  chosen: Map<string, ChosenPhase>;
 }
 
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: LinkState | null): string {
@@ -59,7 +69,11 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: Link
   const via = fromLabel ? ` <span class="via">${fromLabel}</span>` : '';
   const toDriver = ctx.nodeById.get(link.to)?.kind === 'driver';
   const heading = status === 'pending' ? 'Expected, but out of season right now' : toDriver ? 'What pushes it there' : 'Why this happens';
-  const onsetNote = ls && ls.depth > 1 && from ? ` Month 0 here is when ${esc(shortName(from))} was pushed into this phase.` : '';
+  // Lags count from the month the firing driver entered its phase: the month
+  // it was pushed there, or the second chosen driver's own start month (M12).
+  const chosenFrom = from ? ctx.chosen.get(from.id) : undefined;
+  const onsetNote = ls && ls.depth > 1 && from ? ` Month 0 here is when ${esc(shortName(from))} was pushed into this phase.`
+    : ls && from && chosenFrom && chosenFrom.onset > 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase (month ${chosenFrom.onset} on the timeline).` : '';
   return `<div class="link-block">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
@@ -98,11 +112,21 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
 function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState): string {
   let html = '';
   const st = month.nodes[node.id];
-  const chosenPhaseId = ctx.chosen.get(node.id);
-  if (chosenPhaseId) {
-    const phase = node.phases.find((p) => p.id === chosenPhaseId);
-    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${esc(phase?.label ?? chosenPhaseId)}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
-    if (ctx.chosen.size > 1) html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.</p>`;
+  const info = ctx.chosen.get(node.id);
+  if (info) {
+    const phase = node.phases.find((p) => p.id === info.phaseId);
+    const label = esc(phase?.label ?? info.phaseId);
+    if (month.index < info.onset) {
+      // Chosen by hand, but its own start month has not come yet (M12).
+      html += `<div class="state-line zero" style="background:#f0f2f5">Not yet in play: enters ${label} in ${MONTH_NAMES[info.startMonth - 1]}, month ${info.onset}</div>`;
+      html += `<p class="hint">One of two drivers you chose, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
+      html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
+      html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+      html += feedbackBlock(node, graph, ctx);
+      return html;
+    }
+    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
+    if (ctx.chosen.size > 1) html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${info.onset > 0 ? ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]} (month ${info.onset} on the timeline); its links count their lag from then.` : ''}</p>`;
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     html += feedbackBlock(node, graph, ctx);
@@ -142,8 +166,8 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
   return html;
 }
 
-/** `chosen` maps each driver chosen by hand to its phase id (one, or two since M11). */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, string>): void {
+/** `chosen` maps each driver chosen by hand to its phase and onset (one, or two since M11). */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on the map to read what tends to happen there, why, and how sure the science is.</p>`;
     return;

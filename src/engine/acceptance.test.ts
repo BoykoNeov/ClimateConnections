@@ -404,9 +404,10 @@ describe('acceptance: driver-to-driver data', () => {
 // A second driver chosen by hand enters its phase at month 0 with the first,
 // fires at the first hop at full confidence, is never pushed, and its effects
 // add up with the first driver's: same sign reinforces, opposite signs conflict.
-function runTwo(a: [string, string], b: [string, string], startMonth: number): Timeline {
+function runTwo(a: [string, string], b: [string, string], startMonth: number, secondStartMonth?: number): Timeline {
   return propagate(graph, {
-    driverId: a[0], phaseId: a[1], startMonth, horizonMonths: HORIZON, maxDepth: 3, secondary: { driverId: b[0], phaseId: b[1] },
+    driverId: a[0], phaseId: a[1], startMonth, horizonMonths: HORIZON, maxDepth: 3,
+    secondary: secondStartMonth === undefined ? { driverId: b[0], phaseId: b[1] } : { driverId: b[0], phaseId: b[1], startMonth: secondStartMonth },
   });
 }
 
@@ -524,5 +525,128 @@ describe('acceptance: two chosen drivers, in general', () => {
     expect(story!.phase).toBe('la_nina');
     expect(story!.second_driver).toBe('iod');
     expect(story!.second_phase).toBe('negative');
+  });
+});
+
+// ---------------------------------------------------------------- M12: the second driver's own start month
+// The second driver may enter its phase in a calendar month of its own, read
+// within the twelve months shown. Before it, the driver is held out of play
+// (grey, no links, still never pushed); from it, its links count their lag
+// from that month.
+describe('acceptance: El Niño from June with a negative dipole from September', () => {
+  const tl = runTwo(['enso', 'el_nino'], ['iod', 'negative'], 6, 9);
+  const same = runTwo(['enso', 'el_nino'], ['iod', 'negative'], 6);
+  it('the dipole is out of play until September (month 3), then negative to the end, never pushed', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.iod.value, `month ${m.index}`).toBe(m.index < 3 ? 0 : -1);
+      expect(m.nodes.iod.viaLinkIds).toHaveLength(0);
+      expect(m.nodes.iod.pendingLinkIds).toHaveLength(0);
+      expect(m.links.el_nino_positive_iod, `month ${m.index}`).toBeUndefined();
+    }
+  });
+  it('Indonesia is simply dry in July, conflicting from September, and dry again in December when the dipole link is out of season', () => {
+    const jul = tl.months[1].nodes.indonesia_rainfall;
+    expect(jul.viaLinkIds).toEqual(['el_nino_indonesia']);
+    expect(jul.value).toBe(-1);
+    expect(jul.conflicting).toBe(false);
+    expect(tl.months[1].links.negative_iod_indonesia).toBeUndefined();
+    const sep = tl.months[3].nodes.indonesia_rainfall;
+    expect([...sep.viaLinkIds].sort()).toEqual(['el_nino_indonesia', 'negative_iod_indonesia']);
+    expect(sep.conflicting).toBe(true);
+    expect(sep.value).toBe(0);
+    expect(sep.confidence).toBe('probable');
+    const dec = tl.months[6].nodes.indonesia_rainfall;
+    expect(dec.viaLinkIds).toEqual(['el_nino_indonesia']);
+    expect(dec.pendingLinkIds).toEqual(['negative_iod_indonesia']);
+    expect(dec.value).toBe(-1);
+  });
+  it("East Africa's short rains: El Niño's wetting alone in November, the dipole's drying joins in December because its lag counts from September", () => {
+    const nov = tl.months[5].nodes.east_africa_short_rains;
+    expect(nov.viaLinkIds).toEqual(['el_nino_east_africa_short_rains']);
+    expect(nov.value).toBe(1);
+    expect(nov.conflicting).toBe(false);
+    expect(tl.months[5].links.negative_iod_east_africa_short_rains).toBeUndefined();
+    const dec = tl.months[6].nodes.east_africa_short_rains;
+    expect([...dec.viaLinkIds].sort()).toEqual(['el_nino_east_africa_short_rains', 'negative_iod_east_africa_short_rains']);
+    expect(dec.conflicting).toBe(true);
+    expect(dec.value).toBe(0);
+    // With a shared June start the conflict was already there in November.
+    expect(same.months[5].nodes.east_africa_short_rains.conflicting).toBe(true);
+  });
+  it('southeast Australia is hollow before September (the pinned dipole cannot be pushed positive either), wet from September', () => {
+    for (let i = 0; i < 3; i++) {
+      const st = tl.months[i].nodes.southeast_australia_rainfall;
+      expect(st.value, `month ${i}`).toBe(0);
+      expect(st.viaLinkIds).toHaveLength(0);
+      expect(st.pendingLinkIds).toHaveLength(0);
+    }
+    expect(runDeep('enso', 'el_nino', 6).months[2].nodes.southeast_australia_rainfall.value).toBe(-1);
+    const sep = tl.months[3].nodes.southeast_australia_rainfall;
+    expect(sep.viaLinkIds).toEqual(['negative_iod_southeast_australia']);
+    expect(sep.value).toBe(1);
+    expect(sep.confidence).toBe('established');
+  });
+  it('matches the shared-start scenario from September on wherever nothing depends on the lag', () => {
+    expect(tl.months[7].nodes.nao).toEqual(same.months[7].nodes.nao);
+    expect(tl.months[7].nodes.northern_europe_winter).toEqual(same.months[7].nodes.northern_europe_winter);
+    expect(tl.months[3].nodes.indonesia_rainfall).toEqual(same.months[3].nodes.indonesia_rainfall);
+  });
+});
+
+describe('acceptance: El Niño from June with a positive NAO from December', () => {
+  const tl = runTwo(['enso', 'el_nino'], ['nao', 'positive'], 6, 12);
+  it('the NAO is out of play through November (month 5), positive from December (month 6), and its links are not even pending before that', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.nao.value, `month ${m.index}`).toBe(m.index < 6 ? 0 : 1);
+      const naoLinks = Object.keys(m.links).filter((id) => graph.links.find((l) => l.id === id)!.from === 'nao');
+      if (m.index < 6) expect(naoLinks, `month ${m.index}`).toEqual([]);
+      else expect(naoLinks.length).toBeGreaterThan(0);
+    }
+  });
+  it("El Niño's push toward a negative NAO in January is skipped: the NAO is chosen, and stays positive", () => {
+    const jan = tl.months[7];
+    expect(jan.links.el_nino_negative_nao).toBeUndefined();
+    expect(jan.nodes.nao.value).toBe(1);
+    expect(jan.nodes.nao.viaLinkIds).toHaveLength(0);
+    expect(runDeep('enso', 'el_nino', 6).months[7].nodes.nao.value).toBe(-1);
+  });
+  it('northern Europe is mild from December to March at full confidence, pending from April', () => {
+    for (let i = 6; i <= 9; i++) {
+      expect(tl.months[i].nodes.northern_europe_winter.value, `month ${i}`).toBe(1);
+      expect(tl.months[i].links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    }
+    expect(tl.months[5].nodes.northern_europe_winter.value).toBe(0);
+    expect(tl.months[5].links.positive_nao_northern_europe).toBeUndefined();
+    expect(tl.months[10].links.positive_nao_northern_europe?.status).toBe('pending');
+  });
+});
+
+describe('acceptance: second start month, in general', () => {
+  it('a start month earlier in the calendar than the first driver\'s falls in the following year', () => {
+    const tl = runTwo(['enso', 'el_nino'], ['iod', 'negative'], 6, 3); // March: month 9
+    for (const m of tl.months) expect(m.nodes.iod.value, `month ${m.index}`).toBe(m.index < 9 ? 0 : -1);
+    // The dipole's Indonesia link is out of season in March–May and applies again in June (month 12), conflicting with El Niño's.
+    expect(tl.months[9].links.negative_iod_indonesia?.status).toBe('pending');
+    expect(tl.months[12].nodes.indonesia_rainfall.conflicting).toBe(true);
+  });
+  it('the same start month as the first driver gives the M11 result exactly', () => {
+    const a = runTwo(['enso', 'la_nina'], ['iod', 'negative'], 6, 6);
+    const b = runTwo(['enso', 'la_nina'], ['iod', 'negative'], 6);
+    expect(a.months).toEqual(b.months);
+  });
+  it('a neutral second driver with a later start is pinned from month 0: the chain into it is cut before its start too', () => {
+    const tl = runTwo(['enso', 'el_nino'], ['iod', 'neutral'], 6, 9);
+    for (const m of tl.months) {
+      expect(m.nodes.iod.value).toBe(0);
+      expect(m.links.el_nino_positive_iod).toBeUndefined();
+    }
+  });
+  it('every shipped story with a second start month keeps it in 1–12 and has a second driver', () => {
+    for (const s of graph.stories) {
+      if (s.second_start_month === undefined) continue;
+      expect(s.second_driver).toBeDefined();
+      expect(s.second_start_month).toBeGreaterThanOrEqual(1);
+      expect(s.second_start_month).toBeLessThanOrEqual(12);
+    }
   });
 });

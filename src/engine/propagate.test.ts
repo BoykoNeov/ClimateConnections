@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arrivalMonth, calendarMonth, chosenDrivers, downgrade, propagate } from './propagate';
+import { arrivalMonth, calendarMonth, chosenDrivers, chosenOnset, downgrade, propagate } from './propagate';
 import type { Graph, Link, Scenario } from '../types';
 
 function graphWith(links: Partial<Link>[]): Graph {
@@ -327,5 +327,99 @@ describe('propagate: two chosen drivers', () => {
 
   it('refuses the same driver chosen twice', () => {
     expect(() => propagate(graphWith([]), { ...base, secondary: { driverId: 'drv', phaseId: 'cool' } })).toThrow(/twice/);
+  });
+});
+
+// ---------------------------------------------------------------- M12: the second driver's own start month
+// The second driver may enter its phase in a calendar month of its own, read
+// within the twelve months shown (June start, September second driver: month
+// 3; March: month 9, the following year). Before that it is held out of play:
+// value 0, no links, and still never pushed.
+const late: Scenario = { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 9 } };
+
+describe('propagate: second driver with its own start month', () => {
+  it('reads the onset within the twelve months shown, wrapping into the next year', () => {
+    expect(chosenOnset(base, 'drv')).toBe(0);
+    expect(chosenOnset(two, 'd2')).toBe(0);
+    expect(chosenOnset(late, 'drv')).toBe(0);
+    expect(chosenOnset(late, 'd2')).toBe(3);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 6 } }, 'd2')).toBe(0);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3 } }, 'd2')).toBe(9);
+    expect(chosenOnset({ ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 5 } }, 'd2')).toBe(11);
+    expect(chosenDrivers(late)).toEqual([{ driverId: 'drv', phaseId: 'warm' }, { driverId: 'd2', phaseId: 'up', startMonth: 9 }]);
+  });
+
+  it('holds the second driver out of play before its start month, then in its phase to the end', () => {
+    const t = propagate(graphWith([]), late);
+    for (const m of t.months) {
+      expect(m.nodes.drv.value).toBe(1);
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(m.index < 3 ? 0 : 1);
+      expect(m.nodes.d2.viaLinkIds).toEqual([]);
+      expect(m.nodes.d2.pendingLinkIds).toEqual([]);
+    }
+    const wrap = propagate(graphWith([]), { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3 } });
+    for (const m of wrap.months) expect(m.nodes.d2.value, `month ${m.index}`).toBe(m.index < 9 ? 0 : 1);
+  });
+
+  it("counts the second driver's lags from its own onset and reports nothing before it", () => {
+    const t = propagate(graphWith([
+      { id: 'second', from: 'd2', when: 'up', to: 'c', effect: -1, lag_months: [2, 2] },
+    ]), late);
+    for (let i = 0; i < 5; i++) {
+      expect(t.months[i].nodes.c.value, `month ${i}`).toBe(0);
+      expect(t.months[i].links.second, `month ${i}`).toBeUndefined();
+    }
+    expect(t.months[5].nodes.c.value).toBe(-1);
+    expect(t.months[5].links.second).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    // In season but before the onset: not pending, simply absent.
+    const seasonal = propagate(graphWith([
+      { id: 'second', from: 'd2', when: 'up', to: 'c', effect: -1, season: [7, 8, 9, 10] },
+    ]), late);
+    expect(seasonal.months[1].links.second).toBeUndefined(); // July, before the onset
+    expect(seasonal.months[3].links.second?.status).toBe('applied'); // September
+    expect(seasonal.months[5].links.second?.status).toBe('pending'); // November, out of season
+  });
+
+  it('a shared target conflicts only once the second driver is in phase', () => {
+    const t = propagate(graphWith([
+      { id: 'x', to: 'a', effect: 1 }, { id: 'y', from: 'd2', when: 'up', to: 'a', effect: -1 },
+    ]), late);
+    for (const m of t.months) {
+      if (m.index < 3) {
+        expect(m.nodes.a.value).toBe(1);
+        expect(m.nodes.a.conflicting).toBe(false);
+        expect(m.nodes.a.viaLinkIds).toEqual(['x']);
+      } else {
+        expect(m.nodes.a.value).toBe(0);
+        expect(m.nodes.a.conflicting).toBe(true);
+        expect(m.nodes.a.viaLinkIds).toEqual(['x', 'y']);
+      }
+    }
+  });
+
+  it('never pushes the second driver, not even before its start month', () => {
+    const t = propagate(graphWith([
+      { id: 'push', to: 'd2', effect: -1 },
+      { id: 'second', from: 'd2', when: 'up', to: 'c', effect: -1 },
+      { id: 'back', from: 'd2', when: 'up', to: 'drv', effect: -1 },
+    ]), { ...late, maxDepth: 3 });
+    for (const m of t.months) {
+      expect(m.links.push, `month ${m.index}`).toBeUndefined();
+      expect(m.links.back, `month ${m.index}`).toBeUndefined();
+      expect(m.nodes.d2.viaLinkIds).toEqual([]);
+      expect(m.nodes.d2.value).toBe(m.index < 3 ? 0 : 1);
+      expect(m.nodes.c.value).toBe(m.index < 3 ? 0 : -1);
+      expect(m.nodes.drv.value).toBe(1);
+    }
+    // Without the second driver chosen, the same link pushes it down from month 0.
+    const solo = propagate(graphWith([{ id: 'push', to: 'd2', effect: -1 }]), deep);
+    expect(solo.months[0].nodes.d2.value).toBe(-1);
+  });
+
+  it("a start month equal to the first driver's is the same as none", () => {
+    const g = graphWith([{ id: 'x', to: 'a', effect: 1 }, { id: 'y', from: 'd2', when: 'up', to: 'a', effect: -1, lag_months: [1, 1] }]);
+    const same = propagate(g, { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 6 } });
+    const none = propagate(g, two);
+    expect(same.months).toEqual(none.months);
   });
 });

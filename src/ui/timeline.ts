@@ -9,6 +9,8 @@ export class TimelineView {
   private ticks: HTMLDivElement;
   private timer: number | null = null;
   private horizon: number;
+  /** month index at which a second driver enters its phase (M12); null = none or month 0 */
+  private secondOnset: number | null = null;
   onChange: (index: number) => void = () => {};
 
   constructor(container: HTMLElement, horizon: number, private startMonth: number) {
@@ -75,11 +77,21 @@ export class TimelineView {
     this.input.setAttribute('aria-valuetext', this.valueText(this.index));
   }
 
+  /** Mark the tick where a second driver enters its phase (null or 0 = no mark). */
+  setSecondOnset(index: number | null): void {
+    this.secondOnset = index && index > 0 ? index : null;
+    this.renderTicks();
+  }
+
   private renderTicks(): void {
     this.ticks.innerHTML = '';
     for (let i = 0; i <= this.horizon; i++) {
       const s = document.createElement('span');
       s.textContent = MONTH_NAMES[calendarMonth(this.startMonth, i) - 1].slice(0, 3);
+      if (i === this.secondOnset) {
+        s.className = 'second-onset';
+        s.title = 'The second driver enters its phase here';
+      }
       this.ticks.append(s);
     }
   }

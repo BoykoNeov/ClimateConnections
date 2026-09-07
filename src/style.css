@@ -53,7 +53,7 @@ html, body { margin: 0; height: 100%; }
   font-size: 13px;
 }
 #controls h2, #card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 0 6px; }
-#controls h2:first-child { margin-top: 0; }
+#controls > h2:first-child { margin-top: 0; }
 .phase-buttons { display: flex; flex-direction: column; gap: 6px; }
 .phase-buttons:empty { display: none; }
 .phase-btn {
@@ -179,6 +179,7 @@ html, body { margin: 0; height: 100%; }
 .scrubber input[type="range"] { width: 100%; }
 .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 .ticks span { width: 0; text-align: center; white-space: nowrap; }
+.ticks span.second-onset { color: #1f2328; font-weight: 700; text-decoration: underline dotted; }
 .key-hint { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
 .key-hint kbd {
   display: inline-block; font: inherit; font-size: 10px; line-height: 1; padding: 2px 5px; margin-right: 2px;

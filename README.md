@@ -72,8 +72,15 @@ any static file server.
   NAO.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
-  dipole in 2010, say). Both drivers start in the same month and hold their
-  phase all year; both fire their own links at full confidence. Where they
+  dipole in 2010, say). Each driver enters its phase in its own month (a
+  **Second driver begins in** picker appears; it defaults to that driver's
+  usual start) and holds it to the end of the year shown; both fire their
+  own links at full confidence, with lags counted from their own start.
+  Until its month comes the second driver is drawn grey and held out of
+  play: no phase, no links, and nothing can push it. The month is read
+  within the twelve months shown, so a month earlier than the first
+  driver's start falls in the following year; the timeline underlines the
+  tick where the second driver begins. Where they
   push a place the same way the state simply holds; where they push it
   opposite ways the marker gets a dashed ring, a grey hatch if the pushes
   cancel, and the card says "conflicting influences". A chosen driver is
@@ -81,7 +88,8 @@ any static file server.
   between them are listed on the cards, not drawn. Choosing the second
   driver's neutral phase holds it out of play, which shows what a year
   looks like when the other driver does not respond.
-- **Event begins in** picks the calendar month of onset. Picking a driver
+- **Event begins in** (labelled **First driver begins in** while a second
+  driver is chosen) picks the calendar month of onset. Picking a driver
   moves it to that driver's usual start: June for ENSO and the dipole, which
   develop in late boreal spring or summer, and December for the NAO, which
   is a winter pattern. Both the default and the note under the control come
@@ -221,7 +229,8 @@ The full schema is in `docs/DATA_FORMAT.md`.
 
 Stories are guided walkthroughs in `data/stories.yaml`: a title, an intro, a
 phase and start month (optionally a start year for a real event, and
-optionally a second driver and phase chosen for the whole story), then a
+optionally a second driver and phase chosen for the whole story, with a
+start month of its own if it began in a different month), then a
 list of steps, each with a month index, a node to focus, a short text and
 sources. The validator refuses a step that points at a node the scenario
 does not affect at that month, so a story cannot claim more than the links

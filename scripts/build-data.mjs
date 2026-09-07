@@ -105,8 +105,12 @@ const Story = z.object({
   /** a second driver chosen by hand for the whole story (M11); both or neither */
   second_driver: Id.optional(),
   second_phase: Id.optional(),
+  /** calendar month the second driver enters its phase (M12); defaults to start_month */
+  second_start_month: Month.optional(),
   steps: z.array(StoryStep).min(3),
-}).strict().refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together');
+}).strict()
+  .refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together')
+  .refine((s) => s.second_start_month === undefined || s.second_driver !== undefined, 'second_start_month needs a second_driver');
 
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
@@ -192,19 +196,26 @@ if (nodesFile && linksFile && storiesFile) {
   const links = linksFile.links;
   const appliedAt = (l, onsetIdx, m, start) =>
     m >= onsetIdx + l.lag_months[0] && (l.season.length === 0 || l.season.includes(calendarMonth(start, m)));
-  /** The drivers a story fixes by hand: [driverId, phaseId] for the main one and, if any, the second (M11). */
-  const chosenOf = (s) => (s.second_driver ? [[s.driver, s.phase], [s.second_driver, s.second_phase]] : [[s.driver, s.phase]]);
+  /** The drivers a story fixes by hand: [driverId, phaseId, onset month index]
+   *  for the main one (onset 0) and, if any, the second (M11), which enters
+   *  its phase at month 0 or in its own start month (M12), read within the
+   *  twelve months shown. */
+  const chosenOf = (s) => {
+    const out = [[s.driver, s.phase, 0]];
+    if (s.second_driver) out.push([s.second_driver, s.second_phase, ((s.second_start_month ?? s.start_month) - s.start_month + 12) % 12]);
+    return out;
+  };
   /** Drivers pushed into a phase at month m: [driverId, phaseId, onset month]. */
   const pushedAt = (s, m) => {
     const out = [];
     const chosenIds = new Set(chosenOf(s).map(([d]) => d));
-    for (const [cd, cp] of chosenOf(s)) {
+    for (const [cd, cp, co] of chosenOf(s)) {
       for (const l of links) {
         if (l.from !== cd || l.when !== cp) continue;
         const d = nodes.get(l.to);
-        if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, 0, m, s.start_month)) continue;
-        let onsetIdx = 0;
-        while (onsetIdx < m && !appliedAt(l, 0, onsetIdx, s.start_month)) onsetIdx++;
+        if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, co, m, s.start_month)) continue;
+        let onsetIdx = co;
+        while (onsetIdx < m && !appliedAt(l, co, onsetIdx, s.start_month)) onsetIdx++;
         const phase = d.phases.find((p) => p.value === l.effect);
         if (phase) out.push([d.id, phase.id, onsetIdx]);
       }
@@ -212,7 +223,7 @@ if (nodesFile && linksFile && storiesFile) {
     return out;
   };
   const affectedAt = (s, focusId, m) => {
-    if (chosenOf(s).some(([cd, cp]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, 0, m, s.start_month)))) return true;
+    if (chosenOf(s).some(([cd, cp, co]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, co, m, s.start_month)))) return true;
     return pushedAt(s, m).some(([d, p, onsetIdx]) =>
       links.some((l) => l.from === d && l.when === p && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
   };

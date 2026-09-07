@@ -92,6 +92,10 @@ export interface Story {
    *  both or neither */
   second_driver?: string;
   second_phase?: string;
+  /** calendar month the second driver enters its phase (M12); defaults to
+   *  `start_month`. Read within the twelve months shown: a month earlier
+   *  than `start_month` falls in the following year. */
+  second_start_month?: number;
   steps: StoryStep[];
 }
 
@@ -107,6 +111,12 @@ export interface Graph {
 export interface ScenarioDriver {
   driverId: string;
   phaseId: string;
+  /** calendar month (1–12) the driver enters its phase (M12, second driver
+   *  only). Omitted = the scenario's `startMonth`, i.e. month index 0. Read
+   *  within the twelve months shown: the driver enters its phase the first
+   *  time this calendar month comes up at or after month 0, so a month
+   *  earlier than `startMonth` falls in the following year. */
+  startMonth?: number;
 }
 
 export interface Scenario {
@@ -116,8 +126,9 @@ export interface Scenario {
   startMonth: number;
   horizonMonths: number;
   /** a second driver chosen by hand (M11). It enters its phase at month 0
-   *  like the first, fires its own links at the first hop, and is never
-   *  pushed by a link. Must not name the same driver as `driverId`. */
+   *  like the first, or in its own `startMonth` (M12), fires its own links
+   *  at the first hop, and is never pushed by a link, not even before it
+   *  enters its phase. Must not name the same driver as `driverId`. */
   secondary?: ScenarioDriver;
   /** how many hops of links to follow (M10). 1 = only the scenario driver's
    *  own links, the version-1 behaviour and the default; 2 lets a driver that
