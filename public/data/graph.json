@@ -550,6 +550,73 @@
       ]
     },
     {
+      "id": "pacific_meridional_mode",
+      "name": "Pacific Meridional Mode (PMM)",
+      "label": "PMM",
+      "area": [
+        [
+          -150,
+          25
+        ],
+        [
+          -110,
+          25
+        ],
+        [
+          -110,
+          8
+        ],
+        [
+          -150,
+          8
+        ]
+      ],
+      "lat": 18,
+      "lon": -133,
+      "region": "The subtropical north-east Pacific, from Baja California out toward Hawaii",
+      "timescale": "A season; peaks March–May, and in the years it matters its warmth spreads to the equator through the summer",
+      "summary": "A spring pattern of weak trade winds and unusually warm water off Baja California, reaching south-west toward the equator. It is set off by the winter before: a weak Aleutian low and a stormy North Pacific let the trades slacken, less water evaporates, the sea warms, and through spring the warm water and the weak wind feed on each other and creep toward the equator. Its value on this map is as a warning sign. Most of the El Niños of the past few decades were preceded by a positive spring, and when it reaches the equator by summer the Pacific is nudged toward an El Niño the following winter. But the warning is not a promise: a positive spring is followed by an El Niño more often than not, in model experiments about seven times in ten, which means roughly one spring in three comes to nothing. The spring of 2014 was one. The mode's usual trigger, the North Pacific Oscillation, is a month-to-month pressure pattern and is not a driver here, so nothing on the map pushes the mode; it is the Pacific twin of the Atlantic Meridional Mode.\n",
+      "sources": [
+        "chiang_vimont_2004",
+        "chang_2007_pmm",
+        "vimont_2001",
+        "vimont_2003",
+        "anderson_2003",
+        "alexander_2010",
+        "amaya_2019",
+        "linkin_nigam_2008",
+        "di_lorenzo_2015",
+        "stuecker_2018",
+        "noaa_psl_pmm"
+      ],
+      "kind": "driver",
+      "onset_hint": "The Pacific meridional mode peaks in March–May; start in March and switch the chain on to watch the Pacific tip toward El Niño by autumn.",
+      "default_start_month": 3,
+      "phases": [
+        {
+          "id": "positive",
+          "label": "Positive PMM",
+          "color": "#c2410c",
+          "summary": "The subtropical north-east Pacific is warmer than usual and the north-east trade winds weaker. Typhoons tend to form further east and grow stronger, the hurricane season off Mexico tends to be busier, and by autumn the tropical Pacific is nudged toward El Niño. The springs of 2014 and 2015 were both strongly positive: the first was followed by a stalled, barely-there El Niño, the second by one of the strongest on record.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Neutral",
+          "color": "#999999",
+          "summary": "The subtropical north-east Pacific is near its usual temperature and none of the meridional-mode tendencies on this map are expected. ENSO and the Pacific Decadal Oscillation still shape the Pacific's weather.\n",
+          "value": 0
+        },
+        {
+          "id": "negative",
+          "label": "Negative PMM",
+          "color": "#1d4ed8",
+          "summary": "The subtropical north-east Pacific is cooler than usual and the trades stronger. Typhoons tend to form closer to Asia and stay weaker, and the Pacific is nudged toward La Niña, though this side is far weaker in the record than the warm side and its arrows are drawn as contested.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -7077,6 +7144,137 @@
         "czaja_2002",
         "kushnir_2006"
       ]
+    },
+    {
+      "id": "positive_pmm_el_nino",
+      "from": "pacific_meridional_mode",
+      "when": "positive",
+      "to": "enso",
+      "effect": 1,
+      "lag_months": [
+        6,
+        9
+      ],
+      "season": [],
+      "confidence": "probable",
+      "mechanism": "Warm water off Baja California weakens the trade winds to its south, the weaker wind evaporates less and warms the sea further, and the warm patch and the weak wind creep south-west together through spring. By summer the weak wind reaches the equator, where it lets warm water spread east and starts the Pacific toward an El Niño by the following winter.\n",
+      "caveat": "A nudge, not a trigger: the Pacific has to be primed, with heat already stored in the west, for the spring signal to grow, and about one positive spring in three comes to nothing. The spring of 2014 was one such miss. Part of the mode is also El Niño's own footprint in the subtropics, so the two are not fully separate things.\n",
+      "evidence_note": "The majority of El Niño events over four decades were preceded by the mode's spring warming and south-westerly wind; in a high-resolution coupled model it acts as a trigger seven to nine months before large El Niños, but not every event triggers one and the western Pacific has to be preconditioned; imposing the winter forcing in a coupled model warmed the ENSO region in about 70% of sixty runs; positive springs forecast eastern Pacific El Niños with some skill in a multi-model hindcast; the spring-to-winter relation has strengthened over the past seventy years.\n",
+      "sources": [
+        "chang_2007_pmm",
+        "larson_kirtman_2013",
+        "alexander_2010",
+        "vimont_2003",
+        "larson_kirtman_2014",
+        "amaya_2019",
+        "zheng_2023",
+        "stuecker_2018"
+      ]
+    },
+    {
+      "id": "negative_pmm_la_nina",
+      "from": "pacific_meridional_mode",
+      "when": "negative",
+      "to": "enso",
+      "effect": -1,
+      "lag_months": [
+        6,
+        9
+      ],
+      "season": [],
+      "confidence": "contested",
+      "mechanism": "Cool water off Baja California and stronger trades are proposed to work the mirror way: the stronger wind cools the sea further, the pattern creeps toward the equator, and by summer the stronger easterlies there lift cool water in the east and start the Pacific toward a La Niña.\n",
+      "caveat": "The negative side is the weak side. In the observed record negative springs are poor predictors of La Niña, and the studies that made the case for the mode are about the positive springs before El Niños. Shown as contested for that reason; the map draws it so the asymmetry can be seen, not because it is reliable.\n",
+      "evidence_note": "In the multi-model hindcast negative mode events poorly predict La Niña events in observations, and the forecast models fail to capture even that; the subtropical route into ENSO produces multi-year La Niñas but not multi-year El Niños, one source of the asymmetry between the two.\n",
+      "sources": [
+        "larson_kirtman_2014",
+        "yu_fang_2018",
+        "chang_2007_pmm"
+      ]
+    },
+    {
+      "id": "positive_pmm_west_pacific_typhoons",
+      "from": "pacific_meridional_mode",
+      "when": "positive",
+      "to": "west_pacific_typhoons",
+      "effect": 1,
+      "lag_months": [
+        2,
+        5
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "probable",
+      "mechanism": "Rain rising over the warm water of the mode's north-western arm sets up a wave-like response to its west: low-level westerly winds and a spin over the south-eastern part of the typhoon breeding grounds, and weaker wind shear aloft. Typhoons form further east and have a longer run over warm water to grow.\n",
+      "caveat": "The count is a tendency, not a forecast, and one study finds the year-to-year part of the relation weak once the slow decadal swing of the tropical Pacific is removed; the model experiments that back the link are what keep it at probable. Its effect adds to El Niño's own, which points the same way.\n",
+      "evidence_note": "A positive mode favours typhoon formation in the western North Pacific and a negative one inhibits it, in observations, a thousand-year control run and sensitivity experiments, through the wind shear over the south-eastern breeding grounds; the mode index correlates with the number of intense typhoons in June–November; the summer of 2018, with no El Niño, had eighteen typhoons and sensitivity runs put the positive mode as the main cause; in 2015 the mode's warm water pushed the mean birthplace of typhoons ten degrees east of 1997's. One study finds the statistical link is dominated by decadal covariation with the tropical Pacific.\n",
+      "sources": [
+        "zhang_2016_pmm_typhoons",
+        "gao_2018",
+        "takaya_2019",
+        "hong_2018",
+        "liu_2019"
+      ]
+    },
+    {
+      "id": "negative_pmm_west_pacific_typhoons",
+      "from": "pacific_meridional_mode",
+      "when": "negative",
+      "to": "west_pacific_typhoons",
+      "effect": -1,
+      "lag_months": [
+        2,
+        5
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "contested",
+      "mechanism": "With the subtropical north-east Pacific cool, the wave-like response over the typhoon grounds runs the other way: stronger wind shear and less spin over the south-eastern breeding grounds, so typhoons form closer to Asia and stay weaker.\n",
+      "caveat": "The composite study finds the quiet tendency, but the case studies and the model experiments are about positive springs, and the objection that the year-to-year relation is weak applies with more force here. Shown one tier lower than the warm side for that reason.\n",
+      "evidence_note": "The negative phase inhibits typhoon occurrence in the western North Pacific in the composite analysis of observations and the control run; the one-in-ten-years component of the relation, rather than the year-to-year one, carries most of the signal.\n",
+      "sources": [
+        "zhang_2016_pmm_typhoons",
+        "liu_2019"
+      ]
+    },
+    {
+      "id": "positive_pmm_east_pacific_hurricanes",
+      "from": "pacific_meridional_mode",
+      "when": "positive",
+      "to": "east_pacific_hurricanes",
+      "effect": 1,
+      "lag_months": [
+        2,
+        5
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "confidence": "contested",
+      "mechanism": "The mode's warm water lies over the western part of the eastern Pacific hurricane grounds, between Mexico and Hawaii. Warm sea, moist air and weak wind shear there give storms more fuel and more room, and more of them travel west toward Hawaii.\n",
+      "caveat": "Rests on one season, 2015, and its model experiments, and that season had a strong El Niño at the same time; the record of storms in this basin is short. Shown as contested until more seasons are studied.\n",
+      "evidence_note": "The record 2015 season in the eastern and central Pacific, with the first three simultaneous category-4 hurricanes and a record count around Hawaii, was not primarily caused by the El Niño but by warm water in the subtropical Pacific typical of the positive mode, according to targeted high-resolution experiments; the western part of the basin set records for storms, hurricane days and storm energy in 2015, with the El Niño and the positive mode together giving a record-warm background.\n",
+      "sources": [
+        "murakami_2017",
+        "collins_2016"
+      ]
     }
   ],
   "sources": [
@@ -8168,6 +8366,131 @@
       "key": "noaa_psl_amm",
       "citation": "NOAA Physical Sciences Laboratory. Atlantic Meridional Mode (AMM) index, monthly, 1948–present.",
       "url": "https://psl.noaa.gov/data/timeseries/monthly/AMM/"
+    },
+    {
+      "key": "chang_2007_pmm",
+      "citation": "Chang, P., Zhang, L., Saravanan, R., Vimont, D. J., Chiang, J. C. H., Ji, L., Seidel, H., & Tippett, M. K. (2007). Pacific meridional mode and El Niño–Southern Oscillation. Geophysical Research Letters, 34, L16608.",
+      "url": "https://doi.org/10.1029/2007GL030302"
+    },
+    {
+      "key": "larson_kirtman_2013",
+      "citation": "Larson, S., & Kirtman, B. (2013). The Pacific Meridional Mode as a trigger for ENSO in a high-resolution coupled model. Geophysical Research Letters, 40(12), 3189–3194.",
+      "url": "https://doi.org/10.1002/grl.50571"
+    },
+    {
+      "key": "larson_kirtman_2014",
+      "citation": "Larson, S. M., & Kirtman, B. P. (2014). The Pacific Meridional Mode as an ENSO precursor and predictor in the North American Multimodel Ensemble. Journal of Climate, 27(18), 7018–7032.",
+      "url": "https://doi.org/10.1175/JCLI-D-14-00055.1"
+    },
+    {
+      "key": "vimont_2003",
+      "citation": "Vimont, D. J., Wallace, J. M., & Battisti, D. S. (2003). The seasonal footprinting mechanism in the Pacific: Implications for ENSO. Journal of Climate, 16(16), 2668–2675.",
+      "url": "https://doi.org/10.1175/1520-0442(2003)016<2668:TSFMIT>2.0.CO;2"
+    },
+    {
+      "key": "vimont_2001",
+      "citation": "Vimont, D. J., Battisti, D. S., & Hirst, A. C. (2001). Footprinting: A seasonal connection between the tropics and mid-latitudes. Geophysical Research Letters, 28(20), 3923–3926.",
+      "url": "https://doi.org/10.1029/2001GL013435"
+    },
+    {
+      "key": "alexander_2010",
+      "citation": "Alexander, M. A., Vimont, D. J., Chang, P., & Scott, J. D. (2010). The impact of extratropical atmospheric variability on ENSO: Testing the seasonal footprinting mechanism using coupled model experiments. Journal of Climate, 23(11), 2885–2901.",
+      "url": "https://doi.org/10.1175/2010JCLI3205.1"
+    },
+    {
+      "key": "amaya_2019",
+      "citation": "Amaya, D. J. (2019). The Pacific Meridional Mode and ENSO: A review. Current Climate Change Reports, 5(4), 296–307.",
+      "url": "https://doi.org/10.1007/s40641-019-00142-x"
+    },
+    {
+      "key": "zheng_2023",
+      "citation": "Zheng, Y., Chen, S., Chen, W., & Yu, B. (2023). A continuing increase of the impact of the spring North Pacific Meridional Mode on the following winter El Niño and Southern Oscillation. Journal of Climate, 36(2), 585–602.",
+      "url": "https://doi.org/10.1175/JCLI-D-22-0190.1"
+    },
+    {
+      "key": "yu_fang_2018",
+      "citation": "Yu, J.-Y., & Fang, S.-W. (2018). The distinct contributions of the seasonal footprinting and charged-discharged mechanisms to ENSO complexity. Geophysical Research Letters, 45(13), 6611–6618.",
+      "url": "https://doi.org/10.1029/2018GL077664"
+    },
+    {
+      "key": "stuecker_2018",
+      "citation": "Stuecker, M. F. (2018). Revisiting the Pacific Meridional Mode. Scientific Reports, 8, 3216.",
+      "url": "https://doi.org/10.1038/s41598-018-21537-0"
+    },
+    {
+      "key": "anderson_2003",
+      "citation": "Anderson, B. T. (2003). Tropical Pacific sea-surface temperatures and preceding sea level pressure anomalies in the subtropical North Pacific. Journal of Geophysical Research: Atmospheres, 108(D23), 4732.",
+      "url": "https://doi.org/10.1029/2003JD003805"
+    },
+    {
+      "key": "di_lorenzo_2015",
+      "citation": "Di Lorenzo, E., Liguori, G., Schneider, N., Furtado, J. C., Anderson, B. T., & Alexander, M. A. (2015). ENSO and meridional modes: A null hypothesis for Pacific climate variability. Geophysical Research Letters, 42(21), 9440–9448.",
+      "url": "https://doi.org/10.1002/2015GL066281"
+    },
+    {
+      "key": "linkin_nigam_2008",
+      "citation": "Linkin, M. E., & Nigam, S. (2008). The North Pacific Oscillation–West Pacific teleconnection pattern: Mature-phase structure and winter impacts. Journal of Climate, 21(9), 1979–1997.",
+      "url": "https://doi.org/10.1175/2007JCLI2048.1"
+    },
+    {
+      "key": "zhang_2016_pmm_typhoons",
+      "citation": "Zhang, W., Vecchi, G. A., Murakami, H., Villarini, G., & Jia, L. (2016). The Pacific Meridional Mode and the occurrence of tropical cyclones in the western North Pacific. Journal of Climate, 29(1), 381–398.",
+      "url": "https://doi.org/10.1175/JCLI-D-15-0282.1"
+    },
+    {
+      "key": "gao_2018",
+      "citation": "Gao, S., Zhu, L., Zhang, W., & Chen, Z. (2018). Strong modulation of the Pacific Meridional Mode on the occurrence of intense tropical cyclones over the western North Pacific. Journal of Climate, 31(19), 7739–7749.",
+      "url": "https://doi.org/10.1175/JCLI-D-17-0833.1"
+    },
+    {
+      "key": "takaya_2019",
+      "citation": "Takaya, Y. (2019). Positive phase of Pacific Meridional Mode enhanced western North Pacific tropical cyclone activity in summer 2018. SOLA, 15A, 55–59.",
+      "url": "https://doi.org/10.2151/sola.15A-010"
+    },
+    {
+      "key": "hong_2018",
+      "citation": "Hong, C.-C., Lee, M.-Y., Hsu, H.-H., & Tseng, W.-L. (2018). Distinct influences of the ENSO-like and PMM-like SST anomalies on the mean TC genesis location in the western North Pacific: The 2015 summer as an extreme example. Journal of Climate, 31(8), 3049–3059.",
+      "url": "https://doi.org/10.1175/JCLI-D-17-0504.1"
+    },
+    {
+      "key": "liu_2019",
+      "citation": "Liu, C., Zhang, W., Stuecker, M. F., & Jin, F.-F. (2019). Pacific Meridional Mode–western North Pacific tropical cyclone linkage explained by tropical Pacific quasi-decadal variability. Geophysical Research Letters, 46(22), 13346–13354.",
+      "url": "https://doi.org/10.1029/2019GL085340"
+    },
+    {
+      "key": "murakami_2017",
+      "citation": "Murakami, H., Vecchi, G. A., Delworth, T. L., Wittenberg, A. T., Underwood, S., Gudgel, R., Yang, X., Jia, L., Zeng, F., Paffendorf, K., & Zhang, W. (2017). Dominant role of subtropical Pacific warming in extreme eastern Pacific hurricane seasons: 2015 and the future. Journal of Climate, 30(1), 243–264.",
+      "url": "https://doi.org/10.1175/JCLI-D-16-0424.1"
+    },
+    {
+      "key": "collins_2016",
+      "citation": "Collins, J. M., Klotzbach, P. J., Maue, R. N., Roache, D. R., Blake, E. S., Paxton, C. H., & Mehta, C. A. (2016). The record-breaking 2015 hurricane season in the eastern North Pacific: An analysis of environmental conditions. Geophysical Research Letters, 43(17), 9217–9224.",
+      "url": "https://doi.org/10.1002/2016GL070597"
+    },
+    {
+      "key": "hu_fedorov_2016",
+      "citation": "Hu, S., & Fedorov, A. V. (2016). Exceptionally strong easterly wind burst stalling El Niño of 2014. Proceedings of the National Academy of Sciences, 113(8), 2005–2010.",
+      "url": "https://doi.org/10.1073/pnas.1514182113"
+    },
+    {
+      "key": "mcphaden_2015",
+      "citation": "McPhaden, M. J. (2015). Playing hide and seek with El Niño. Nature Climate Change, 5(9), 791–795.",
+      "url": "https://doi.org/10.1038/nclimate2775"
+    },
+    {
+      "key": "levine_mcphaden_2016",
+      "citation": "Levine, A. F. Z., & McPhaden, M. J. (2016). How the July 2014 easterly wind burst gave the 2015–2016 El Niño a head start. Geophysical Research Letters, 43(12), 6503–6510.",
+      "url": "https://doi.org/10.1002/2016GL069204"
+    },
+    {
+      "key": "menkes_2014",
+      "citation": "Menkes, C. E., Lengaigne, M., Vialard, J., Puy, M., Marchesiello, P., Cravatte, S., & Cambon, G. (2014). About the role of Westerly Wind Events in the possible development of an El Niño in 2014. Geophysical Research Letters, 41(18), 6476–6483.",
+      "url": "https://doi.org/10.1002/2014GL061186"
+    },
+    {
+      "key": "noaa_psl_pmm",
+      "citation": "NOAA Physical Sciences Laboratory. Pacific Meridional Mode (PMM) index, monthly, 1948–present.",
+      "url": "https://psl.noaa.gov/data/timeseries/monthly/PMM/"
     }
   ],
   "stories": [
@@ -9164,6 +9487,69 @@
             "marengo_2008",
             "phillips_2009",
             "vimont_kossin_2007"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "positive_pmm_2014_15",
+      "title": "2014–15: the spring warning that came true late",
+      "intro": "In the spring of 2014 the subtropical north-east Pacific ran warm under weak trade winds, the mode's positive pattern, and forecasters spoke of a coming El Niño to rival 1997's. The year shown begins in March 2014 with the mode positive, no second driver and the chain switched on, so the map can do what the mode does: push the Pacific toward El Niño by autumn. In reality the El Niño stalled that summer, barely reached the threshold in winter, and only became the big event a year later. This is the best example in the tool of what a dashed arrow means: a precursor raises the odds; it does not fix the outcome.\n",
+      "driver": "pacific_meridional_mode",
+      "phase": "positive",
+      "start_month": 3,
+      "start_year": 2014,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "pacific_meridional_mode",
+          "text": "The winter of 2013–14 left a huge patch of warm water in the north-east Pacific, nicknamed \"the Blob\", under a stubborn ridge of high pressure and weak winds. By March the mode's index was positive: warm water and slack trade winds off Baja California, the warmth spreading south-west toward the equator. The map now shows the mode's own arrows, dashed, and with the chain on it will push ENSO in the autumn. Read the caveat first: most El Niños are preceded by a spring like this, but a spring like this is not always followed by an El Niño.\n",
+          "sources": [
+            "chang_2007_pmm",
+            "bond_2015",
+            "di_lorenzo_mantua_2016",
+            "noaa_psl_pmm"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "west_pacific_typhoons",
+          "text": "From June a dashed arrow points at the typhoon grounds and says active. Rain rising over the mode's warm water sets up a response far to the west: low-level westerlies, more spin and less wind shear over the south-eastern part of the breeding grounds, so typhoons form further east and have longer to grow. The arrow is dashed for a reason the card gives: one study finds the year-to-year part of this relation weak once the slow swing of the tropical Pacific is removed, and it is the model experiments that keep the link at probable. The map shows the tendency for any positive spring; it does not score the 2014 season.\n",
+          "sources": [
+            "zhang_2016_pmm_typhoons",
+            "gao_2018",
+            "liu_2019"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "enso",
+          "text": "By September the map has pushed ENSO into El Niño: the marker is outlined as pushed, and a dashed arrow from the mode reaches it. This is the whole point of the driver. In the real 2014 the Pacific had looked like early 1997 until April, with bursts of westerly wind and warm water piled up in the west; then the bursts stopped, and in June an exceptionally strong burst of easterly wind blew the other way and stalled the event. By September the warming was weak and the forecasts of a great El Niño had been quietly withdrawn.\n",
+          "sources": [
+            "hu_fedorov_2016",
+            "menkes_2014",
+            "mcphaden_2015"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "enso",
+          "text": "By December the pushed El Niño has painted its own map one tier down: Indonesia and eastern Australia dry, the typhoons active, and in the coming months the Gulf Coast, Peru and Hawaii will fill in, every arrow dashed because it comes through a pushed driver. The real winter of 2014–15 was borderline. NOAA's index hovered at the threshold, and no El Niño was declared until March 2015. The mode had raised the odds; the summer's winds had taken them away again.\n",
+          "sources": [
+            "noaa_cpc_oni",
+            "mcphaden_2015",
+            "levine_mcphaden_2016"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "enso",
+          "text": "A year on, in March 2015, NOAA declared the El Niño at last. The easterly burst that stalled it in 2014 had also stopped the Pacific from releasing its stored heat, which gave the 2015 event a head start, and it grew into one of the three strongest on record. The spring of 2015 was itself strongly positive in the mode, and its warm subtropical water helped make that year's eastern Pacific hurricane season the busiest recorded. So the warning came true, a year late. The lesson to carry from this story is the one the dashed line always carries: a precursor raises the odds, and roughly one spring in three, like 2014, comes to nothing.\n",
+          "sources": [
+            "levine_mcphaden_2016",
+            "noaa_cpc_oni",
+            "murakami_2017",
+            "larson_kirtman_2013"
           ]
         }
       ]

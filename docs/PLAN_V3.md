@@ -256,6 +256,15 @@ Atlantic hurricane season, Northeast Brazil and the southern Amazon.
 
 ### M22 — Tenth driver: the Pacific Meridional Mode
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§10 under M22. As planned, with two things worth noting: the negative
+typhoon link is shipped contested rather than left out (the composite
+study supports the sign, the case studies do not cover it), and the
+positive typhoon link's caveat names the study that finds the
+year-to-year relation weak. The story runs the mode alone with the chain
+on, so the pushed El Niño paints its own map one tier down from
+September 2014 while the text tells how the real event stalled.
+
 The north-east Pacific's spring pattern of weakened trade winds and warm
 water off Baja California that often leads an El Niño by two to three
 seasons. Its value is as a **precursor**: a driver whose main effect is to

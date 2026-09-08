@@ -507,6 +507,67 @@ nodes:
           weaker. The spring of 2009 was a strong case, with floods in the
           Nordeste.
     sources: [chiang_vimont_2004, servain_1991, czaja_2002, vimont_kossin_2007, xie_carton_2004, noaa_psl_amm]
+  - id: pacific_meridional_mode
+    name: Pacific Meridional Mode (PMM)
+    label: PMM
+    kind: driver
+    lat: 18
+    lon: -133
+    area: [[-150, 25], [-110, 25], [-110, 8], [-150, 8]]
+    region: The subtropical north-east Pacific, from Baja California out toward Hawaii
+    timescale: A season; peaks March–May, and in the years it matters its warmth spreads to the equator through the summer
+    summary: >
+      A spring pattern of weak trade winds and unusually warm water off
+      Baja California, reaching south-west toward the equator. It is set
+      off by the winter before: a weak Aleutian low and a stormy North
+      Pacific let the trades slacken, less water evaporates, the sea
+      warms, and through spring the warm water and the weak wind feed on
+      each other and creep toward the equator. Its value on this map is as
+      a warning sign. Most of the El Niños of the past few decades were
+      preceded by a positive spring, and when it reaches the equator by
+      summer the Pacific is nudged toward an El Niño the following winter.
+      But the warning is not a promise: a positive spring is followed by
+      an El Niño more often than not, in model experiments about seven
+      times in ten, which means roughly one spring in three comes to
+      nothing. The spring of 2014 was one. The mode's usual trigger, the
+      North Pacific Oscillation, is a month-to-month pressure pattern and
+      is not a driver here, so nothing on the map pushes the mode; it is
+      the Pacific twin of the Atlantic Meridional Mode.
+    onset_hint: The Pacific meridional mode peaks in March–May; start in March and switch the chain on to watch the Pacific tip toward El Niño by autumn.
+    default_start_month: 3
+    phases:
+      - id: positive
+        value: 1
+        label: Positive PMM
+        color: "#c2410c"
+        summary: >
+          The subtropical north-east Pacific is warmer than usual and the
+          north-east trade winds weaker. Typhoons tend to form further
+          east and grow stronger, the hurricane season off Mexico tends to
+          be busier, and by autumn the tropical Pacific is nudged toward El
+          Niño. The springs of 2014 and 2015 were both strongly positive:
+          the first was followed by a stalled, barely-there El Niño, the
+          second by one of the strongest on record.
+      - id: neutral
+        value: 0
+        label: Neutral
+        color: "#999999"
+        summary: >
+          The subtropical north-east Pacific is near its usual temperature
+          and none of the meridional-mode tendencies on this map are
+          expected. ENSO and the Pacific Decadal Oscillation still shape
+          the Pacific's weather.
+      - id: negative
+        value: -1
+        label: Negative PMM
+        color: "#1d4ed8"
+        summary: >
+          The subtropical north-east Pacific is cooler than usual and the
+          trades stronger. Typhoons tend to form closer to Asia and stay
+          weaker, and the Pacific is nudged toward La Niña, though this
+          side is far weaker in the record than the warm side and its
+          arrows are drawn as contested.
+    sources: [chiang_vimont_2004, chang_2007_pmm, vimont_2001, vimont_2003, anderson_2003, alexander_2010, amaya_2019, linkin_nigam_2008, di_lorenzo_2015, stuecker_2018, noaa_psl_pmm]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon

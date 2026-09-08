@@ -225,8 +225,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode and the Atlantic meridional mode as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'sam'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode and the Atlantic and Pacific meridional modes as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -249,6 +249,7 @@ describe('acceptance: drivers', () => {
     expect(start('atlantic_nino')).toBe(5);
     expect(start('indian_ocean_basin')).toBe(2);
     expect(start('atlantic_meridional_mode')).toBe(3);
+    expect(start('pacific_meridional_mode')).toBe(3);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -389,10 +390,10 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
     }
   });
-  it('ships twenty-one driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twenty-three driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
       'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
-      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'warm_basin_la_nina',
+      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'negative_pmm_la_nina', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'positive_pmm_el_nino', 'warm_basin_la_nina',
     ]);
     for (const l of d2d) {
       expect(l.from).not.toBe(l.to);
@@ -1769,5 +1770,154 @@ describe('acceptance: the 2005 story, the mode alone from March', () => {
     }
     expect(tl.months[6].nodes.southwest_amazon_dry_season.value).toBe(-1);
     expect(tl.months[7].nodes.southwest_amazon_dry_season.value).toBe(-1);
+  });
+});
+
+
+// ---------------------------------------------------------------- M22: tenth driver (Pacific Meridional Mode)
+// The mode peaks in March–May, so its scenarios start in March. Its main
+// work is to push ENSO; nothing on the map pushes it.
+function runPmm(phaseId: string, startMonth = 3, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'pacific_meridional_mode', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+describe('acceptance: positive Pacific meridional mode, March start', () => {
+  const tl = runPmm('positive');
+  it('the typhoons active and the eastern Pacific hurricanes busier June–November (months 3–8), pending in May, never the opposite sign', () => {
+    expect(tl.months[0].calendarMonth).toBe(3);
+    for (const id of ['west_pacific_typhoons', 'east_pacific_hurricanes']) {
+      expect(monthsWith(tl, id, 1), id).toEqual([3, 4, 5, 6, 7, 8]);
+      expect(monthsWith(tl, id, -1), id).toHaveLength(0);
+      expect(tl.months[1].nodes[id].pendingLinkIds, `${id} April`).toHaveLength(0);
+      expect(tl.months[2].nodes[id].pendingLinkIds, `${id} May`).toHaveLength(1);
+      expect(tl.months[9].nodes[id].pendingLinkIds, `${id} December`).toHaveLength(1);
+    }
+  });
+  it('tiers: the typhoons probable / contested, the hurricanes contested and positive only, ENSO probable / contested; no link into the mode and none to Hawaii', () => {
+    const own = graph.links.filter((l) => l.from === 'pacific_meridional_mode');
+    expect(own).toHaveLength(5);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => `${l.when}:${l.confidence}`).sort();
+    expect(tier('west_pacific_typhoons')).toEqual(['negative:contested', 'positive:probable']);
+    expect(tier('east_pacific_hurricanes')).toEqual(['positive:contested']);
+    expect(tier('enso')).toEqual(['negative:contested', 'positive:probable']);
+    expect(tier('hawaii_winter_rainfall')).toEqual([]);
+    expect(graph.links.filter((l) => l.to === 'pacific_meridional_mode')).toHaveLength(0);
+    expect(own.every((l) => l.confidence !== 'established')).toBe(true);
+    expect(tl.months[3].nodes.west_pacific_typhoons.confidence).toBe('probable');
+    expect(tl.months[3].nodes.east_pacific_hurricanes.confidence).toBe('contested');
+  });
+  it('ENSO is pushed toward El Niño in September (lag 6), pending in August, and holds to the end of the year shown', () => {
+    expect(tl.months[5].nodes.enso.value).toBe(0);
+    expect(tl.months[5].nodes.enso.pendingLinkIds).toHaveLength(0);
+    expect(tl.months[6].calendarMonth).toBe(9);
+    expect(tl.months[6].nodes.enso.value).toBe(1);
+    expect(tl.months[6].nodes.enso.viaLinkIds).toEqual(['positive_pmm_el_nino']);
+    expect(tl.months[6].nodes.enso.confidence).toBe('probable');
+    expect(tl.months[6].links.positive_pmm_el_nino?.depth).toBe(1);
+    expect(tl.months[12].nodes.enso.value).toBe(1);
+  });
+  it('under "established only" every arrow of this driver is a ghost and nothing on the map is applied', () => {
+    const est = propagate(graph, { driverId: 'pacific_meridional_mode', phaseId: 'positive', startMonth: 3, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    for (const m of est.months) {
+      for (const st of Object.values(m.nodes)) expect(st.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      for (const [id, l] of Object.entries(m.links)) expect(l.status, `${id} at month ${m.index}`).toBe('ghost');
+    }
+    expect(est.months[3].links.positive_pmm_west_pacific_typhoons?.status).toBe('ghost');
+    expect(est.months[6].links.positive_pmm_el_nino?.status).toBe('ghost');
+    expect(est.months[6].nodes.enso.value).toBe(0);
+  });
+});
+
+describe('acceptance: the positive mode pushes El Niño and its map follows one tier down (March start, chain on)', () => {
+  const tl = runPmm('positive', 3, 3);
+  const direct = runPmm('positive', 3, 1);
+  it('Indonesia and eastern Australia dry from September (months 6–9) through the pushed El Niño, hollow under direct links; eastern Australia rated probable', () => {
+    expect(monthsWith(tl, 'indonesia_rainfall', -1)).toEqual([6, 7, 8, 9]);
+    expect(monthsWith(tl, 'east_australia_rainfall', -1).slice(0, 4)).toEqual([6, 7, 8, 9]);
+    for (const id of ['indonesia_rainfall', 'east_australia_rainfall']) {
+      for (const m of tl.months.slice(0, 6)) expect(m.nodes[id].viaLinkIds, `${id} month ${m.index}`).toHaveLength(0);
+      for (const dm of direct.months) expect(dm.nodes[id].viaLinkIds, `${id} direct month ${dm.index}`).toHaveLength(0);
+    }
+    expect(tl.months[6].nodes.east_australia_rainfall.viaLinkIds).toEqual(['el_nino_east_australia']);
+    expect(tl.months[6].nodes.east_australia_rainfall.confidence).toBe('probable');
+    expect(tl.months[6].links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+  });
+  it('the third hop: the pushed El Niño pushes the dipole (depth 2, contested), whose arrow also lands on Indonesia at depth 3, so Indonesia is rated contested', () => {
+    const sep = tl.months[6];
+    expect(sep.nodes.iod.value).toBe(1);
+    expect(sep.links.el_nino_positive_iod).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect([...sep.nodes.indonesia_rainfall.viaLinkIds].sort()).toEqual(['el_nino_indonesia', 'positive_iod_indonesia']);
+    expect(sep.links.positive_iod_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 3 });
+    expect(sep.nodes.indonesia_rainfall.confidence).toBe('contested');
+    expect(sep.nodes.indonesia_rainfall.conflicting).toBe(false);
+  });
+  it('the Gulf Coast and Peru wet from January (month 10), Hawaii dry from February (month 11) rated contested: El Niño’s winter one tier down', () => {
+    expect(tl.months[10].calendarMonth).toBe(1);
+    expect(monthsWith(tl, 'us_gulf_coast_winter', 1)).toEqual([10, 11, 12]);
+    expect(monthsWith(tl, 'peru_coast_rainfall', 1)).toEqual([10, 11, 12]);
+    expect(monthsWith(tl, 'hawaii_winter_rainfall', -1)).toEqual([11, 12]);
+    expect(tl.months[11].nodes.hawaii_winter_rainfall.confidence).toBe('contested');
+    expect(tl.months[11].nodes.hawaii_winter_rainfall.viaLinkIds).toEqual(['el_nino_hawaii']);
+  });
+  it('the typhoons and the eastern Pacific hurricanes carry both arrows the same way from September, no conflict', () => {
+    const sep = tl.months[6];
+    expect([...sep.nodes.west_pacific_typhoons.viaLinkIds].sort()).toEqual(['el_nino_west_pacific_typhoons', 'positive_pmm_west_pacific_typhoons']);
+    expect(sep.nodes.west_pacific_typhoons.value).toBe(1);
+    expect(sep.nodes.west_pacific_typhoons.conflicting).toBe(false);
+    expect([...sep.nodes.east_pacific_hurricanes.viaLinkIds].sort()).toEqual(['el_nino_east_pacific_hurricanes', 'positive_pmm_east_pacific_hurricanes']);
+    expect(sep.nodes.east_pacific_hurricanes.value).toBe(1);
+    expect(sep.nodes.east_pacific_hurricanes.conflicting).toBe(false);
+    expect(tl.months[3].nodes.west_pacific_typhoons.viaLinkIds).toEqual(['positive_pmm_west_pacific_typhoons']);
+  });
+  it('the mode is never pushed back: it has no links in and holds its phase all year', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.pacific_meridional_mode.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.pacific_meridional_mode.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: negative Pacific meridional mode, March start, chain on', () => {
+  const tl = runPmm('negative', 3, 3);
+  it('the typhoons quiet June–November rated contested; the eastern Pacific hurricanes hollow (positive link only)', () => {
+    expect(monthsWith(tl, 'west_pacific_typhoons', -1)).toEqual([3, 4, 5, 6, 7, 8]);
+    expect(tl.months[3].nodes.west_pacific_typhoons.confidence).toBe('contested');
+    for (const m of tl.months.slice(0, 6)) {
+      expect(m.nodes.east_pacific_hurricanes.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+      expect(m.nodes.east_pacific_hurricanes.pendingLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+  it('ENSO is pushed toward La Niña in September rated contested, and the pushed La Niña’s map follows at the floor tier: Indonesia wet, the typhoons quiet through both arrows', () => {
+    expect(tl.months[5].nodes.enso.value).toBe(0);
+    expect(tl.months[6].nodes.enso.value).toBe(-1);
+    expect(tl.months[6].nodes.enso.viaLinkIds).toEqual(['negative_pmm_la_nina']);
+    expect(tl.months[6].nodes.enso.confidence).toBe('contested');
+    expect(monthsWith(tl, 'indonesia_rainfall', 1)).toEqual([6, 7, 8, 9]);
+    expect(tl.months[6].links.la_nina_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    const sep = tl.months[6];
+    expect([...sep.nodes.west_pacific_typhoons.viaLinkIds].sort()).toEqual(['la_nina_west_pacific_typhoons', 'negative_pmm_west_pacific_typhoons']);
+    expect(sep.nodes.west_pacific_typhoons.value).toBe(-1);
+    expect(sep.nodes.west_pacific_typhoons.conflicting).toBe(false);
+  });
+});
+
+describe('acceptance: the 2014–15 story, the mode alone from March with the chain on', () => {
+  const s = graph.stories.find((x) => x.id === 'positive_pmm_2014_15')!;
+  it('ships with the mode positive from March 2014, no second driver, five steps', () => {
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['pacific_meridional_mode', 'positive', undefined, 3, 2014]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 3, 6, 9, 12]);
+    expect(s.steps.map((st) => st.focus)).toEqual(['pacific_meridional_mode', 'west_pacific_typhoons', 'enso', 'enso', 'enso']);
+  });
+  it('at the story’s steps the typhoon arrow is applied in June at full tier and ENSO is pushed from September, still pushed in March 2015', () => {
+    const tl = propagate(graph, { driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3 });
+    expect(tl.months[3].nodes.west_pacific_typhoons.viaLinkIds).toEqual(['positive_pmm_west_pacific_typhoons']);
+    expect(tl.months[3].links.positive_pmm_west_pacific_typhoons?.depth).toBe(1);
+    expect(tl.months[3].nodes.enso.value).toBe(0);
+    expect(tl.months[6].nodes.enso.value).toBe(1);
+    expect(tl.months[9].nodes.enso.value).toBe(1);
+    expect(tl.months[9].nodes.indonesia_rainfall.value).toBe(-1);
+    expect(tl.months[12].calendarMonth).toBe(3);
+    expect(tl.months[12].nodes.enso.value).toBe(1);
   });
 });

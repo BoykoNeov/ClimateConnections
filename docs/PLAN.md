@@ -1223,8 +1223,76 @@ drivers stays in one place.
   print caption.
 - Not in M21: any change to the AMO's links, even where the same outcome
   is now reachable two ways (two arrows on one region rated separately is
-  the M11 behaviour). Next in `docs/PLAN_V3.md`: M22, the Pacific
-  Meridional Mode.
+  the M11 behaviour).
+
+### M22 — Tenth driver: Pacific Meridional Mode (version 3, signed off 2026-09-08)
+- Data: `pacific_meridional_mode` driver node with positive / neutral /
+  negative phases (label "PMM"; marker at 18°N 133°W, between Hawaii at
+  21°N 157°W and the eastern Pacific hurricanes at 14°N 110°W, clear of
+  both labels; area the subtropical north-east Pacific 150°W–110°W,
+  8°N–25°N, butting against ENSO's box; `default_start_month` 3). No new
+  outcome node. Three outcome links: the western Pacific typhoons (+
+  probable / − contested, lag 2–5, June–November, the wind-shear response
+  over the south-eastern breeding grounds) and the eastern Pacific
+  hurricanes (positive only, + contested, lag 2–5, June–November, the
+  2015 season's experiments). Two driver-to-driver links, both out of
+  the mode into ENSO: a positive spring pushes ENSO toward El Niño
+  (probable, lag 6–9, all year, the seasonal footprinting mechanism) and
+  a negative spring toward La Niña (contested, as decided at sign-off:
+  negative springs poorly predict La Niña in the record). Nothing pushes
+  the mode; its trigger, the North Pacific Oscillation, is a
+  month-to-month pressure pattern and not a driver, and the card says so.
+  Hawaii has no supportable direct link and is left hollow (with the
+  chain on it dries in winter through the pushed El Niño, one tier
+  down). Twenty-five new sources, every one resolved on Crossref,
+  twenty-three with abstracts read. One story, "2014–15: the spring
+  warning that came true late" (the mode alone from March 2014, chain
+  on), five steps: the warm spring after the Blob winter with the caveat
+  first, the dashed typhoon arrow in June and why it is dashed, ENSO
+  pushed in September against the real stall by the June easterly wind
+  burst, the borderline winter with El Niño's map painted one tier down,
+  and March 2015 when the El Niño was declared at last and the lesson
+  that a precursor raises the odds.
+- Honesty note carried in the data: the driver card leads with the
+  failure rate (a positive spring is followed by an El Niño more often
+  than not, about seven times in ten in the coupled-model experiments,
+  so roughly one spring in three comes to nothing; 2014 was one), says
+  that part of the mode is El Niño's own footprint, and every arrow of
+  this driver is dashed or dotted, so under "established only" the
+  driver shows nothing at all, which is the point. The typhoon link's
+  caveat names the study that finds the year-to-year relation weak.
+- What the chain shows, asserted in tests: from a March positive spring
+  ENSO is pushed in September (lag 6) at depth 1, rated probable, and
+  from then El Niño's own map follows one tier down: Indonesia and
+  eastern Australia dry from September (Indonesia also through the
+  pushed dipole at the third hop, so rated contested), the Gulf Coast
+  and Peru wet from January, Hawaii dry from February rated contested;
+  the typhoons and
+  the eastern Pacific hurricanes carry both arrows the same way from
+  September without conflict; the mode is never pushed back. The
+  negative spring pushes ENSO toward La Niña rated contested, and the
+  pushed La Niña's map follows at the floor tier.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the positive mode from March (the
+  typhoons and hurricanes June–November and pending in May, the tiers,
+  ENSO pushed in September and its outcomes one tier down, everything a
+  ghost under "established only"), the negative mode (ENSO toward La
+  Niña contested, the typhoons quiet, the hurricanes hollow until the
+  pushed La Niña reaches them, the pushed La Niña's map at the floor), the no-links-in rule and the 2014–15
+  story (fields, five steps, ENSO pushed at step three). Existing
+  expectations updated: ten drivers, twenty-three driver-to-driver
+  links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m22.mjs`):
+  the new marker placed with no label overlap, the driver dropdown
+  jumping to March, the phase button labels, the dashed typhoon arrow
+  in June, the induced ENSO marker in September and El Niño's map one
+  tier down in December, everything ghosted under "established only",
+  the negative reversal, the driver card with the failure rate, the
+  2014–15 story stepped to its end, the print caption.
+- Not in M22: the North Pacific Oscillation as a driver; any link from
+  ENSO back into the mode (Stuecker's fast feedback is named in the
+  caveat, not drawn, to keep the loop rules simple). Next in
+  `docs/PLAN_V3.md`: M26, a large tropical volcanic eruption.
 
 ---
 
@@ -1355,6 +1423,11 @@ established), sahel_rainfall (+/−, probable) and central_america_rainfall
 |---|---|---|---|---|---|
 | southwest_amazon_dry_season | Acre, Rondônia, southern and western Amazonas | wet_dry | Atlantic meridional mode | harsher dry season June–October (−), probable | milder (+), contested |
 
+The Pacific Meridional Mode (M22) adds no outcome node; it acts on
+west_pacific_typhoons (+ probable / − contested) and
+east_pacific_hurricanes (positive phase only, +, contested), and pushes
+ENSO (positive → El Niño probable, negative → La Niña contested).
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1391,7 +1464,8 @@ writing mechanism text):
   side by side); more drivers (done, M16: the Southern Annular Mode; M17:
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
   Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
-  the first version 3 driver; M21: the Atlantic Meridional Mode);
+  the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
+  the Pacific Meridional Mode);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

@@ -4,16 +4,16 @@ An interactive teaching map of how the big climate oscillations affect
 weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole,
 the North Atlantic Oscillation, the Southern Annular Mode, the Pacific
 Decadal Oscillation, the Atlantic Multidecadal Oscillation, the Atlantic
-Niño, the Indian Ocean Basin Mode or the Atlantic Meridional Mode) and a
-phase (El Niño or La Niña, a positive or negative dipole, NAO, SAM, PDO,
-AMO or AMM, an Atlantic Niño or Niña, a warm or cool Indian Ocean), press
-play, and watch the
+Niño, the Indian Ocean Basin Mode, the Atlantic Meridional Mode or the
+Pacific Meridional Mode) and a phase (El Niño or La Niña, a positive or
+negative dipole, NAO, SAM, PDO, AMO, AMM or PMM, an Atlantic Niño or Niña,
+a warm or cool Indian Ocean), press play, and watch the
 known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds nine drivers, 56 outcome regions, 172 cited links
-(twenty-one of them between the drivers) and thirteen guided stories. A scenario is
+The map currently holds ten drivers, 56 outcome regions, 177 cited links
+(twenty-three of them between the drivers) and fourteen guided stories. A scenario is
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -80,15 +80,18 @@ any static file server.
   cousin of El Niño, peaking in the northern summer), the Indian Ocean
   Basin Mode (the whole tropical Indian Ocean warming or cooling together,
   the spring after an El Niño or La Niña, and carrying its signal into the
-  East Asian summer) or the Atlantic Meridional Mode (the spring contrast
+  East Asian summer), the Atlantic Meridional Mode (the spring contrast
   between a warm north and a cool south tropical Atlantic, or the
   reverse, with the rain belt shifted toward the warm side; the seasonal
-  cousin of the AMO). The other drivers' markers turn grey; their cards
-  say they are not part of the scenario.
+  cousin of the AMO) or the Pacific Meridional Mode (the spring pattern
+  of weak trade winds and warm water off Baja California that often
+  comes two or three seasons before an El Niño; with the chain on, the
+  map pushes ENSO from it). The other drivers' markers turn grey; their
+  cards say they are not part of the scenario.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
   Niña; positive, neutral or negative dipole; positive, neutral or negative
-  NAO, SAM, PDO, AMO or AMM; Atlantic Niño, neutral or Atlantic Niña; warm,
-  neutral or cool basin.
+  NAO, SAM, PDO, AMO, AMM or PMM; Atlantic Niño, neutral or Atlantic Niña;
+  warm, neutral or cool basin.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
@@ -116,9 +119,11 @@ any static file server.
   AMO, ahead of the hurricane season and the Sahel's rains, May for the
   Atlantic Niño, which peaks in June–August, February for the Indian
   Ocean basin mode, which peaks in February–April ahead of the East Asian
-  summer, and March for the Atlantic meridional mode, which peaks in
-  March–May ahead of the Nordeste's rains and the hurricane season. Both
-  the default and the note under the control come from the data.
+  summer, and March for the Atlantic and Pacific meridional modes, which
+  peak in March–May, ahead of the Nordeste's rains and the hurricane
+  season for the one and of the Pacific's autumn tip toward El Niño for
+  the other. Both the default and the note under the control come from
+  the data.
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase
@@ -245,7 +250,7 @@ Pacific as a curve.
 
    ```yaml
    - id: el_nino_example_region       # unique, permanent
-     from: enso                        # a driver id (enso, iod, nao, sam, pdo, amo, atlantic_nino, indian_ocean_basin or atlantic_meridional_mode)
+     from: enso                        # a driver id (enso, iod, nao, sam, pdo, amo, atlantic_nino, indian_ocean_basin, atlantic_meridional_mode or pacific_meridional_mode)
      when: el_nino                     # a phase id of that driver
      to: example_region                # a node id: an outcome, or another driver
      effect: -1                        # +1 or -1 on the target's axis; for a driver

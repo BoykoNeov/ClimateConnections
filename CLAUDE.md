@@ -15,8 +15,9 @@ since M15 a second driver that may begin before the first, and since
 M16 the Southern Annular Mode as a fourth driver, since M17 the
 Pacific Decadal Oscillation as a fifth, since M18 the Atlantic
 Multidecadal Oscillation as a sixth, since M19 the Atlantic Niño as a
-seventh, since M20 the Indian Ocean Basin Mode as an eighth, and since
-M21 the Atlantic Meridional Mode as a ninth) on a
+seventh, since M20 the Indian Ocean Basin Mode as an eighth, since M21
+the Atlantic Meridional Mode as a ninth, and since M22 the Pacific
+Meridional Mode as a tenth) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -57,8 +58,9 @@ one.
   Oscillation as a fifth (M17) were signed off on 2026-09-07, and the
   Atlantic Multidecadal Oscillation as a sixth (M18) and the Atlantic
   Niño as a seventh (M19) on 2026-09-08, and the Indian Ocean Basin Mode
-  as an eighth (M20, the first version 3 item, `docs/PLAN_V3.md`) and the
-  Atlantic Meridional Mode as a ninth (M21) on 2026-09-08. A new driver
+  as an eighth (M20, the first version 3 item, `docs/PLAN_V3.md`), the
+  Atlantic Meridional Mode as a ninth (M21) and the Pacific Meridional
+  Mode as a tenth (M22) on 2026-09-08. A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
   everything from the data. Do not start another version 2 or version 3

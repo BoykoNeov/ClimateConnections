@@ -3646,6 +3646,158 @@ links:
       deepening the mixed layer; the remote-forcing study ties such
       springs to the NAO and ENSO.
     sources: [foltz_2012, czaja_2002, kushnir_2006]
+  # ---- Pacific Meridional Mode (M22). The mode peaks in March–May, so its
+  # scenarios start in March. Its main work is to push ENSO; with the chain
+  # on, El Niño's own map follows one tier down from the autumn. Nothing on
+  # the map pushes it: its trigger, the North Pacific Oscillation, is a
+  # month-to-month pressure pattern and not a driver here.
+  - id: positive_pmm_el_nino
+    from: pacific_meridional_mode
+    when: positive
+    to: enso
+    effect: 1
+    lag_months: [6, 9]
+    season: []
+    confidence: probable
+    mechanism: >
+      Warm water off Baja California weakens the trade winds to its south,
+      the weaker wind evaporates less and warms the sea further, and the
+      warm patch and the weak wind creep south-west together through
+      spring. By summer the weak wind reaches the equator, where it lets
+      warm water spread east and starts the Pacific toward an El Niño by
+      the following winter.
+    caveat: >
+      A nudge, not a trigger: the Pacific has to be primed, with heat
+      already stored in the west, for the spring signal to grow, and about
+      one positive spring in three comes to nothing. The spring of 2014
+      was one such miss. Part of the mode is also El Niño's own footprint
+      in the subtropics, so the two are not fully separate things.
+    evidence_note: >
+      The majority of El Niño events over four decades were preceded by
+      the mode's spring warming and south-westerly wind; in a
+      high-resolution coupled model it acts as a trigger seven to nine
+      months before large El Niños, but not every event triggers one and
+      the western Pacific has to be preconditioned; imposing the winter
+      forcing in a coupled model warmed the ENSO region in about 70% of
+      sixty runs; positive springs forecast eastern Pacific El Niños with
+      some skill in a multi-model hindcast; the spring-to-winter relation
+      has strengthened over the past seventy years.
+    sources: [chang_2007_pmm, larson_kirtman_2013, alexander_2010, vimont_2003, larson_kirtman_2014, amaya_2019, zheng_2023, stuecker_2018]
+
+  - id: negative_pmm_la_nina
+    from: pacific_meridional_mode
+    when: negative
+    to: enso
+    effect: -1
+    lag_months: [6, 9]
+    season: []
+    confidence: contested
+    mechanism: >
+      Cool water off Baja California and stronger trades are proposed to
+      work the mirror way: the stronger wind cools the sea further, the
+      pattern creeps toward the equator, and by summer the stronger
+      easterlies there lift cool water in the east and start the Pacific
+      toward a La Niña.
+    caveat: >
+      The negative side is the weak side. In the observed record negative
+      springs are poor predictors of La Niña, and the studies that made
+      the case for the mode are about the positive springs before El
+      Niños. Shown as contested for that reason; the map draws it so the
+      asymmetry can be seen, not because it is reliable.
+    evidence_note: >
+      In the multi-model hindcast negative mode events poorly predict La
+      Niña events in observations, and the forecast models fail to
+      capture even that; the subtropical route into ENSO produces
+      multi-year La Niñas but not multi-year El Niños, one source of the
+      asymmetry between the two.
+    sources: [larson_kirtman_2014, yu_fang_2018, chang_2007_pmm]
+
+  - id: positive_pmm_west_pacific_typhoons
+    from: pacific_meridional_mode
+    when: positive
+    to: west_pacific_typhoons
+    effect: 1
+    lag_months: [2, 5]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Rain rising over the warm water of the mode's north-western arm sets
+      up a wave-like response to its west: low-level westerly winds and a
+      spin over the south-eastern part of the typhoon breeding grounds,
+      and weaker wind shear aloft. Typhoons form further east and have a
+      longer run over warm water to grow.
+    caveat: >
+      The count is a tendency, not a forecast, and one study finds the
+      year-to-year part of the relation weak once the slow decadal swing
+      of the tropical Pacific is removed; the model experiments that back
+      the link are what keep it at probable. Its effect adds to El Niño's
+      own, which points the same way.
+    evidence_note: >
+      A positive mode favours typhoon formation in the western North
+      Pacific and a negative one inhibits it, in observations, a
+      thousand-year control run and sensitivity experiments, through the
+      wind shear over the south-eastern breeding grounds; the mode index
+      correlates with the number of intense typhoons in June–November;
+      the summer of 2018, with no El Niño, had eighteen typhoons and
+      sensitivity runs put the positive mode as the main cause; in 2015
+      the mode's warm water pushed the mean birthplace of typhoons ten
+      degrees east of 1997's. One study finds the statistical link is
+      dominated by decadal covariation with the tropical Pacific.
+    sources: [zhang_2016_pmm_typhoons, gao_2018, takaya_2019, hong_2018, liu_2019]
+
+  - id: negative_pmm_west_pacific_typhoons
+    from: pacific_meridional_mode
+    when: negative
+    to: west_pacific_typhoons
+    effect: -1
+    lag_months: [2, 5]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: contested
+    mechanism: >
+      With the subtropical north-east Pacific cool, the wave-like response
+      over the typhoon grounds runs the other way: stronger wind shear and
+      less spin over the south-eastern breeding grounds, so typhoons form
+      closer to Asia and stay weaker.
+    caveat: >
+      The composite study finds the quiet tendency, but the case studies
+      and the model experiments are about positive springs, and the
+      objection that the year-to-year relation is weak applies with more
+      force here. Shown one tier lower than the warm side for that reason.
+    evidence_note: >
+      The negative phase inhibits typhoon occurrence in the western North
+      Pacific in the composite analysis of observations and the control
+      run; the one-in-ten-years component of the relation, rather than
+      the year-to-year one, carries most of the signal.
+    sources: [zhang_2016_pmm_typhoons, liu_2019]
+
+  - id: positive_pmm_east_pacific_hurricanes
+    from: pacific_meridional_mode
+    when: positive
+    to: east_pacific_hurricanes
+    effect: 1
+    lag_months: [2, 5]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: contested
+    mechanism: >
+      The mode's warm water lies over the western part of the eastern
+      Pacific hurricane grounds, between Mexico and Hawaii. Warm sea, moist
+      air and weak wind shear there give storms more fuel and more room,
+      and more of them travel west toward Hawaii.
+    caveat: >
+      Rests on one season, 2015, and its model experiments, and that
+      season had a strong El Niño at the same time; the record of storms
+      in this basin is short. Shown as contested until more seasons are
+      studied.
+    evidence_note: >
+      The record 2015 season in the eastern and central Pacific, with the
+      first three simultaneous category-4 hurricanes and a record count
+      around Hawaii, was not primarily caused by the El Niño but by warm
+      water in the subtropical Pacific typical of the positive mode,
+      according to targeted high-resolution experiments; the western part
+      of the basin set records for storms, hurricane days and storm
+      energy in 2015, with the El Niño and the positive mode together
+      giving a record-warm background.
+    sources: [murakami_2017, collins_2016]
 
 sources:
   - key: ropelewski_halpert_1986
@@ -4317,3 +4469,79 @@ sources:
   - key: noaa_psl_amm
     citation: "NOAA Physical Sciences Laboratory. Atlantic Meridional Mode (AMM) index, monthly, 1948–present."
     url: https://psl.noaa.gov/data/timeseries/monthly/AMM/
+  # ---- Pacific Meridional Mode (M22)
+  - key: chang_2007_pmm
+    citation: "Chang, P., Zhang, L., Saravanan, R., Vimont, D. J., Chiang, J. C. H., Ji, L., Seidel, H., & Tippett, M. K. (2007). Pacific meridional mode and El Niño–Southern Oscillation. Geophysical Research Letters, 34, L16608."
+    url: https://doi.org/10.1029/2007GL030302
+  - key: larson_kirtman_2013
+    citation: "Larson, S., & Kirtman, B. (2013). The Pacific Meridional Mode as a trigger for ENSO in a high-resolution coupled model. Geophysical Research Letters, 40(12), 3189–3194."
+    url: https://doi.org/10.1002/grl.50571
+  - key: larson_kirtman_2014
+    citation: "Larson, S. M., & Kirtman, B. P. (2014). The Pacific Meridional Mode as an ENSO precursor and predictor in the North American Multimodel Ensemble. Journal of Climate, 27(18), 7018–7032."
+    url: https://doi.org/10.1175/JCLI-D-14-00055.1
+  - key: vimont_2003
+    citation: "Vimont, D. J., Wallace, J. M., & Battisti, D. S. (2003). The seasonal footprinting mechanism in the Pacific: Implications for ENSO. Journal of Climate, 16(16), 2668–2675."
+    url: https://doi.org/10.1175/1520-0442(2003)016<2668:TSFMIT>2.0.CO;2
+  - key: vimont_2001
+    citation: "Vimont, D. J., Battisti, D. S., & Hirst, A. C. (2001). Footprinting: A seasonal connection between the tropics and mid-latitudes. Geophysical Research Letters, 28(20), 3923–3926."
+    url: https://doi.org/10.1029/2001GL013435
+  - key: alexander_2010
+    citation: "Alexander, M. A., Vimont, D. J., Chang, P., & Scott, J. D. (2010). The impact of extratropical atmospheric variability on ENSO: Testing the seasonal footprinting mechanism using coupled model experiments. Journal of Climate, 23(11), 2885–2901."
+    url: https://doi.org/10.1175/2010JCLI3205.1
+  - key: amaya_2019
+    citation: "Amaya, D. J. (2019). The Pacific Meridional Mode and ENSO: A review. Current Climate Change Reports, 5(4), 296–307."
+    url: https://doi.org/10.1007/s40641-019-00142-x
+  - key: zheng_2023
+    citation: "Zheng, Y., Chen, S., Chen, W., & Yu, B. (2023). A continuing increase of the impact of the spring North Pacific Meridional Mode on the following winter El Niño and Southern Oscillation. Journal of Climate, 36(2), 585–602."
+    url: https://doi.org/10.1175/JCLI-D-22-0190.1
+  - key: yu_fang_2018
+    citation: "Yu, J.-Y., & Fang, S.-W. (2018). The distinct contributions of the seasonal footprinting and charged-discharged mechanisms to ENSO complexity. Geophysical Research Letters, 45(13), 6611–6618."
+    url: https://doi.org/10.1029/2018GL077664
+  - key: stuecker_2018
+    citation: "Stuecker, M. F. (2018). Revisiting the Pacific Meridional Mode. Scientific Reports, 8, 3216."
+    url: https://doi.org/10.1038/s41598-018-21537-0
+  - key: anderson_2003
+    citation: "Anderson, B. T. (2003). Tropical Pacific sea-surface temperatures and preceding sea level pressure anomalies in the subtropical North Pacific. Journal of Geophysical Research: Atmospheres, 108(D23), 4732."
+    url: https://doi.org/10.1029/2003JD003805
+  - key: di_lorenzo_2015
+    citation: "Di Lorenzo, E., Liguori, G., Schneider, N., Furtado, J. C., Anderson, B. T., & Alexander, M. A. (2015). ENSO and meridional modes: A null hypothesis for Pacific climate variability. Geophysical Research Letters, 42(21), 9440–9448."
+    url: https://doi.org/10.1002/2015GL066281
+  - key: linkin_nigam_2008
+    citation: "Linkin, M. E., & Nigam, S. (2008). The North Pacific Oscillation–West Pacific teleconnection pattern: Mature-phase structure and winter impacts. Journal of Climate, 21(9), 1979–1997."
+    url: https://doi.org/10.1175/2007JCLI2048.1
+  - key: zhang_2016_pmm_typhoons
+    citation: "Zhang, W., Vecchi, G. A., Murakami, H., Villarini, G., & Jia, L. (2016). The Pacific Meridional Mode and the occurrence of tropical cyclones in the western North Pacific. Journal of Climate, 29(1), 381–398."
+    url: https://doi.org/10.1175/JCLI-D-15-0282.1
+  - key: gao_2018
+    citation: "Gao, S., Zhu, L., Zhang, W., & Chen, Z. (2018). Strong modulation of the Pacific Meridional Mode on the occurrence of intense tropical cyclones over the western North Pacific. Journal of Climate, 31(19), 7739–7749."
+    url: https://doi.org/10.1175/JCLI-D-17-0833.1
+  - key: takaya_2019
+    citation: "Takaya, Y. (2019). Positive phase of Pacific Meridional Mode enhanced western North Pacific tropical cyclone activity in summer 2018. SOLA, 15A, 55–59."
+    url: https://doi.org/10.2151/sola.15A-010
+  - key: hong_2018
+    citation: "Hong, C.-C., Lee, M.-Y., Hsu, H.-H., & Tseng, W.-L. (2018). Distinct influences of the ENSO-like and PMM-like SST anomalies on the mean TC genesis location in the western North Pacific: The 2015 summer as an extreme example. Journal of Climate, 31(8), 3049–3059."
+    url: https://doi.org/10.1175/JCLI-D-17-0504.1
+  - key: liu_2019
+    citation: "Liu, C., Zhang, W., Stuecker, M. F., & Jin, F.-F. (2019). Pacific Meridional Mode–western North Pacific tropical cyclone linkage explained by tropical Pacific quasi-decadal variability. Geophysical Research Letters, 46(22), 13346–13354."
+    url: https://doi.org/10.1029/2019GL085340
+  - key: murakami_2017
+    citation: "Murakami, H., Vecchi, G. A., Delworth, T. L., Wittenberg, A. T., Underwood, S., Gudgel, R., Yang, X., Jia, L., Zeng, F., Paffendorf, K., & Zhang, W. (2017). Dominant role of subtropical Pacific warming in extreme eastern Pacific hurricane seasons: 2015 and the future. Journal of Climate, 30(1), 243–264."
+    url: https://doi.org/10.1175/JCLI-D-16-0424.1
+  - key: collins_2016
+    citation: "Collins, J. M., Klotzbach, P. J., Maue, R. N., Roache, D. R., Blake, E. S., Paxton, C. H., & Mehta, C. A. (2016). The record-breaking 2015 hurricane season in the eastern North Pacific: An analysis of environmental conditions. Geophysical Research Letters, 43(17), 9217–9224."
+    url: https://doi.org/10.1002/2016GL070597
+  - key: hu_fedorov_2016
+    citation: "Hu, S., & Fedorov, A. V. (2016). Exceptionally strong easterly wind burst stalling El Niño of 2014. Proceedings of the National Academy of Sciences, 113(8), 2005–2010."
+    url: https://doi.org/10.1073/pnas.1514182113
+  - key: mcphaden_2015
+    citation: "McPhaden, M. J. (2015). Playing hide and seek with El Niño. Nature Climate Change, 5(9), 791–795."
+    url: https://doi.org/10.1038/nclimate2775
+  - key: levine_mcphaden_2016
+    citation: "Levine, A. F. Z., & McPhaden, M. J. (2016). How the July 2014 easterly wind burst gave the 2015–2016 El Niño a head start. Geophysical Research Letters, 43(12), 6503–6510."
+    url: https://doi.org/10.1002/2016GL069204
+  - key: menkes_2014
+    citation: "Menkes, C. E., Lengaigne, M., Vialard, J., Puy, M., Marchesiello, P., Cravatte, S., & Cambon, G. (2014). About the role of Westerly Wind Events in the possible development of an El Niño in 2014. Geophysical Research Letters, 41(18), 6476–6483."
+    url: https://doi.org/10.1002/2014GL061186
+  - key: noaa_psl_pmm
+    citation: "NOAA Physical Sciences Laboratory. Pacific Meridional Mode (PMM) index, monthly, 1948–present."
+    url: https://psl.noaa.gov/data/timeseries/monthly/PMM/

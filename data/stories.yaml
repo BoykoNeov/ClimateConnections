@@ -1248,3 +1248,94 @@ stories:
           from a store of carbon into a source, and the fires were set by
           people. The map shows the tendency; the damage is a human story.
         sources: [marengo_2008, phillips_2009, vimont_kossin_2007]
+
+  - id: positive_pmm_2014_15
+    title: "2014–15: the spring warning that came true late"
+    intro: >
+      In the spring of 2014 the subtropical north-east Pacific ran warm
+      under weak trade winds, the mode's positive pattern, and forecasters
+      spoke of a coming El Niño to rival 1997's. The year shown begins in
+      March 2014 with the mode positive, no second driver and the chain
+      switched on, so the map can do what the mode does: push the Pacific
+      toward El Niño by autumn. In reality the El Niño stalled that
+      summer, barely reached the threshold in winter, and only became the
+      big event a year later. This is the best example in the tool of what
+      a dashed arrow means: a precursor raises the odds; it does not fix
+      the outcome.
+    driver: pacific_meridional_mode
+    phase: positive
+    start_month: 3
+    start_year: 2014
+    steps:
+      - month: 0
+        focus: pacific_meridional_mode
+        text: >
+          The winter of 2013–14 left a huge patch of warm water in the
+          north-east Pacific, nicknamed "the Blob", under a stubborn ridge
+          of high pressure and weak winds. By March the mode's index was
+          positive: warm water and slack trade winds off Baja California,
+          the warmth spreading south-west toward the equator. The map now
+          shows the mode's own arrows, dashed, and with the chain on it
+          will push ENSO in the autumn. Read the caveat first: most El
+          Niños are preceded by a spring like this, but a spring like this
+          is not always followed by an El Niño.
+        sources: [chang_2007_pmm, bond_2015, di_lorenzo_mantua_2016, noaa_psl_pmm]
+
+      - month: 3
+        focus: west_pacific_typhoons
+        text: >
+          From June a dashed arrow points at the typhoon grounds and says
+          active. Rain rising over the mode's warm water sets up a
+          response far to the west: low-level westerlies, more spin and
+          less wind shear over the south-eastern part of the breeding
+          grounds, so typhoons form further east and have longer to grow.
+          The arrow is dashed for a reason the card gives: one study finds
+          the year-to-year part of this relation weak once the slow swing
+          of the tropical Pacific is removed, and it is the model
+          experiments that keep the link at probable. The map shows the
+          tendency for any positive spring; it does not score the 2014
+          season.
+        sources: [zhang_2016_pmm_typhoons, gao_2018, liu_2019]
+
+      - month: 6
+        focus: enso
+        text: >
+          By September the map has pushed ENSO into El Niño: the marker
+          is outlined as pushed, and a dashed arrow from the mode reaches
+          it. This is the whole point of the driver. In the real 2014 the
+          Pacific had looked like early 1997 until April, with bursts of
+          westerly wind and warm water piled up in the west; then the
+          bursts stopped, and in June an exceptionally strong burst of
+          easterly wind blew the other way and stalled the event. By
+          September the warming was weak and the forecasts of a great El
+          Niño had been quietly withdrawn.
+        sources: [hu_fedorov_2016, menkes_2014, mcphaden_2015]
+
+      - month: 9
+        focus: enso
+        text: >
+          By December the pushed El Niño has painted its own map one tier
+          down: Indonesia and eastern Australia dry, the typhoons active,
+          and in the coming months the Gulf Coast, Peru and Hawaii will
+          fill in, every arrow dashed because it comes through a pushed
+          driver. The real winter of 2014–15 was borderline. NOAA's index
+          hovered at the threshold, and no El Niño was declared until
+          March 2015. The mode had raised the odds; the summer's winds had
+          taken them away again.
+        sources: [noaa_cpc_oni, mcphaden_2015, levine_mcphaden_2016]
+
+      - month: 12
+        focus: enso
+        text: >
+          A year on, in March 2015, NOAA declared the El Niño at last. The
+          easterly burst that stalled it in 2014 had also stopped the
+          Pacific from releasing its stored heat, which gave the 2015
+          event a head start, and it grew into one of the three strongest
+          on record. The spring of 2015 was itself strongly positive in
+          the mode, and its warm subtropical water helped make that year's
+          eastern Pacific hurricane season the busiest recorded. So the
+          warning came true, a year late. The lesson to carry from this
+          story is the one the dashed line always carries: a precursor
+          raises the odds, and roughly one spring in three, like 2014,
+          comes to nothing.
+        sources: [levine_mcphaden_2016, noaa_cpc_oni, murakami_2017, larson_kirtman_2013]
