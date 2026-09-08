@@ -79,6 +79,21 @@ nodes:
     summary: >
       ...
     sources: [field_2009]
+
+  - id: aleutian_low             # a seasonal feature (M41, docs/PLAN.md §4 rule 13)
+    name: Aleutian Low
+    label: Aleutian Low          # required on a feature: drawn beside the symbol
+    kind: feature
+    symbol: low                  # high | low | vortex: an H or L in a circle, or a ring
+    lat: 52
+    lon: -178
+    area: [[160, 62], [-140, 62], [-140, 42], [160, 42]]   # optional, a dotted outline
+    region: North Pacific, south of the Aleutian Islands
+    timescale: Every winter, October–March; deepest in December–February
+    months: [10, 11, 12, 1, 2, 3]   # the calendar months it is present; [] = all year
+    summary: >
+      ...
+    sources: [overland_1999, trenberth_hurrell_1994]
 ```
 
 Rules enforced by the validator:
@@ -95,6 +110,19 @@ Rules enforced by the validator:
   always carries the sentence "How much of this reaches people depends on
   preparation, prices and policy; the map shows only the push from the
   weather", which lives in the UI, not here.
+- A seasonal feature (M41) is a fixture of the year's weather the links
+  work through, not a driver and not a place: it has `symbol`, `months`
+  and a required `label`, may have an `area`, and has no `axis`, `labels`,
+  `phases` or `sector`. No link starts or ends at it; a link names the
+  features it works through in `via` (below), and every feature has at
+  least one such link. The map draws it only with the "Seasonal features"
+  layer on, in its months, as its symbol, filled while an applied arrow
+  works through it; its card always carries the sentence "A fixture of the
+  year's weather, not a cause on this map: nothing is computed from it and
+  no arrow starts or ends at it. It is filled in while an arrow drawn this
+  month works through it", which lives in the UI, not here. Shipped: the
+  Aleutian Low, the Icelandic Low, the Azores High, the Siberian High and
+  the Arctic polar vortex.
 - A phase with `variant_of` (M36) names another phase of the same driver
   that is not itself a variant, and has the same `value`. The phase
   buttons show the parent, and a second row of kinds under it while it
@@ -132,6 +160,11 @@ links:
                                         #   link then needs an evidence_note saying why. A
                                         #   link whose `when` is itself a variant cannot
                                         #   carry except.
+    via: [aleutian_low]                 # optional (M41): the seasonal features this link works
+                                        #   through. Each must be a feature the mechanism, caveat
+                                        #   or evidence note names ("deepens the Aleutian low");
+                                        #   never on an impact link. Drawing only: the engine
+                                        #   never reads it.
     weakened_by:                        # optional (M35): drivers whose chosen phase weakens
       - driver: pdo                     #   this link. While that driver is chosen by hand
         phase: negative                 #   and holds that phase, the link is drawn one
@@ -196,6 +229,15 @@ Rules enforced by the validator:
   parent. `weakened_by` on a parent's link is in force for its kinds too;
   `except` never applies to modulation. Shipped: `el_nino_central` with
   five links of its own and six classic El Niño links excepting it.
+- `via` (M41, docs/PLAN.md §4 rule 13): each entry names a feature node
+  that the link's `mechanism`, `caveat` or `evidence_note` names by its
+  `label` (case-insensitive), so `via` is never a claim the text does not
+  make; none twice; when both the link's `season` and the feature's
+  `months` are given they share a month; an impact link cannot carry it.
+  The engine never reads it: the map fills the feature in while the link
+  is applied, the card says "Works through the Aleutian Low", and nothing
+  else follows. Two wording fixes came with it ("Iceland low" to
+  "Icelandic low"). Shipped: fifty entries on thirty-five links.
 - Impact links (M37, docs/PLAN.md §4 rule 12): a link may start at an
   outcome; its `to` must then be an impact and its `when` is `plus` or
   `minus`, the outcome's state it follows from. A link from a driver never
@@ -243,6 +285,8 @@ stories:
                                         #     its own onset
     impacts: true                       # optional (M37): the story turns the "Impacts on people"
                                         #   layer on; only such a story may point a step at an impact
+    features: true                      # optional (M41): the story turns the "Seasonal features"
+                                        #   layer on; only such a story may point a step at a feature
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -297,6 +341,11 @@ Rules enforced by the validator:
   monsoon against the wet push of the dipole it sets off) passes the
   build and fails the engine test; point such a step at the outcome and
   say why the square is empty, as the 1997–98 impacts story does.
+- A step may focus a seasonal feature (M41) only in a story with
+  `features: true`, and an arrow drawn that month must work through it:
+  some link from a chosen driver, or from a driver a chosen driver has
+  pushed, with the feature in `via`, applied at that month. The feature
+  is then filled in on the map.
 - Step months never go backwards.
 - Every step cites at least one source key that resolves in `links.yaml`.
 - `src/engine/stories.test.ts` re-checks every step through the real engine.

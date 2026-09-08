@@ -2499,3 +2499,136 @@ nodes:
       and 1980s cut the river's flow by more than the rain fell, and the
       flow has only partly recovered.
     sources: [mahe_paturel_2009, descroix_2009]
+
+  # ---- Seasonal features (M41, docs/PLAN.md §4 rule 13). Not drivers and
+  # not places: the fixtures of the year's weather that the links work
+  # through, drawn in the months they are present as an H or L (or a ring
+  # for the vortex) when the "Seasonal features" layer is on. A link names
+  # the features it works through in `via`; no link starts or ends at one,
+  # nothing is computed from one, and the engine never reads them.
+  - id: aleutian_low
+    name: Aleutian Low
+    label: Aleutian Low
+    kind: feature
+    symbol: low
+    lat: 52
+    lon: -178
+    area: [[160, 62], [-140, 62], [-140, 42], [160, 42]]
+    region: North Pacific, south of the Aleutian Islands
+    timescale: Every winter, October–March; deepest in December–February
+    months: [10, 11, 12, 1, 2, 3]
+    summary: >
+      The great winter low-pressure centre of the North Pacific: a parade
+      of storms that deepens each autumn south of the Aleutian Islands and
+      fills in again by late spring. Its depth and position set the winter
+      over Alaska, western Canada and the western United States. A deep
+      low drags mild Pacific air north into Alaska and bends the jet
+      stream so that storms reach California; a weak one leaves Alaska
+      cold and the Southwest dry. El Niño deepens it and shifts it east,
+      the "atmospheric bridge" by which the tropics reach the North
+      Pacific, and the Pacific Decadal Oscillation is in large part the
+      ocean's memory of this low from one winter to the next. On this map
+      it is the machinery those arrows work through: nothing is computed
+      from it.
+    sources: [overland_1999, trenberth_hurrell_1994, alexander_2002]
+
+  - id: icelandic_low
+    name: Icelandic Low
+    label: Icelandic Low
+    kind: feature
+    symbol: low
+    lat: 60
+    lon: -30
+    area: [[-45, 70], [-10, 70], [-10, 54], [-45, 54]]
+    region: North Atlantic, between Greenland and Iceland
+    timescale: Present all year; deepest and most important October–March
+    months: [10, 11, 12, 1, 2, 3]
+    summary: >
+      The northern half of the North Atlantic see-saw: a region of low
+      pressure between Greenland and Iceland where the Atlantic storms
+      gather and deepen each winter. With the Azores High to its south it
+      drives the westerly winds that carry mild, wet Atlantic air into
+      Europe. When both are strong the westerlies are strong and Europe
+      is mild and stormy while Greenland and Labrador are cold; when both
+      are weak the westerlies slacken, cold air spreads west into Europe
+      and Greenland turns mild. That see-saw is the North Atlantic
+      Oscillation, and every arrow from the NAO on this map is a change
+      in these two centres. On this map it is drawn as the machinery
+      those arrows work through: nothing is computed from it.
+    sources: [serreze_1997, hurrell_2003, hurrell_1995]
+
+  - id: azores_high
+    name: Azores High
+    label: Azores High
+    kind: feature
+    symbol: high
+    lat: 25
+    lon: -30
+    area: [[-48, 40], [-10, 40], [-10, 22], [-48, 22]]
+    region: Subtropical North Atlantic, between the Azores and the Canaries
+    timescale: All year; strongest and furthest north in summer, when it is also called the Bermuda High
+    months: []
+    summary: >
+      The great dome of high pressure over the subtropical North Atlantic,
+      the southern half of the see-saw whose northern half is the
+      Icelandic Low. Its northern flank drives the westerlies toward
+      Europe, its southern flank the northeast trade winds toward the
+      tropical Atlantic, and its eastern flank the dry, sinking air over
+      Iberia and the Mediterranean in summer. A strong Azores High in
+      winter keeps Atlantic storms north of Iberia and strengthens the
+      trades; a weak one lets the storms into the Mediterranean and
+      slackens the trades, which is how the NAO reaches the tropical
+      Atlantic. On this map it is drawn all year as the machinery those
+      arrows work through: nothing is computed from it.
+    sources: [davis_1997, rodwell_hoskins_2001, hurrell_2003]
+
+  - id: siberian_high
+    name: Siberian High
+    label: Siberian High
+    kind: feature
+    symbol: high
+    lat: 47
+    lon: 102
+    area: [[72, 60], [125, 60], [125, 36], [72, 36]]
+    region: Mongolia and southern Siberia
+    timescale: Every winter, November–March; strongest in January
+    months: [11, 12, 1, 2, 3]
+    summary: >
+      A dome of dense, cold air that settles over Mongolia and southern
+      Siberia each winter as the land loses heat under long nights and
+      snow, and holds the highest sea-level pressures recorded anywhere
+      on Earth. Its outflow is the East Asian winter monsoon, the cold
+      north-westerly wind that reaches China, Korea and Japan, and when
+      it spreads west it brings cold to European Russia and, at times,
+      to Scandinavia and central Europe. The contested Arctic arrows on
+      this map, from the autumn ice of the Barents and Kara seas and the
+      October snow, claim to reach the continents by building this high
+      earlier and stronger. On this map it is drawn as the machinery
+      those arrows work through: nothing is computed from it.
+    sources: [panagiotopoulos_2005, gong_ho_2002, cohen_2014]
+
+  - id: polar_vortex
+    name: Arctic polar vortex
+    label: Polar vortex
+    kind: feature
+    symbol: vortex
+    lat: 80
+    lon: 160
+    area: [[0, 66], [90, 66], [180, 66], [-90, 66]]
+    region: The Arctic stratosphere, 15–50 km up
+    timescale: Every winter, November–March; forms in autumn and breaks down each spring
+    months: [11, 12, 1, 2, 3]
+    summary: >
+      A band of strong westerly winds that circles the pole high in the
+      stratosphere every winter, holding a pool of very cold air over the
+      Arctic. It is not the surface weather, but it speaks to it: when
+      planetary-scale waves rising from below break against the vortex
+      it weakens, sometimes suddenly, and the disturbance leaks down over
+      the following weeks as a negative North Atlantic Oscillation, with
+      cold outbreaks over Europe and eastern North America; a strong,
+      undisturbed vortex favours the positive phase. Several arrows on
+      this map reach the NAO by this route: the QBO, a tropical eruption,
+      the autumn Arctic ice and the October snow. On this map it is drawn
+      as the machinery those arrows work through: nothing is computed
+      from it.
+    sources: [waugh_2017, baldwin_dunkerton_2001, thompson_wallace_1998]

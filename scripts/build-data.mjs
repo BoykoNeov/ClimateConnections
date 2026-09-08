@@ -82,7 +82,21 @@ const ImpactNode = NodeBase.omit({ area: true }).extend({
   labels: z.object({ plus: z.string().min(1), zero: z.string().min(1), minus: z.string().min(1) }).strict(),
 }).strict();
 
-const Node = z.discriminatedUnion('kind', [DriverNode, OutcomeNode, ImpactNode]);
+/** A seasonal feature (M41, docs/PLAN.md §4 rule 13): a fixture of the
+ *  year's weather the links work through, drawn as an H or L (or a ring)
+ *  in the months it is present. No axis, labels, phases or sector; no link
+ *  starts or ends at it (checked below); every feature has a link through
+ *  it (checked below). */
+const FEATURE_SYMBOLS = ['high', 'low', 'vortex'];
+const FeatureNode = NodeBase.extend({
+  kind: z.literal('feature'),
+  label: z.string().min(1).max(24),
+  symbol: z.enum(FEATURE_SYMBOLS),
+  /** calendar months it is present; empty = all year */
+  months: z.array(Month).refine((s) => new Set(s).size === s.length, 'months has duplicates'),
+}).strict();
+
+const Node = z.discriminatedUnion('kind', [DriverNode, OutcomeNode, ImpactNode, FeatureNode]);
 
 /** One driver whose chosen phase weakens a link by one confidence tier
  *  (M35, rule 10), with the studies that found the weakening. */
@@ -112,7 +126,11 @@ const Link = z.object({
   /** variants of the `when` phase for which the link does not hold (M36,
    *  rule 11); the link must then carry an evidence_note saying why */
   except: z.array(Id).min(1).optional(),
+  /** the seasonal features the link works through (M41, rule 13); each
+   *  must be a feature the link's own text names, checked below */
+  via: z.array(Id).min(1).optional(),
 }).strict()
+  .refine((l) => l.via === undefined || new Set(l.via).size === l.via.length, 'via lists a feature twice')
   .refine((l) => l.weakened_by === undefined || l.evidence_note !== undefined, 'a link with weakened_by needs an evidence_note saying what weakens it')
   .refine((l) => l.except === undefined || l.evidence_note !== undefined, 'a link with except needs an evidence_note saying why the effect is not expected in that kind')
   .refine((l) => l.except === undefined || new Set(l.except).size === l.except.length, 'except lists a phase twice');
@@ -164,6 +182,9 @@ const Story = z.object({
   /** the story points at an impact on people (M37): the impacts layer is
    *  turned on when it starts; only such a story may focus an impact node */
   impacts: z.boolean().optional(),
+  /** the story points at a seasonal feature (M41): the features layer is
+   *  turned on when it starts; only such a story may focus a feature */
+  features: z.boolean().optional(),
   /** the pre-M33 spelling of a one-element `drivers` list, accepted for one
    *  milestone and written into `drivers` below: a second driver chosen by
    *  hand (M11; both or neither), its own start month (M12), read backwards
@@ -266,6 +287,7 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     const to = nodes.get(l.to);
     if (!from) fail(`link "${l.id}": unknown from node "${l.from}"`);
     else if (from.kind === 'impact') fail(`link "${l.id}": an impact cannot have outgoing links ("${l.from}")`);
+    else if (from.kind === 'feature') fail(`link "${l.id}": a seasonal feature cannot have outgoing links ("${l.from}", rule 13); a link names the features it works through in via`);
     else if (from.kind === 'outcome') {
       // An impact link (M37, rule 12): from an outcome, into an impact,
       // `when` naming the outcome's state; never weakened, never excepted.
@@ -279,6 +301,7 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     }
     else if (!from.phases.some((p) => p.id === l.when)) fail(`link "${l.id}": "${l.when}" is not a phase of "${l.from}"`);
     if (!to) fail(`link "${l.id}": unknown to node "${l.to}"`);
+    else if (to.kind === 'feature') fail(`link "${l.id}": a link cannot point at the seasonal feature "${l.to}" (rule 13); name it in via instead`);
     else if (to.kind === 'impact' && from && from.kind === 'driver') fail(`link "${l.id}": a driver cannot point at an impact; impacts follow from outcomes (rule 12)`);
     else if (to.kind === 'driver') {
       // Driver-to-driver (M10): the effect must name a phase of the target
@@ -300,6 +323,20 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     for (const k of l.sources) {
       if (!sources.has(k)) fail(`link "${l.id}": unknown source "${k}"`);
       usedSources.add(k);
+    }
+    // Seasonal features (M41, rule 13): each `via` entry is a feature that
+    // the link's own text names, so via is never a claim the text does not
+    // make; never on an impact link; a season the feature is there for.
+    if (l.via !== undefined) {
+      if (from && from.kind === 'outcome') fail(`link "${l.id}": an impact link cannot have via`);
+      const text = [l.mechanism, l.caveat, l.evidence_note ?? ''].join(' ').toLowerCase();
+      for (const v of l.via) {
+        const f = nodes.get(v);
+        if (!f) { fail(`link "${l.id}": via names unknown node "${v}"`); continue; }
+        if (f.kind !== 'feature') { fail(`link "${l.id}": via names "${v}", which is ${f.kind === 'driver' ? 'a driver' : f.kind === 'outcome' ? 'a place' : 'an impact'}, not a seasonal feature`); continue; }
+        if (!text.includes(f.label.toLowerCase())) fail(`link "${l.id}": via names "${v}" but neither the mechanism, the caveat nor the evidence note names "${f.label}"`);
+        if (l.season.length > 0 && f.months.length > 0 && !l.season.some((m) => f.months.includes(m))) fail(`link "${l.id}": its season shares no month with the months of "${v}", so it could never be drawn through it`);
+      }
     }
     // Modulation (M35, rule 10): the weakening driver exists, has that
     // phase, is not the link's own driver, no pair twice, sources resolve.
@@ -332,6 +369,10 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
   // Rule 12: every impact has at least one link into it, from an outcome.
   for (const n of nodesFile.nodes) {
     if (n.kind === 'impact' && !linksFile.links.some((l) => l.to === n.id)) fail(`nodes.yaml: impact "${n.id}" has no link into it`);
+  }
+  // Rule 13: every seasonal feature has at least one link through it.
+  for (const n of nodesFile.nodes) {
+    if (n.kind === 'feature' && !linksFile.links.some((l) => (l.via ?? []).includes(n.id))) fail(`nodes.yaml: feature "${n.id}" has no link through it (no link lists it in via)`);
   }
   // Rule 11: a target reached by a driver in a variant phase and in the
   // parent phase must be excepted on the parent link, so it is never
@@ -419,6 +460,14 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
       while (onsetIdx < m && !affectedWithSign(s, l.from, effect, onsetIdx)) onsetIdx++;
       return m >= onsetIdx + l.lag_months[0] && (l.season.length === 0 || l.season.includes(calendarMonth(s.start_month, m)));
     });
+  /** Rule 13 (M41): an applied link at month m, from a chosen driver or a
+   *  driver one has pushed, lists the feature in `via`, so the feature is
+   *  drawn filled that month. */
+  const throughAt = (s, featureId, m) => {
+    const lists = (l) => (l.via ?? []).includes(featureId);
+    if (chosenOf(s).some(([cd, cp, co, cf]) => links.some((l) => firesFor(l, cd, cp) && lists(l) && appliedAt(l, co, m, s.start_month, cf)))) return true;
+    return pushedAt(s, m).some(([d, p, onsetIdx]) => links.some((l) => firesFor(l, d, p) && lists(l) && appliedAt(l, onsetIdx, m, s.start_month)));
+  };
   /** Rule 11: a place that a parent link excepted for a chosen variant would
    *  have reached this month, so a story can point at what did not happen. */
   const exceptedAt = (s, focusId, m) =>
@@ -456,7 +505,12 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
       lastMonth = step.month;
       const focus = nodes.get(step.focus);
       if (!focus) { fail(`${where}: unknown focus node "${step.focus}"`); return; }
-      if (focus.kind === 'impact') {
+      if (focus.kind === 'feature') {
+        // Rule 13: only a story that turns the features layer on may point
+        // at a feature, and an arrow drawn that month must work through it.
+        if (!s.features) fail(`${where}: "${step.focus}" is a seasonal feature, so the story needs features: true`);
+        else if (!throughAt(s, step.focus, step.month)) fail(`${where}: no arrow drawn at month ${step.month} (calendar month ${calendarMonth(s.start_month, step.month)}) works through "${step.focus}"; the feature would be hollow`);
+      } else if (focus.kind === 'impact') {
         // Rule 12: only a story that turns the impacts layer on may point
         // at an impact, and it must be reached that month.
         if (!s.impacts) fail(`${where}: "${step.focus}" is an impact on people, so the story needs impacts: true`);
@@ -493,7 +547,8 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     mkdirSync(join(root, 'public/data'), { recursive: true });
     writeFileSync(join(root, 'public/data/graph.json'), JSON.stringify(graph, null, 2) + '\n');
     const impacts = graph.nodes.filter((n) => n.kind === 'impact').length;
-    console.log(`graph.json: ${graph.nodes.length} nodes (${impacts} impacts on people), ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories, ${graph.years.length} years`);
+    const features = graph.nodes.filter((n) => n.kind === 'feature').length;
+    console.log(`graph.json: ${graph.nodes.length} nodes (${impacts} impacts on people, ${features} seasonal features), ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories, ${graph.years.length} years`);
   }
 }
 

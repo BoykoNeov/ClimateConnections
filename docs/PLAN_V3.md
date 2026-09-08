@@ -32,7 +32,8 @@ Three kinds of work, in rough order of cost:
    of outcome regions are specified.
 2. **UI additions that need no engine change** (§3). Region-first
    navigation, a sources page, an arrival window on the arrows, a second
-   language.
+   language, and (M41, added 2026-09-08) seasonal features: the fixtures
+   of the year's weather the links work through, drawn in their months.
 3. **Engine extensions for phenomena that do not fit today** (§4). Each
    one names the exact rule it adds, why the current rules cannot express
    the phenomenon, and what the honest limit of the new rule is. Phase
@@ -657,6 +658,119 @@ in `src/ui/`.
 - **Not in M31:** right-to-left layout; translated map labels from
   `world-atlas` (country names are not drawn anyway).
 
+### M41 — Seasonal features: the machinery on the map
+
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§6 under M41. As written below, with these readings: a feature whose
+months have not come is still drawn while an applied arrow works through
+it (El Niño's push on the PDO arrives in September, a month before the
+Aleutian Low is back), and its card says "outside its usual months"; the
+card's list of every arrow that can work through the feature is read
+from the data, whatever the scenario; region mode draws the features the
+listed links work through and nothing else; the vortex is named "Arctic
+polar vortex" so the card's "Works through the Arctic polar vortex" reads
+as a sentence; a feature's name sits to the left of its symbol near the
+map's right edge (the Azores High); and the story has six steps, two of
+them on features.
+
+The Aleutian Low, the Icelandic Low, the Azores High, the Siberian High
+and the stratospheric polar vortex are named in the mechanism text of
+about fifty links and drawn nowhere. They are not drivers: a fixture that
+returns every year in the same place has no phase a student can pick and
+nothing the map can add up. They are the machinery the drivers act
+through, and a student who reads that El Niño warms Alaska "through a
+deeper Aleutian Low" has no way to see what that low is or when it is
+there. Three ways of putting them on the map were weighed on 2026-09-08:
+
+1. *As waypoints the drivers push* (a driver that cannot be chosen, only
+   pushed: El Niño deepens the low, the deep low warms Alaska). One flag
+   away from rule 6, and wrong for the evidence: every hop drops a tier,
+   so an established direct link would arrive one tier lower, and the
+   direct statistical link is what is established; the mechanism is its
+   explanation. Keeping both would draw every such arrow twice.
+2. *As strength swings, full drivers* ("Siberian High stronger or weaker
+   than usual"). Fits every rule unchanged and has index series behind
+   it, but each is a whole new driver, and it still never draws the
+   feature's ordinary yearly cycle, only departures from it.
+3. *As fixtures drawn in their months, with the links naming what they
+   work through.* No engine change, no hop, no tier change, no state.
+
+**Decided 2026-09-08: the third.** It answers the teaching question (why
+the same low appears in ten links; why the PDO weakens ENSO's winter
+links, since both act through it) without bending the confidence rules
+or duplicating arrows. The second stays open as a later data-only driver.
+
+**Data.** A fourth node kind, `feature`: the common fields, `symbol:
+high | low | vortex` (drawn as an H or L in a circle, as on a weather
+chart, or a ring), `months` (the calendar months it is present; empty =
+all year) and an optional `area`; no `axis`, `labels`, `phases` or
+`sector`. No link ever starts or ends at a feature. A link may instead
+carry `via: [feature ids]`, the features the studies describe the effect
+as a change in. The validator requires each to exist and be a feature,
+refuses `via` on an impact link, requires the link's `mechanism`,
+`caveat` or `evidence_note` to name the feature (its `label`,
+case-insensitive), requires the link's season to share a month with the
+feature's months when both are given, and requires every feature to
+have at least one link through it. First set: the five above, with the
+links that already name them (about fifty), two wording fixes ("Iceland
+low" to "Icelandic low"), and one story, "Winter's machinery: how El
+Niño reaches Alaska and Europe", carrying `features: true`.
+
+**Engine.** Unchanged, by rule 13 of `docs/PLAN.md` §4 (written before
+the code): a feature gets the empty state like any node and nothing
+reads it; `via` is never read by `propagate`. `src/engine/features.ts`
+holds pure readers only: whether a feature is present in a calendar
+month, the links through a feature, and the month's reported links
+grouped by the feature they work through. A regression test strips the
+features and every `via` and finds every story's and every real year's
+timeline identical.
+
+**UI.** Behind a "Seasonal features" checkbox, the seventh, under the
+Legend heading after "Show arrival window" so the browser scripts'
+indices still hold, **off by default** (rule 15). On: every feature is
+drawn in its months as its symbol with its name, hollow and dotted while
+nothing works through it, filled dark while an applied arrow this month
+lists it in `via` (and drawn then even outside its months, the card
+saying so), faint-filled when only pending arrows do. Clicking one opens
+a card that leads with one fixed sentence, in the UI and not in the
+data: "A fixture of the year's weather, not a cause on this map: nothing
+is computed from it and no arrow starts or ends at it. It is filled in
+while an arrow drawn this month works through it." Then whether it is
+present, the arrows through it this month, every arrow that can work
+through it (by driver and phase, with tier and season), its summary and
+sources. While a feature is selected the arrows that do not work through
+it are dimmed. Every link block on a place, in region mode too, gains
+"Works through the Aleutian Low". Region mode draws, with the layer on,
+the features the listed links work through, filled, with no month.
+Compare mode shares the toggle; a story with `features: true` turns it
+on and may focus a feature, and only then; the print caption gains a
+sentence while it is on; the legend a row.
+
+**Tests.** `src/engine/features.test.ts`: presence by month, the shipped
+set (five features, each with links through it, each such link naming
+it, no link from or to a feature), the month's grouping under El Niño
+from June with the chain on (the Aleutian Low filled from October through
+the push on the PDO, the Icelandic Low and the Azores High in February
+through the push on the NAO, the Siberian High through the pushed NAO's
+arrow to western Russia, the polar vortex present and idle), and the
+regression above. `stories.test.ts` checks a feature step through the
+engine. The validator's refusals are checked by hand on a mutated copy.
+
+**Honesty note.** Drawing the ordinary state of the atmosphere is new for
+a map that shows departures from it. Four defences: the layer is off by
+default; the marker is a chart symbol, never a state colour, so a filled
+H cannot be read as "stronger than usual"; nothing is computed from a
+feature and no arrow touches it; and the fixed sentence on every
+feature's card.
+
+**Not in M41.** Features as pushed waypoints (the first way above);
+a feature's own strength as a driver (the second: a data-only driver
+later, with its own sign-off); Southern Hemisphere and tropical fixtures
+(the South Pacific high off Chile, the Mascarene High, the Antarctic
+vortex, the monsoon trough): a later data-only batch, since the map
+reads everything about a feature from the data; the subtropical jets
+(bands, not centres); any arrow drawn to or from a feature.
+
 ---
 
 ## 4. Engine extensions for phenomena that do not fit today
@@ -1114,7 +1228,7 @@ lag and season fields.
 |---|---|---|
 | Madden–Julian Oscillation | 30–60 day cycle; the monthly grid cannot hold it (non-goal since v1) | A weekly timeline, which is a different tool |
 | Sudden stratospheric warmings, blocking | Events of days to weeks with no opposite phase; sub-monthly | Same |
-| North Pacific Oscillation, Pacific–North American pattern, Pacific–South American pattern | Monthly atmospheric patterns that *are* the teleconnection rather than a driver of it; they would draw ENSO's links twice | Nothing; explain them on the ENSO and PDO cards instead |
+| North Pacific Oscillation, Pacific–North American pattern, Pacific–South American pattern | Monthly atmospheric patterns that *are* the teleconnection rather than a driver of it; they would draw ENSO's links twice | Nothing; explain them on the ENSO and PDO cards instead. The fixed centres they move (the Aleutian Low, the Icelandic Low and Azores High) are drawn since M41 as seasonal features the links work through, never as drivers |
 | Arctic Oscillation as its own driver | Nearly the same thing as the NAO on this map; the M9 card already says so | Nothing |
 | Atlantic meridional overturning, Kuroshio, Gulf Stream | Decades to centuries; no phase a student can pick for a year | Nothing within a twelve-month tool |
 | Solar cycle | Eleven years, weak and disputed surface effects | Nothing |
@@ -1132,7 +1246,7 @@ lag and season fields.
 
 ```
 Data only (no src/ change):   M20 → M21 → M22 → M26 → M27 → M23 → M24 → M25
-UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M29 (any time)
+UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M41 (shipped 2026-09-08), M29 (any time)
 Engine, in dependency order:  M32 (duration) → M33 (N drivers) → M34 (years)
                               M35 (modulation) after M23 if the QBO case is wanted
                               M36 (flavours) independent (shipped 2026-09-08)

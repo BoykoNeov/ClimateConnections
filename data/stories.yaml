@@ -2016,3 +2016,92 @@ stories:
           storms have come, the water follows. Whether they come at all is
           the uncertain step, and the map draws that one dotted.
         sources: [cayan_1999, jong_2016]
+
+  # ---- Seasonal features (M41): a story that turns the layer on.
+  - id: el_nino_winter_machinery
+    title: "Winter's machinery: how El Niño reaches Alaska and Europe"
+    intro: >
+      The arrows on this map run straight from a driver to the place it
+      reaches, but the studies behind them describe a change in something
+      that is there every winter: a low over the North Pacific, a low and
+      a high over the Atlantic. This story turns on the "Seasonal
+      features" layer and follows an El Niño through two of them. Nothing
+      is computed from a feature; it is filled in when an arrow drawn
+      that month works through it, and the map is the same with the layer
+      off.
+    driver: enso
+    phase: el_nino
+    start_month: 6
+    features: true
+    steps:
+      - month: 0
+        focus: enso
+        text: >
+          An El Niño begins to develop in June. Through the summer its
+          arrows reach the tropics: the Indian monsoon, Indonesia, the
+          western Pacific typhoons. The winter fixtures of the northern
+          hemisphere are not on the map yet: the Aleutian Low fills in
+          each spring and returns in the autumn, and the layer draws it
+          only in the months it is there.
+        sources: [noaa_climate_gov_enso, trenberth_1997]
+
+      - month: 4
+        focus: aleutian_low
+        text: >
+          October. The Aleutian Low is back, and since September El Niño
+          has been deepening it through the "atmospheric bridge": the
+          shifted tropical rain sets off a wave train that reaches the
+          North Pacific and drops the pressure south of the Aleutians.
+          The arrow from El Niño to the Pacific Decadal Oscillation is
+          the studies' name for that change, so the low is filled in on
+          the map. Click it to see which arrows work through it, and
+          notice that no arrow starts or ends at it.
+        sources: [alexander_2002, newman_2003]
+
+      - month: 6
+        focus: pdo
+        text: >
+          December. The deep low cools the central North Pacific and
+          warms the water along the coast: the pattern of a positive
+          Pacific Decadal Oscillation, which the map has pushed positive
+          since September. From here the oscillation's own arrows fire,
+          one tier lower because they are one step further from the El
+          Niño, and every one of them works through the same low.
+        sources: [newman_2016, mantua_1997]
+
+      - month: 7
+        focus: alaska_winter
+        text: >
+          January, and mild in Alaska. The oscillation's arrow here is
+          rated probable and arrives contested, two steps from the El
+          Niño: a deep Aleutian Low pumps Pacific air north over the
+          state. The low is where the El Niño and the oscillation blur
+          into one another, which is why, on this map, a Pacific Decadal
+          Oscillation chosen in its opposite phase weakens El Niño's own
+          winter arrows to North America.
+        sources: [mantua_1997, newman_2016]
+
+      - month: 8
+        focus: icelandic_low
+        text: >
+          February, and El Niño's other winter route. The disturbed North
+          Pacific sends planetary waves up into the stratosphere and
+          across to the Atlantic, where late in winter they tend to
+          weaken the Icelandic Low and the Azores High: a negative North
+          Atlantic Oscillation. Both features are filled in, because the
+          arrow from El Niño to the NAO works through them. It is a
+          modest signal, rated probable, and the strongest El Niños have
+          not produced it.
+        sources: [bronnimann_2007, ineson_scaife_2009]
+
+      - month: 9
+        focus: northern_europe_winter
+        text: >
+          March. With the Icelandic Low weak the westerlies slacken, and
+          northern Europe tends to a cold, calm end to winter: the NAO's
+          own arrow, one tier down from its established rating because
+          the NAO was pushed there rather than chosen. Every arrow in this
+          story passed through a fixture of the winter, and none of them
+          is the fixture's doing. Turn the layer off and the map is the
+          one you started with.
+        sources: [hurrell_1995, cattiaux_2010]

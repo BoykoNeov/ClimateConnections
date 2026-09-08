@@ -93,7 +93,7 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, chain: true, others: [], compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, showFeatures: false, chain: true, others: [], compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -108,7 +108,7 @@ async function main(): Promise<void> {
   const tlEl = document.getElementById('timeline')!;
   const tl = new TimelineView(tlEl, HORIZON, controls.startMonth);
   const years = yearRows(graph);
-  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, years.map((r) => r.year), regions, controls);
+  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, years.map((r) => r.year), regions, controls, graph.nodes.filter((n) => n.kind === 'feature').map((n) => n.name));
   const sources = new Map(graph.sources.map((s) => [s.key, s]));
   const story = new StoryView(document.getElementById('story')!, sources, new Set(years.map((r) => r.year)));
   const yearView = new YearView(document.getElementById('year')!, graph);
@@ -240,7 +240,7 @@ async function main(): Promise<void> {
    *  effect, tooltip naming the firing driver, the tendency and the season. */
   function ringsFor(nodeId: string, inPlay: Link[]): DialRing[] {
     const node = graph.nodes.find((n) => n.id === nodeId);
-    if (!node) return [];
+    if (!node || node.kind === 'feature') return []; // no link ends at a feature (M41)
     return inPlay.filter((l) => l.to === nodeId).map((l) => {
       const from = graph.nodes.find((n) => n.id === l.from);
       const fromName = from ? from.name.replace(/\s*\(.*\)$/, '') : l.from;
@@ -281,10 +281,10 @@ async function main(): Promise<void> {
       p.el.classList.remove('editing');
     }
     pane('a').prevApplied = new Set();
-    pane('a').map.renderRegion({ nodeId: node.id, groups, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels });
+    pane('a').map.renderRegion({ nodeId: node.id, groups, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showFeatures: controls.showFeatures });
     monthEl.innerHTML = `By region<small>everything that reaches ${esc(shortName(node))}</small>`;
-    captionEl.textContent = `Everything that is known to reach ${node.name} on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, each connection in its own season and confidence tier, no month or scenario chosen. Printed from Climate Connections, ${location.origin}${location.pathname}`;
-    renderRegionCard(cardEl, graph, node, groups);
+    captionEl.textContent = `Everything that is known to reach ${node.name} on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, each connection in its own season and confidence tier, no month or scenario chosen. ${controls.showFeatures ? FEATURES_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    renderRegionCard(cardEl, graph, node, groups, controls.showFeatures);
   }
 
   /** A click on the map in region mode: a driver opens its own scenario
@@ -299,7 +299,7 @@ async function main(): Promise<void> {
       applyControls({ ...controls, region: node.id });
       return;
     }
-    if (node.kind !== 'driver') return; // impacts are not drawn in region mode
+    if (node.kind !== 'driver') return; // impacts are not drawn in region mode; a feature (M41) opens no scenario
     const groups = influencesOn(graph, controls.region!);
     const reaching = groups.find((g) => g.driver.id === node.id);
     watch(node.id, reaching ? reaching.phases[0].phase.id : node.phases[0].id);
@@ -350,7 +350,7 @@ async function main(): Promise<void> {
       const c = chosenFor(s, p.timeline, month);
       chosenBySide.set(side, c);
       titles.set(side, scenarioTitle(s, c));
-      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, showWindow: controls.showWindow, differs });
+      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, showWindow: controls.showWindow, showFeatures: controls.showFeatures, differs });
       if (compare) setHead(p.head, side, titles.get(side)!, month);
     }
 
@@ -364,7 +364,7 @@ async function main(): Promise<void> {
     } else {
       monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     }
-    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') + (controls.showWindow ? ` ${WINDOW_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
+    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') + (controls.showWindow ? ` ${WINDOW_CAPTION.trim()}` : '') + (controls.showFeatures ? ` ${FEATURES_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
     if (differs) ctl.compareNote.textContent = differs.size === 0 ? 'The two maps agree this month.' : differs.size === 1 ? 'One marker differs this month (dark ring).' : `${differs.size} markers differ this month (dark rings).`;
 
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -376,7 +376,9 @@ async function main(): Promise<void> {
     // An impact's card (M37) is only reachable with the layer on; if the layer
     // went off while one was selected, the selection is dropped.
     if (node?.kind === 'impact' && !controls.showImpacts) selectedNodeId = null;
-    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts, controls.showWindow);
+    // Likewise a feature's card (M41) is only reachable with its layer on.
+    if (node?.kind === 'feature' && !controls.showFeatures) selectedNodeId = null;
+    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts, controls.showWindow, controls.showFeatures);
 
     const s = sideSettings(controls, edited);
     const c = chosenBySide.get(edited)!;
@@ -449,7 +451,9 @@ async function main(): Promise<void> {
     controls.region = null;
     // A story on impacts (M37) turns the layer on; any other leaves it as it is.
     if (s.impacts) controls.showImpacts = true;
-    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, hold: controls.hold, others: controls.others, compare: null, region: null, showImpacts: controls.showImpacts });
+    // A story on seasonal features (M41) turns that layer on the same way.
+    if (s.features) controls.showFeatures = true;
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, hold: controls.hold, others: controls.others, compare: null, region: null, showImpacts: controls.showImpacts, showFeatures: controls.showFeatures });
     tl.pause();
     syncHash();
     recompute();
@@ -592,10 +596,13 @@ async function main(): Promise<void> {
   /** The arrival window (M30) in a printed caption: what a faint arrow with an outlined head means. */
   const WINDOW_CAPTION = 'A faint arrow with an outlined head is within its arrival window: the effect is applied from the earliest month the studies give and may still be on its way until the latest, after which the arrow is drawn in full. ';
 
+  /** Seasonal features (M41) in a printed caption: what the chart symbols are and are not. */
+  const FEATURES_CAPTION = 'An H or L in a circle (a ring for the polar vortex) is a seasonal feature, a fixture of the year\'s weather drawn in the months it is present; it is filled in while an arrow drawn this month works through it, nothing is computed from it, and no arrow starts or ends at it. ';
+
   function printCaption(months: Map<Side, MonthState>, chosen: Map<Side, Chosen>): string {
     const parts = shown().map((side) => scenarioSentence(sideSettings(controls, side), chosen.get(side)!, months.get(side)!));
     const body = controls.compare ? `Two scenarios compared. A: ${parts[0]}B: ${parts[1]}` : parts[0];
-    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}${controls.showWindow ? WINDOW_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}${controls.showWindow ? WINDOW_CAPTION : ''}${controls.showFeatures ? FEATURES_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
   recompute();

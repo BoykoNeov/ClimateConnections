@@ -17,10 +17,14 @@ months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
 The map currently holds fourteen drivers, 62 outcome regions, ten impacts
-on people (harvests, disease seasons, fires, rivers, a catch), 226 cited
-links (twenty-nine of them between the drivers, thirteen from a region to
-an impact), twenty guided stories and a
-table of real years, 1950–2025, read from the index datasets. A scenario is
+on people (harvests, disease seasons, fires, rivers, a catch), five
+seasonal features (the fixtures of the year's weather the links work
+through: the Aleutian Low, the Icelandic Low, the Azores High, the
+Siberian High and the Arctic polar vortex), 226 cited links (twenty-nine
+of them between the drivers, thirteen from a region to an impact,
+thirty-five naming the features they work through), twenty-one guided
+stories and a table of real years, 1950–2025, read from the index
+datasets. A scenario is
 one driver in one phase, optionally with any number of other drivers each
 in a phase of its own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -57,6 +61,13 @@ can be compared side by side on one timeline.
   the timing uncertainty is on the map and not only on the card.
 - Not a source of precise boundaries. The "affected areas" layer is a set of
   rough, illustrative outlines, and the control that turns it on says so.
+- Not a picture of the ordinary weather. The "Seasonal features" layer
+  (off by default) draws five fixtures of the year, an H or L in a circle
+  as on a weather chart, in the months they are present. They are the
+  machinery the arrows work through, not causes on the map: nothing is
+  computed from them, no arrow starts or ends at one, and a filled symbol
+  means only that an arrow drawn this month works through it, never that
+  the feature is stronger than usual.
 - Not a statement about what happens to people. The "Impacts on people"
   layer (off by default) draws harvests, disease seasons, fires, rivers
   and a catch that tend to follow from the weather beside them, one
@@ -312,6 +323,21 @@ any static file server.
   reads "may arrive any time from month 4 to month 8 after onset; drawn
   faint until month 8", or says the month has passed. A connection whose
   studies give one lag has no window and its card says so.
+- **Seasonal features** (off by default, under the legend) draws the
+  fixtures of the year's weather that the arrows work through: the
+  Aleutian Low, the Icelandic Low, the Azores High, the Siberian High and
+  the Arctic polar vortex, each as an H or L in a circle (the vortex as a
+  ring) in the months it is present. A feature is hollow until an arrow
+  drawn this month works through it, and filled while one does: under El
+  Niño from June the Aleutian Low fills in from September, when the push
+  on the Pacific Decadal Oscillation arrives, and the Icelandic Low and
+  Azores High in February, when the late-winter push on the NAO does.
+  Click a feature to read which arrows work through it, in this month and
+  in any; the other arrows fade while it is selected. A place's card says
+  "Works through the Aleutian Low" on every such arrow. Nothing is computed
+  from a feature and no arrow starts or ends at one; the story "Winter's
+  machinery: how El Niño reaches Alaska and Europe" turns the layer on and
+  follows an El Niño through two of them.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and
@@ -339,7 +365,7 @@ and whichever card is open. The interactive controls are dropped.
 ## How it works
 
 ```
-data/nodes.yaml      the phenomena on the map (drivers, outcomes and impacts on people)
+data/nodes.yaml      the phenomena on the map (drivers, outcomes, impacts on people and seasonal features)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
 data/years.yaml      the table of real years: which phase each driver held, 1950–2025, from the index datasets
@@ -405,6 +431,15 @@ has no links out of it, so nothing flows back, and with the layer off the
 hop does not run at all and the timeline is exactly what it was. An
 impact link is rated established only on a multi-decade study of the
 impact itself, never of the weather.
+
+A link may also name the *seasonal features* it works through: the
+Aleutian Low, the Icelandic Low, the Azores High, the Siberian High and
+the Arctic polar vortex are nodes of a fourth kind, with the months they
+are present and no state at all. The engine never reads them; with the
+"Seasonal features" layer on the map draws each in its months and fills it
+in while an applied arrow lists it, and the validator only lets a link
+name a feature that its own mechanism text names. The map with the layer
+off is the map without them, byte for byte.
 
 Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
 the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;

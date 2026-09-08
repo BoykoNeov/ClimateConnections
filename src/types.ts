@@ -12,6 +12,11 @@ export type Value = -1 | 0 | 1;
 export const SECTORS = ['agriculture', 'health', 'water', 'energy', 'fisheries', 'fire', 'economy'] as const;
 export type Sector = (typeof SECTORS)[number];
 
+/** How a seasonal feature is drawn (M41, rule 13): an H or L in a circle,
+ *  as on a weather chart, or a ring for the vortex. */
+export const FEATURE_SYMBOLS = ['high', 'low', 'vortex'] as const;
+export type FeatureSymbol = (typeof FEATURE_SYMBOLS)[number];
+
 export interface Phase {
   id: string;
   label: string;
@@ -78,7 +83,22 @@ export interface ImpactNode extends NodeBase {
   area?: undefined;
 }
 
-export type GraphNode = DriverNode | OutcomeNode | ImpactNode;
+/** A recurring fixture of the year's weather that the links work through
+ *  (M41, rule 13): the Aleutian Low, the Siberian High, the polar vortex.
+ *  Not a driver and not a place: it has no phase, no state and no links
+ *  of its own; a link names the features it works through in `via`. The
+ *  engine never reads it. Drawn in its `months` as its `symbol`, filled
+ *  while an applied link works through it. */
+export interface FeatureNode extends NodeBase {
+  kind: 'feature';
+  /** the short name drawn beside the symbol; required on a feature */
+  label: string;
+  symbol: FeatureSymbol;
+  /** calendar months (1–12) in which it is present; empty = all year */
+  months: number[];
+}
+
+export type GraphNode = DriverNode | OutcomeNode | ImpactNode | FeatureNode;
 
 /** One driver whose chosen phase weakens a link (M35, rule 10): while that
  *  driver is chosen by hand and holds that phase, the link is shown one
@@ -115,6 +135,10 @@ export interface Link {
    *  link whose `when` is a parent phase; such a link always has an
    *  `evidence_note` saying why. */
   except?: string[];
+  /** the seasonal features this link works through (M41, rule 13): feature
+   *  node ids the link's own text names ("El Niño deepens the Aleutian
+   *  Low"). Drawing only: the engine never reads it. Never on an impact link. */
+  via?: string[];
 }
 
 export interface Source {
@@ -155,6 +179,9 @@ export interface Story {
   /** the story points at an impact on people (M37): the impacts layer is
    *  turned on when it starts, and only such a story may focus an impact */
   impacts?: boolean;
+  /** the story points at a seasonal feature (M41): the features layer is
+   *  turned on when it starts, and only such a story may focus a feature */
+  features?: boolean;
   steps: StoryStep[];
 }
 

@@ -1076,6 +1076,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low, azores_high]
     mechanism: >
       A strong Icelandic low and Azores high drive strong westerly winds that
       carry mild, moist Atlantic air deep into Europe, so winters from
@@ -1117,6 +1118,7 @@ links:
     lag_months: [0, 0]
     season: [11, 12, 1, 2, 3]
     confidence: established
+    via: [azores_high]
     mechanism: >
       With the Azores high strong and the storm track held far to the north,
       few Atlantic depressions reach Iberia and the western Mediterranean,
@@ -1141,6 +1143,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [icelandic_low]
     mechanism: >
       A strong Icelandic low pulls mild southerly air up the eastern
       seaboard and keeps the Arctic air bottled up to the north, so eastern
@@ -1159,6 +1162,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low]
     mechanism: >
       The strong Icelandic low draws cold northerly air down its western
       flank over Greenland and the Labrador Sea, so winters there tend to be
@@ -1201,6 +1205,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low, azores_high]
     mechanism: >
       With the Icelandic low and Azores high both weak, the westerlies
       slacken and often stall behind a blocking high near Greenland, so
@@ -1241,6 +1246,7 @@ links:
     lag_months: [0, 0]
     season: [11, 12, 1, 2, 3]
     confidence: established
+    via: [azores_high]
     mechanism: >
       With the Azores high weak, Atlantic depressions run south into Iberia
       and the western Mediterranean one after another, so winters tend to
@@ -1262,6 +1268,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [icelandic_low]
     mechanism: >
       A weak Icelandic low and a blocking high over Greenland steer Arctic
       air south into the eastern United States, and coastal storms running
@@ -1286,6 +1293,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low]
     mechanism: >
       With the Icelandic low weak and a high sitting near Greenland, mild
       air is drawn north over the Labrador Sea and west Greenland, so
@@ -1427,6 +1435,7 @@ links:
     lag_months: [6, 9]
     season: [1, 2, 3]
     confidence: probable
+    via: [icelandic_low, azores_high]
     mechanism: >
       In an El Niño winter the storm track over the North Pacific shifts and
       strengthens, and planetary-scale waves carry that disturbance up into
@@ -2095,6 +2104,7 @@ links:
     lag_months: [0, 1]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [siberian_high]
     mechanism: >
       When the westerlies falter in a negative winter the Siberian high can
       extend west, and cold continental air spreads over European Russia
@@ -2497,6 +2507,7 @@ links:
     lag_months: [0, 1]
     season: [10, 11, 12, 1, 2, 3]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       Warm water in the Gulf of Alaska and a deep Aleutian low pump mild
       Pacific air north over Alaska through the winter.
@@ -2520,6 +2531,7 @@ links:
     lag_months: [0, 1]
     season: [10, 11, 12, 1, 2, 3]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       Cool water in the Gulf of Alaska and a weak Aleutian low leave Alaska
       under its own cold air through the winter.
@@ -2536,6 +2548,7 @@ links:
     lag_months: [0, 1]
     season: [12, 1, 2]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       Warm coastal water and a deep Aleutian low steer mild Pacific air onto
       the Northwest coast and shift the storms away from it, so winters tend
@@ -2559,6 +2572,7 @@ links:
     lag_months: [0, 1]
     season: [12, 1, 2]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       Cool coastal water and a weak Aleutian low leave the Northwest coast
       under cooler air with the storm track on top of it, so winters tend to
@@ -2576,6 +2590,7 @@ links:
     lag_months: [0, 1]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       The deep Aleutian low of the warm phase sets up a ridge over western
       Canada that carries mild Pacific air across the Rockies onto the
@@ -2599,6 +2614,7 @@ links:
     lag_months: [0, 1]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       With a weak Aleutian low and no ridge over western Canada, Arctic air
       sits over the Prairies more often in winter.
@@ -2615,6 +2631,7 @@ links:
     lag_months: [0, 1]
     season: [11, 12, 1, 2, 3, 4]
     confidence: contested
+    via: [aleutian_low]
     mechanism: >
       The deep Aleutian low of the warm phase strengthens the subtropical
       jet across the southern United States in winter and steers Pacific
@@ -2638,6 +2655,7 @@ links:
     lag_months: [0, 1]
     season: [11, 12, 1, 2, 3, 4]
     confidence: contested
+    via: [aleutian_low]
     mechanism: >
       With a weak Aleutian low the subtropical jet is weak and the winter
       storms stay north of the Southwest, so winters tend to be drier.
@@ -2661,6 +2679,7 @@ links:
     lag_months: [3, 6]
     season: []
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       El Niño deepens the Aleutian low through the "atmospheric bridge",
       which cools the central North Pacific and warms the water along the
@@ -2686,6 +2705,7 @@ links:
     lag_months: [3, 6]
     season: []
     confidence: probable
+    via: [aleutian_low]
     mechanism: >
       La Niña weakens the Aleutian low through the same bridge, which warms
       the central North Pacific and cools the coastal water, the pattern of
@@ -2974,6 +2994,7 @@ links:
     lag_months: [0, 3]
     season: [12, 1, 2, 3]
     confidence: contested
+    via: [icelandic_low, azores_high]
     mechanism: >
       A warm North Atlantic warms and moistens the lower atmosphere over
       the ocean in winter, which is proposed to weaken the Icelandic low
@@ -2999,6 +3020,7 @@ links:
     lag_months: [0, 3]
     season: [12, 1, 2, 3]
     confidence: contested
+    via: [icelandic_low, azores_high]
     mechanism: >
       A cool North Atlantic is proposed to sharpen the winter contrast
       between the Icelandic low and the Azores high, the positive side of
@@ -3757,6 +3779,7 @@ links:
     lag_months: [2, 4]
     season: []
     confidence: probable
+    via: [azores_high]
     mechanism: >
       A negative NAO winter weakens the Azores high and with it the
       northeast trade winds. Weaker trades evaporate less water from the
@@ -3786,6 +3809,7 @@ links:
     lag_months: [2, 4]
     season: []
     confidence: probable
+    via: [azores_high]
     mechanism: >
       A positive NAO winter strengthens the Azores high and the northeast
       trades, more evaporation cools the northern tropical Atlantic, and
@@ -4075,6 +4099,7 @@ links:
     lag_months: [2, 8]
     season: [12, 1, 2]
     confidence: probable
+    via: [polar_vortex]
     mechanism: >
       The haze absorbs some sunlight and warms the stratosphere over the
       tropics more than over the pole. The sharper contrast strengthens
@@ -4147,10 +4172,11 @@ links:
     lag_months: [2, 8]
     season: [12, 1, 2, 3]
     confidence: probable
+    via: [icelandic_low, azores_high, polar_vortex]
     mechanism: >
       Heating of the tropical stratosphere by the haze strengthens the
       winter polar vortex, and a strong vortex reaches down to the
-      surface as a positive North Atlantic Oscillation: the Iceland low
+      surface as a positive North Atlantic Oscillation: the Icelandic low
       deeper, the Azores high stronger, the westerlies across the
       Atlantic stronger and further north.
     caveat: >
@@ -4381,6 +4407,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low]
     mechanism: >
       A positive North Atlantic Oscillation deepens the Icelandic low. The
       winds on its western side blow from the north across Baffin Island,
@@ -4411,6 +4438,7 @@ links:
     lag_months: [0, 0]
     season: [12, 1, 2, 3]
     confidence: established
+    via: [icelandic_low, azores_high]
     mechanism: >
       With the Icelandic low weak and the Azores high feeble, the flow of
       Arctic air down the Labrador coast slackens. Milder Atlantic air
@@ -4671,6 +4699,7 @@ links:
     lag_months: [1, 3]
     season: [12, 1, 2]
     confidence: probable
+    via: [icelandic_low, azores_high, polar_vortex]
     mechanism: >
       Planetary-scale waves rising from the winter troposphere are steered
       by the winds they meet in the stratosphere. With easterly wind over
@@ -4678,7 +4707,7 @@ links:
       break against the polar vortex, and the vortex weakens and warms,
       sometimes suddenly. A weak vortex leaks down through the lower
       stratosphere over a few weeks and shows at the surface as a
-      negative North Atlantic Oscillation: a weaker Iceland low, a weaker
+      negative North Atlantic Oscillation: a weaker Icelandic low, a weaker
       Azores high, and Atlantic westerlies that are slack and pushed
       south.
     caveat: >
@@ -4728,6 +4757,7 @@ links:
     lag_months: [1, 3]
     season: [12, 1, 2]
     confidence: probable
+    via: [azores_high, polar_vortex]
     mechanism: >
       With westerly wind over the equator, planetary-scale waves rising
       from the winter troposphere can spread into the tropics, fewer of
@@ -4839,6 +4869,7 @@ links:
     lag_months: [1, 3]
     season: [12, 1, 2]
     confidence: contested
+    via: [siberian_high, polar_vortex]
     mechanism: >
       Where the autumn ice is missing, the open sea heats and moistens the
       air above it. The warmed air builds a ridge of high pressure over
@@ -4907,6 +4938,7 @@ links:
     lag_months: [1, 3]
     season: [12, 1, 2]
     confidence: contested
+    via: [azores_high, polar_vortex]
     mechanism: >
       The ridge that low ice builds over the Urals lines up with the
       planetary-scale waves of early winter and strengthens them, so more
@@ -4968,6 +5000,7 @@ links:
     lag_months: [1, 3]
     season: [12, 1, 2]
     confidence: contested
+    via: [siberian_high]
     mechanism: >
       The stronger Siberian high that follows low Barents–Kara ice drives
       the East Asian winter monsoon: cold air pours south-east out of
@@ -5063,6 +5096,7 @@ links:
     lag_months: [2, 3]
     season: [12, 1, 2]
     confidence: contested
+    via: [siberian_high, polar_vortex]
     mechanism: >
       Snow cools the ground beneath it, so a wide October snow cover
       builds the Siberian high early and strong. The high sits where the
@@ -5188,6 +5222,7 @@ links:
     lag_months: [2, 3]
     season: [12, 1, 2]
     confidence: contested
+    via: [siberian_high, polar_vortex]
     mechanism: >
       Two paths into Europe. Directly, the early, strong Siberian high
       pushes cold air west across Russia toward Scandinavia and Germany.
@@ -7150,3 +7185,28 @@ sources:
   - key: descroix_2009
     citation: "Descroix, L., Mahé, G., Lebel, T., Favreau, G., Galle, S., Gautier, E., Olivry, J.-C., Albergel, J., Amogu, O., Cappelaere, B., Dessouassi, R., Diedhiou, A., Le Breton, E., Mamadou, I., & Sighomnou, D. (2009). Spatio-temporal variability of hydrological regimes around the boundaries between Sahelian and Sudanian areas of West Africa: A synthesis. Journal of Hydrology, 375(1–2), 90–102."
     url: https://doi.org/10.1016/j.jhydrol.2008.12.012
+  # ---- Seasonal features (M41): the fixtures the links work through. All resolved on Crossref 2026-09-08.
+  - key: overland_1999
+    citation: "Overland, J. E., Adams, J. M., & Bond, N. A. (1999). Decadal variability of the Aleutian Low and its relation to high-latitude circulation. Journal of Climate, 12(5), 1542–1548."
+    url: https://doi.org/10.1175/1520-0442(1999)012<1542:DVOTAL>2.0.CO;2
+  - key: trenberth_hurrell_1994
+    citation: "Trenberth, K. E., & Hurrell, J. W. (1994). Decadal atmosphere-ocean variations in the Pacific. Climate Dynamics, 9(6), 303–319."
+    url: https://doi.org/10.1007/BF00204745
+  - key: serreze_1997
+    citation: "Serreze, M. C., Carse, F., Barry, R. G., & Rogers, J. C. (1997). Icelandic Low cyclone activity: Climatological features, linkages with the NAO, and relationships with recent changes in the Northern Hemisphere circulation. Journal of Climate, 10(3), 453–464."
+    url: https://doi.org/10.1175/1520-0442(1997)010<0453:ILCACF>2.0.CO;2
+  - key: davis_1997
+    citation: "Davis, R. E., Hayden, B. P., Gay, D. A., Phillips, W. L., & Jones, G. V. (1997). The North Atlantic subtropical anticyclone. Journal of Climate, 10(4), 728–744."
+    url: https://doi.org/10.1175/1520-0442(1997)010<0728:TNASA>2.0.CO;2
+  - key: rodwell_hoskins_2001
+    citation: "Rodwell, M. J., & Hoskins, B. J. (2001). Subtropical anticyclones and summer monsoons. Journal of Climate, 14(15), 3192–3211."
+    url: https://doi.org/10.1175/1520-0442(2001)014<3192:SAASM>2.0.CO;2
+  - key: panagiotopoulos_2005
+    citation: "Panagiotopoulos, F., Shahgedanova, M., Hannachi, A., & Stephenson, D. B. (2005). Observed trends and teleconnections of the Siberian High: A recently declining center of action. Journal of Climate, 18(9), 1411–1422."
+    url: https://doi.org/10.1175/JCLI3352.1
+  - key: gong_ho_2002
+    citation: "Gong, D.-Y., & Ho, C.-H. (2002). The Siberian High and climate change over middle to high latitude Asia. Theoretical and Applied Climatology, 72(1–2), 1–9."
+    url: https://doi.org/10.1007/s007040200008
+  - key: waugh_2017
+    citation: "Waugh, D. W., Sobel, A. H., & Polvani, L. M. (2017). What is the polar vortex and how does it influence weather? Bulletin of the American Meteorological Society, 98(1), 37–44."
+    url: https://doi.org/10.1175/BAMS-D-15-00212.1

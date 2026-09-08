@@ -162,6 +162,30 @@ html, body { margin: 0; height: 100%; }
 /* the event that fired it has ended (M32): like pending, but grey (the stroke is set by the map) */
 .link.faded { opacity: 0.22; }
 .link.ghost { stroke: var(--ghost) !important; opacity: 0.45; }
+/* a seasonal feature is selected (M41) and this arrow does not work through it */
+.links .link.dimmed { opacity: 0.07; }
+
+/* Seasonal features (M41, docs/PLAN.md §4 rule 13): an H or L in a circle, as
+   on a weather chart, or a ring for the vortex; slate, never a state colour.
+   Hollow and dotted while idle, filled while an applied arrow works through
+   it, faintly filled while only pending ones do. */
+.feature { cursor: pointer; }
+.feature circle.mark { fill: #ffffff; stroke: #5b6472; stroke-width: 1.6; stroke-dasharray: 2 2; }
+.feature circle.ring { fill: none; stroke: #5b6472; stroke-width: 1.4; }
+.feature.active circle.mark { fill: #334155; stroke: #ffffff; stroke-width: 2; stroke-dasharray: none; }
+.feature.active circle.ring { stroke: #ffffff; }
+.feature.pending circle.mark { fill: #334155; fill-opacity: 0.25; stroke-dasharray: none; }
+.feature text.glyph { font-size: 11px; font-weight: 700; fill: #5b6472; text-anchor: middle; pointer-events: none; }
+.feature.active text.glyph { fill: #ffffff; }
+.feature text.name {
+  font-size: 10.5px; fill: #5b6472; paint-order: stroke; stroke: #ffffff; stroke-width: 3px;
+  stroke-linejoin: round; pointer-events: none;
+}
+.feature.active text.name { fill: var(--ink); font-weight: 600; }
+.feature.selected circle.mark { stroke: var(--ink); stroke-width: 3; stroke-dasharray: none; }
+.feature.selected text.name { font-weight: 700; }
+.feature-area { fill: #334155; fill-opacity: 0; stroke: #5b6472; stroke-opacity: 0.45; stroke-width: 1; stroke-dasharray: 2 3; pointer-events: none; }
+.feature-area.active { fill-opacity: 0.07; stroke-opacity: 0.8; }
 
 .node { cursor: pointer; }
 .node circle, .node rect { stroke-width: 1.6; }
@@ -274,6 +298,10 @@ ul.kinds li.dropped { color: var(--muted); }
    and the list of impacts that follow from a place on an outcome's card */
 .sector { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .impact-note { font-style: italic; border-left: 3px solid #c2185b; padding-left: 8px; margin: 6px 0 10px; }
+/* Seasonal features (M41): the fixed sentence at the top of a feature's card, the "Works through" line and the lists of arrows through it */
+.feature-note { font-style: italic; border-left: 3px solid #334155; padding-left: 8px; margin: 6px 0 10px; }
+.hint.through { color: #334155; }
+ul.through { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
 ul.impacts { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
 ul.impacts li.off { color: var(--muted); }
 .legend-row.impacts svg { flex: none; }
@@ -370,6 +398,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
   .node text { font-size: 11px; }
   .node.driver text { font-size: 13px; }
   .node.focus circle, .node.focus rect { animation: none; stroke-width: 3; }
+  .feature text.name { font-size: 11px; }
 
   #print-caption { grid-area: caption; display: block; margin: 2mm 0 3mm; font-size: 9pt; color: #000; }
 

@@ -3668,6 +3668,212 @@
         "zero": "Flow near normal",
         "minus": "River flow tends to be lower than usual"
       }
+    },
+    {
+      "id": "aleutian_low",
+      "name": "Aleutian Low",
+      "label": "Aleutian Low",
+      "area": [
+        [
+          160,
+          62
+        ],
+        [
+          -140,
+          62
+        ],
+        [
+          -140,
+          42
+        ],
+        [
+          160,
+          42
+        ]
+      ],
+      "lat": 52,
+      "lon": -178,
+      "region": "North Pacific, south of the Aleutian Islands",
+      "timescale": "Every winter, October–March; deepest in December–February",
+      "summary": "The great winter low-pressure centre of the North Pacific: a parade of storms that deepens each autumn south of the Aleutian Islands and fills in again by late spring. Its depth and position set the winter over Alaska, western Canada and the western United States. A deep low drags mild Pacific air north into Alaska and bends the jet stream so that storms reach California; a weak one leaves Alaska cold and the Southwest dry. El Niño deepens it and shifts it east, the \"atmospheric bridge\" by which the tropics reach the North Pacific, and the Pacific Decadal Oscillation is in large part the ocean's memory of this low from one winter to the next. On this map it is the machinery those arrows work through: nothing is computed from it.\n",
+      "sources": [
+        "overland_1999",
+        "trenberth_hurrell_1994",
+        "alexander_2002"
+      ],
+      "kind": "feature",
+      "symbol": "low",
+      "months": [
+        10,
+        11,
+        12,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "icelandic_low",
+      "name": "Icelandic Low",
+      "label": "Icelandic Low",
+      "area": [
+        [
+          -45,
+          70
+        ],
+        [
+          -10,
+          70
+        ],
+        [
+          -10,
+          54
+        ],
+        [
+          -45,
+          54
+        ]
+      ],
+      "lat": 60,
+      "lon": -30,
+      "region": "North Atlantic, between Greenland and Iceland",
+      "timescale": "Present all year; deepest and most important October–March",
+      "summary": "The northern half of the North Atlantic see-saw: a region of low pressure between Greenland and Iceland where the Atlantic storms gather and deepen each winter. With the Azores High to its south it drives the westerly winds that carry mild, wet Atlantic air into Europe. When both are strong the westerlies are strong and Europe is mild and stormy while Greenland and Labrador are cold; when both are weak the westerlies slacken, cold air spreads west into Europe and Greenland turns mild. That see-saw is the North Atlantic Oscillation, and every arrow from the NAO on this map is a change in these two centres. On this map it is drawn as the machinery those arrows work through: nothing is computed from it.\n",
+      "sources": [
+        "serreze_1997",
+        "hurrell_2003",
+        "hurrell_1995"
+      ],
+      "kind": "feature",
+      "symbol": "low",
+      "months": [
+        10,
+        11,
+        12,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "azores_high",
+      "name": "Azores High",
+      "label": "Azores High",
+      "area": [
+        [
+          -48,
+          40
+        ],
+        [
+          -10,
+          40
+        ],
+        [
+          -10,
+          22
+        ],
+        [
+          -48,
+          22
+        ]
+      ],
+      "lat": 25,
+      "lon": -30,
+      "region": "Subtropical North Atlantic, between the Azores and the Canaries",
+      "timescale": "All year; strongest and furthest north in summer, when it is also called the Bermuda High",
+      "summary": "The great dome of high pressure over the subtropical North Atlantic, the southern half of the see-saw whose northern half is the Icelandic Low. Its northern flank drives the westerlies toward Europe, its southern flank the northeast trade winds toward the tropical Atlantic, and its eastern flank the dry, sinking air over Iberia and the Mediterranean in summer. A strong Azores High in winter keeps Atlantic storms north of Iberia and strengthens the trades; a weak one lets the storms into the Mediterranean and slackens the trades, which is how the NAO reaches the tropical Atlantic. On this map it is drawn all year as the machinery those arrows work through: nothing is computed from it.\n",
+      "sources": [
+        "davis_1997",
+        "rodwell_hoskins_2001",
+        "hurrell_2003"
+      ],
+      "kind": "feature",
+      "symbol": "high",
+      "months": []
+    },
+    {
+      "id": "siberian_high",
+      "name": "Siberian High",
+      "label": "Siberian High",
+      "area": [
+        [
+          72,
+          60
+        ],
+        [
+          125,
+          60
+        ],
+        [
+          125,
+          36
+        ],
+        [
+          72,
+          36
+        ]
+      ],
+      "lat": 47,
+      "lon": 102,
+      "region": "Mongolia and southern Siberia",
+      "timescale": "Every winter, November–March; strongest in January",
+      "summary": "A dome of dense, cold air that settles over Mongolia and southern Siberia each winter as the land loses heat under long nights and snow, and holds the highest sea-level pressures recorded anywhere on Earth. Its outflow is the East Asian winter monsoon, the cold north-westerly wind that reaches China, Korea and Japan, and when it spreads west it brings cold to European Russia and, at times, to Scandinavia and central Europe. The contested Arctic arrows on this map, from the autumn ice of the Barents and Kara seas and the October snow, claim to reach the continents by building this high earlier and stronger. On this map it is drawn as the machinery those arrows work through: nothing is computed from it.\n",
+      "sources": [
+        "panagiotopoulos_2005",
+        "gong_ho_2002",
+        "cohen_2014"
+      ],
+      "kind": "feature",
+      "symbol": "high",
+      "months": [
+        11,
+        12,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": "polar_vortex",
+      "name": "Arctic polar vortex",
+      "label": "Polar vortex",
+      "area": [
+        [
+          0,
+          66
+        ],
+        [
+          90,
+          66
+        ],
+        [
+          180,
+          66
+        ],
+        [
+          -90,
+          66
+        ]
+      ],
+      "lat": 80,
+      "lon": 160,
+      "region": "The Arctic stratosphere, 15–50 km up",
+      "timescale": "Every winter, November–March; forms in autumn and breaks down each spring",
+      "summary": "A band of strong westerly winds that circles the pole high in the stratosphere every winter, holding a pool of very cold air over the Arctic. It is not the surface weather, but it speaks to it: when planetary-scale waves rising from below break against the vortex it weakens, sometimes suddenly, and the disturbance leaks down over the following weeks as a negative North Atlantic Oscillation, with cold outbreaks over Europe and eastern North America; a strong, undisturbed vortex favours the positive phase. Several arrows on this map reach the NAO by this route: the QBO, a tropical eruption, the autumn Arctic ice and the October snow. On this map it is drawn as the machinery those arrows work through: nothing is computed from it.\n",
+      "sources": [
+        "waugh_2017",
+        "baldwin_dunkerton_2001",
+        "thompson_wallace_1998"
+      ],
+      "kind": "feature",
+      "symbol": "vortex",
+      "months": [
+        11,
+        12,
+        1,
+        2,
+        3
+      ]
     }
   ],
   "links": [
@@ -5031,6 +5237,10 @@
       "sources": [
         "hurrell_1995",
         "hurrell_2003"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -5082,6 +5292,9 @@
       "sources": [
         "hurrell_1995",
         "trigo_2004"
+      ],
+      "via": [
+        "azores_high"
       ]
     },
     {
@@ -5106,6 +5319,9 @@
       "sources": [
         "hurrell_2003",
         "seager_2010"
+      ],
+      "via": [
+        "icelandic_low"
       ]
     },
     {
@@ -5131,6 +5347,9 @@
       "sources": [
         "van_loon_rogers_1978",
         "hurrell_1995"
+      ],
+      "via": [
+        "icelandic_low"
       ]
     },
     {
@@ -5182,6 +5401,10 @@
         "hurrell_1995",
         "cattiaux_2010",
         "osborn_2011"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -5234,6 +5457,9 @@
         "hurrell_1995",
         "trigo_2004",
         "vicente_serrano_2011"
+      ],
+      "via": [
+        "azores_high"
       ]
     },
     {
@@ -5259,6 +5485,9 @@
       "sources": [
         "hurrell_2003",
         "seager_2010"
+      ],
+      "via": [
+        "icelandic_low"
       ]
     },
     {
@@ -5283,6 +5512,9 @@
       "sources": [
         "van_loon_rogers_1978",
         "hurrell_1995"
+      ],
+      "via": [
+        "icelandic_low"
       ]
     },
     {
@@ -5432,6 +5664,10 @@
         "ineson_scaife_2009",
         "toniazzo_scaife_2006",
         "domeisen_2019"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -6265,6 +6501,9 @@
       "sources": [
         "hurrell_1995",
         "hurrell_1996"
+      ],
+      "via": [
+        "siberian_high"
       ]
     },
     {
@@ -6738,6 +6977,9 @@
         "mantua_1997",
         "mantua_hare_2002",
         "newman_2016"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6764,6 +7006,9 @@
       "sources": [
         "mantua_1997",
         "mantua_hare_2002"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6789,6 +7034,9 @@
         "mantua_1997",
         "mote_2016",
         "bond_2015"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6812,6 +7060,9 @@
       "sources": [
         "mantua_1997",
         "mantua_hare_2002"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6837,6 +7088,9 @@
       "sources": [
         "mantua_1997",
         "gershunov_barnett_1998"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6861,6 +7115,9 @@
       "sources": [
         "mantua_1997",
         "gershunov_barnett_1998"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6889,6 +7146,9 @@
         "mantua_1997",
         "mccabe_2004",
         "mote_2016"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6916,6 +7176,9 @@
       "sources": [
         "mccabe_2004",
         "mantua_1997"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6937,6 +7200,9 @@
         "newman_2003",
         "alexander_2002",
         "newman_2016"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -6958,6 +7224,9 @@
         "newman_2003",
         "alexander_2002",
         "newman_2016"
+      ],
+      "via": [
+        "aleutian_low"
       ]
     },
     {
@@ -7285,6 +7554,10 @@
       "sources": [
         "peings_magnusdottir_2014",
         "omrani_2014"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -7310,6 +7583,10 @@
       "sources": [
         "peings_magnusdottir_2014",
         "omrani_2014"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -8052,6 +8329,9 @@
         "chiang_vimont_2004",
         "foltz_2012",
         "kushnir_2006"
+      ],
+      "via": [
+        "azores_high"
       ]
     },
     {
@@ -8073,6 +8353,9 @@
         "foltz_2012",
         "czaja_2002",
         "kushnir_2006"
+      ],
+      "via": [
+        "azores_high"
       ]
     },
     {
@@ -8320,6 +8603,9 @@
         "polvani_2019",
         "coupe_robock_2021",
         "wunderlich_mitchell_2017"
+      ],
+      "via": [
+        "polar_vortex"
       ]
     },
     {
@@ -8368,7 +8654,7 @@
         3
       ],
       "confidence": "probable",
-      "mechanism": "Heating of the tropical stratosphere by the haze strengthens the winter polar vortex, and a strong vortex reaches down to the surface as a positive North Atlantic Oscillation: the Iceland low deeper, the Azores high stronger, the westerlies across the Atlantic stronger and further north.\n",
+      "mechanism": "Heating of the tropical stratosphere by the haze strengthens the winter polar vortex, and a strong vortex reaches down to the surface as a positive North Atlantic Oscillation: the Icelandic low deeper, the Azores high stronger, the westerlies across the Atlantic stronger and further north.\n",
       "caveat": "Found in the pressure record after most large eruptions but, in the words of one review of ten reanalyses, not as clear cut as the literature suggests: the spread between eruptions is large, models make the vortex response small, and the polar response turns out not to be a direct effect of the heating but to go through stratospheric wave activity, sensitive to the shape of the cloud. Drawn dashed for that reason; with the chain on, the NAO's own winter arrows follow one tier down.\n",
       "evidence_note": "Both the Arctic Oscillation and the NAO are excited in the first winter after thirteen major eruptions since 1870, significant at 95%, the signal larger for the NAO; the winter response to fifteen tropical eruptions in European reconstructions follows a positive NAO; four centuries of records give a mean response resembling the Arctic Oscillation; ten reanalyses and the Hadley Centre pressure record confirm a positive NAO tendency in the winters after large eruptions, with a large spread for individual eruptions; AR4 models simulate a positive Arctic Oscillation but with far weaker surface effects, and CMIP5 models generally fail to capture the strengthened vortex and positive NAO; in one Earth-system model the vortex response is insignificant for observation-based forcings and depends on the structure of the aerosol cloud.\n",
       "sources": [
@@ -8381,6 +8667,11 @@
         "toohey_2014",
         "robock_2000",
         "kodera_1994"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high",
+        "polar_vortex"
       ]
     },
     {
@@ -8550,6 +8841,9 @@
         "shabbar_bonsal_2004",
         "hurrell_van_loon_1997",
         "hurrell_2003"
+      ],
+      "via": [
+        "icelandic_low"
       ]
     },
     {
@@ -8577,6 +8871,10 @@
         "hurrell_van_loon_1997",
         "bonsal_2001",
         "shabbar_bonsal_2004"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high"
       ]
     },
     {
@@ -8772,7 +9070,7 @@
         2
       ],
       "confidence": "probable",
-      "mechanism": "Planetary-scale waves rising from the winter troposphere are steered by the winds they meet in the stratosphere. With easterly wind over the equator the waves cannot cross into the tropics, more of them break against the polar vortex, and the vortex weakens and warms, sometimes suddenly. A weak vortex leaks down through the lower stratosphere over a few weeks and shows at the surface as a negative North Atlantic Oscillation: a weaker Iceland low, a weaker Azores high, and Atlantic westerlies that are slack and pushed south.\n",
+      "mechanism": "Planetary-scale waves rising from the winter troposphere are steered by the winds they meet in the stratosphere. With easterly wind over the equator the waves cannot cross into the tropics, more of them break against the polar vortex, and the vortex weakens and warms, sometimes suddenly. A weak vortex leaks down through the lower stratosphere over a few weeks and shows at the surface as a negative North Atlantic Oscillation: a weaker Icelandic low, a weaker Azores high, and Atlantic westerlies that are slack and pushed south.\n",
       "caveat": "An average over many winters, not a rule for one. The effect is clearest in early winter, was nearly absent from 1978 to 1997, and models make it weaker than the record does; a multi-century model run calls the QBO's link to the Arctic Oscillation likely real and its link to the NAO probable but not certain, which is why the arrow is dashed. Which height of the wind matters most is still argued. A chosen NAO is never pushed, so pick the QBO alone with the chain on to see this arrow; the NAO's own winter map then follows one tier down.\n",
       "evidence_note": "In sixteen winters of 50 hPa data the high-latitude stratosphere is significantly lower in pressure, a stronger vortex, in westerly than easterly phases, with the largest planetary wave 40% stronger in November–December of easterly phases (Holton and Tan 1980); a review of three decades of work confirms the vortex is weaker in easterly winters while leaving the mechanism and the best height open (Anstey and Shepherd 2014); the easterly phase favours more extreme cold events in northern Europe and eastern North America, with a signature roughly comparable to ENSO's (Thompson, Baldwin and Wallace 2002); weak-vortex events are followed over about two months by negative Arctic Oscillation patterns at the surface (Baldwin and Dunkerton 2001); seasonal hindcasts started on 1 December reproduce a surface Arctic Oscillation response to the QBO (Marshall and Scaife 2009); the January sea-level-pressure response resembles the positive NAO under westerly winds and comes mainly through the polar vortex (Gray et al. 2018); a multi-century model run finds the QBO–Arctic Oscillation link likely real and the QBO–NAO link probable, though weaker than observed (Andrews et al. 2019); the effect faded in 1978–1997 (Lu et al. 2014); the mechanism is argued between the critical-line and meridional- circulation explanations (Garfinkel et al. 2012; Watson and Gray 2014); most models underestimate the early-winter warming of the vortex in easterly phases (Rao et al. 2020); the QBO and ENSO signals in the Arctic stratosphere were correlated in time in the first half of the record and are hard to separate (Garfinkel and Hartmann 2007).\n",
       "sources": [
@@ -8789,6 +9087,11 @@
         "watson_gray_2014",
         "rao_2020",
         "garfinkel_hartmann_2007"
+      ],
+      "via": [
+        "icelandic_low",
+        "azores_high",
+        "polar_vortex"
       ]
     },
     {
@@ -8821,6 +9124,10 @@
         "thompson_2002",
         "baldwin_dunkerton_2001",
         "baldwin_2001"
+      ],
+      "via": [
+        "azores_high",
+        "polar_vortex"
       ]
     },
     {
@@ -8912,6 +9219,10 @@
         "peings_2019",
         "blackport_screen_2021",
         "overland_2021"
+      ],
+      "via": [
+        "siberian_high",
+        "polar_vortex"
       ]
     },
     {
@@ -8946,6 +9257,10 @@
         "blackport_screen_2021",
         "smith_2022",
         "screen_2018"
+      ],
+      "via": [
+        "azores_high",
+        "polar_vortex"
       ]
     },
     {
@@ -8978,6 +9293,9 @@
         "sun_2016",
         "ogawa_2018",
         "blackport_2019"
+      ],
+      "via": [
+        "siberian_high"
       ]
     },
     {
@@ -9050,6 +9368,10 @@
         "santolaria_otin_2020",
         "gastineau_2017",
         "brown_derksen_2013"
+      ],
+      "via": [
+        "siberian_high",
+        "polar_vortex"
       ]
     },
     {
@@ -9116,6 +9438,10 @@
         "brown_derksen_2013",
         "lawrence_2020",
         "rutgers_snow_lab"
+      ],
+      "via": [
+        "siberian_high",
+        "polar_vortex"
       ]
     },
     {
@@ -11992,6 +12318,46 @@
       "key": "descroix_2009",
       "citation": "Descroix, L., Mahé, G., Lebel, T., Favreau, G., Galle, S., Gautier, E., Olivry, J.-C., Albergel, J., Amogu, O., Cappelaere, B., Dessouassi, R., Diedhiou, A., Le Breton, E., Mamadou, I., & Sighomnou, D. (2009). Spatio-temporal variability of hydrological regimes around the boundaries between Sahelian and Sudanian areas of West Africa: A synthesis. Journal of Hydrology, 375(1–2), 90–102.",
       "url": "https://doi.org/10.1016/j.jhydrol.2008.12.012"
+    },
+    {
+      "key": "overland_1999",
+      "citation": "Overland, J. E., Adams, J. M., & Bond, N. A. (1999). Decadal variability of the Aleutian Low and its relation to high-latitude circulation. Journal of Climate, 12(5), 1542–1548.",
+      "url": "https://doi.org/10.1175/1520-0442(1999)012<1542:DVOTAL>2.0.CO;2"
+    },
+    {
+      "key": "trenberth_hurrell_1994",
+      "citation": "Trenberth, K. E., & Hurrell, J. W. (1994). Decadal atmosphere-ocean variations in the Pacific. Climate Dynamics, 9(6), 303–319.",
+      "url": "https://doi.org/10.1007/BF00204745"
+    },
+    {
+      "key": "serreze_1997",
+      "citation": "Serreze, M. C., Carse, F., Barry, R. G., & Rogers, J. C. (1997). Icelandic Low cyclone activity: Climatological features, linkages with the NAO, and relationships with recent changes in the Northern Hemisphere circulation. Journal of Climate, 10(3), 453–464.",
+      "url": "https://doi.org/10.1175/1520-0442(1997)010<0453:ILCACF>2.0.CO;2"
+    },
+    {
+      "key": "davis_1997",
+      "citation": "Davis, R. E., Hayden, B. P., Gay, D. A., Phillips, W. L., & Jones, G. V. (1997). The North Atlantic subtropical anticyclone. Journal of Climate, 10(4), 728–744.",
+      "url": "https://doi.org/10.1175/1520-0442(1997)010<0728:TNASA>2.0.CO;2"
+    },
+    {
+      "key": "rodwell_hoskins_2001",
+      "citation": "Rodwell, M. J., & Hoskins, B. J. (2001). Subtropical anticyclones and summer monsoons. Journal of Climate, 14(15), 3192–3211.",
+      "url": "https://doi.org/10.1175/1520-0442(2001)014<3192:SAASM>2.0.CO;2"
+    },
+    {
+      "key": "panagiotopoulos_2005",
+      "citation": "Panagiotopoulos, F., Shahgedanova, M., Hannachi, A., & Stephenson, D. B. (2005). Observed trends and teleconnections of the Siberian High: A recently declining center of action. Journal of Climate, 18(9), 1411–1422.",
+      "url": "https://doi.org/10.1175/JCLI3352.1"
+    },
+    {
+      "key": "gong_ho_2002",
+      "citation": "Gong, D.-Y., & Ho, C.-H. (2002). The Siberian High and climate change over middle to high latitude Asia. Theoretical and Applied Climatology, 72(1–2), 1–9.",
+      "url": "https://doi.org/10.1007/s007040200008"
+    },
+    {
+      "key": "waugh_2017",
+      "citation": "Waugh, D. W., Sobel, A. H., & Polvani, L. M. (2017). What is the polar vortex and how does it influence weather? Bulletin of the American Meteorological Society, 98(1), 37–44.",
+      "url": "https://doi.org/10.1175/BAMS-D-15-00212.1"
     }
   ],
   "stories": [
@@ -13556,6 +13922,71 @@
           "sources": [
             "cayan_1999",
             "jong_2016"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "el_nino_winter_machinery",
+      "title": "Winter's machinery: how El Niño reaches Alaska and Europe",
+      "intro": "The arrows on this map run straight from a driver to the place it reaches, but the studies behind them describe a change in something that is there every winter: a low over the North Pacific, a low and a high over the Atlantic. This story turns on the \"Seasonal features\" layer and follows an El Niño through two of them. Nothing is computed from a feature; it is filled in when an arrow drawn that month works through it, and the map is the same with the layer off.\n",
+      "driver": "enso",
+      "phase": "el_nino",
+      "start_month": 6,
+      "features": true,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "enso",
+          "text": "An El Niño begins to develop in June. Through the summer its arrows reach the tropics: the Indian monsoon, Indonesia, the western Pacific typhoons. The winter fixtures of the northern hemisphere are not on the map yet: the Aleutian Low fills in each spring and returns in the autumn, and the layer draws it only in the months it is there.\n",
+          "sources": [
+            "noaa_climate_gov_enso",
+            "trenberth_1997"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "aleutian_low",
+          "text": "October. The Aleutian Low is back, and since September El Niño has been deepening it through the \"atmospheric bridge\": the shifted tropical rain sets off a wave train that reaches the North Pacific and drops the pressure south of the Aleutians. The arrow from El Niño to the Pacific Decadal Oscillation is the studies' name for that change, so the low is filled in on the map. Click it to see which arrows work through it, and notice that no arrow starts or ends at it.\n",
+          "sources": [
+            "alexander_2002",
+            "newman_2003"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "pdo",
+          "text": "December. The deep low cools the central North Pacific and warms the water along the coast: the pattern of a positive Pacific Decadal Oscillation, which the map has pushed positive since September. From here the oscillation's own arrows fire, one tier lower because they are one step further from the El Niño, and every one of them works through the same low.\n",
+          "sources": [
+            "newman_2016",
+            "mantua_1997"
+          ]
+        },
+        {
+          "month": 7,
+          "focus": "alaska_winter",
+          "text": "January, and mild in Alaska. The oscillation's arrow here is rated probable and arrives contested, two steps from the El Niño: a deep Aleutian Low pumps Pacific air north over the state. The low is where the El Niño and the oscillation blur into one another, which is why, on this map, a Pacific Decadal Oscillation chosen in its opposite phase weakens El Niño's own winter arrows to North America.\n",
+          "sources": [
+            "mantua_1997",
+            "newman_2016"
+          ]
+        },
+        {
+          "month": 8,
+          "focus": "icelandic_low",
+          "text": "February, and El Niño's other winter route. The disturbed North Pacific sends planetary waves up into the stratosphere and across to the Atlantic, where late in winter they tend to weaken the Icelandic Low and the Azores High: a negative North Atlantic Oscillation. Both features are filled in, because the arrow from El Niño to the NAO works through them. It is a modest signal, rated probable, and the strongest El Niños have not produced it.\n",
+          "sources": [
+            "bronnimann_2007",
+            "ineson_scaife_2009"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "northern_europe_winter",
+          "text": "March. With the Icelandic Low weak the westerlies slacken, and northern Europe tends to a cold, calm end to winter: the NAO's own arrow, one tier down from its established rating because the NAO was pushed there rather than chosen. Every arrow in this story passed through a fixture of the winter, and none of them is the fixture's doing. Turn the layer off and the map is the one you started with.\n",
+          "sources": [
+            "hurrell_1995",
+            "cattiaux_2010"
           ]
         }
       ]

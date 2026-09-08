@@ -8,9 +8,10 @@ import 'd3-transition';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import world from 'world-atlas/countries-110m.json';
-import type { Graph, GraphNode, Link, LinkStatus, MonthState, Confidence, Axis, Value } from '../types';
+import type { FeatureNode, Graph, GraphNode, Link, LinkStatus, MonthState, Confidence, Axis, Value } from '../types';
 import { phaseForValue } from '../engine/propagate';
 import type { DriverInfluences } from '../engine/inverse';
+import { featureDrawn, featuresThisMonth } from '../engine/features';
 
 export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   wet_dry: { plus: '#2166ac', minus: '#b35806' },
@@ -29,6 +30,7 @@ const INACTIVE_DRIVER = '#c7c9cf';
 export function stateColor(node: GraphNode, value: Value): string {
   if (value === 0) return NEUTRAL;
   if (node.kind === 'driver') return phaseForValue(node, value)?.color ?? NEUTRAL;
+  if (node.kind === 'feature') return NEUTRAL; // never a state colour (M41, rule 13)
   return value > 0 ? AXIS_COLORS[node.axis].plus : AXIS_COLORS[node.axis].minus;
 }
 
@@ -60,6 +62,22 @@ export interface RenderOptions {
    *  yet `settled` faint, with an outlined arrowhead. Off, every arrow is
    *  drawn as before. */
   showWindow?: boolean;
+  /** seasonal features (M41, rule 13): draw the fixtures of the year's
+   *  weather in their months, filled while an applied arrow works through
+   *  them, and dim the other arrows while one is selected. Off, nothing of
+   *  them is drawn. */
+  showFeatures?: boolean;
+}
+
+/** One seasonal feature as the map draws it this month (M41). */
+interface FeatureDatum {
+  node: FeatureNode;
+  /** in its months (all year when empty) */
+  present: boolean;
+  /** an applied link works through it: filled */
+  active: boolean;
+  /** only pending links do: faintly filled */
+  pending: boolean;
 }
 
 /**
@@ -108,6 +126,9 @@ interface ArrowDatum {
   /** the arrival window (M30): an applied link not yet settled, drawn
    *  faint with an outlined head while the window layer is on */
   unsettled: boolean;
+  /** a seasonal feature is selected (M41) and this link does not work
+   *  through it: drawn very faint so the ones that do stand out */
+  dimmed: boolean;
 }
 
 /** Region mode (M28): what the map draws for a place instead of a scenario.
@@ -118,6 +139,8 @@ export interface RegionRender {
   groups: DriverInfluences[];
   showAreas: boolean;
   showAllLabels: boolean;
+  /** draw the seasonal features the listed links work through (M41), filled, no month */
+  showFeatures?: boolean;
 }
 
 /** Sideways offsets for `n` arrows sharing a path: 0 for one, ±7 for two, ... */
@@ -131,7 +154,11 @@ export class MapView {
   private gBase: Selection<SVGGElement, unknown, null, undefined>;
   private gAreas: Selection<SVGGElement, unknown, null, undefined>;
   private gLinks: Selection<SVGGElement, unknown, null, undefined>;
+  /** seasonal features (M41): between the arrows and the markers */
+  private gFeatures: Selection<SVGGElement, unknown, null, undefined>;
   private areas: Map<string, GeoJSON.Polygon>;
+  /** the outlines of the seasonal features that carry an `area` (M41) */
+  private featureAreas: Map<string, GeoJSON.Polygon>;
   private gNodes: Selection<SVGGElement, unknown, null, undefined>;
   private projection = geoNaturalEarth1().rotate([-160, 0]);
   private path = geoPath(this.projection);
@@ -146,7 +173,9 @@ export class MapView {
   constructor(container: HTMLElement, private graph: Graph, private idPrefix = '') {
     this.nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
     this.linkById = new Map(graph.links.map((l) => [l.id, l]));
-    this.areas = new Map(graph.nodes.filter((n) => n.area).map((n) => [n.id, areaPolygon(n.area!)]));
+    // A feature's area belongs to the features layer, never to the areas layer (M41).
+    this.areas = new Map(graph.nodes.filter((n) => n.area && n.kind !== 'feature').map((n) => [n.id, areaPolygon(n.area!)]));
+    this.featureAreas = new Map(graph.nodes.filter((n) => n.kind === 'feature' && n.area).map((n) => [n.id, areaPolygon(n.area!)]));
     this.svg = select(container).append('svg').attr('role', 'img').attr('aria-label', 'World map of climate connections');
     const defs = this.svg.append('defs');
     // Hatch for a marker whose opposite pushes cancel out (conflicting at 0),
@@ -170,6 +199,7 @@ export class MapView {
     this.gBase = this.svg.append('g').attr('class', 'base');
     this.gAreas = this.svg.append('g').attr('class', 'areas');
     this.gLinks = this.svg.append('g').attr('class', 'links');
+    this.gFeatures = this.svg.append('g').attr('class', 'features');
     this.gNodes = this.svg.append('g').attr('class', 'nodes');
     this.drawBase();
     this.fit();
@@ -188,7 +218,7 @@ export class MapView {
 
   private markerId(node: GraphNode, value: Value, kind: ArrowDatum['kind']): string {
     if (kind === 'ghost') return 'ghost';
-    if (kind === 'faded' || value === 0) return 'neutral';
+    if (kind === 'faded' || value === 0 || node.kind === 'feature') return 'neutral';
     if (node.kind === 'driver') {
       const phase = phaseForValue(node, value);
       return phase ? `phase-${node.id}-${phase.id}` : 'neutral';
@@ -336,7 +366,9 @@ export class MapView {
     // ---- arrows: one per link the engine reports this month, drawn from the
     // driver that fires it (the scenario driver, or a driver it has pushed).
     // A faded link (M32: the event has ended) is drawn like a pending one
-    // but grey, with a grey arrowhead.
+    // but grey, with a grey arrowhead. While a seasonal feature is selected
+    // (M41) the arrows that do not work through it are dimmed.
+    const selectedFeature = opts.showFeatures && opts.selectedNodeId && this.nodeById.get(opts.selectedNodeId)?.kind === 'feature' ? opts.selectedNodeId : null;
     const arrows: ArrowDatum[] = [];
     for (const [lid, ls] of Object.entries(month.links)) {
       const link = this.linkById.get(lid);
@@ -347,7 +379,8 @@ export class MapView {
       const color = ls.status === 'ghost' ? '#c7c9cf' : ls.status === 'faded' ? NEUTRAL : stateColor(target, link.effect);
       // The arrival window (M30): only an applied arrow is drawn faint, and only with the layer on.
       const unsettled = !!opts.showWindow && ls.status === 'applied' && !ls.settled;
-      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0, unsettled });
+      const dimmed = selectedFeature !== null && !(link.via ?? []).includes(selectedFeature);
+      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0, unsettled, dimmed });
     }
     const merged = this.drawArrows(arrows, '');
 
@@ -364,8 +397,14 @@ export class MapView {
       }
     });
 
-    // ---- nodes (impacts, M37, only with their layer on)
-    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'impact' || !!opts.showImpacts), {
+    // ---- seasonal features (M41, rule 13): only with their layer on, in
+    // their months or while an applied arrow works through them
+    this.drawFeatures(opts.showFeatures
+      ? featuresThisMonth(this.graph, month).filter(featureDrawn).map((f) => ({ node: f.feature, present: f.present, active: f.applied.length > 0, pending: f.pending.length > 0 }))
+      : [], selectedFeature);
+
+    // ---- nodes (impacts, M37, only with their layer on; never the features, which have their own layer)
+    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'feature' && (n.kind !== 'impact' || !!opts.showImpacts)), {
       cls: (d) => {
         const st = month.nodes[d.id];
         const cls = ['node', d.kind];
@@ -436,13 +475,19 @@ export class MapView {
       const links = g.phases.flatMap((p) => p.links.map((l) => ({ link: l.link, phase: p.phase })));
       const offsets = spreads(links.length);
       links.forEach(({ link, phase }, i) => {
-        arrows.push({ link, from: g.driver, target, kind: 'applied', confidence: link.confidence, color: phase.color, marker: `phase-${g.driver.id}-${phase.id}`, spread: offsets[i], unsettled: false });
+        arrows.push({ link, from: g.driver, target, kind: 'applied', confidence: link.confidence, color: phase.color, marker: `phase-${g.driver.id}-${phase.id}`, spread: offsets[i], unsettled: false, dimmed: false });
       });
     }
     this.drawArrows(arrows, ' region');
 
-    // ---- nodes (never the impacts, M37: region mode reads links from drivers only)
-    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'impact'), {
+    // ---- seasonal features (M41): the ones the listed links work through, filled, no month
+    const through = new Set(arrows.flatMap((a) => a.link.via ?? []));
+    this.drawFeatures(r.showFeatures
+      ? this.graph.nodes.filter((n): n is FeatureNode => n.kind === 'feature' && through.has(n.id)).map((node) => ({ node, present: true, active: true, pending: false }))
+      : [], null);
+
+    // ---- nodes (never the impacts, M37: region mode reads links from drivers only; never the features, M41)
+    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'impact' && n.kind !== 'feature'), {
       cls: (d) => {
         const cls = ['node', d.kind];
         let labelled = r.showAllLabels;
@@ -465,7 +510,7 @@ export class MapView {
     sel.exit().remove();
     const enter = sel.enter().append('path');
     return enter.merge(sel)
-      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${d.unsettled ? ' unsettled' : ''}${extraClass}`)
+      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${d.unsettled ? ' unsettled' : ''}${d.dimmed ? ' dimmed' : ''}${extraClass}`)
       .attr('stroke', (d) => d.color)
       .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker}${d.unsettled ? '-open' : ''})`)
       .attr('d', (d) => this.arcPath(d.from, d.target, d.spread));
@@ -510,6 +555,48 @@ export class MapView {
       .attr('y', (d) => (d.kind === 'driver' ? 24 : 0))
       .attr('text-anchor', (d) => (d.kind === 'driver' ? 'middle' : 'start'))
       .text((d) => d.label ?? d.name);
+  }
+
+  /**
+   * Seasonal features (M41, rule 13): one marker per feature in `list`, its
+   * symbol (an H or L in a circle, as on a weather chart; a ring for the
+   * vortex) with its name, and its area, if any, as a dotted outline under
+   * it. Filled while `active` (an applied arrow works through it), faintly
+   * while only `pending` ones do, hollow otherwise; never a state colour.
+   * A feature left out of the list is removed. Clickable and focusable
+   * like a node.
+   */
+  private drawFeatures(list: FeatureDatum[], selectedId: string | null): void {
+    const outlines = this.gFeatures.selectAll<SVGPathElement, FeatureDatum>('path.feature-area').data(list.filter((d) => this.featureAreas.has(d.node.id)), (d) => d.node.id);
+    outlines.exit().remove();
+    outlines.enter().append('path').merge(outlines)
+      .attr('class', (d) => `feature-area${d.active ? ' active' : ''}`)
+      .attr('d', (d) => this.path(this.featureAreas.get(d.node.id)!));
+    const marks = this.gFeatures.selectAll<SVGGElement, FeatureDatum>('g.feature').data(list, (d) => d.node.id);
+    marks.exit().remove();
+    const enter = marks.enter().append('g')
+      .attr('tabindex', 0)
+      .attr('role', 'button')
+      .attr('aria-label', (d) => d.node.name)
+      .on('click', (_e, d) => this.onNodeClick(d.node.id))
+      .on('keydown', (e: KeyboardEvent, d) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); this.onNodeClick(d.node.id); }
+      });
+    enter.append('circle').attr('class', 'mark').attr('r', 10);
+    enter.filter((d) => d.node.symbol === 'vortex').append('circle').attr('class', 'ring').attr('r', 4.5);
+    enter.append('text').attr('class', 'glyph').attr('dy', '0.36em').text((d) => (d.node.symbol === 'high' ? 'H' : d.node.symbol === 'low' ? 'L' : ''));
+    enter.append('text').attr('class', 'name').attr('dy', '0.35em').text((d) => d.node.label);
+    const merged = enter.merge(marks)
+      .attr('class', (d) => `feature ${d.node.symbol}${d.active ? ' active' : d.pending ? ' pending' : ' idle'}${d.present ? '' : ' offseason'}${selectedId === d.node.id ? ' selected' : ''}`)
+      .attr('transform', (d) => {
+        const p = this.projection([d.node.lon, d.node.lat]);
+        return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
+      });
+    // The name sits to the right of the symbol, or to its left near the
+    // map's right edge (the Azores High, beside the Atlantic seam).
+    merged.select('text.name')
+      .attr('x', (d) => ((this.projection([d.node.lon, d.node.lat])?.[0] ?? 0) > this.width - 90 ? -14 : 14))
+      .attr('text-anchor', (d) => ((this.projection([d.node.lon, d.node.lat])?.[0] ?? 0) > this.width - 90 ? 'end' : 'start'));
   }
 
   /** Fill for a marker or area: the node colour, or the grey hatch when

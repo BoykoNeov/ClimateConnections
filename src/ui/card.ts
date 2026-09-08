@@ -1,8 +1,9 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, ImpactNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Phase, Source } from '../types';
+import type { Confidence, DriverNode, FeatureNode, Graph, GraphNode, ImpactNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Phase, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
 import { downgrade, phaseForValue } from '../engine/propagate';
+import { featurePresent } from '../engine/features';
 import { compareNode, type Verdict } from '../engine/compare';
 import { countInfluences, type DriverInfluences, type Influence } from '../engine/inverse';
 import { stateColor } from './map';
@@ -67,6 +68,19 @@ function modulationHtml(link: Link, ls: LinkState | null, nodeById: Map<string, 
 /** The fixed sentence on every impact's card (M37, rule 12): in the UI, not
  *  in the data, so no impact can be written without it. */
 export const IMPACT_NOTE = 'How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.';
+
+/** The fixed sentence on every seasonal feature's card (M41, rule 13): in
+ *  the UI, not in the data, so no feature can be written without it. */
+export const FEATURE_NOTE = 'A fixture of the year\'s weather, not a cause on this map: nothing is computed from it and no arrow starts or ends at it. It is filled in while an arrow drawn this month works through it.';
+
+/** "Works through the Aleutian Low" (M41, rule 13): the features the
+ *  link's studies describe the effect as a change in. Empty without `via`. */
+function throughHtml(link: Link, nodeById: Map<string, GraphNode>, featuresOn: boolean): string {
+  const names = (link.via ?? []).map((id) => nodeById.get(id)).filter((n): n is FeatureNode => !!n && n.kind === 'feature').map((n) => n.name);
+  if (names.length === 0) return '';
+  const list = names.map((n) => `the ${n}`).join(' and ');
+  return `<p class="hint through">Works through ${esc(list)}: the studies describe this effect as a change in ${names.length === 1 ? 'it' : 'them'}. ${featuresOn ? 'Click the symbol on the map to see every arrow that works through it.' : 'Turn on "Seasonal features" under the legend, on the left, to see it on the map.'}</p>`;
+}
 
 /** "How sure are we?" for a link as it acts this month. `ls` carries the
  *  confidence after the per-hop downgrade and, M35, the modulation; when
@@ -157,6 +171,8 @@ interface Ctx {
   impacts?: boolean;
   /** the arrival window is shown (M30): the timing lines say the window */
   window?: boolean;
+  /** the seasonal features layer is on (M41): the "Works through" lines point at the map */
+  features?: boolean;
 }
 
 /** The timing line of a link block: the lag range, counted from `after`
@@ -185,7 +201,7 @@ function whoChose(ctx: Ctx): string {
 
 /** "the tendency" a link pushes its target toward, in the target's own words. */
 function tendencyWords(link: Link, to: GraphNode | undefined): string {
-  if (!to) return link.effect > 0 ? 'higher' : 'lower';
+  if (!to || to.kind === 'feature') return link.effect > 0 ? 'higher' : 'lower';
   if (to.kind === 'driver') return `toward ${phaseForValue(to, link.effect)?.label ?? 'a phase'}`;
   return link.effect > 0 ? to.labels.plus : to.labels.minus;
 }
@@ -251,6 +267,7 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
   return `<div class="link-block${status === 'faded' ? ' faded' : ''}">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
+    ${throughHtml(link, ctx.nodeById, !!ctx.features)}
     <p class="hint">${timing}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>
     ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
     ${sourcesHtml(link.sources, ctx.sources)}
@@ -347,6 +364,7 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
       <h4>${esc(fromPhase?.label ?? l.when)} tends to push toward ${esc(toPhase?.label ?? String(l.effect))} <span class="badge ${l.confidence}">${l.confidence}</span></h4>
       ${alsoChosen}
       <p>${esc(l.mechanism.trim())}</p>
+      ${throughHtml(l, ctx.nodeById, !!ctx.features)}
       <p class="hint">Expected from month ${l.lag_months[0]}${l.lag_months[1] !== l.lag_months[0] ? `–${l.lag_months[1]}` : ''} after ${esc(shortName(from))} enters that phase; season: ${seasonText(l)}.</p>
       ${sureBlock(l, null, ctx.nodeById, ctx.sources)}
       ${sourcesHtml(l.sources, ctx.sources)}
@@ -472,6 +490,7 @@ export interface CardCompare {
  *  `chosen` names the phase a driver chosen by hand holds on that side, so
  *  a kind of a phase (M36) is named rather than its parent. */
 function stateWords(node: GraphNode, st: NodeState, chosen?: Map<string, ChosenPhase>): { text: string; color: string } {
+  if (node.kind === 'feature') return { text: 'a fixture, never a state', color: '#f0f2f5' };
   if (node.kind === 'driver') {
     if (st.value === 0 && st.viaLinkIds.length === 0) {
       if (st.pendingLinkIds.length > 0) return { text: 'expected to be pushed, out of season', color: '#f0f2f5' };
@@ -539,6 +558,60 @@ function impactsFromBlock(node: OutcomeNode, graph: Graph, ctx: Ctx, month: Mont
     <ul class="impacts">${items.join('')}</ul>`;
 }
 
+/** The card of a seasonal feature (M41, rule 13): the fixed sentence, whether
+ *  it is on the map this month, the arrows drawn this month that work
+ *  through it, every arrow that can, its summary and sources. Nothing is
+ *  computed here: every line reads what the engine reported or the data. */
+function featureCard(node: FeatureNode, graph: Graph, ctx: Ctx, month: MonthState): string {
+  const present = featurePresent(node, month.calendarMonth);
+  const applied: [Link, LinkState][] = [];
+  const pending: [Link, LinkState][] = [];
+  for (const [id, ls] of Object.entries(month.links)) {
+    const l = ctx.linkById.get(id);
+    if (!l || !(l.via ?? []).includes(node.id)) continue;
+    if (ls.status === 'applied') applied.push([l, ls]);
+    else if (ls.status === 'pending') pending.push([l, ls]);
+  }
+  const when = node.months.length === 0 ? 'all year' : monthRanges(node.months);
+  let line: string;
+  let cls = 'zero';
+  let bg = '#f0f2f5';
+  if (applied.length > 0) {
+    line = `${applied.length === 1 ? 'One arrow' : `${countWord(applied.length)[0].toUpperCase()}${countWord(applied.length).slice(1)} arrows`} drawn this month work${applied.length === 1 ? 's' : ''} through it${present ? '' : `, outside its usual months (${when})`}`;
+    cls = 'plus';
+    bg = '#334155';
+  } else if (present) {
+    line = `On the map this month (present ${when}); no arrow drawn this month works through it`;
+  } else {
+    line = `Not on the map this month: present ${when}, and no arrow drawn this month works through it`;
+  }
+  let html = `<p class="feature-note">${esc(FEATURE_NOTE)}</p>`;
+  html += `<div class="state-line ${cls}" style="background:${bg}">${line}</div>`;
+  if (pending.length > 0) {
+    const n = countWord(pending.length);
+    html += `<p class="hint">${pending.length === 1 ? 'One more arrow' : `${n[0].toUpperCase()}${n.slice(1)} more arrows`} through it ${pending.length === 1 ? 'is' : 'are'} expected but out of season this month.</p>`;
+  }
+  html += `<p>${esc(node.summary.trim())}</p>`;
+  const item = (l: Link, tier: Confidence, note: string) => {
+    const from = ctx.nodeById.get(l.from);
+    const to = ctx.nodeById.get(l.to);
+    const phase = from?.kind === 'driver' ? from.phases.find((p) => p.id === l.when)?.label ?? l.when : l.when;
+    return `<li>${esc(from ? shortName(from) : l.from)}, ${esc(phase)} → ${esc(to ? shortName(to) : l.to)}: ${esc(tendencyWords(l, to))} <span class="badge ${tier}">${tier}</span>${note}</li>`;
+  };
+  if (applied.length > 0 || pending.length > 0) {
+    html += `<h2>Arrows through it this month</h2><ul class="through">`;
+    for (const [l, ls] of applied) html += item(l, ls.confidence, '');
+    for (const [l, ls] of pending) html += item(l, ls.confidence, ' <span class="hint">expected, out of season</span>');
+    html += `</ul>`;
+  }
+  const all = graph.links.filter((l) => (l.via ?? []).includes(node.id));
+  html += `<h2>Every arrow that can work through it</h2>
+    <p class="hint">Read from the data as the studies rate each arrow, whatever the scenario. The feature is filled in whenever one of them is drawn.</p>
+    <ul class="through">${all.map((l) => item(l, l.confidence, ` <span class="hint">${esc(seasonRanges(l))}</span>`)).join('')}</ul>`;
+  html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+  return html;
+}
+
 /** The card of an impact on people (M37, rule 12): the sector, the fixed
  *  sentence, the state in plain words and one block per impact link. */
 function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
@@ -569,7 +642,7 @@ function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
  *  the wording says "from the record" instead of "you chose".
  *  `impacts` (M37) says the impacts layer is on; `window` (M30) that the
  *  arrival window is shown, so the timing lines say it. */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false, window = false): void {
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false, window = false, features = false): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
@@ -581,10 +654,17 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     chosen,
     impacts,
     window,
+    features,
   };
   if (year !== undefined) ctx.year = year;
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
-  if (compare) html += compareBlock(node, compare);
+  // A feature has no state to compare (M41): the same fixture on both sides.
+  if (compare && node.kind !== 'feature') html += compareBlock(node, compare);
+
+  if (node.kind === 'feature') {
+    container.innerHTML = html + featureCard(node, graph, ctx, month);
+    return;
+  }
 
   if (node.kind === 'driver') {
     container.innerHTML = html + driverCard(node, graph, ctx, month);
@@ -625,8 +705,13 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
 
 /** "October–December", "all year", "June, September–November". */
 function seasonRanges(link: Link): string {
-  if (link.season.length === 0) return 'all year';
-  const months = [...link.season].sort((a, b) => a - b);
+  return monthRanges(link.season);
+}
+
+/** The same for any list of calendar months (a feature's `months`, M41). */
+function monthRanges(list: number[]): string {
+  if (list.length === 0) return 'all year';
+  const months = [...list].sort((a, b) => a - b);
   // Runs of consecutive months, joined across the year end (Dec–Feb).
   const runs: number[][] = [];
   for (const m of months) {
@@ -660,7 +745,7 @@ function stripHtml(inf: Influence, color: string): string {
  * line is read from the data as it stands. A button per phase hands the
  * page a single-driver scenario to watch.
  */
-export function renderRegionCard(container: HTMLElement, graph: Graph, node: OutcomeNode, groups: DriverInfluences[]): void {
+export function renderRegionCard(container: HTMLElement, graph: Graph, node: OutcomeNode, groups: DriverInfluences[], features = false): void {
   const sources = new Map(graph.sources.map((s) => [s.key, s]));
   const nodeById = new Map<string, GraphNode>(graph.nodes.map((n) => [n.id, n]));
   const total = countInfluences(groups);
@@ -681,6 +766,7 @@ export function renderRegionCard(container: HTMLElement, graph: Graph, node: Out
           <h4><span class="swatch" style="background:${ph.phase.color}"></span>${esc(ph.phase.label)}: ${esc(tendency)} <span class="badge ${inf.confidence}">${inf.confidence}</span></h4>
           <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}${kind}</p>
           <p>${esc(l.mechanism.trim())}</p>
+          ${throughHtml(l, nodeById, features)}
           ${sureBlock(l, null, nodeById, sources)}
           ${sourcesHtml(l.sources, sources)}
         </div>`;

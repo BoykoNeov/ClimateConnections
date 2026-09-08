@@ -40,7 +40,12 @@ reached from an outcome one hop further and one tier lower, behind an
 "Impacts on people" layer that is off by default, the fifth engine
 extension, and since M30 an arrival window: every reported link says
 whether the later end of its lag range has passed, reporting only,
-drawn behind a "Show arrival window" toggle that is off by default) on a
+drawn behind a "Show arrival window" toggle that is off by default, and
+since M41 seasonal features: a fourth node kind for the fixtures of the
+year's weather the links work through, the Aleutian Low, the Icelandic
+Low, the Azores High, the Siberian High and the Arctic polar vortex,
+drawn in their months behind a "Seasonal features" toggle that is off by
+default, filled while an arrow works through them, never computed from) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -141,6 +146,22 @@ one.
   application to the later end or anywhere between, do not draw the window
   on pending, faded or ghost arrows, and do not turn the toggle on by
   default.
+- Seasonal features (M41, §4 rule 13) are drawing only. A `feature` node
+  (`symbol: high | low | vortex`, `months`, a required `label`, no axis,
+  labels, phases or sector) is a fixture of the year's weather; a link
+  names the features it works through in `via`, and only features its own
+  `mechanism`, `caveat` or `evidence_note` names (the validator checks the
+  label); no link ever starts or ends at a feature; every feature has a
+  link through it. The engine never reads a feature or a `via`: a feature
+  holds the empty state, and every timeline is identical with the
+  features and every `via` stripped (a regression test proves it).
+  `src/engine/features.ts` only reads what the engine reported (present
+  by month; the month's applied and pending links through a feature). The
+  map draws them behind "Seasonal features" (off by default) as an H or L
+  in a circle or a ring, never a state colour; the fixed sentence on every
+  feature's card lives in `src/ui/card.ts`. Do not turn a feature into a
+  pushed waypoint, give it a state or a strength, or draw an arrow to or
+  from one.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -193,7 +214,12 @@ one.
   story) on 2026-09-08, and the arrival window (M30, the second UI item:
   `LinkState.settled` in §4 rule 3, the "Show arrival window" toggle
   under the legend, the faint arrow with an outlined head, the card's
-  three timing lines) on 2026-09-08.
+  three timing lines) on 2026-09-08, and seasonal features (M41, the
+  third UI item, with a schema addition and no engine change: the
+  `feature` node kind and `Link.via`, §4 rule 13, `src/engine/features.ts`,
+  the "Seasonal features" checkbox, the H / L / ring markers, the feature
+  card, the "Works through" line, the winter-machinery story) on
+  2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its
@@ -222,8 +248,8 @@ npm run build          # static site to dist/
 ```
 
 ## Layout (see docs/PLAN.md §2 for the full tree)
-- `data/` — nodes.yaml, links.yaml, stories.yaml, years.yaml
+- `data/` — nodes.yaml (drivers, outcomes, impacts, seasonal features), links.yaml, stories.yaml, years.yaml
 - `scripts/build-data.mjs` — validator + converter; `scripts/years-schema.mjs` — the years table's checks
-- `src/engine/` — propagate.ts, years.ts and tests
+- `src/engine/` — propagate.ts, years.ts, features.ts (readers only) and tests
 - `src/ui/` — map, timeline, card, controls, legend, story and year panels
 - `docs/` — PLAN.md, DATA_FORMAT.md

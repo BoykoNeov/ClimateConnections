@@ -125,6 +125,15 @@ describe('stories', () => {
           expect(node).toBeDefined();
           if (chosen.has(node!.id)) return;
           const st = timeline.months[step.month].nodes[step.focus];
+          // Rule 13 (M41): a step on a seasonal feature needs the layer on
+          // and an applied link that works through it that month.
+          if (node!.kind === 'feature') {
+            expect(story.features, `${story.id} points at the feature ${step.focus} without features: true`).toBe(true);
+            const month = timeline.months[step.month];
+            const through = Object.entries(month.links).filter(([id, ls]) => ls.status === 'applied' && (graph.links.find((l) => l.id === id)?.via ?? []).includes(step.focus));
+            expect(through.length, `${step.focus}: no applied link works through it`).toBeGreaterThan(0);
+            return;
+          }
           // Rule 12 (M37): a step on an impact needs the layer on and the
           // square reached that month; it is never excused by rule 11.
           if (node!.kind === 'impact') {

@@ -92,6 +92,10 @@ export interface ControlState extends ScenarioSettings {
    *  outlined head until the later end of its lag range has passed, on
    *  both sides. Off by default; a way of looking, like the areas layer. */
   showWindow: boolean;
+  /** seasonal features (M41, rule 13): draw the fixtures of the year's
+   *  weather the links work through, on both sides and in region mode.
+   *  Off by default; a way of looking, like the areas layer. */
+  showFeatures: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -418,6 +422,8 @@ export class ControlsView {
   private impactsBox: HTMLInputElement;
   /** the arrival window (M30): the toggle under the Legend heading */
   private windowBox: HTMLInputElement;
+  /** seasonal features (M41) */
+  private featuresBox: HTMLInputElement;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
   private compareBox: HTMLInputElement;
   private sideBox: HTMLDivElement;
@@ -430,7 +436,8 @@ export class ControlsView {
   /** a real year was picked from the dropdown (null = "none") (M34) */
   onYear: (year: number | null) => void = () => {};
 
-  constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], years: number[], regions: OutcomeNode[], private state: ControlState) {
+  /** `featureNames`: the seasonal features in the data (M41), named in the layer's hint */
+  constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], years: number[], regions: OutcomeNode[], private state: ControlState, featureNames: string[] = []) {
     container.innerHTML = '';
 
     const hs = document.createElement('h2');
@@ -752,6 +759,23 @@ export class ControlsView {
     hintW.className = 'hint';
     hintW.textContent = 'The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, an arrow is drawn faint with an outlined head until the latest month has passed, so you can see where the timing is uncertain. The card gives the range either way.';
     this.scenarioBox.parentElement!.append(hintW);
+    // Seasonal features (M41): the seventh checkbox, after "Show arrival
+    // window" so the browser scripts' indices still hold. Off by default
+    // (rule 15 of docs/PLAN_V3.md).
+    const featuresLabel = document.createElement('label');
+    featuresLabel.className = 'check';
+    this.featuresBox = document.createElement('input');
+    this.featuresBox.type = 'checkbox';
+    this.featuresBox.dataset.role = 'features';
+    this.featuresBox.checked = state.showFeatures;
+    this.featuresBox.addEventListener('change', () => this.update({ showFeatures: this.featuresBox.checked }));
+    featuresLabel.append(this.featuresBox, document.createTextNode(' Seasonal features'));
+    this.scenarioBox.parentElement!.append(featuresLabel);
+    const hintF = document.createElement('p');
+    hintF.className = 'hint';
+    const named = featureNames.length === 0 ? '' : ` (${featureNames.slice(0, -1).join(', ')}${featureNames.length > 1 ? ' and ' : ''}${featureNames[featureNames.length - 1]})`;
+    hintF.textContent = `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring, in the months they are present. They are the machinery the arrows work through, not causes on the map: nothing is computed from them and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.`;
+    this.scenarioBox.parentElement!.append(hintF);
     const legend = renderLegend();
     legend.classList.add('print-keep');
     this.scenarioBox.parentElement!.append(legend);
@@ -958,5 +982,6 @@ export class ControlsView {
     this.chainBox.checked = s.chain;
     this.impactsBox.checked = this.state.showImpacts;
     this.windowBox.checked = this.state.showWindow;
+    this.featuresBox.checked = this.state.showFeatures;
   }
 }
