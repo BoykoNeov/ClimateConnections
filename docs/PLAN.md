@@ -1553,9 +1553,96 @@ drivers stays in one place.
   print caption.
 - Not in M23: the QBO as a modulator of other links (M35); the monsoon
   link; the QBO's effect on West Pacific typhoons (Chan 1995), a
-  candidate if the hurricane lesson proves useful; the solar cycle. Next
-  in `docs/PLAN_V3.md`: M24 and M25, the two contested Arctic
-  precursors, as one matched lesson.
+  candidate if the hurricane lesson proves useful; the solar cycle.
+
+### M24 — Thirteenth driver: Barents–Kara autumn sea ice (version 3, signed off 2026-09-08)
+- Data: `barents_kara_ice` driver node, label "Barents–Kara ice", three
+  phases `high` (+1, "High ice", sky blue #0369a1), `neutral` (0, "Near
+  normal") and `low` (−1, "Low ice", purple #a21caf); an area over the
+  two seas (20–100°E, 68–81°N); `default_start_month` 10; marker at
+  78°N 58°E in the Kara Sea, not 76°N 45°E as the plan proposed, because
+  at 76°N 45°E the centred driver label ran two pixels into the Norway
+  label. One new outcome node, **Central Siberia and Mongolia winter
+  temperature** (`siberia_winter`, warm_cool, 60°N 95°E, label "Central
+  Siberia"), which is where the Mongolia candidate M27 deferred now
+  lives. Four links, all from the low phase, all **contested**, lag 1–3
+  (so an October reading reaches December), December–February: central
+  Siberia colder, western Russia colder, East Asia colder, and the NAO
+  pushed negative. The high-ice phase draws nothing, as the plan's text
+  implies (it lists links for low ice only): the argument is about ice
+  loss, high-ice autumns are nearly all before 2005, and the card says
+  that the mirror image is implied by the statistics but has never been
+  offered as a forecast. Nothing pushes the ice; the card says the trend
+  is not a driver this map draws. Fifty-five new sources: forty-nine
+  papers resolved on Crossref (abstracts read for all but the ten Nature-
+  family papers that carry none, cited on their titles and well-known
+  findings), the NSIDC record-minimum and November 2012 analyses, the
+  Japan Meteorological Agency's press note on the December 2012 cold
+  wave, NASA Earth Observatory on the January 2013 cold in China, the
+  Hadley Centre Central England Temperature series, the Rutgers Global
+  Snow Lab record and three State of the Climate reports. One story,
+  "2012–13: record-low ice, then a cold Eurasian winter" (low ice from
+  October 2012, one driver, chain on), five steps: the record minimum
+  and the open Kara Sea in October, with the note that October snow was
+  wide too and that the two precursors are one signal; December's cold
+  wave from central Siberia to north-eastern China (Astana below −40°C,
+  Moscow below −25°C); January's twenty-eight-year cold in China and the
+  6 January vortex split, whose wave forcing came mainly from the
+  Pacific side; February, the last month the map draws, with Britain's
+  coldest March since 1962 named as what the map's season cannot show
+  (the step sits in February because the validator refuses a focus the
+  scenario does not touch, and in March every arrow waits); October
+  2013, the ice back to 5.10 million km², the mild Eurasian winter and
+  the American "polar vortex" winter that the ice story predicted
+  neither of, and the argument stated both ways, ending "one winter, and
+  the argument is about whether it counts".
+- Honesty notes carried in the data: the driver card leads with "on the
+  map because the science is disputed", states the claim and the
+  counter-claim in plain words (the same weather causes both, forty
+  winters, ensembles that cool little or not at all, the wavier-jet
+  evidence challenged), names the one thing sixteen models agree on (a
+  weak negative-NAO push worth about a tenth of a winter), says only the
+  low phase is drawn and why, that nothing pushes the ice and why, that
+  the eastern US claims go through the Chukchi Sea and are not drawn,
+  and that this driver and the October snow driver (M25) are largely one
+  signal seen twice, so drawing both is not evidence they add up. Every
+  link's caveat names both sides with their strongest papers; the
+  Siberian caveat ends "if the link is real it is small in any one winter
+  and the rest is chance".
+- What the engine shows, asserted in tests: from October, Siberia,
+  western Russia, East Asia and the NAO are touched December–February
+  only, November waits and March onward waits; with the chain on the
+  pushed NAO's winter map follows at the floor tier (every applied arrow
+  on the map contested), western Russia carries two arrows from one
+  cause and is not hatched; the high and neutral phases draw nothing;
+  under "probable and above", not only "established only", every arrow
+  from the ice is a ghost and the whole driver disappears, which is the
+  lesson the plan asked the browser check to show; with El Niño chosen
+  as a second driver that began in June, East Asia is hatched in winter
+  (the ice says colder, the El Niño milder).
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the ice from October with direct links
+  only (phases, the four links and the new node, the winter months, the
+  NAO's regions hollow at depth 1, the empty phases, the two filters),
+  with the chain on (the floor-tier winter map, western Russia's two
+  arrows, never pushed, El Niño as a second driver) and the 2012–13
+  story (fields, five steps, the states at each step). Existing
+  expectations updated: thirteen drivers, twenty-eight driver-to-driver
+  links, sixty-two outcome regions.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m24.mjs`):
+  75 markers, the two new markers placed with no label overlap (every
+  label on), the driver dropdown jumping to October, three phase
+  buttons, October with nothing available and November waiting,
+  December with the chain on (Siberia, western Russia and East Asia
+  cold, the NAO induced negative, its winter map one tier down, every
+  arrow on the map dotted, western Russia not hatched), the Siberian and
+  pushed-NAO cards, March waiting, "probable and above" ghosting the
+  whole driver, high ice drawing nothing and its card saying so, the
+  2012–13 story stepped to its end, the print caption.
+- Not in M24: any link from the warming trend; Arctic sea ice elsewhere
+  (Chukchi, Beaufort), so the eastern US is not reached from this
+  driver; a high-ice link. Next in `docs/PLAN_V3.md`: M25, the October
+  snow, the second half of the matched lesson.
 
 ---
 
@@ -1702,6 +1789,11 @@ NAO (easterly → negative, westerly → positive, both probable, the
 Holton–Tan effect) and acts on atlantic_hurricanes (westerly +, easterly
 −, both contested: a link that held until about 1990).
 
+The Barents–Kara autumn sea ice (M24) adds one outcome node,
+siberia_winter (warm_cool). Its low phase acts on siberia_winter,
+western_russia_winter and east_asia_winter (−, all contested) and pushes
+the NAO negative (contested). Its high phase draws nothing.
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1740,7 +1832,8 @@ writing mechanism text):
   Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
   the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
   the Pacific Meridional Mode; M26: a large tropical volcanic eruption;
-  M23: the Quasi-Biennial Oscillation);
+  M23: the Quasi-Biennial Oscillation; M24: the Barents–Kara autumn sea
+  ice);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

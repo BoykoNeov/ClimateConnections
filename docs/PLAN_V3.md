@@ -362,6 +362,19 @@ are pushes.
 
 ### M24 — Twelfth driver: autumn Arctic sea ice (Barents–Kara)
 
+**Shipped 2026-09-08**, after M23, so it is the thirteenth driver on the
+map. The record of what was built is in `docs/PLAN.md` §10 under M24.
+Departures from the text below, each with its reason: the marker is at
+78°N 58°E in the Kara Sea, not 76°N 45°E, because the centred driver
+label ran into the Norway label there; the label is "Barents–Kara ice",
+two words shorter, for the same reason; the neutral phase's id is
+`neutral` and the phases are listed high, neutral, low so the driver
+reads like every other; the new Siberian node is "Central Siberia and
+Mongolia", taking in the Mongolia candidate M27 deferred; the high-ice
+phase draws nothing, as the list below implies, and the card says why.
+The story is the real 2012–13, one driver with the chain on, and its
+March step sits in February because the map's arrows stop there.
+
 A **contested** driver, added because showing disputed science is the
 point of the tool. Low autumn sea ice in the Barents and Kara seas has been
 linked to cold Siberian winters and a weaker polar vortex; other studies

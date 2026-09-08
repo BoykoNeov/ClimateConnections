@@ -710,6 +710,84 @@
       ]
     },
     {
+      "id": "barents_kara_ice",
+      "name": "Barents–Kara autumn sea ice",
+      "label": "Barents–Kara ice",
+      "area": [
+        [
+          20,
+          81
+        ],
+        [
+          100,
+          81
+        ],
+        [
+          100,
+          68
+        ],
+        [
+          20,
+          68
+        ]
+      ],
+      "lat": 78,
+      "lon": 58,
+      "region": "The Barents and Kara seas, the shallow Arctic shelf north of Norway and western Siberia",
+      "timescale": "Read each October–November; the retreat is a trend of decades with big swings from year to year",
+      "summary": "The Barents and Kara seas, north of Norway and western Siberia, are the corner of the Arctic where autumn ice has retreated most since the 1990s, and the corner most often blamed for cold winters on the continents. This driver is on the map because the science is disputed, and showing a disputed link honestly is what the map is for. The claim: when the autumn ice is low, the open water heats and moistens the air above it, a ridge of high pressure builds over the Urals and the Siberian coast, the Siberian high strengthens, and Arctic air spills south into central Siberia, western Russia and East Asia. By a second, slower path the warm Arctic sends more wave energy up into the stratosphere, the winter polar vortex weakens, and the disturbance leaks back down over the following weeks as a negative North Atlantic Oscillation. The counter-claim: cold winters and low ice happen together because the same weather pattern causes both, so the statistics overstate the cause; the record is about forty winters long and the relationship comes and goes within it; when large model ensembles remove the ice the continents cool only slightly or not at all; and the \"wavier jet stream\" evidence has been challenged as an artefact of method. Sixteen models agree on one thing, a weak push toward the negative NAO worth about a tenth of the swing in any single winter. Every arrow from this marker is contested, and its \"How sure are we?\" sections are the longest on the map. Only the low-ice phase draws arrows: the argument is about ice loss, high-ice autumns are nearly all in the years before the argument began, and nobody claims high ice as a forecast. Nothing on the map pushes the ice: its retreat is driven by the warming climate and by warm Atlantic water, and the long-term trend is not a driver this map draws. Claims that the same ice loss cools the eastern United States go through the Chukchi Sea on the Pacific side and are not drawn. Low ice here and wide October snow across Siberia tend to come together, so this driver and the October snow driver are largely one signal seen twice; the map draws both, but drawing both is not evidence that they add up.\n",
+      "sources": [
+        "cohen_2014",
+        "vihma_2014",
+        "overland_2011",
+        "overland_2015",
+        "cohen_2020",
+        "overland_2021",
+        "screen_2017",
+        "blackport_screen_2021",
+        "kolstad_screen_2019",
+        "smith_2022",
+        "francis_vavrus_2012",
+        "barnes_2013",
+        "blackport_screen_2020",
+        "liu_2012_snowfall",
+        "tang_2013",
+        "kug_2015",
+        "cohen_2018_us",
+        "wegmann_2015",
+        "gastineau_2017",
+        "santolaria_otin_2020",
+        "wegmann_2020",
+        "nsidc_2012_minimum"
+      ],
+      "kind": "driver",
+      "onset_hint": "The ice is read in October and November; start in October and switch the chain on to see the pushed NAO's own winter map, every arrow of it dotted.",
+      "default_start_month": 10,
+      "phases": [
+        {
+          "id": "high",
+          "label": "High ice",
+          "color": "#0369a1",
+          "summary": "The Barents and Kara seas freeze early and wide, as they did in most autumns before 2005. The map draws no arrows for this phase: the studies are about what happens when the ice is missing, and the mirror image, a milder Siberia after a well- iced autumn, is implied by their statistics but has never been offered as a forecast.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Near normal",
+          "color": "#999999",
+          "summary": "The autumn ice is close to the recent average and none of the tendencies on this map are drawn. The average itself has fallen a long way since the 1980s, which is the trend this map does not draw.\n",
+          "value": 0
+        },
+        {
+          "id": "low",
+          "label": "Low ice",
+          "color": "#a21caf",
+          "summary": "Open water stays late into the autumn where ice used to be. The claim drawn here: a colder winter in central Siberia, western Russia and East Asia, and a push toward the negative North Atlantic Oscillation, all contested. The autumn of 2012, after the record-low September, is the story.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -3181,6 +3259,47 @@
         "plus": "Snow tends to be deeper than usual",
         "zero": "Near normal",
         "minus": "Snow tends to be shallower than usual"
+      },
+      "global": false
+    },
+    {
+      "id": "siberia_winter",
+      "name": "Central Siberia and Mongolia winter temperature",
+      "label": "Central Siberia",
+      "area": [
+        [
+          70,
+          70
+        ],
+        [
+          120,
+          70
+        ],
+        [
+          120,
+          45
+        ],
+        [
+          70,
+          45
+        ]
+      ],
+      "lat": 60,
+      "lon": 95,
+      "region": "Central Siberia from the Ob to Lake Baikal, and Mongolia",
+      "timescale": "December–February",
+      "summary": "The coldest inhabited land on Earth, where the Siberian high, a dome of dense cold air, sits from November to March. In some winters the dome is stronger and spreads further than usual, and the cold reaches from the Yenisei to Mongolia's herds and on into China. Since the 2000s a run of such winters has coincided with low autumn ice in the Barents and Kara seas to the north-west, and whether the one causes the other is the argument this marker carries. December 2012 is the example: more than six degrees below normal from central Siberia to north-eastern China for weeks.\n",
+      "sources": [
+        "mori_2014",
+        "zhang_2018",
+        "jma_2012_cold_wave"
+      ],
+      "kind": "outcome",
+      "axis": "warm_cool",
+      "labels": {
+        "plus": "Winter tends to be milder than usual",
+        "zero": "Near normal",
+        "minus": "Winter tends to be colder than usual, with deeper and longer cold spells"
       },
       "global": false
     }
@@ -8236,6 +8355,144 @@
         "shapiro_1989",
         "camargo_sobel_2010"
       ]
+    },
+    {
+      "id": "low_ice_siberia_cold",
+      "from": "barents_kara_ice",
+      "when": "low",
+      "to": "siberia_winter",
+      "effect": -1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "Where the autumn ice is missing, the open sea heats and moistens the air above it. The warmed air builds a ridge of high pressure over the Urals and the Siberian coast, the ridge steers the storms that would otherwise cross the Barents Sea away, and on its eastern side the Siberian high grows stronger and spreads. Arctic air then drains south across central Siberia: a warm Arctic and a cold continent in the same month. A second path runs through the stratosphere: the ridge sends more wave energy upward, the polar vortex weakens, and the cold deepens over Siberia in late winter.\n",
+      "caveat": "The most argued arrow on the map. The claim rests on some forty winters, in which low ice and cold Siberia did tend to come together; one large model experiment found the odds of a severe Siberian winter more than doubled by the ice loss, and another traced a stratospheric path. But cold Siberian winters and open Barents water can be two results of the same weather pattern, and when six models were run with and without the observed ice loss the continent did not cool; a twenty-five-winter cooling trend across Eurasia was judged unlikely to be the ice's doing; the ridge over the Urals may cause the low ice rather than follow from it; and a warm Gulf Stream can produce both at once. Dotted for all of that. Read the Siberian card either way: if the link is real it is small in any one winter and the rest is chance.\n",
+      "evidence_note": "Reduced Barents–Kara ice in a general circulation model produces a high over the polar ocean and easterly flow across the continents, a winter cooling reaching −1.5°C with cold extremes three times more likely (Petoukhov and Semenov 2010); low autumn ice is followed by cold over the Far East in early winter and from Europe to the Far East in late winter, through a stronger Siberian high (Honda, Inoue and Yamane 2009); in light-ice years cyclones stall over the Barents Sea and an anticyclone forms along the Siberian coast, the warm-Arctic cold-Siberian pattern (Inoue, Hori and Takaya 2012); a large ensemble finds the probability of severe winters in central Eurasia more than doubled by the sea-ice decline, through more frequent Eurasian blocking (Mori et al. 2014); a stratospheric pathway links Barents–Kara ice loss to a colder Siberia (Zhang et al. 2018); a cooling trend across Eurasia is linked to the ice (Outten and Esau 2011); reviews of the case for and against (Cohen et al. 2014; Vihma 2014; Overland et al. 2015). Against: twenty-five winters of Eurasian cooling are unlikely to be due to Arctic sea-ice loss (McCusker, Fyfe and Sigmond 2016); neither ice loss nor greenhouse forcing yields colder continents in multiple models, and ice loss reduces cold extremes (Sun, Perlwitz and Hoerling 2016); six coordinated models find the ice changes do not lead to colder Siberian winters (Ogawa et al. 2018); the coincidence of low ice and cold winters is explained by the circulation driving both, with minimal influence from the ice (Blackport et al. 2019), though the modelled cooling may be too weak (Screen and Blackport 2019); a poleward shift of the Gulf Stream front can drive both the ice retreat and the Eurasian cold (Sato, Inoue and Watanabe 2014); Ural blocking in November drives the early-winter response while perturbed ice and snow alone do not (Peings 2019); observed statistics overestimate the causal effect of ice on mid-latitude winters (Blackport and Screen 2021); ice loss alone has played a secondary role relative to natural variability (Overland et al. 2021).\n",
+      "sources": [
+        "petoukhov_semenov_2010",
+        "honda_2009",
+        "inoue_2012",
+        "mori_2014",
+        "zhang_2018",
+        "outten_esau_2011",
+        "cohen_2014",
+        "vihma_2014",
+        "overland_2015",
+        "mccusker_2016",
+        "sun_2016",
+        "ogawa_2018",
+        "blackport_2019",
+        "screen_blackport_2019",
+        "sato_2014",
+        "peings_2019",
+        "blackport_screen_2021",
+        "overland_2021"
+      ]
+    },
+    {
+      "id": "low_ice_negative_nao",
+      "from": "barents_kara_ice",
+      "when": "low",
+      "to": "nao",
+      "effect": -1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "The ridge that low ice builds over the Urals lines up with the planetary-scale waves of early winter and strengthens them, so more wave energy rises into the stratosphere and breaks against the polar vortex. The vortex weakens and warms, sometimes suddenly, and over the following weeks the weakening leaks back down to the surface as a negative North Atlantic Oscillation: a weaker Iceland low, a weaker Azores high, slack westerlies, cold in northern Europe and the eastern United States, mild in Greenland. The path takes time, which is why the studies find the surface signal in late winter.\n",
+      "caveat": "Contested, and dotted. The path through the stratosphere is detectable in the record and reproduced by some models, but it appears in only a minority of resampled records, the lagged correlation between autumn ice and the winter NAO has come and gone over the last century, and a model forced with the observed ice alone does not reproduce the relationship, which can instead be generated by the atmosphere's own variability and by the tropics. Sixteen models agree on a weak push toward the negative NAO, worth about a tenth of the swing in any single winter. A chosen NAO is never pushed, so pick the ice alone with the chain on to see this arrow; the NAO's own winter map then follows, still dotted.\n",
+      "evidence_note": "Barents–Kara sea-ice loss weakens the stratospheric polar vortex in observations and model experiments (Kim et al. 2014); reduced November ice leads to more negative Arctic Oscillation and NAO in early and late winter, with large negative events more than twice as frequent in a high-top model (Nakamura et al. 2015); in a nine- region experiment only Barents–Kara ice loss weakens the vortex and is followed by an NAO-like surface response (Screen 2017); the stratospheric pathway from late-autumn ice to the February NAO is detectable and explains about 26% of its variance but is highly intermittent, appearing in 16% of resampled records (Siew et al. 2020); causal-network analysis finds Barents–Kara ice an important driver of the winter Arctic Oscillation (Kretschmer et al. 2016); models forced by ice loss give a weak negative-NAO response in early winter, often masked by internal variability (Screen et al. 2013; Deser et al. 2010). Against: the observed ice–NAO relationship is reproduced by internal variability and not as a forced response to the ice, with tropical rainfall driving the covariability (Warner, Screen and Scaife 2020); the lagged correlation is non-stationary across centennial reanalyses and large ensembles, which questions its causality (Kolstad and Screen 2019); coupled models capture the delayed ice–vortex–NAO connection but weaker than observed, and its sign varies between ensemble members (Blackport and Screen 2021); sixteen models simulate a robust but weak weakening of the westerlies, an NAO response accounting for around 10% of variations in individual years, and the observed relationship has weakened recently (Smith et al. 2022); models agree in sign but disagree in size (Screen et al. 2018).\n",
+      "sources": [
+        "kim_2014",
+        "nakamura_2015",
+        "screen_2017",
+        "siew_2020",
+        "kretschmer_2016",
+        "screen_2013",
+        "deser_2010",
+        "warner_2020",
+        "kolstad_screen_2019",
+        "blackport_screen_2021",
+        "smith_2022",
+        "screen_2018"
+      ]
+    },
+    {
+      "id": "low_ice_east_asia_cold",
+      "from": "barents_kara_ice",
+      "when": "low",
+      "to": "east_asia_winter",
+      "effect": -1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "The stronger Siberian high that follows low Barents–Kara ice drives the East Asian winter monsoon: cold air pours south-east out of Siberia across Mongolia and northern China to Korea and Japan. A wave train set off by the heating over the open Arctic water arcs east along the Siberian coast and arrives over East Asia in early winter with high pressure behind it.\n",
+      "caveat": "Contested. The East Asian link is the best-attested regionally: two studies from different groups found the early-winter cold over the Far East, and one separated it from a different, Pacific-side ice loss that reaches North America. But the same objections apply as for Siberia: the record is short, the statistics can run the other way, and models mostly do not reproduce a cooling. East Asia's winter also answers to ENSO on this map, at a higher tier; when both are chosen the arrows may argue.\n",
+      "evidence_note": "Significant cold anomalies over the Far East in early winter follow low autumn Arctic ice, reproduced in a model as a stationary wave from the Barents–Kara heating that amplifies the Siberian high (Honda, Inoue and Yamane 2009); warming over the Barents–Kara seas favours cold winters over East Asia while warming over the East Siberian–Chukchi seas favours cold over North America (Kug et al. 2015); the winter Siberian high is stronger after low autumn ice in the eastern Arctic and Siberian marginal seas, with September ice a precursor beyond what tropical seas predict (Wu, Su and Zhang 2011); light-ice years bring an anticyclone along the Siberian coast and cold advection over eastern Siberia (Inoue, Hori and Takaya 2012); early-winter reduced Barents–Kara ice may reinforce existing teleconnections to central Asia and downstream East Asia (Overland et al. 2021); reviews of the East Asian case (Gao et al. 2014; Vihma 2014). Against: multi-model experiments give no cooling of the continents from ice loss (Sun, Perlwitz and Hoerling 2016; Ogawa et al. 2018); the coincidence is explained by the circulation driving both (Blackport et al. 2019); ice loss alone has played a secondary role (Overland et al. 2021).\n",
+      "sources": [
+        "honda_2009",
+        "kug_2015",
+        "wu_2011",
+        "inoue_2012",
+        "overland_2021",
+        "gao_2014",
+        "vihma_2014",
+        "sun_2016",
+        "ogawa_2018",
+        "blackport_2019"
+      ]
+    },
+    {
+      "id": "low_ice_western_russia_cold",
+      "from": "barents_kara_ice",
+      "when": "low",
+      "to": "western_russia_winter",
+      "effect": -1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "The ridge over the Urals that follows low ice blocks the mild Atlantic air that usually crosses European Russia in winter, and on its western flank Arctic air from the Barents and Kara coasts is steered south over the Russian plain. The first model study of the link put the largest cooling here, over Europe and northern Asia, and named the cold winter of 2005–06 as its example.\n",
+      "caveat": "Contested, and read with the Siberian arrow: the same studies for, the same studies against. Western Russia's winter also answers to the North Atlantic Oscillation on this map at the established tier, and the ice pushes the NAO the same way, so with the chain on this region can be cold twice over from one cause. A twenty-five-winter cooling trend across Eurasia, the strongest evidence for this arrow in the 2010s, has since been judged more likely chance than ice.\n",
+      "evidence_note": "Lower Barents–Kara ice concentration in a model brings a continental-scale winter cooling reaching −1.5°C, with cold extremes over large areas including Europe more than three times as likely, in a non-linear response that peaks at intermediate ice loss (Petoukhov and Semenov 2010); zonally elongated cold anomalies from Europe to the Far East in late winter follow low ice, with the negative NAO (Honda, Inoue and Yamane 2009); the odds of severe winters in central Eurasia more than doubled (Mori et al. 2014); a cooling trend over Eurasia is linked to the ice (Outten and Esau 2011); the recent ice reduction results in cold winters in mid- latitude continental regions in a high-top model (Nakamura et al. 2015). Against: the Eurasian cooling of 1990–2015 is unlikely due to ice loss (McCusker, Fyfe and Sigmond 2016); no cooling in multi- model experiments (Sun, Perlwitz and Hoerling 2016; Ogawa et al. 2018); minimal influence of the ice on coincident cold winters (Blackport et al. 2019); the statistics are inflated by the circulation's effect on the ice (Blackport and Screen 2021).\n",
+      "sources": [
+        "petoukhov_semenov_2010",
+        "honda_2009",
+        "mori_2014",
+        "outten_esau_2011",
+        "nakamura_2015",
+        "mccusker_2016",
+        "sun_2016",
+        "ogawa_2018",
+        "blackport_2019",
+        "blackport_screen_2021"
+      ]
     }
   ],
   "sources": [
@@ -9947,6 +10204,281 @@
       "key": "blunden_2011",
       "citation": "Blunden, J., Arndt, D. S., & Baringer, M. O. (Eds.) (2011). State of the Climate in 2010. Bulletin of the American Meteorological Society, 92(6), S1–S236.",
       "url": "https://doi.org/10.1175/1520-0477-92.6.S1"
+    },
+    {
+      "key": "cohen_2014",
+      "citation": "Cohen, J., Screen, J. A., Furtado, J. C., Barlow, M., Whittleston, D., Coumou, D., Francis, J., Dethloff, K., Entekhabi, D., Overland, J., & Jones, J. (2014). Recent Arctic amplification and extreme mid-latitude weather. Nature Geoscience, 7(9), 627–637.",
+      "url": "https://doi.org/10.1038/ngeo2234"
+    },
+    {
+      "key": "mori_2014",
+      "citation": "Mori, M., Watanabe, M., Shiogama, H., Inoue, J., & Kimoto, M. (2014). Robust Arctic sea-ice influence on the frequent Eurasian cold winters in past decades. Nature Geoscience, 7(12), 869–873.",
+      "url": "https://doi.org/10.1038/ngeo2277"
+    },
+    {
+      "key": "kim_2014",
+      "citation": "Kim, B.-M., Son, S.-W., Min, S.-K., Jeong, J.-H., Kim, S.-J., Zhang, X., Shim, T., & Yoon, J.-H. (2014). Weakening of the stratospheric polar vortex by Arctic sea-ice loss. Nature Communications, 5, 4646.",
+      "url": "https://doi.org/10.1038/ncomms5646"
+    },
+    {
+      "key": "screen_blackport_2019",
+      "citation": "Screen, J. A., & Blackport, R. (2019). Is sea-ice-driven Eurasian cooling too weak in models? Nature Climate Change, 9(12), 934–936.",
+      "url": "https://doi.org/10.1038/s41558-019-0635-1"
+    },
+    {
+      "key": "blackport_2019",
+      "citation": "Blackport, R., Screen, J. A., van der Wiel, K., & Bintanja, R. (2019). Minimal influence of reduced Arctic sea ice on coincident cold winters in mid-latitudes. Nature Climate Change, 9(9), 697–704.",
+      "url": "https://doi.org/10.1038/s41558-019-0551-4"
+    },
+    {
+      "key": "petoukhov_semenov_2010",
+      "citation": "Petoukhov, V., & Semenov, V. A. (2010). A link between reduced Barents-Kara sea ice and cold winter extremes over northern continents. Journal of Geophysical Research: Atmospheres, 115, D21111.",
+      "url": "https://doi.org/10.1029/2009JD013568"
+    },
+    {
+      "key": "honda_2009",
+      "citation": "Honda, M., Inoue, J., & Yamane, S. (2009). Influence of low Arctic sea-ice minima on anomalously cold Eurasian winters. Geophysical Research Letters, 36, L08707.",
+      "url": "https://doi.org/10.1029/2008GL037079"
+    },
+    {
+      "key": "inoue_2012",
+      "citation": "Inoue, J., Hori, M. E., & Takaya, K. (2012). The role of Barents Sea ice in the wintertime cyclone track and emergence of a warm-Arctic cold-Siberian anomaly. Journal of Climate, 25(7), 2561–2568.",
+      "url": "https://doi.org/10.1175/JCLI-D-11-00449.1"
+    },
+    {
+      "key": "liu_2012_snowfall",
+      "citation": "Liu, J., Curry, J. A., Wang, H., Song, M., & Horton, R. M. (2012). Impact of declining Arctic sea ice on winter snowfall. Proceedings of the National Academy of Sciences, 109(11), 4074–4079.",
+      "url": "https://doi.org/10.1073/pnas.1114910109"
+    },
+    {
+      "key": "overland_2011",
+      "citation": "Overland, J. E., Wood, K. R., & Wang, M. (2011). Warm Arctic—cold continents: climate impacts of the newly open Arctic Sea. Polar Research, 30, 15787.",
+      "url": "https://doi.org/10.3402/polar.v30i0.15787"
+    },
+    {
+      "key": "francis_vavrus_2012",
+      "citation": "Francis, J. A., & Vavrus, S. J. (2012). Evidence linking Arctic amplification to extreme weather in mid-latitudes. Geophysical Research Letters, 39, L06801.",
+      "url": "https://doi.org/10.1029/2012GL051000"
+    },
+    {
+      "key": "barnes_2013",
+      "citation": "Barnes, E. A. (2013). Revisiting the evidence linking Arctic amplification to extreme weather in midlatitudes. Geophysical Research Letters, 40(17), 4734–4739.",
+      "url": "https://doi.org/10.1002/grl.50880"
+    },
+    {
+      "key": "mccusker_2016",
+      "citation": "McCusker, K. E., Fyfe, J. C., & Sigmond, M. (2016). Twenty-five winters of unexpected Eurasian cooling unlikely due to Arctic sea-ice loss. Nature Geoscience, 9(11), 838–842.",
+      "url": "https://doi.org/10.1038/ngeo2820"
+    },
+    {
+      "key": "sun_2016",
+      "citation": "Sun, L., Perlwitz, J., & Hoerling, M. (2016). What caused the recent \"Warm Arctic, Cold Continents\" trend pattern in winter temperatures? Geophysical Research Letters, 43(10), 5345–5352.",
+      "url": "https://doi.org/10.1002/2016GL069024"
+    },
+    {
+      "key": "kretschmer_2016",
+      "citation": "Kretschmer, M., Coumou, D., Donges, J. F., & Runge, J. (2016). Using causal effect networks to analyze different Arctic drivers of midlatitude winter circulation. Journal of Climate, 29(11), 4069–4081.",
+      "url": "https://doi.org/10.1175/JCLI-D-15-0654.1"
+    },
+    {
+      "key": "cohen_2020",
+      "citation": "Cohen, J., Zhang, X., Francis, J., Jung, T., Kwok, R., Overland, J., Ballinger, T. J., Bhatt, U. S., Chen, H. W., Coumou, D., Feldstein, S., Gu, H., Handorf, D., Henderson, G., Ionita, M., Kretschmer, M., Laliberte, F., Lee, S., Linderholm, H. W., Maslowski, W., Peings, Y., Pfeiffer, K., Rigor, I., Semmler, T., Stroeve, J., Taylor, P. C., Vavrus, S., Vihma, T., Wang, S., Wendisch, M., Wu, Y., & Yoon, J. (2020). Divergent consensuses on Arctic amplification influence on midlatitude severe winter weather. Nature Climate Change, 10(1), 20–29.",
+      "url": "https://doi.org/10.1038/s41558-019-0662-y"
+    },
+    {
+      "key": "screen_2018",
+      "citation": "Screen, J. A., Deser, C., Smith, D. M., Zhang, X., Blackport, R., Kushner, P. J., Oudar, T., McCusker, K. E., & Sun, L. (2018). Consistency and discrepancy in the atmospheric response to Arctic sea-ice loss across climate models. Nature Geoscience, 11(3), 155–163.",
+      "url": "https://doi.org/10.1038/s41561-018-0059-y"
+    },
+    {
+      "key": "smith_2022",
+      "citation": "Smith, D. M., Eade, R., Andrews, M. B., Ayres, H., Clark, A., Chripko, S., Deser, C., Dunstone, N. J., García-Serrano, J., Gastineau, G., Graff, L. S., Hardiman, S. C., He, B., Hermanson, L., Jung, T., Knight, J., Levine, X., Magnusdottir, G., Manzini, E., Matei, D., Mori, M., Msadek, R., Ortega, P., Peings, Y., Scaife, A. A., Screen, J. A., Seabrook, M., Semmler, T., Sigmond, M., Streffing, J., Sun, L., & Walsh, A. (2022). Robust but weak winter atmospheric circulation response to future Arctic sea ice loss. Nature Communications, 13, 727.",
+      "url": "https://doi.org/10.1038/s41467-022-28283-y"
+    },
+    {
+      "key": "nakamura_2015",
+      "citation": "Nakamura, T., Yamazaki, K., Iwamoto, K., Honda, M., Miyoshi, Y., Ogawa, Y., & Ukita, J. (2015). A negative phase shift of the winter AO/NAO due to the recent Arctic sea-ice reduction in late autumn. Journal of Geophysical Research: Atmospheres, 120(8), 3209–3227.",
+      "url": "https://doi.org/10.1002/2014JD022848"
+    },
+    {
+      "key": "kug_2015",
+      "citation": "Kug, J.-S., Jeong, J.-H., Jang, Y.-S., Kim, B.-M., Folland, C. K., Min, S.-K., & Son, S.-W. (2015). Two distinct influences of Arctic warming on cold winters over North America and East Asia. Nature Geoscience, 8(10), 759–762.",
+      "url": "https://doi.org/10.1038/ngeo2517"
+    },
+    {
+      "key": "tang_2013",
+      "citation": "Tang, Q., Zhang, X., Yang, X., & Francis, J. A. (2013). Cold winter extremes in northern continents linked to Arctic sea ice loss. Environmental Research Letters, 8(1), 014036.",
+      "url": "https://doi.org/10.1088/1748-9326/8/1/014036"
+    },
+    {
+      "key": "outten_esau_2011",
+      "citation": "Outten, S. D., & Esau, I. (2011). A link between Arctic sea ice and recent cooling trends over Eurasia. Climatic Change, 110(3–4), 1069–1075.",
+      "url": "https://doi.org/10.1007/s10584-011-0334-z"
+    },
+    {
+      "key": "overland_2015",
+      "citation": "Overland, J., Francis, J. A., Hall, R., Hanna, E., Kim, S.-J., & Vihma, T. (2015). The melting Arctic and midlatitude weather patterns: Are they connected? Journal of Climate, 28(20), 7917–7932.",
+      "url": "https://doi.org/10.1175/JCLI-D-14-00822.1"
+    },
+    {
+      "key": "warner_2020",
+      "citation": "Warner, J. L., Screen, J. A., & Scaife, A. A. (2020). Links between Barents-Kara sea ice and the extratropical atmospheric circulation explained by internal variability and tropical forcing. Geophysical Research Letters, 47(1), e2019GL085679.",
+      "url": "https://doi.org/10.1029/2019GL085679"
+    },
+    {
+      "key": "siew_2020",
+      "citation": "Siew, P. Y. F., Li, C., Sobolowski, S. P., & King, M. P. (2020). Intermittency of Arctic–mid-latitude teleconnections: stratospheric pathway between autumn sea ice and the winter North Atlantic Oscillation. Weather and Climate Dynamics, 1(1), 261–275.",
+      "url": "https://doi.org/10.5194/wcd-1-261-2020"
+    },
+    {
+      "key": "parkinson_comiso_2013",
+      "citation": "Parkinson, C. L., & Comiso, J. C. (2013). On the 2012 record low Arctic sea ice cover: Combined impact of preconditioning and an August storm. Geophysical Research Letters, 40(7), 1356–1361.",
+      "url": "https://doi.org/10.1002/grl.50349"
+    },
+    {
+      "key": "blunden_2013",
+      "citation": "Blunden, J., & Arndt, D. S. (Eds.) (2013). State of the Climate in 2012. Bulletin of the American Meteorological Society, 94(8), S1–S258.",
+      "url": "https://doi.org/10.1175/2013BAMSStateoftheClimate.1"
+    },
+    {
+      "key": "blunden_2014",
+      "citation": "Blunden, J., & Arndt, D. S. (Eds.) (2014). State of the Climate in 2013. Bulletin of the American Meteorological Society, 95(7), S1–S279.",
+      "url": "https://doi.org/10.1175/2014BAMSStateoftheClimate.1"
+    },
+    {
+      "key": "blunden_2015",
+      "citation": "Blunden, J., & Arndt, D. S. (Eds.) (2015). State of the Climate in 2014. Bulletin of the American Meteorological Society, 96(7), S1–S267.",
+      "url": "https://doi.org/10.1175/2015BAMSStateoftheClimate.1"
+    },
+    {
+      "key": "coy_pawson_2015",
+      "citation": "Coy, L., & Pawson, S. (2015). The major stratospheric sudden warming of January 2013: Analyses and forecasts in the GEOS-5 data assimilation system. Monthly Weather Review, 143(2), 491–510.",
+      "url": "https://doi.org/10.1175/MWR-D-14-00023.1"
+    },
+    {
+      "key": "blackport_screen_2020",
+      "citation": "Blackport, R., & Screen, J. A. (2020). Insignificant effect of Arctic amplification on the amplitude of midlatitude atmospheric waves. Science Advances, 6(8), eaay2880.",
+      "url": "https://doi.org/10.1126/sciadv.aay2880"
+    },
+    {
+      "key": "screen_2017",
+      "citation": "Screen, J. A. (2017). Simulated atmospheric response to regional and pan-Arctic sea ice loss. Journal of Climate, 30(11), 3945–3962.",
+      "url": "https://doi.org/10.1175/JCLI-D-16-0197.1"
+    },
+    {
+      "key": "blackport_screen_2021",
+      "citation": "Blackport, R., & Screen, J. A. (2021). Observed statistical connections overestimate the causal effects of Arctic sea ice changes on midlatitude winter climate. Journal of Climate, 34(8), 3021–3038.",
+      "url": "https://doi.org/10.1175/JCLI-D-20-0293.1"
+    },
+    {
+      "key": "deser_2010",
+      "citation": "Deser, C., Tomas, R., Alexander, M., & Lawrence, D. (2010). The seasonal atmospheric response to projected Arctic sea ice loss in the late twenty-first century. Journal of Climate, 23(2), 333–351.",
+      "url": "https://doi.org/10.1175/2009JCLI3053.1"
+    },
+    {
+      "key": "cohen_2018_us",
+      "citation": "Cohen, J., Pfeiffer, K., & Francis, J. A. (2018). Warm Arctic episodes linked with increased frequency of extreme winter weather in the United States. Nature Communications, 9, 869.",
+      "url": "https://doi.org/10.1038/s41467-018-02992-9"
+    },
+    {
+      "key": "gastineau_2017",
+      "citation": "Gastineau, G., García-Serrano, J., & Frankignoul, C. (2017). The influence of autumnal Eurasian snow cover on climate and its link with Arctic sea ice cover. Journal of Climate, 30(19), 7599–7619.",
+      "url": "https://doi.org/10.1175/JCLI-D-16-0623.1"
+    },
+    {
+      "key": "wegmann_2015",
+      "citation": "Wegmann, M., Orsolini, Y., Vázquez, M., Gimeno, L., Nieto, R., Bulygina, O., Jaiser, R., Handorf, D., Rinke, A., Dethloff, K., Sterin, A., & Brönnimann, S. (2015). Arctic moisture source for Eurasian snow cover variations in autumn. Environmental Research Letters, 10(5), 054015.",
+      "url": "https://doi.org/10.1088/1748-9326/10/5/054015"
+    },
+    {
+      "key": "peings_2019",
+      "citation": "Peings, Y. (2019). Ural blocking as a driver of early-winter stratospheric warmings. Geophysical Research Letters, 46(10), 5460–5468.",
+      "url": "https://doi.org/10.1029/2019GL082097"
+    },
+    {
+      "key": "zhang_2018",
+      "citation": "Zhang, P., Wu, Y., Simpson, I. R., Smith, K. L., Zhang, X., De, B., & Callaghan, P. (2018). A stratospheric pathway linking a colder Siberia to Barents-Kara Sea sea ice loss. Science Advances, 4(7), eaat6025.",
+      "url": "https://doi.org/10.1126/sciadv.aat6025"
+    },
+    {
+      "key": "vihma_2014",
+      "citation": "Vihma, T. (2014). Effects of Arctic sea ice decline on weather and climate: A review. Surveys in Geophysics, 35(5), 1175–1214.",
+      "url": "https://doi.org/10.1007/s10712-014-9284-0"
+    },
+    {
+      "key": "gao_2014",
+      "citation": "Gao, Y., Sun, J., Li, F., He, S., Sandven, S., Yan, Q., Zhang, Z., Lohmann, K., Keenlyside, N., Furevik, T., & Suo, L. (2015). Arctic sea ice and Eurasian climate: A review. Advances in Atmospheric Sciences, 32(1), 92–114.",
+      "url": "https://doi.org/10.1007/s00376-014-0009-6"
+    },
+    {
+      "key": "wu_2011",
+      "citation": "Wu, B., Su, J., & Zhang, R. (2011). Effects of autumn-winter Arctic sea ice on winter Siberian High. Chinese Science Bulletin, 56(30), 3220–3228.",
+      "url": "https://doi.org/10.1007/s11434-011-4696-4"
+    },
+    {
+      "key": "sato_2014",
+      "citation": "Sato, K., Inoue, J., & Watanabe, M. (2014). Influence of the Gulf Stream on the Barents Sea ice retreat and Eurasian coldness during early winter. Environmental Research Letters, 9(8), 084009.",
+      "url": "https://doi.org/10.1088/1748-9326/9/8/084009"
+    },
+    {
+      "key": "overland_2021",
+      "citation": "Overland, J. E., Ballinger, T. J., Cohen, J., Francis, J. A., Hanna, E., Jaiser, R., Kim, B.-M., Kim, S.-J., Ukita, J., Vihma, T., Wang, M., & Zhang, X. (2021). How do intermittency and simultaneous processes obfuscate the Arctic influence on midlatitude winter extreme weather events? Environmental Research Letters, 16(4), 043002.",
+      "url": "https://doi.org/10.1088/1748-9326/abdb5d"
+    },
+    {
+      "key": "wegmann_2020",
+      "citation": "Wegmann, M., Rohrer, M., Santolaria-Otín, M., & Lohmann, G. (2020). Eurasian autumn snow link to winter North Atlantic Oscillation is strongest for Arctic warming periods. Earth System Dynamics, 11(2), 509–524.",
+      "url": "https://doi.org/10.5194/esd-11-509-2020"
+    },
+    {
+      "key": "santolaria_otin_2020",
+      "citation": "Santolaria-Otín, M., García-Serrano, J., Ménégoz, M., & Bech, J. (2020). On the observed connection between Arctic sea ice and Eurasian snow in relation to the winter North Atlantic Oscillation. Environmental Research Letters, 15(12), 124010.",
+      "url": "https://doi.org/10.1088/1748-9326/abad57"
+    },
+    {
+      "key": "screen_2013",
+      "citation": "Screen, J. A., Simmonds, I., Deser, C., & Tomas, R. (2013). The atmospheric response to three decades of observed Arctic sea ice loss. Journal of Climate, 26(4), 1230–1248.",
+      "url": "https://doi.org/10.1175/JCLI-D-12-00063.1"
+    },
+    {
+      "key": "kolstad_screen_2019",
+      "citation": "Kolstad, E. W., & Screen, J. A. (2019). Nonstationary relationship between autumn Arctic sea ice and the winter North Atlantic Oscillation. Geophysical Research Letters, 46(13), 7583–7591.",
+      "url": "https://doi.org/10.1029/2019GL083059"
+    },
+    {
+      "key": "ogawa_2018",
+      "citation": "Ogawa, F., Keenlyside, N., Gao, Y., Koenigk, T., Yang, S., Suo, L., Wang, T., Gastineau, G., Nakamura, T., Cheung, H. N., Omrani, N.-E., Ukita, J., & Semenov, V. (2018). Evaluating impacts of recent Arctic sea ice loss on the Northern Hemisphere winter climate change. Geophysical Research Letters, 45(7), 3255–3263.",
+      "url": "https://doi.org/10.1002/2017GL076502"
+    },
+    {
+      "key": "nsidc_2012_minimum",
+      "citation": "National Snow and Ice Data Center (2012). Arctic sea ice extent settles at record seasonal minimum. Arctic Sea Ice News and Analysis, 19 September 2012.",
+      "url": "https://nsidc.org/sea-ice-today/analyses/arctic-sea-ice-extent-settles-record-seasonal-minimum"
+    },
+    {
+      "key": "nsidc_2012_november",
+      "citation": "National Snow and Ice Data Center (2012). Arctic rapidly gaining winter ice. Arctic Sea Ice News and Analysis, 5 November 2012.",
+      "url": "https://nsidc.org/sea-ice-today/analyses/arctic-rapidly-gaining-winter-ice"
+    },
+    {
+      "key": "jma_2012_cold_wave",
+      "citation": "Tokyo Climate Center, Japan Meteorological Agency (2012). Cold wave over the Eurasian continent in December 2012. Press release, 28 December 2012.",
+      "url": "https://www.data.jma.go.jp/tcc/tcc/news/press_20121228.pdf"
+    },
+    {
+      "key": "nasa_eo_china_2013",
+      "citation": "NASA Earth Observatory (2013). Unusual cold in China and northeast Asia. Image of the day, 24 January 2013.",
+      "url": "https://science.nasa.gov/earth/earth-observatory/unusual-cold-in-china-and-northeast-asia-80235/"
+    },
+    {
+      "key": "hadcet",
+      "citation": "Met Office Hadley Centre. Central England Temperature (HadCET): monthly mean temperature series, 1659 to date.",
+      "url": "https://www.metoffice.gov.uk/hadobs/hadcet/"
+    },
+    {
+      "key": "rutgers_snow_lab",
+      "citation": "Rutgers University Global Snow Lab (Robinson, D. A.). Northern Hemisphere snow cover extent: monthly area by region from the NOAA snow cover climate data record, 1967 to date.",
+      "url": "https://climate.rutgers.edu/snowcover/"
     }
   ],
   "stories": [
@@ -11154,6 +11686,80 @@
             "osborn_2011",
             "scaife_2014",
             "andrews_2019"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "low_ice_2012_13",
+      "title": "2012–13: record-low ice, then a cold Eurasian winter",
+      "intro": "In September 2012 the Arctic's summer ice shrank to the smallest extent ever measured, and the winter that followed brought weeks of deep cold to Siberia, Kazakhstan, Russia and China, and Britain's coldest March in more than fifty years. This story follows that year from the open water of October to the next October, and asks the question the science is still arguing over: did the missing ice cause the cold, or did the two merely happen together? The map draws every arrow from the ice dotted, because every one is contested. Switch the chain on to see the pushed North Atlantic Oscillation carry the argument on into Europe, and read the last step before deciding.\n",
+      "driver": "barents_kara_ice",
+      "phase": "low",
+      "start_month": 10,
+      "start_year": 2012,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "barents_kara_ice",
+          "text": "October 2012. On 16 September the Arctic's ice had shrunk to 3.41 million square kilometres, 760,000 below the previous record of 2007 and about half the average of the 1980s and 1990s, after decades of thinning left the pack vulnerable to a summer storm in August. By early November large areas of the Barents and Kara seas were still open water, the Kara Sea was freezing more slowly than anywhere else in the Arctic, and the air over the open water in October ran three to four degrees warmer than usual. Snow, meanwhile, lay wider across Eurasia than in most Octobers: open Barents water feeds Siberian snow, which is why this driver and the October snow driver are best read as one signal. The map's arrows wait for December.\n",
+          "sources": [
+            "nsidc_2012_minimum",
+            "parkinson_comiso_2013",
+            "nsidc_2012_november",
+            "blunden_2013",
+            "rutgers_snow_lab",
+            "wegmann_2015"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "siberia_winter",
+          "text": "December 2012. From the end of November the cold air poured out: more than six degrees below normal from central Siberia to north-eastern China for weeks, below −40°C at Astana in the middle of the month, below −25°C in Moscow on Christmas Eve, as the Siberian high swelled and spread toward north-western Russia. The map draws central Siberia, western Russia and East Asia cold along three dotted arrows, and with the chain on it pushes the North Atlantic Oscillation negative too. This is the winter as the ice studies describe it: a warm Arctic, a cold continent, a stronger Siberian high. Hold that thought; the argument is about the arrow, not the weather.\n",
+          "sources": [
+            "jma_2012_cold_wave",
+            "blunden_2013",
+            "honda_2009",
+            "mori_2014",
+            "petoukhov_semenov_2010"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "east_asia_winter",
+          "text": "January 2013. Between late November and early January China recorded its lowest temperatures in twenty-eight years; the cold froze part of the Yellow River, trapped a thousand ships in Laizhou Bay and killed some 180,000 cattle. On 6 January the stratospheric polar vortex split in two in a major sudden warming, the very event the second path from the ice is meant to produce, and the surface pattern that followed leaned negative for weeks. Yet the analysis of that warming traced most of the wave energy that broke the vortex to the Pacific side of the hemisphere, not to the Barents Sea. The same event fits both stories, which is the trouble with one winter.\n",
+          "sources": [
+            "nasa_eo_china_2013",
+            "coy_pawson_2015",
+            "kim_2014",
+            "zhang_2018",
+            "blunden_2014"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "nao",
+          "text": "February 2013, the last month in which the map draws the ice's arrows; from March they wait for the next winter. The real winter did not stop. With the Atlantic pressure see-saw stuck in its negative phase, easterly winds off a cold continent gave Britain its coldest March since 1962, with snow across England and Wales in the third week, and the cold reached deep into Germany and Poland. If the ice did this, it did it through the stratosphere and a late-winter NAO, the path the studies say takes the longest; the map's season is a simplification of that, and the caveat on the NAO arrow says how thin the evidence for the path is.\n",
+          "sources": [
+            "blunden_2014",
+            "hadcet",
+            "siew_2020",
+            "nakamura_2015",
+            "kolstad_screen_2019"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "barents_kara_ice",
+          "text": "October 2013, and the year shown ends with more ice: the summer minimum of 2013 was 5.10 million square kilometres, half as much again as 2012. The winter that followed was one of the mildest on record across Europe and Russia, while the eastern United States froze under what the newspapers called the polar vortex; the ice story had predicted neither. That is the argument in one sentence. On one side, a hundred-member model experiment in which the ice loss more than doubled the odds of a severe Siberian winter; on the other, ensembles in which removing the ice does nothing, a Eurasian cooling trend judged more likely chance than ice, and the finding that cold winters and low ice coincide because the same weather causes both. Sixteen models agree on a push toward the negative NAO worth about a tenth of a winter. The winter of 2012–13 is one winter, and the argument is about whether it counts.\n",
+          "sources": [
+            "blunden_2014",
+            "blunden_2015",
+            "mori_2014",
+            "blackport_2019",
+            "mccusker_2016",
+            "smith_2022",
+            "cohen_2020"
           ]
         }
       ]

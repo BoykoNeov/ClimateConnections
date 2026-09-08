@@ -19,8 +19,10 @@ seventh, since M20 the Indian Ocean Basin Mode as an eighth, since M21
 the Atlantic Meridional Mode as a ninth, since M22 the Pacific
 Meridional Mode as a tenth, since M26 a large tropical volcanic
 eruption as an eleventh, the one driver that is an event rather than a
-swing, and since M23 the Quasi-Biennial Oscillation as a twelfth, a
-band of wind in the stratosphere with no region of its own) on a
+swing, since M23 the Quasi-Biennial Oscillation as a twelfth, a
+band of wind in the stratosphere with no region of its own, and since
+M24 the autumn sea ice of the Barents and Kara seas as a thirteenth,
+the first driver whose every link is contested) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -67,9 +69,11 @@ one.
   eleventh (M26, taken before M23–M25 as the plan's order suggests) on
   2026-09-08, the third batch of outcome regions (M27: Central Asia,
   the US Midwest, northeastern Canada, India's pre-monsoon heat, Tibetan
-  snow; data only, no driver) on 2026-09-08, and the Quasi-Biennial
+  snow; data only, no driver) on 2026-09-08, the Quasi-Biennial
   Oscillation as a twelfth driver (M23, taken after M26 and M27 as the
-  plan's order suggests) on 2026-09-08. A new driver
+  plan's order suggests) on 2026-09-08, and the Barents–Kara autumn sea
+  ice as a thirteenth (M24, the first of the two contested Arctic
+  precursors) on 2026-09-08. A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
   everything from the data. Do not start another version 2 or version 3

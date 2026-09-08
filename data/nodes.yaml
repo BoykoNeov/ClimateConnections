@@ -708,6 +708,83 @@ nodes:
           old hurricane rule easterly seasons were quieter; the rule has
           not worked since about 1990.
     sources: [reed_1961, naujokat_1986, fu_berlin_qbo, baldwin_2001, anstey_shepherd_2014, anstey_2022, holton_tan_1980, thompson_2002, garfinkel_hartmann_2007, scaife_2014, osprey_2016, newman_2016_qbo, yoo_son_2016, son_2017, camargo_sobel_2010, claud_terray_2007, mukherjee_1985]
+  - id: barents_kara_ice
+    name: Barents–Kara autumn sea ice
+    label: Barents–Kara ice
+    kind: driver
+    lat: 78
+    lon: 58
+    area: [[20, 81], [100, 81], [100, 68], [20, 68]]
+    region: The Barents and Kara seas, the shallow Arctic shelf north of Norway and western Siberia
+    timescale: Read each October–November; the retreat is a trend of decades with big swings from year to year
+    summary: >
+      The Barents and Kara seas, north of Norway and western Siberia, are
+      the corner of the Arctic where autumn ice has retreated most since
+      the 1990s, and the corner most often blamed for cold winters on the
+      continents. This driver is on the map because the science is
+      disputed, and showing a disputed link honestly is what the map is
+      for. The claim: when the autumn ice is low, the open water heats and
+      moistens the air above it, a ridge of high pressure builds over the
+      Urals and the Siberian coast, the Siberian high strengthens, and
+      Arctic air spills south into central Siberia, western Russia and
+      East Asia. By a second, slower path the warm Arctic sends more wave
+      energy up into the stratosphere, the winter polar vortex weakens,
+      and the disturbance leaks back down over the following weeks as a
+      negative North Atlantic Oscillation. The counter-claim: cold winters
+      and low ice happen together because the same weather pattern causes
+      both, so the statistics overstate the cause; the record is about
+      forty winters long and the relationship comes and goes within it;
+      when large model ensembles remove the ice the continents cool only
+      slightly or not at all; and the "wavier jet stream" evidence has
+      been challenged as an artefact of method. Sixteen models agree on
+      one thing, a weak push toward the negative NAO worth about a tenth
+      of the swing in any single winter. Every arrow from this marker is
+      contested, and its "How sure are we?" sections are the longest on
+      the map. Only the low-ice phase draws arrows: the argument is about
+      ice loss, high-ice autumns are nearly all in the years before the
+      argument began, and nobody claims high ice as a forecast. Nothing on
+      the map pushes the ice: its retreat is driven by the warming climate
+      and by warm Atlantic water, and the long-term trend is not a driver
+      this map draws. Claims that the same ice loss cools the eastern
+      United States go through the Chukchi Sea on the Pacific side and are
+      not drawn. Low ice here and wide October snow across Siberia tend to
+      come together, so this driver and the October snow driver are
+      largely one signal seen twice; the map draws both, but drawing both
+      is not evidence that they add up.
+    onset_hint: The ice is read in October and November; start in October and switch the chain on to see the pushed NAO's own winter map, every arrow of it dotted.
+    default_start_month: 10
+    phases:
+      - id: high
+        value: 1
+        label: High ice
+        color: "#0369a1"
+        summary: >
+          The Barents and Kara seas freeze early and wide, as they did in
+          most autumns before 2005. The map draws no arrows for this
+          phase: the studies are about what happens when the ice is
+          missing, and the mirror image, a milder Siberia after a well-
+          iced autumn, is implied by their statistics but has never been
+          offered as a forecast.
+      - id: neutral
+        value: 0
+        label: Near normal
+        color: "#999999"
+        summary: >
+          The autumn ice is close to the recent average and none of the
+          tendencies on this map are drawn. The average itself has fallen
+          a long way since the 1980s, which is the trend this map does not
+          draw.
+      - id: low
+        value: -1
+        label: Low ice
+        color: "#a21caf"
+        summary: >
+          Open water stays late into the autumn where ice used to be. The
+          claim drawn here: a colder winter in central Siberia, western
+          Russia and East Asia, and a push toward the negative North
+          Atlantic Oscillation, all contested. The autumn of 2012, after
+          the record-low September, is the story.
+    sources: [cohen_2014, vihma_2014, overland_2011, overland_2015, cohen_2020, overland_2021, screen_2017, blackport_screen_2021, kolstad_screen_2019, smith_2022, francis_vavrus_2012, barnes_2013, blackport_screen_2020, liu_2012_snowfall, tang_2013, kug_2015, cohen_2018_us, wegmann_2015, gastineau_2017, santolaria_otin_2020, wegmann_2020, nsidc_2012_minimum]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -2054,3 +2131,30 @@ nodes:
       Indian Ocean Dipole tends to add early-winter snowfall; both are
       recent, contested findings from a short satellite record.
     sources: [you_2020, shaman_tziperman_2005]
+
+  # ---------------------------------------------------------------- outcomes added with the Barents–Kara sea ice (M24)
+  - id: siberia_winter
+    name: Central Siberia and Mongolia winter temperature
+    label: Central Siberia
+    kind: outcome
+    lat: 60
+    lon: 95
+    area: [[70, 70], [120, 70], [120, 45], [70, 45]]
+    region: Central Siberia from the Ob to Lake Baikal, and Mongolia
+    timescale: December–February
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual, with deeper and longer cold spells
+    summary: >
+      The coldest inhabited land on Earth, where the Siberian high, a
+      dome of dense cold air, sits from November to March. In some
+      winters the dome is stronger and spreads further than usual, and
+      the cold reaches from the Yenisei to Mongolia's herds and on into
+      China. Since the 2000s a run of such winters has coincided with
+      low autumn ice in the Barents and Kara seas to the north-west,
+      and whether the one causes the other is the argument this marker
+      carries. December 2012 is the example: more than six degrees below
+      normal from central Siberia to north-eastern China for weeks.
+    sources: [mori_2014, zhang_2018, jma_2012_cold_wave]

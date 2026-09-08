@@ -1560,3 +1560,107 @@ stories:
           it point out, does not guarantee forecasting the winter it
           leans on.
         sources: [fu_berlin_qbo, blunden_2011, osborn_2011, scaife_2014, andrews_2019]
+
+  - id: low_ice_2012_13
+    title: "2012–13: record-low ice, then a cold Eurasian winter"
+    intro: >
+      In September 2012 the Arctic's summer ice shrank to the smallest
+      extent ever measured, and the winter that followed brought weeks of
+      deep cold to Siberia, Kazakhstan, Russia and China, and Britain's
+      coldest March in more than fifty years. This story follows that
+      year from the open water of October to the next October, and asks
+      the question the science is still arguing over: did the missing ice
+      cause the cold, or did the two merely happen together? The map
+      draws every arrow from the ice dotted, because every one is
+      contested. Switch the chain on to see the pushed North Atlantic
+      Oscillation carry the argument on into Europe, and read the last
+      step before deciding.
+    driver: barents_kara_ice
+    phase: low
+    start_month: 10
+    start_year: 2012
+    steps:
+      - month: 0
+        focus: barents_kara_ice
+        text: >
+          October 2012. On 16 September the Arctic's ice had shrunk to
+          3.41 million square kilometres, 760,000 below the previous
+          record of 2007 and about half the average of the 1980s and
+          1990s, after decades of thinning left the pack vulnerable to a
+          summer storm in August. By early November large areas of the
+          Barents and Kara seas were still open water, the Kara Sea was
+          freezing more slowly than anywhere else in the Arctic, and the
+          air over the open water in October ran three to four degrees
+          warmer than usual. Snow, meanwhile, lay wider across Eurasia
+          than in most Octobers: open Barents water feeds Siberian snow,
+          which is why this driver and the October snow driver are best
+          read as one signal. The map's arrows wait for December.
+        sources: [nsidc_2012_minimum, parkinson_comiso_2013, nsidc_2012_november, blunden_2013, rutgers_snow_lab, wegmann_2015]
+
+      - month: 2
+        focus: siberia_winter
+        text: >
+          December 2012. From the end of November the cold air poured
+          out: more than six degrees below normal from central Siberia to
+          north-eastern China for weeks, below −40°C at Astana in the
+          middle of the month, below −25°C in Moscow on Christmas Eve, as
+          the Siberian high swelled and spread toward north-western
+          Russia. The map draws central Siberia, western Russia and East
+          Asia cold along three dotted arrows, and with the chain on it
+          pushes the North Atlantic Oscillation negative too. This is the
+          winter as the ice studies describe it: a warm Arctic, a cold
+          continent, a stronger Siberian high. Hold that thought; the
+          argument is about the arrow, not the weather.
+        sources: [jma_2012_cold_wave, blunden_2013, honda_2009, mori_2014, petoukhov_semenov_2010]
+
+      - month: 3
+        focus: east_asia_winter
+        text: >
+          January 2013. Between late November and early January China
+          recorded its lowest temperatures in twenty-eight years; the
+          cold froze part of the Yellow River, trapped a thousand ships
+          in Laizhou Bay and killed some 180,000 cattle. On 6 January the
+          stratospheric polar vortex split in two in a major sudden
+          warming, the very event the second path from the ice is meant
+          to produce, and the surface pattern that followed leaned
+          negative for weeks. Yet the analysis of that warming traced
+          most of the wave energy that broke the vortex to the Pacific
+          side of the hemisphere, not to the Barents Sea. The same event
+          fits both stories, which is the trouble with one winter.
+        sources: [nasa_eo_china_2013, coy_pawson_2015, kim_2014, zhang_2018, blunden_2014]
+
+      - month: 4
+        focus: nao
+        text: >
+          February 2013, the last month in which the map draws the ice's
+          arrows; from March they wait for the next winter. The real
+          winter did not stop. With the Atlantic pressure see-saw stuck
+          in its negative phase, easterly winds off a cold continent gave
+          Britain its coldest March since 1962, with snow across England
+          and Wales in the third week, and the cold reached deep into
+          Germany and Poland. If the ice did this, it did it through the
+          stratosphere and a late-winter NAO, the path the studies say
+          takes the longest; the map's season is a simplification of
+          that, and the caveat on the NAO arrow says how thin the
+          evidence for the path is.
+        sources: [blunden_2014, hadcet, siew_2020, nakamura_2015, kolstad_screen_2019]
+
+      - month: 12
+        focus: barents_kara_ice
+        text: >
+          October 2013, and the year shown ends with more ice: the summer
+          minimum of 2013 was 5.10 million square kilometres, half as
+          much again as 2012. The winter that followed was one of the
+          mildest on record across Europe and Russia, while the eastern
+          United States froze under what the newspapers called the polar
+          vortex; the ice story had predicted neither. That is the
+          argument in one sentence. On one side, a hundred-member model
+          experiment in which the ice loss more than doubled the odds of
+          a severe Siberian winter; on the other, ensembles in which
+          removing the ice does nothing, a Eurasian cooling trend judged
+          more likely chance than ice, and the finding that cold winters
+          and low ice coincide because the same weather causes both.
+          Sixteen models agree on a push toward the negative NAO worth
+          about a tenth of a winter. The winter of 2012–13 is one winter,
+          and the argument is about whether it counts.
+        sources: [blunden_2014, blunden_2015, mori_2014, blackport_2019, mccusker_2016, smith_2022, cohen_2020]
