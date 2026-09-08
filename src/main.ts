@@ -93,7 +93,7 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, chain: true, others: [], compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, chain: true, others: [], compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -350,7 +350,7 @@ async function main(): Promise<void> {
       const c = chosenFor(s, p.timeline, month);
       chosenBySide.set(side, c);
       titles.set(side, scenarioTitle(s, c));
-      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, differs });
+      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, showWindow: controls.showWindow, differs });
       if (compare) setHead(p.head, side, titles.get(side)!, month);
     }
 
@@ -364,7 +364,7 @@ async function main(): Promise<void> {
     } else {
       monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     }
-    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
+    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') + (controls.showWindow ? ` ${WINDOW_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
     if (differs) ctl.compareNote.textContent = differs.size === 0 ? 'The two maps agree this month.' : differs.size === 1 ? 'One marker differs this month (dark ring).' : `${differs.size} markers differ this month (dark rings).`;
 
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -376,7 +376,7 @@ async function main(): Promise<void> {
     // An impact's card (M37) is only reachable with the layer on; if the layer
     // went off while one was selected, the selection is dropped.
     if (node?.kind === 'impact' && !controls.showImpacts) selectedNodeId = null;
-    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts);
+    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts, controls.showWindow);
 
     const s = sideSettings(controls, edited);
     const c = chosenBySide.get(edited)!;
@@ -589,10 +589,13 @@ async function main(): Promise<void> {
   /** The impacts layer (M37) in a printed caption: what a square is and the fixed sentence. */
   const IMPACTS_CAPTION = 'Squares are impacts on people (harvests, disease seasons, fires, rivers, catches) that tend to follow from the weather beside them, drawn one confidence tier lower; how much of this reaches people depends on preparation, prices and policy, and the map shows only the push from the weather. ';
 
+  /** The arrival window (M30) in a printed caption: what a faint arrow with an outlined head means. */
+  const WINDOW_CAPTION = 'A faint arrow with an outlined head is within its arrival window: the effect is applied from the earliest month the studies give and may still be on its way until the latest, after which the arrow is drawn in full. ';
+
   function printCaption(months: Map<Side, MonthState>, chosen: Map<Side, Chosen>): string {
     const parts = shown().map((side) => scenarioSentence(sideSettings(controls, side), chosen.get(side)!, months.get(side)!));
     const body = controls.compare ? `Two scenarios compared. A: ${parts[0]}B: ${parts[1]}` : parts[0];
-    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}${controls.showWindow ? WINDOW_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
   recompute();

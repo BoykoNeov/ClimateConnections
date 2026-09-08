@@ -38,7 +38,9 @@ classic links except the ones listed and links of its own, the fourth
 engine extension, and since M37 impacts on people: a third node kind
 reached from an outcome one hop further and one tier lower, behind an
 "Impacts on people" layer that is off by default, the fifth engine
-extension) on a
+extension, and since M30 an arrival window: every reported link says
+whether the later end of its lag range has passed, reporting only,
+drawn behind a "Show arrival window" toggle that is off by default) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -127,6 +129,18 @@ one.
   never rated established unless its source is a multi-decade study of
   the impact itself. Do not add size, money or lives, impacts of impacts,
   a link out of an impact, or a default that turns the layer on.
+- The arrival window (M30, §4 rule 3) is reporting only: `LinkState.settled`
+  is true once the month is at or past the onset plus the later end of
+  `lag_months`, counted from the same onset as the lag (a chosen driver's
+  own, a pushed driver's, an outcome's first month in the state), on every
+  status, always true when the ends are equal. A link is still applied
+  from the earlier end, and a scenario gives the same timeline as before
+  apart from the field. The map draws an applied unsettled arrow faint
+  with an outlined head only with "Show arrival window" on (off by
+  default); the card's timing line says the window. Do not move the
+  application to the later end or anywhere between, do not draw the window
+  on pending, faded or ghost arrows, and do not turn the toggle on by
+  default.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -176,7 +190,10 @@ one.
   engine extension: the `impact` node kind, impact links from outcomes,
   rule 12, `Scenario.impacts`, ten impacts and thirteen links, the
   "Impacts on people" checkbox, the impact card, the 1997–98 impacts
-  story) on 2026-09-08.
+  story) on 2026-09-08, and the arrival window (M30, the second UI item:
+  `LinkState.settled` in §4 rule 3, the "Show arrival window" toggle
+  under the legend, the faint arrow with an outlined head, the card's
+  three timing lines) on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its

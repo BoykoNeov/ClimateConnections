@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { arrivalMonth, calendarMonth, chosenDrivers, chosenFade, chosenOnset, downgrade, propagate } from './propagate';
 import type { Graph, Link, Scenario } from '../types';
 
+/** An exact link state with any `settled` (M30, reporting only): the
+ *  arrival window is checked in window.test.ts. */
+const ls = (o: object) => ({ settled: expect.any(Boolean), ...o });
+
 function graphWith(links: Partial<Link>[]): Graph {
   return {
     nodes: [
@@ -121,7 +125,7 @@ describe('propagate: driver-to-driver links', () => {
     expect(t.months[2].nodes.d2.value).toBe(1);
     expect(t.months[2].nodes.d2.viaLinkIds).toEqual(['push']);
     expect(t.months[2].nodes.d2.confidence).toBe('established');
-    expect(t.months[2].links.push).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[2].links.push).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
 
   it("does not follow the pushed driver's links at the default depth of 1", () => {
@@ -215,19 +219,19 @@ describe('propagate: driver-to-driver links', () => {
       { ...chain[0], confidence: 'contested' }, chain[1],
       { id: 'direct', to: 'a', effect: 1, confidence: 'established' },
     ]), { ...deep, minConfidence: 'probable' });
-    expect(t.months[3].links.push).toEqual({ status: 'ghost', confidence: 'contested', depth: 1 });
+    expect(t.months[3].links.push).toEqual(ls({ status: 'ghost', confidence: 'contested', depth: 1 }));
     expect(t.months[3].nodes.d2.value).toBe(0);
     expect(t.months[3].nodes.d2.viaLinkIds).toEqual([]);
     expect(t.months[3].links.second).toBeUndefined();
     expect(t.months[3].links.direct.status).toBe('applied');
     // A ghost is reported from its lag on, in season or not.
     const t2 = propagate(graphWith([{ id: 'g', to: 'a', confidence: 'contested', season: [1] }]), { ...base, minConfidence: 'established' });
-    expect(t2.months[0].links.g).toEqual({ status: 'ghost', confidence: 'contested', depth: 1 });
+    expect(t2.months[0].links.g).toEqual(ls({ status: 'ghost', confidence: 'contested', depth: 1 }));
     expect(t2.months[0].nodes.a.pendingLinkIds).toEqual([]);
     // Ghosting goes by effective confidence: an established second-hop link
     // is probable after the downgrade and so is a ghost under "established only".
     const t3 = propagate(graphWith(chain), { ...deep, minConfidence: 'established' });
-    expect(t3.months[3].links.second).toEqual({ status: 'ghost', confidence: 'probable', depth: 2 });
+    expect(t3.months[3].links.second).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 2 }));
     expect(t3.months[3].nodes.c.value).toBe(0);
   });
 
@@ -265,7 +269,7 @@ describe('propagate: two chosen drivers', () => {
     expect(t.months[1].nodes.c.value).toBe(0);
     expect(t.months[1].links.second).toBeUndefined();
     expect(t.months[2].nodes.c.value).toBe(-1);
-    expect(t.months[2].links.second).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[2].links.second).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     expect(t.months[2].nodes.c.confidence).toBe('established');
   });
 
@@ -370,7 +374,7 @@ describe('propagate: second driver with its own start month', () => {
       expect(t.months[i].links.second, `month ${i}`).toBeUndefined();
     }
     expect(t.months[5].nodes.c.value).toBe(-1);
-    expect(t.months[5].links.second).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[5].links.second).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     // In season but before the onset: not pending, simply absent.
     const seasonal = propagate(graphWith([
       { id: 'second', from: 'd2', when: 'up', to: 'c', effect: -1, season: [7, 8, 9, 10] },
@@ -459,7 +463,7 @@ describe('propagate: second driver that begins before the first', () => {
       { id: 'later', from: 'd2', when: 'up', to: 'b', effect: 1, lag_months: [5, 5] }, // available from month 2
     ]), early);
     expect(t.months[0].nodes.c.value).toBe(-1);
-    expect(t.months[0].links.ran).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[0].links.ran).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     expect(t.months[0].nodes.b.value).toBe(0);
     expect(t.months[0].links.later).toBeUndefined();
     expect(t.months[1].links.later).toBeUndefined();
@@ -542,7 +546,7 @@ describe('propagate: phase duration', () => {
     for (const m of t.months.slice(0, 6)) {
       expect(m.nodes.drv.value, `month ${m.index}`).toBe(1);
       expect(m.nodes.a.value, `month ${m.index}`).toBe(1);
-      expect(m.links.l0).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+      expect(m.links.l0).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     }
     for (const m of t.months.slice(6)) {
       expect(m.nodes.drv.value, `month ${m.index}`).toBe(0);
@@ -551,7 +555,7 @@ describe('propagate: phase duration', () => {
       expect(m.nodes.a.pendingLinkIds).toEqual([]);
       expect(m.nodes.a.fadedLinkIds).toEqual(['l0']);
       expect(m.nodes.a.confidence).toBeNull();
-      expect(m.links.l0).toEqual({ status: 'faded', confidence: 'established', depth: 1 });
+      expect(m.links.l0).toEqual(ls({ status: 'faded', confidence: 'established', depth: 1 }));
     }
     expect(chosenDrivers(held)).toEqual([{ driverId: 'drv', phaseId: 'warm', holdMonths: 6 }]);
   });
@@ -723,7 +727,7 @@ describe('propagate: any number of chosen drivers (M33)', () => {
       expect(m.nodes.a.conflicting).toBe(true);
       expect(m.nodes.a.confidence).toBe('contested');
       expect([...m.nodes.a.viaLinkIds].sort()).toEqual(['x', 'y', 'z']);
-      for (const id of ['x', 'y', 'z']) expect(m.links[id]).toEqual({ status: 'applied', confidence: g.links.find((l) => l.id === id)!.confidence, depth: 1 });
+      for (const id of ['x', 'y', 'z']) expect(m.links[id]).toEqual(ls({ status: 'applied', confidence: g.links.find((l) => l.id === id)!.confidence, depth: 1 }));
       expect(m.nodes.drv.value).toBe(1);
       expect(m.nodes.d2.value).toBe(1);
       expect(m.nodes.d3.value).toBe(-1);
@@ -809,7 +813,7 @@ describe('propagate: any number of chosen drivers (M33)', () => {
       for (const id of ['p1', 'p2', 'p3', 'p4b']) expect(m.links[id], `${id} month ${m.index}`).toBeUndefined();
       expect(m.nodes.d4.value).toBe(1);
       expect(m.links.p4?.status).toBe('applied');
-      expect(m.links.own).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+      expect(m.links.own).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
       expect(m.nodes.c.value).toBe(1);
     }
   });
@@ -866,9 +870,9 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
       if (p.links.w) expect(m.links.w).toEqual({ ...p.links.w, confidence: 'probable', weakenedBy: [S] });
       else expect(m.links.w).toBeUndefined();
     }
-    expect(plain.months[2].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(t.months[2].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
-    expect(t.months[5].links.w).toEqual({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(plain.months[2].links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(t.months[2].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] }));
+    expect(t.months[5].links.w).toEqual(ls({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [S] }));
     expect(t.months[1].links.w).toBeUndefined();
   });
 
@@ -876,7 +880,7 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     const g = graphWithMany([weakened()]);
     for (const others of [[], [{ driverId: 'd2', phaseId: 'mid' }], [{ driverId: 'd2', phaseId: 'up' }], [{ driverId: 'd3', phaseId: 'down' }]]) {
       const t = propagate(g, { ...base, others });
-      expect(t.months[0].links.w, JSON.stringify(others)).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+      expect(t.months[0].links.w, JSON.stringify(others)).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
       expect(t.months[0].nodes.a.confidence).toBe('established');
     }
   });
@@ -886,7 +890,7 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     const t = propagate(g, { ...base, maxDepth: 3 });
     for (const m of t.months) {
       expect(m.nodes.d2.value, `month ${m.index}`).toBe(-1);
-      expect(m.links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+      expect(m.links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     }
   });
 
@@ -895,27 +899,27 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     const t = propagate(g, { ...base, others: [{ ...D2_DOWN, startMonth: 9, holdMonths: 4 }] }); // onset 3, fade 7
     for (const m of t.months) {
       const inForce = m.index >= 3 && m.index < 7;
-      expect(m.links.w, `month ${m.index}`).toEqual(inForce ? { status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] } : { status: 'applied', confidence: 'established', depth: 1 });
+      expect(m.links.w, `month ${m.index}`).toEqual(ls(inForce ? { status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] } : { status: 'applied', confidence: 'established', depth: 1 }));
       expect(m.nodes.a.confidence).toBe(inForce ? 'probable' : 'established');
     }
     const early = propagate(g, { ...base, others: [{ ...D2_DOWN, startMonth: 3, startsBefore: true, holdMonths: 5 }] }); // onset -3, fade 2
-    expect(early.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
-    expect(early.months[1].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
-    expect(early.months[2].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(early.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] }));
+    expect(early.months[1].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] }));
+    expect(early.months[2].links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
 
   it('floored at contested, and still reported in force there', () => {
     const g = graphWithMany([weakened({ confidence: 'contested' })]);
     const t = propagate(g, { ...base, others: [D2_DOWN] });
-    expect(t.months[0].links.w).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [S] });
+    expect(t.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [S] }));
     expect(t.months[0].nodes.a.value).toBe(1);
   });
 
   it('ghosted under the confidence filter at the weakened tier: applies nothing, pushes nothing', () => {
     const g = graphWithMany([weakened(), { id: 'wd', to: 'd3', effect: 1, confidence: 'established', weakened_by: [S] }, { id: 'on', from: 'd3', when: 'up', to: 'c', effect: 1 }]);
     const t = propagate(g, { ...base, maxDepth: 3, minConfidence: 'established', others: [D2_DOWN] });
-    expect(t.months[0].links.w).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] });
-    expect(t.months[0].links.wd).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[0].links.w).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] }));
+    expect(t.months[0].links.wd).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] }));
     expect(t.months[0].nodes.a.value).toBe(0);
     expect(t.months[0].nodes.d3.value).toBe(0);
     expect(t.months[0].links.on).toBeUndefined();
@@ -923,7 +927,7 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     expect(plain.months[0].nodes.a.value).toBe(1);
     expect(plain.months[0].nodes.d3.value).toBe(1);
     // (its onward link is a second hop, probable, and so a ghost under this filter anyway: M10)
-    expect(plain.months[0].links.on).toEqual({ status: 'ghost', confidence: 'probable', depth: 2 });
+    expect(plain.months[0].links.on).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 2 }));
   });
 
   it('rule 5 at the node: the weakened tier is the lowest among the applied links; sums and conflicts unchanged', () => {
@@ -933,33 +937,33 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     expect(t.months[0].nodes.a.value).toBe(1);
     expect(t.months[0].nodes.a.conflicting).toBe(true);
     expect(t.months[0].nodes.a.viaLinkIds.sort()).toEqual(['against', 'other', 'w']);
-    expect(t.months[0].links.other).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(t.months[0].links.against).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[0].links.other).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(t.months[0].links.against).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
 
   it('stacks with the per-hop downgrade: a second-hop link loses one tier for the hop and one more for the modulator', () => {
     const g = graphWithMany([{ id: 'push', to: 'd3', effect: 1 }, { id: 'w', from: 'd3', when: 'up', to: 'b', effect: 1, confidence: 'established', weakened_by: [S] }]);
     const t = propagate(g, { ...base, maxDepth: 3, others: [D2_DOWN] });
     expect(t.months[0].nodes.d3.value).toBe(1);
-    expect(t.months[0].links.w).toEqual({ status: 'applied', confidence: 'contested', depth: 2, weakenedBy: [S] });
+    expect(t.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2, weakenedBy: [S] }));
     expect(t.months[0].nodes.b.confidence).toBe('contested');
     const plain = propagate(g, { ...base, maxDepth: 3 });
-    expect(plain.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(plain.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
   });
 
   it('one tier only, however many listed drivers hold their phase, all of them reported in the link’s order', () => {
     const g = graphWithMany([weakened({ weakened_by: [S, S3] })]);
     const both = propagate(g, { ...base, others: [{ driverId: 'd3', phaseId: 'up' }, D2_DOWN] });
-    expect(both.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S, S3] });
+    expect(both.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S, S3] }));
     const one = propagate(g, { ...base, others: [{ driverId: 'd3', phaseId: 'up' }] });
-    expect(one.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S3] });
+    expect(one.months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S3] }));
   });
 
   it('a faded link (M32) is reported as rated, whoever is chosen', () => {
     const g = graphWithMany([weakened()]);
     const t = propagate(g, { ...base, holdMonths: 3, others: [D2_DOWN] });
-    expect(t.months[2].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
-    expect(t.months[3].links.w).toEqual({ status: 'faded', confidence: 'established', depth: 1 });
+    expect(t.months[2].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] }));
+    expect(t.months[3].links.w).toEqual(ls({ status: 'faded', confidence: 'established', depth: 1 }));
   });
 
   it('a modulated link still pushes a driver, whose state and onward links carry the lower tier; onsets unchanged', () => {
@@ -971,8 +975,8 @@ describe('propagate: links that weaken other links (M35, rule 10)', () => {
     expect(t.months[2].nodes.d3.confidence).toBe('probable');
     expect(plain.months[2].nodes.d3.confidence).toBe('established');
     expect(t.months[2].links.on).toBeUndefined();
-    expect(t.months[3].links.on).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
-    expect(plain.months[3].links.on).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(t.months[3].links.on).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
+    expect(plain.months[3].links.on).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(arrivalMonth(t, 'on', 'c')).toBe(arrivalMonth(plain, 'on', 'c'));
   });
 

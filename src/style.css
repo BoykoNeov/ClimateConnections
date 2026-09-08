@@ -156,6 +156,8 @@ html, body { margin: 0; height: 100%; }
 .link.established { stroke-width: 2.6; }
 .link.probable { stroke-width: 2.1; stroke-dasharray: 7 5; }
 .link.contested { stroke-width: 1.6; stroke-dasharray: 1.5 4; opacity: 0.7; }
+/* within its arrival window (M30): applied, but the later end of its lag has not passed; the head is outlined by the marker */
+.link.unsettled { opacity: 0.4; }
 .link.pending { opacity: 0.22; }
 /* the event that fired it has ended (M32): like pending, but grey (the stroke is set by the map) */
 .link.faded { opacity: 0.22; }

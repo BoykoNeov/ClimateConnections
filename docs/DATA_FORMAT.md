@@ -116,7 +116,8 @@ links:
     to: indian_summer_monsoon           # an outcome node id, or another driver's id (M10)
     effect: -1                          # +1 | -1 on the target's axis; for a driver target,
                                         #   the value of the phase to push it into
-    lag_months: [0, 3]                  # [min, max] months after onset, 0–24
+    lag_months: [0, 3]                  # [min, max] months after onset, 0–24; the map applies the
+                                        #   link from min and draws it faint until max (M30)
     season: [6, 7, 8, 9]                # months 1–12 the effect is felt; [] = all year
     confidence: established             # established | probable | contested
     mechanism: >                        # plain-language "why", 1–2 sentences
@@ -397,4 +398,10 @@ driver's phase has been set to end (the "Event lasts" control, or a
 story's `hold_months`, M32), the link is drawn faded (grey, muted) from the
 month the phase ends, and a link whose `lag_months[0]` is at or beyond the
 hold never arrives at all: the card says so, and says that in reality the
-ocean can carry such an effect past the end of the event.
+ocean can carry such an effect past the end of the event. The later end of
+the range is the arrival window (M30): it never changes when the link is
+applied, but with "Show arrival window" on the arrow is drawn faint with an
+outlined head until that month has passed, and the card's timing line says
+"may arrive any time from month 4 to month 8". A link whose two ends are
+equal has no window. Give the range the studies give, not a guess: a wide
+range is honest, and the map shows it as such.

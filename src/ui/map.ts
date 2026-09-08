@@ -56,6 +56,10 @@ export interface RenderOptions {
    *  outcomes and the arrows into them. Off, they are not drawn at all
    *  (the engine reports none either, so the month has no impact links). */
   showImpacts?: boolean;
+  /** the arrival window (M30, rule 3): draw an applied arrow that is not
+   *  yet `settled` faint, with an outlined arrowhead. Off, every arrow is
+   *  drawn as before. */
+  showWindow?: boolean;
 }
 
 /**
@@ -101,6 +105,9 @@ interface ArrowDatum {
   /** region mode (M28): sideways offset in drawing units so links from the
    *  same driver do not lie on top of one another; 0 = the plain path */
   spread: number;
+  /** the arrival window (M30): an applied link not yet settled, drawn
+   *  faint with an outlined head while the window layer is on */
+  unsettled: boolean;
 }
 
 /** Region mode (M28): what the map draws for a place instead of a scenario.
@@ -153,6 +160,12 @@ export class MapView {
         .attr('id', `${idPrefix}arrow-${id}`).attr('viewBox', '0 0 10 10').attr('refX', 9).attr('refY', 5)
         .attr('markerWidth', 5).attr('markerHeight', 5).attr('orient', 'auto-start-reverse')
         .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', color);
+      // The outlined head of an arrow within its arrival window (M30):
+      // white, with the arrow's colour as its edge.
+      defs.append('marker')
+        .attr('id', `${idPrefix}arrow-${id}-open`).attr('viewBox', '0 0 10 10').attr('refX', 9).attr('refY', 5)
+        .attr('markerWidth', 5).attr('markerHeight', 5).attr('orient', 'auto-start-reverse').attr('overflow', 'visible')
+        .append('path').attr('d', 'M 1 1 L 9 5 L 1 9 z').attr('fill', '#ffffff').attr('stroke', color).attr('stroke-width', 1.4).attr('stroke-linejoin', 'round');
     }
     this.gBase = this.svg.append('g').attr('class', 'base');
     this.gAreas = this.svg.append('g').attr('class', 'areas');
@@ -332,7 +345,9 @@ export class MapView {
       const target = this.nodeById.get(link.to);
       if (!from || !target) continue;
       const color = ls.status === 'ghost' ? '#c7c9cf' : ls.status === 'faded' ? NEUTRAL : stateColor(target, link.effect);
-      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0 });
+      // The arrival window (M30): only an applied arrow is drawn faint, and only with the layer on.
+      const unsettled = !!opts.showWindow && ls.status === 'applied' && !ls.settled;
+      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0, unsettled });
     }
     const merged = this.drawArrows(arrows, '');
 
@@ -421,7 +436,7 @@ export class MapView {
       const links = g.phases.flatMap((p) => p.links.map((l) => ({ link: l.link, phase: p.phase })));
       const offsets = spreads(links.length);
       links.forEach(({ link, phase }, i) => {
-        arrows.push({ link, from: g.driver, target, kind: 'applied', confidence: link.confidence, color: phase.color, marker: `phase-${g.driver.id}-${phase.id}`, spread: offsets[i] });
+        arrows.push({ link, from: g.driver, target, kind: 'applied', confidence: link.confidence, color: phase.color, marker: `phase-${g.driver.id}-${phase.id}`, spread: offsets[i], unsettled: false });
       });
     }
     this.drawArrows(arrows, ' region');
@@ -450,9 +465,9 @@ export class MapView {
     sel.exit().remove();
     const enter = sel.enter().append('path');
     return enter.merge(sel)
-      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${extraClass}`)
+      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${d.unsettled ? ' unsettled' : ''}${extraClass}`)
       .attr('stroke', (d) => d.color)
-      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker})`)
+      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker}${d.unsettled ? '-open' : ''})`)
       .attr('d', (d) => this.arcPath(d.from, d.target, d.spread));
   }
 

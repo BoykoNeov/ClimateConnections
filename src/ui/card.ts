@@ -155,6 +155,27 @@ interface Ctx {
   year?: number;
   /** the impacts layer is on (M37): an outcome's card lists the impacts that follow from it */
   impacts?: boolean;
+  /** the arrival window is shown (M30): the timing lines say the window */
+  window?: boolean;
+}
+
+/** The timing line of a link block: the lag range, counted from `after`
+ *  ("after onset", "after Indonesia first shows \"drier\""), and the season.
+ *  With the arrival window shown (M30) and a range wider than one month it
+ *  says the window instead, in one of three forms: not yet settled (the
+ *  arrow is faint), settled (the later month has passed), or pending. A
+ *  faded link, or one not reported this month, keeps the plain form. */
+function timingLine(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null, after: string): string {
+  const [a, b] = link.lag_months;
+  const season = `season: ${seasonText(link)}`;
+  const plain = `Expected from month ${a}${b !== a ? `–${b}` : ''} ${after}; ${season}.`;
+  if (!ctx.window || status === 'faded' || !ls) return plain;
+  if (a === b) return `${plain} The studies give one lag here, so there is no arrival window.`;
+  let text: string;
+  if (status === 'pending') text = `May arrive any time from month ${a} to month ${b} ${after}; ${season}. Out of season now; in season it is drawn faint until month ${b}${ls.settled ? ', which has passed' : ''}.`;
+  else if (ls.settled) text = `Could have arrived any time from month ${a} to month ${b} ${after}; month ${b} has passed, so the arrow is drawn in full. ${season[0].toUpperCase()}${season.slice(1)}.`;
+  else text = `May arrive any time from month ${a} to month ${b} ${after}; drawn faint until month ${b}. ${season[0].toUpperCase()}${season.slice(1)}.`;
+  return `<span class="window">${text}</span>`;
 }
 
 /** "you chose" or, in year mode, "set from the record for 1997". */
@@ -189,7 +210,7 @@ function kindNote(link: Link, from: GraphNode | undefined, ctx: Ctx): string {
 function impactLinkBlock(link: Link, from: OutcomeNode, ctx: Ctx, status: 'applied' | 'pending', ls: LinkState | null): string {
   const state = link.when === 'plus' ? from.labels.plus : from.labels.minus;
   const heading = status === 'pending' ? 'Expected, but out of season right now' : 'What pushes it';
-  const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after ${esc(shortName(from))} first shows "${esc(state.toLowerCase())}"; season: ${seasonText(link)}. Drawn only while that place holds this state.`;
+  const timing = `${timingLine(link, ctx, status, ls, `after ${esc(shortName(from))} first shows "${esc(state.toLowerCase())}"`)} Drawn only while that place holds this state.`;
   return `<div class="link-block impact-link">
     <h4>${heading} <span class="via">from ${esc(shortName(from))}: ${esc(state.toLowerCase())}</span> <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
@@ -202,7 +223,7 @@ function impactLinkBlock(link: Link, from: OutcomeNode, ctx: Ctx, status: 'appli
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null): string {
   const from = ctx.nodeById.get(link.from);
   if (from?.kind === 'outcome' && status !== 'faded') return impactLinkBlock(link, from, ctx, status, ls);
-  const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
+  const timing = timingLine(link, ctx, status, ls, 'after onset');
   // Say where the link comes from when that is not obvious: "through" a
   // pushed driver, or "from" one of two chosen drivers.
   const fromLabel = !from || !ls ? '' : ls.depth > 1 ? `through ${esc(shortName(from))}` : ctx.chosen.size > 1 ? `from ${esc(shortName(from))}` : '';
@@ -230,7 +251,7 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
   return `<div class="link-block${status === 'faded' ? ' faded' : ''}">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
-    <p class="hint">${esc(timing)}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>
+    <p class="hint">${timing}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>
     ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
     ${sourcesHtml(link.sources, ctx.sources)}
   </div>`;
@@ -546,8 +567,9 @@ function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
  *  `compare` (M14) adds the other scenario's month for a side-by-side block on top.
  *  `year` (M34) says the chosen drivers come from the table of real years, so
  *  the wording says "from the record" instead of "you chose".
- *  `impacts` (M37) says the impacts layer is on. */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false): void {
+ *  `impacts` (M37) says the impacts layer is on; `window` (M30) that the
+ *  arrival window is shown, so the timing lines say it. */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false, window = false): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
@@ -558,6 +580,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     linkById: new Map(graph.links.map((l) => [l.id, l])),
     chosen,
     impacts,
+    window,
   };
   if (year !== undefined) ctx.year = year;
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;

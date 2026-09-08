@@ -305,6 +305,13 @@ between studies. The app must make this visible, never hide it:
   established only". Hidden links are drawn as faint grey ghosts, not
   removed, so the student sees that something was left out.
 - **Permanent disclaimer** under the title (section 5.6).
+- **Arrival window** (M30): the lag on a link is a range, and the range is
+  the timing uncertainty. The card always prints it; behind the "Show
+  arrival window" toggle in the legend (off by default, rule 15 of
+  `docs/PLAN_V3.md`) an applied link is drawn faint with an outlined
+  arrowhead until the later end of its range has passed, and the card's
+  timing line says "may arrive any time from month 0 to month 4; drawn
+  faint until month 4".
 - Effects are always phrased as tendencies ("tends to be drier") in
   `labels`, `mechanism`, and card text. The validator warns on the words
   "will", "always", "causes" in `mechanism` and `caveat`.
@@ -336,6 +343,22 @@ Semantics (implement exactly this; do not improvise):
      for at least one available link.
    - A link that is available but out of season is reported in
      `pendingLinkIds` so the UI can draw it muted.
+   - Arrival window (M30, reporting only). `lag_months` is a range and the
+     engine applies a link from its earliest month, as above; the latest
+     month says nothing about when the link applies. It is reported: every
+     entry in `MonthState.links[id]` carries `settled: boolean`, true once
+     `index >= onset + lag_months[1]`, counted from the same onset as the
+     lag (the chosen driver's own onset, negative for one that began
+     before the first; the month a pushed driver was pushed; an outcome's
+     first month in the state for an impact link, rule 12). Always true
+     when the two ends of the range are equal. Reported on every status
+     (`applied`, `pending`, `ghost`, `faded`) so the map can draw an
+     applied link faint until it is settled and the card can say why.
+     States, sums, tiers, conflicts, onsets and every status are
+     unchanged: a link is still applied from `lag_months[0]`, and a
+     scenario gives the same timeline as before this field existed apart
+     from the field itself. Do not move the application to `lag_months[1]`
+     or anywhere in between; that would change every scenario and story.
 4. Combination rule at a target node in a given month: sum the `effect`
    values of all applied links, clamp to [-1, 1]. If the applied links have
    both positive and negative effects, set `conflicting: true`. (Version 1
@@ -673,6 +696,13 @@ and lowest-confidence selection.
 - Arrowhead via SVG marker.
 - On arrival (first month the link is applied) animate the arrow drawing
   itself using stroke-dasharray/dashoffset over ~600ms.
+- Arrival window (M30): with "Show arrival window" on, an applied link
+  that is not yet `settled` (§4 rule 3) is drawn at reduced opacity with
+  its arrowhead outlined (a white head with the arrow's colour as its
+  edge, one extra SVG marker per colour), and takes the full style the
+  first month at or after `onset + lag_months[1]`. Pending, faded and
+  ghost arrows are unchanged, and so is everything with the toggle off.
+  Region mode draws no scenario and so no window.
 
 ### 5.4 Timeline
 - Horizontal scrubber, 0–12, labeled with calendar month names.
@@ -720,7 +750,16 @@ step further from the driver than the weather it follows from, and never
 above that weather's own tier. An outcome's card lists, while the layer
 is on, "Impacts on people that follow" from it (each with its tendency,
 tier and whether it is drawn this month), and while the layer is off one
-line saying how many follow and where to turn them on.
+line saying how many follow and where to turn them on. Since M30 the
+timing line of every link block, with "Show arrival window" on and a lag
+range wider than one month, reads "May arrive any time from month 0 to
+month 4 after onset; drawn faint until month 4" while the link is applied
+and not yet settled, "Could have arrived any time from month 0 to month
+4 after onset; month 4 has passed, so the arrow is drawn in full" once it
+is settled, and for a pending link "may arrive any time from month 0 to
+month 4 ... once in season"; a link whose two ends are equal says the
+studies give one lag and no window. With the toggle off the line is the
+pre-M30 "Expected from month 0–4 after onset".
 
 ### 5.6 Controls (top-left)
 - Phase buttons (M36): the buttons show the phases that are not variants;
@@ -851,7 +890,21 @@ line saying how many follow and where to turn them on.
   `impacts: true` and turns the layer on when it starts.
 - Legend: confidence line styles and the state color scheme, and (M37) a
   square for an impact on people with its two colours and the note that
-  it shows only with the layer on.
+  it shows only with the layer on, and (M30) a row for an arrow within
+  its arrival window (faint, outlined head) with the note that the map
+  applies a connection from the earliest month of its lag range and
+  draws it faint until the latest has passed.
+- "Show arrival window" (M30): a checkbox under the Legend heading, the
+  sixth checkbox in the controls (after "Impacts on people", so the
+  browser scripts' indices still hold), **off by default** (rule 15 of
+  `docs/PLAN_V3.md`). On, the map draws every applied arrow faint with an
+  outlined head until its `settled` month, on both sides in compare mode,
+  and the cards' timing lines say the window; its hint says the studies
+  give a range, that the map applies a connection from the earliest month
+  and that this toggle changes nothing about when, only how it is drawn.
+  A way of looking, like the areas layer: switching it ends no story and
+  leaves no year. The season dial is unchanged (it shows the season gate
+  only). The print caption says what a faint arrow means while it is on.
 - A permanent one-line disclaimer under the title: "Shows historical
   tendencies from published research. Not a forecast, not a simulation."
 
@@ -2848,7 +2901,66 @@ drivers stays in one place.
   table saying anything about impacts, nodes in the `energy` and
   `economy` sectors (in the list, none written yet). Next in
   `docs/PLAN_V3.md`: the UI items M29–M31 and the roadmap items M38–M40,
-  each with its own sign-off.
+  each with its own sign-off; M30 was taken next.
+
+### M30 — Arrival window (version 3, signed off 2026-09-08)
+- The second UI item of version 3, taken at the user's "work on M30
+  (arrival window)". Timing uncertainty was the one kind the map did not
+  show: `lag_months` is a range, the engine applies a link from its
+  earliest month and the card printed the range as text. Section 4 rule 3
+  gains the arrival-window bullet as above, written before the code (rule
+  14 of `docs/PLAN_V3.md`), and §3.4 the bullet on timing.
+- Engine, reporting only: `LinkState.settled`, true once `index >= onset
+  + lag_months[1]`, computed in `propagate` beside the lag test for the
+  driver hops, in the faded report (rule 9, from the chosen onset) and in
+  the impact hop (rule 12, from the outcome's onset in the state); always
+  true when the ends are equal. Nothing else in `propagate.ts` changed:
+  a regression test runs every shipped story and every real year and
+  checks the timeline is identical to before apart from the field, and
+  that changing a link's later lag changes nothing but `settled`. Tests
+  in `src/engine/window.test.ts` (17: false at the earliest lag, true at
+  the latest, true throughout for equal ends, counted from a chosen
+  driver's own start month and from a negative onset, from a pushed
+  driver's onset, on pending, ghost and faded links, on an impact link
+  from the outcome's onset, the season not delaying it, carried through
+  modulation; the shipped data with El Niño's monsoon link (lag 0–3)
+  settled at month 3 and the coast of Peru (4–8) at month 8, every
+  reported link in every story and year carrying a boolean, every
+  equal-ended link always settled; the regression on stories and years
+  with every later lag pushed out). The 119 exact link-state assertions
+  in the older test files are wrapped in a helper that admits any
+  `settled`, so they still check every other field exactly.
+- UI: `showWindow` in `ControlState`, the "Show arrival window" checkbox
+  under the Legend heading (data-role `window`, off by default) with its
+  hint; `RenderOptions.showWindow` and `ArrowDatum.settled` in the map,
+  an applied unsettled arrow with the class `unsettled` (opacity 0.4)
+  and an outlined arrowhead (`arrow-<colour>-open`: white fill, the
+  colour as a 1.4 unit stroke); the card's timing line in the three
+  forms of §5.5 (class `window` on the sentence) through a `window`
+  argument of `renderCard`; the legend row and note; the print caption's
+  sentence while the toggle is on. Compare mode shares the toggle;
+  region mode ignores it; a story and a real year leave it alone.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m30.mjs` (18
+  checks; screenshots `m30-01-window-july.png` … `m30-04-compare.png`
+  under `W:\temp\claude\ClimateConnections\m30`): six checkboxes with
+  the sixth "Show arrival window" off on load and no unsettled arrow; the
+  toggle on in July (month 1) drawing El Niño's monsoon arrow (lag 0–3)
+  faint at opacity 0.4 with the open head and the Indonesia arrow (lag
+  0–2) likewise, the monsoon card's "drawn faint until month 3"; month 3
+  settling the monsoon arrow with the card saying "month 3 has passed",
+  month 2 settling Indonesia; the coast of Peru arrow (lag 4–8) pending
+  and untouched in October with the card's pending line, faint in
+  December and full at month 8; the toggle off again restoring every
+  arrow and the plain card line; the legend row; the print caption;
+  compare mode with faint arrows on both maps (La Niña's monsoon arrow
+  on B); the 1997–98 story leaving the toggle on; region mode without a
+  faint arrow and the arrows back after it; the real year 1997 keeping
+  the toggle with the caption naming both.
+- Not in M30: any change to when a link applies (rule 3 stands: the
+  earliest month); a window on pending, faded or ghost arrows; the season
+  dial; a per-link "most likely" month (the data has a range, not a
+  mode). Next in `docs/PLAN_V3.md`: M29, M31 and the roadmap items
+  M38–M40, each with its own sign-off.
 
 ---
 

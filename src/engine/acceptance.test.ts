@@ -10,6 +10,10 @@ import { scenarioForYear, yearRow } from './years';
 import type { Graph, Scenario, ScenarioDriver, Timeline, Value } from '../types';
 import graphJson from '../../public/data/graph.json';
 
+/** An exact link state with any `settled` (M30, reporting only): the
+ *  arrival window is checked in window.test.ts. */
+const ls = (o: object) => ({ settled: expect.any(Boolean), ...o });
+
 const graph = graphJson as unknown as Graph;
 const HORIZON = 12;
 
@@ -287,7 +291,7 @@ describe('acceptance: El Niño pushes the dipole and the NAO (June start, chain 
     const m = tl.months[2];
     expect(m.nodes.southeast_australia_rainfall.value).toBe(-1);
     expect(m.nodes.southeast_australia_rainfall.viaLinkIds).toEqual(['positive_iod_southeast_australia']);
-    expect(m.links.positive_iod_southeast_australia).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(m.links.positive_iod_southeast_australia).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     for (const dm of direct.months) {
       expect(dm.nodes.southeast_australia_rainfall.value).toBe(0);
       expect(dm.nodes.southeast_australia_rainfall.viaLinkIds).toHaveLength(0);
@@ -323,7 +327,7 @@ describe('acceptance: El Niño pushes the dipole and the NAO (June start, chain 
     const m = tl.months[8];
     expect(m.nodes.northern_europe_winter.value).toBe(-1);
     expect(m.nodes.northern_europe_winter.viaLinkIds).toEqual(['negative_nao_northern_europe']);
-    expect(m.links.negative_nao_northern_europe).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(m.links.negative_nao_northern_europe).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     for (const dm of direct.months) expect(dm.nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
   });
 
@@ -356,7 +360,7 @@ describe('acceptance: La Niña pushes the dipole negative and the NAO positive (
     expect(tl.months[7].nodes.nao.value).toBe(1);
     expect(tl.months[7].nodes.nao.confidence).toBe('contested');
     expect(tl.months[8].nodes.northern_europe_winter.value).toBe(1);
-    expect(tl.months[8].links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(tl.months[8].links.positive_nao_northern_europe).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
   });
 });
 
@@ -365,12 +369,12 @@ describe('acceptance: a positive dipole tips the Pacific toward La Niña a year 
   it('ENSO is untouched for ten months, then pushed to La Niña at month 11', () => {
     for (const m of tl.months.slice(0, 11)) expect(m.nodes.enso.value, `month ${m.index}`).toBe(0);
     expect(tl.months[11].nodes.enso.value).toBe(-1);
-    expect(tl.months[11].links.positive_iod_la_nina_next_year).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(tl.months[11].links.positive_iod_la_nina_next_year).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
   });
   it('La Niña\'s all-year links then fire at two hops, contested, from month 11', () => {
     expect(tl.months[10].nodes.central_pacific_islands.value).toBe(0);
     expect(tl.months[11].nodes.central_pacific_islands.value).toBe(-1);
-    expect(tl.months[11].links.la_nina_central_pacific_islands).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(tl.months[11].links.la_nina_central_pacific_islands).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
   });
   it('La Niña\'s push back onto the dipole is skipped: the chosen driver holds its phase', () => {
     for (const m of tl.months) {
@@ -446,7 +450,7 @@ describe('acceptance: El Niño with a negative dipole chosen by hand (June start
     expect(st.conflicting).toBe(true);
     expect(st.value).toBe(0);
     expect(st.confidence).toBe('probable');
-    expect(tl.months[1].links.negative_iod_indonesia).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(tl.months[1].links.negative_iod_indonesia).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
   });
   it('East Africa\'s short rains conflict in November: El Niño wet, the dipole dry', () => {
     const st = tl.months[5].nodes.east_africa_short_rains;
@@ -534,7 +538,7 @@ describe('acceptance: two chosen drivers, in general', () => {
     const jan = tl.months[7];
     expect(jan.nodes.nao.value).toBe(1);
     expect(jan.links.el_nino_negative_nao).toBeUndefined();
-    expect(jan.links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(jan.links.positive_nao_northern_europe).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     expect(jan.nodes.northern_europe_winter.value).toBe(1);
     expect(jan.nodes.northern_europe_winter.confidence).toBe('established');
   });
@@ -632,7 +636,7 @@ describe('acceptance: El Niño from June with a positive NAO from December', () 
   it('northern Europe is mild from December to March at full confidence, pending from April', () => {
     for (let i = 6; i <= 9; i++) {
       expect(tl.months[i].nodes.northern_europe_winter.value, `month ${i}`).toBe(1);
-      expect(tl.months[i].links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+      expect(tl.months[i].links.positive_nao_northern_europe).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     }
     expect(tl.months[5].nodes.northern_europe_winter.value).toBe(0);
     expect(tl.months[5].links.positive_nao_northern_europe).toBeUndefined();
@@ -1857,14 +1861,14 @@ describe('acceptance: the positive mode pushes El Niño and its map follows one 
     }
     expect(tl.months[6].nodes.east_australia_rainfall.viaLinkIds).toEqual(['el_nino_east_australia']);
     expect(tl.months[6].nodes.east_australia_rainfall.confidence).toBe('probable');
-    expect(tl.months[6].links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(tl.months[6].links.el_nino_indonesia).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
   });
   it('the third hop: the pushed El Niño pushes the dipole (depth 2, contested), whose arrow also lands on Indonesia at depth 3, so Indonesia is rated contested', () => {
     const sep = tl.months[6];
     expect(sep.nodes.iod.value).toBe(1);
-    expect(sep.links.el_nino_positive_iod).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(sep.links.el_nino_positive_iod).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
     expect([...sep.nodes.indonesia_rainfall.viaLinkIds].sort()).toEqual(['el_nino_indonesia', 'positive_iod_indonesia']);
-    expect(sep.links.positive_iod_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 3 });
+    expect(sep.links.positive_iod_indonesia).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 3 }));
     expect(sep.nodes.indonesia_rainfall.confidence).toBe('contested');
     expect(sep.nodes.indonesia_rainfall.conflicting).toBe(false);
   });
@@ -1910,7 +1914,7 @@ describe('acceptance: negative Pacific meridional mode, March start, chain on', 
     expect(tl.months[6].nodes.enso.viaLinkIds).toEqual(['negative_pmm_la_nina']);
     expect(tl.months[6].nodes.enso.confidence).toBe('contested');
     expect(monthsWith(tl, 'indonesia_rainfall', 1)).toEqual([6, 7, 8, 9]);
-    expect(tl.months[6].links.la_nina_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(tl.months[6].links.la_nina_indonesia).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
     const sep = tl.months[6];
     expect([...sep.nodes.west_pacific_typhoons.viaLinkIds].sort()).toEqual(['la_nina_west_pacific_typhoons', 'negative_pmm_west_pacific_typhoons']);
     expect(sep.nodes.west_pacific_typhoons.value).toBe(-1);
@@ -1974,7 +1978,7 @@ describe('acceptance: a tropical eruption from June, direct links only', () => {
     expect(monthsWith(tl, 'global_mean_temperature', -1)).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     expect(tl.months[2].nodes.global_mean_temperature.pendingLinkIds).toHaveLength(0);
     expect(tl.months[3].nodes.global_mean_temperature.confidence).toBe('established');
-    expect(tl.months[3].links.eruption_global_cooling).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(tl.months[3].links.eruption_global_cooling).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
   it('northern Europe and western Russia mild in the first winter only (December–February, months 6–8), pending from August and again from March', () => {
     for (const id of ['northern_europe_winter', 'western_russia_winter']) {
@@ -2035,11 +2039,11 @@ describe('acceptance: a tropical eruption from June with the chain on', () => {
   it('December: the NAO is pushed positive at depth 1 and its winter map follows one tier down; northern Europe carries both arrows the same way without conflict', () => {
     const dec = tl.months[6];
     expect(dec.calendarMonth).toBe(12);
-    expect(dec.links.eruption_positive_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(dec.links.eruption_positive_nao).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
     expect([...dec.nodes.northern_europe_winter.viaLinkIds].sort()).toEqual(['eruption_northern_europe_winter', 'positive_nao_northern_europe']);
     expect(dec.nodes.northern_europe_winter.value).toBe(1);
     expect(dec.nodes.northern_europe_winter.conflicting).toBe(false);
-    expect(dec.links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(dec.links.positive_nao_northern_europe).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(dec.nodes.mediterranean_winter_rainfall.value).toBe(-1);
     expect(dec.nodes.mediterranean_winter_rainfall.viaLinkIds).toEqual(['positive_nao_mediterranean']);
     // The pushed NAO pushes the Atlantic meridional mode negative from February (lag 2), a third hop.
@@ -2048,11 +2052,11 @@ describe('acceptance: a tropical eruption from June with the chain on', () => {
   });
   it('December: ENSO is pushed toward El Niño rated contested, and El Niño’s map follows at the floor tier (Indonesia dry through the pushed El Niño)', () => {
     const dec = tl.months[6];
-    expect(dec.links.eruption_el_nino).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(dec.links.eruption_el_nino).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
     expect(dec.nodes.enso.value).toBe(1);
     expect(dec.nodes.indonesia_rainfall.value).toBe(-1);
     expect(dec.nodes.indonesia_rainfall.viaLinkIds).toEqual(['el_nino_indonesia']);
-    expect(dec.links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(dec.links.el_nino_indonesia).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
   });
   it('from March the pushed El Niño’s warming arrow reaches the global temperature and disagrees with the volcano’s cooling: value 0, flagged as conflicting (the map cannot weigh them)', () => {
     expect(monthsWith(tl, 'global_mean_temperature', -1)).toEqual([3, 4, 5, 6, 7, 8]);
@@ -2242,20 +2246,20 @@ describe('acceptance: the QBO from November, direct links only', () => {
     expect(east.months[0].calendarMonth).toBe(11);
     expect(monthsWith(east, 'nao', -1)).toEqual([1, 2, 3]);
     expect(east.months[0].nodes.nao.pendingLinkIds).toHaveLength(0);
-    expect(east.months[1].links.easterly_qbo_negative_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(east.months[1].links.easterly_qbo_negative_nao).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
     expect(east.months[1].nodes.nao.confidence).toBe('probable');
     for (const m of east.months.slice(4)) expect(m.nodes.nao.pendingLinkIds, `month ${m.index}`).toEqual(['easterly_qbo_negative_nao']);
   });
   it('westerly: the mirror, the NAO pushed positive December–February', () => {
     expect(monthsWith(west, 'nao', 1)).toEqual([1, 2, 3]);
     expect(monthsWith(west, 'nao', -1)).toHaveLength(0);
-    expect(west.months[1].links.westerly_qbo_positive_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(west.months[1].links.westerly_qbo_positive_nao).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
   });
   it('the hurricane link is read in the season itself: August–October (months 9–11), rated contested, easterly quieter and westerly busier; pending the rest of the year', () => {
     expect(monthsWith(east, 'atlantic_hurricanes', -1)).toEqual([9, 10, 11]);
     expect(monthsWith(west, 'atlantic_hurricanes', 1)).toEqual([9, 10, 11]);
     expect(east.months[9].nodes.atlantic_hurricanes.confidence).toBe('contested');
-    expect(east.months[9].links.easterly_qbo_atlantic_hurricanes).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(east.months[9].links.easterly_qbo_atlantic_hurricanes).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
     expect(east.months[0].nodes.atlantic_hurricanes.pendingLinkIds).toEqual(['easterly_qbo_atlantic_hurricanes']);
     expect(east.months[12].nodes.atlantic_hurricanes.pendingLinkIds).toEqual(['easterly_qbo_atlantic_hurricanes']);
   });
@@ -2294,10 +2298,10 @@ describe('acceptance: the easterly QBO from November with the chain on', () => {
   it('December–February: the NAO is pushed at depth 1 and its winter map follows one tier down (northern Europe cold and Greenland mild at probable, eastern North America cold at contested)', () => {
     for (const i of [1, 2, 3]) {
       const m = tl.months[i];
-      expect(m.links.easterly_qbo_negative_nao, `month ${i}`).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+      expect(m.links.easterly_qbo_negative_nao, `month ${i}`).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
       expect(m.nodes.northern_europe_winter.value, `month ${i}`).toBe(-1);
       expect(m.nodes.northern_europe_winter.confidence, `month ${i}`).toBe('probable');
-      expect(m.links.negative_nao_northern_europe, `month ${i}`).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+      expect(m.links.negative_nao_northern_europe, `month ${i}`).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
       expect(m.nodes.greenland_winter.value, `month ${i}`).toBe(1);
       expect(m.nodes.mediterranean_winter_rainfall.value, `month ${i}`).toBe(1);
       expect(m.nodes.eastern_north_america_winter.confidence, `month ${i}`).toBe('contested');
@@ -2309,7 +2313,7 @@ describe('acceptance: the easterly QBO from November with the chain on', () => {
   });
   it('the pushed NAO pushes the Atlantic meridional mode positive for the one month its lag allows (February, a third hop at the floor tier), and the hurricanes are never in conflict', () => {
     expect(tl.months[3].nodes.atlantic_meridional_mode.value).toBe(1);
-    expect(tl.months[3].links.negative_nao_positive_amm).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(tl.months[3].links.negative_nao_positive_amm).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
     expect(tl.months[2].nodes.atlantic_meridional_mode.value).toBe(0);
     expect(tl.months[4].nodes.atlantic_meridional_mode.value).toBe(0);
     for (const m of tl.months) expect(m.nodes.atlantic_hurricanes.conflicting, `month ${m.index}`).toBe(false);
@@ -2407,9 +2411,9 @@ describe('acceptance: Barents–Kara sea ice from October, direct links only', (
       expect(low.months[2].nodes[id].confidence, id).toBe('contested');
       for (const m of low.months.slice(5)) expect(m.nodes[id].pendingLinkIds, `${id} month ${m.index}`).toHaveLength(1);
     }
-    expect(low.months[2].links.low_ice_siberia_cold).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
-    expect(low.months[2].links.low_ice_negative_nao).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
-    expect(low.months[1].links.low_ice_siberia_cold).toEqual({ status: 'pending', confidence: 'contested', depth: 1 });
+    expect(low.months[2].links.low_ice_siberia_cold).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
+    expect(low.months[2].links.low_ice_negative_nao).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
+    expect(low.months[1].links.low_ice_siberia_cold).toEqual(ls({ status: 'pending', confidence: 'contested', depth: 1 }));
   });
   it('direct links only: the NAO is pushed but its own regions stay hollow', () => {
     for (const m of low.months) {
@@ -2445,10 +2449,10 @@ describe('acceptance: low Barents–Kara ice from October with the chain on', ()
   it('December–February: the NAO is pushed at depth 1 and its winter map follows at the floor tier (northern Europe cold, Greenland mild, northeastern Canada mild, all contested); western Russia is cold twice over from one cause and not in conflict', () => {
     for (const i of [2, 3, 4]) {
       const m = tl.months[i];
-      expect(m.links.low_ice_negative_nao, `month ${i}`).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+      expect(m.links.low_ice_negative_nao, `month ${i}`).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
       expect(m.nodes.northern_europe_winter.value, `month ${i}`).toBe(-1);
       expect(m.nodes.northern_europe_winter.confidence, `month ${i}`).toBe('contested');
-      expect(m.links.negative_nao_northern_europe, `month ${i}`).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+      expect(m.links.negative_nao_northern_europe, `month ${i}`).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
       expect(m.nodes.greenland_winter.value, `month ${i}`).toBe(1);
       expect(m.nodes.hudson_bay_winter.value, `month ${i}`).toBe(1);
       expect(m.nodes.eastern_north_america_winter.value, `month ${i}`).toBe(-1);
@@ -2545,8 +2549,8 @@ describe('acceptance: Eurasian October snow from October, direct links only', ()
       for (const m of high.months.slice(5)) expect(m.nodes[id].pendingLinkIds, `${id} month ${m.index}`).toHaveLength(1);
     }
     expect(Object.keys(high.months[1].links)).toHaveLength(0);
-    expect(high.months[2].links.high_snow_negative_nao).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
-    expect(high.months[5].links.high_snow_negative_nao).toEqual({ status: 'pending', confidence: 'contested', depth: 1 });
+    expect(high.months[2].links.high_snow_negative_nao).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
+    expect(high.months[5].links.high_snow_negative_nao).toEqual(ls({ status: 'pending', confidence: 'contested', depth: 1 }));
   });
   it('the low-snow and neutral phases draw nothing: the map draws only what has been argued over', () => {
     for (const phase of ['low', 'neutral']) {
@@ -2573,7 +2577,7 @@ describe('acceptance: high October snow with the chain on, alone and with the Ba
   it('December–February: northern Europe and the eastern United States carry two arrows from one cause (the snow’s own and the pushed NAO’s) and are not hatched; Greenland mild through the NAO at the floor tier', () => {
     for (const i of [2, 3, 4]) {
       const m = tl.months[i];
-      expect(m.links.high_snow_negative_nao, `month ${i}`).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+      expect(m.links.high_snow_negative_nao, `month ${i}`).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
       expect([...m.nodes.northern_europe_winter.viaLinkIds].sort(), `month ${i}`).toEqual(['high_snow_northern_europe_cold', 'negative_nao_northern_europe']);
       expect([...m.nodes.eastern_north_america_winter.viaLinkIds].sort(), `month ${i}`).toEqual(['high_snow_eastern_us_cold', 'negative_nao_eastern_north_america']);
       expect(m.nodes.northern_europe_winter.conflicting, `month ${i}`).toBe(false);
@@ -2658,15 +2662,15 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
     const neg = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative' }]);
     const pos = june('el_nino', [{ driverId: 'pdo', phaseId: 'positive' }]);
     expect(monthsWith(alone, 'pacific_northwest_winter', 1)).toEqual([6, 7, 8]);
-    expect(alone.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(alone.months[7].links.el_nino_pacific_northwest).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
     expect(neg.months[7].nodes.pacific_northwest_winter.conflicting).toBe(true);
     expect(neg.months[7].nodes.pacific_northwest_winter.viaLinkIds.sort()).toEqual(['el_nino_pacific_northwest', 'negative_pdo_pacific_northwest']);
-    expect(pos.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(pos.months[7].links.el_nino_pacific_northwest).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     expect(pos.months[7].nodes.pacific_northwest_winter.conflicting).toBe(false);
     // Pending months carry the weakening too (rule 3 unchanged: the same months).
-    expect(neg.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
-    expect(alone.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'pending', confidence: 'established', depth: 1 });
+    expect(neg.months[5].links.el_nino_pacific_northwest).toEqual(ls({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
+    expect(alone.months[5].links.el_nino_pacific_northwest).toEqual(ls({ status: 'pending', confidence: 'established', depth: 1 }));
   });
 
   it('the Gulf Coast, which the PDO does not reach itself: wet in November–March either way, established alone and probable with the negative PDO (rule 5 takes the weakened tier); California, already contested, stays contested with the entry in force', () => {
@@ -2677,15 +2681,15 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
     expect(alone.months[7].nodes.us_gulf_coast_winter.confidence).toBe('established');
     expect(neg.months[7].nodes.us_gulf_coast_winter.confidence).toBe('probable');
     expect(neg.months[7].nodes.us_gulf_coast_winter.conflicting).toBe(false);
-    expect(neg.months[7].links.el_nino_california).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] });
-    expect(alone.months[7].links.el_nino_california).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(neg.months[7].links.el_nino_california).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] }));
+    expect(alone.months[7].links.el_nino_california).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
   });
 
   it('the PDO from December (M12): the Gulf Coast link arrives in November at established and drops to probable from December, the month the PDO enters its phase; nothing moves', () => {
     const t = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative', startMonth: 12 }]);
     expect(chosenOnset(t.scenario, 'pdo')).toBe(6);
-    expect(t.months[5].links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(t.months[6].links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(t.months[5].links.el_nino_us_gulf_coast).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(t.months[6].links.el_nino_us_gulf_coast).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
     expect(monthsWith(t, 'us_gulf_coast_winter', 1)).toEqual([5, 6, 7, 8, 9]);
   });
 
@@ -2693,12 +2697,12 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
     const alone = june('el_nino', [], { minConfidence: 'established' });
     const neg = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative' }], { minConfidence: 'established' });
     expect(alone.months[7].nodes.pacific_northwest_winter.value).toBe(1);
-    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
-    expect(neg.months[7].links.negative_pdo_pacific_northwest).toEqual({ status: 'ghost', confidence: 'probable', depth: 1 });
+    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
+    expect(neg.months[7].links.negative_pdo_pacific_northwest).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1 }));
     expect(neg.months[7].nodes.pacific_northwest_winter.value).toBe(0);
     expect(neg.months[7].nodes.pacific_northwest_winter.viaLinkIds).toEqual([]);
     // The Gulf Coast, established alone, is ghosted too under the negative PDO.
-    expect(neg.months[7].links.el_nino_us_gulf_coast).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(neg.months[7].links.el_nino_us_gulf_coast).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
     expect(neg.months[7].nodes.us_gulf_coast_winter.value).toBe(0);
   });
 
@@ -2707,7 +2711,7 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
     expect(chain.months.some((m) => m.nodes.pdo.value === 1)).toBe(true);
     expect(chain.months.every((m) => m.nodes.pdo.value !== -1)).toBe(true);
     for (const id of EL_NINO_LINKS) for (const m of chain.months) if (m.links[id]) expect(m.links[id].weakenedBy, `${id} month ${m.index}`).toBeUndefined();
-    expect(chain.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(chain.months[7].links.el_nino_pacific_northwest).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     const chainL = june('la_nina', [], { maxDepth: 3 });
     expect(chainL.months.some((m) => m.nodes.pdo.value === -1)).toBe(true);
     for (const id of LA_NINA_LINKS) for (const m of chainL.months) if (m.links[id]) expect(m.links[id].weakenedBy, `${id} month ${m.index}`).toBeUndefined();
@@ -2716,13 +2720,13 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
   it('La Niña with a positive PDO: the mirror, the Southwest dry at probable and the Prairies (rated probable) at contested; alone as rated', () => {
     const alone = june('la_nina');
     const pos = june('la_nina', [{ driverId: 'pdo', phaseId: 'positive' }]);
-    expect(alone.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(pos.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [POS] });
-    expect(alone.months[7].links.la_nina_canadian_prairies).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
-    expect(pos.months[7].links.la_nina_canadian_prairies).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [POS] });
+    expect(alone.months[7].links.la_nina_us_southwest).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(pos.months[7].links.la_nina_us_southwest).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [POS] }));
+    expect(alone.months[7].links.la_nina_canadian_prairies).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
+    expect(pos.months[7].links.la_nina_canadian_prairies).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [POS] }));
     // Wrong-sign PDO: nothing.
     const neg = june('la_nina', [{ driverId: 'pdo', phaseId: 'negative' }]);
-    expect(neg.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(neg.months[7].links.la_nina_us_southwest).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
 
   it('the real year 2023 (M34): El Niño from May with the PDO negative since 2020, so from the record the Gulf Coast arrives in November at probable and the card can say why', () => {
@@ -2730,7 +2734,7 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
     const ys = scenarioForYear(graph, row);
     const t = propagate(graph, { ...ys.scenario, maxDepth: 3 });
     const nov = t.months.find((m) => m.calendarMonth === 11)!;
-    expect(nov.links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(nov.links.el_nino_us_gulf_coast).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
     expect(nov.nodes.us_gulf_coast_winter.value).toBe(1);
   });
 
@@ -2810,7 +2814,7 @@ describe('acceptance: El Niño flavours (M36, rule 11)', () => {
     expect(t.months[0].nodes.indian_summer_monsoon.viaLinkIds).toEqual(['el_nino_central_indian_monsoon']);
     expect(t.months[0].links.el_nino_indian_monsoon).toBeUndefined();
     expect(t.months[0].nodes.indonesia_rainfall.viaLinkIds).toEqual(['el_nino_indonesia']);
-    expect(t.months[0].links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[0].links.el_nino_indonesia).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     for (const m of t.months) {
       expect(m.nodes.peru_coast_rainfall.value, `month ${m.index}`).toBe(0);
       expect(m.nodes.peru_fishery.value).toBe(0);
@@ -2821,13 +2825,13 @@ describe('acceptance: El Niño flavours (M36, rule 11)', () => {
       expect(m.links.el_nino_west_pacific_typhoons).toBeUndefined();
     }
     expect(monthsWith(t, 'atlantic_hurricanes', 1)).toEqual([0, 1, 2, 3, 10, 11, 12]); // June–August again at the window's end: no hold here
-    expect(t.months[2].links.el_nino_central_atlantic_hurricanes).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(t.months[2].links.el_nino_central_atlantic_hurricanes).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
     expect(monthsWith(t, 'us_gulf_coast_winter', 1)).toEqual([4, 5, 6, 7]);
-    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
     expect(monthsWith(t, 'eastern_north_america_winter', -1)).toEqual([5, 6, 7]);
-    expect(t.months[5].links.el_nino_central_eastern_north_america).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(t.months[5].links.el_nino_central_eastern_north_america).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
     expect(monthsWith(t, 'west_pacific_typhoons', 1)).toEqual([0, 1, 2, 3, 11, 12]);
-    expect(t.months[1].links.el_nino_central_west_pacific_typhoons).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(t.months[1].links.el_nino_central_west_pacific_typhoons).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
     // The classic kind from August, for contrast: the coast wet in December–April, the Atlantic quiet.
     const c = propagate(graph, { driverId: 'enso', phaseId: 'el_nino', startMonth: 8, horizonMonths: HORIZON });
     expect(monthsWith(c, 'peru_coast_rainfall', 1)).toEqual([4, 5, 6, 7, 8]);
@@ -2837,8 +2841,8 @@ describe('acceptance: El Niño flavours (M36, rule 11)', () => {
 
   it('the negative PDO weakens the central kind’s Gulf Coast link (contested) and the inherited Northwest link (probable) alike', () => {
     const t = central({ others: [{ driverId: 'pdo', phaseId: 'negative' }] });
-    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] });
-    expect(t.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] }));
+    expect(t.months[5].links.el_nino_pacific_northwest).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] }));
   });
 
   it('the chain never lands on the kind: a positive PMM from March pushes ENSO into the classic El Niño, whose links fire and whose kind-only links do not', () => {

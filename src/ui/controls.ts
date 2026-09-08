@@ -88,6 +88,10 @@ export interface ControlState extends ScenarioSettings {
    *  and draw the squares. Off by default; a way of looking, like the
    *  areas layer, so switching it ends no story and leaves no year. */
   showImpacts: boolean;
+  /** the arrival window (M30, rule 3): draw an applied arrow faint with an
+   *  outlined head until the later end of its lag range has passed, on
+   *  both sides. Off by default; a way of looking, like the areas layer. */
+  showWindow: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -412,6 +416,8 @@ export class ControlsView {
   private filterSelect: HTMLSelectElement;
   private chainBox: HTMLInputElement;
   private impactsBox: HTMLInputElement;
+  /** the arrival window (M30): the toggle under the Legend heading */
+  private windowBox: HTMLInputElement;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
   private compareBox: HTMLInputElement;
   private sideBox: HTMLDivElement;
@@ -730,6 +736,22 @@ export class ControlsView {
     h4.textContent = 'Legend';
     h4.className = 'print-keep';
     this.scenarioBox.parentElement!.append(h4);
+    // The arrival window (M30): the sixth checkbox, under the Legend
+    // heading, after "Impacts on people" so the browser scripts' indices
+    // still hold. Off by default (rule 15 of docs/PLAN_V3.md).
+    const windowLabel = document.createElement('label');
+    windowLabel.className = 'check';
+    this.windowBox = document.createElement('input');
+    this.windowBox.type = 'checkbox';
+    this.windowBox.dataset.role = 'window';
+    this.windowBox.checked = state.showWindow;
+    this.windowBox.addEventListener('change', () => this.update({ showWindow: this.windowBox.checked }));
+    windowLabel.append(this.windowBox, document.createTextNode(' Show arrival window'));
+    this.scenarioBox.parentElement!.append(windowLabel);
+    const hintW = document.createElement('p');
+    hintW.className = 'hint';
+    hintW.textContent = 'The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, an arrow is drawn faint with an outlined head until the latest month has passed, so you can see where the timing is uncertain. The card gives the range either way.';
+    this.scenarioBox.parentElement!.append(hintW);
     const legend = renderLegend();
     legend.classList.add('print-keep');
     this.scenarioBox.parentElement!.append(legend);
@@ -935,5 +957,6 @@ export class ControlsView {
     this.filterSelect.value = s.filter;
     this.chainBox.checked = s.chain;
     this.impactsBox.checked = this.state.showImpacts;
+    this.windowBox.checked = this.state.showWindow;
   }
 }

@@ -291,6 +291,12 @@ export interface LinkState {
    *  one is; the confidence above is then one tier lower than it would
    *  otherwise be (floored at contested). */
   weakenedBy?: Modulation[];
+  /** the arrival window has closed (M30, rule 3): the month index is at or
+   *  past the onset plus the later end of `lag_months`, counted from the
+   *  same onset as the lag. Always true when the two ends are equal.
+   *  Reporting only: the link is applied from the earlier end regardless,
+   *  and nothing else reads this. */
+  settled: boolean;
 }
 
 export interface NodeState {

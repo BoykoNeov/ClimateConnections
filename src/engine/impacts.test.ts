@@ -12,6 +12,10 @@ import type { Graph, Link, MonthState, Scenario, Story, Timeline } from '../type
 import { SECTORS } from '../types';
 import graphJson from '../../public/data/graph.json';
 
+/** An exact link state with any `settled` (M30, reporting only): the
+ *  arrival window is checked in window.test.ts. */
+const ls = (o: object) => ({ settled: expect.any(Boolean), ...o });
+
 /** A driver, a second driver it pushes, four outcomes and five impacts. */
 function graphWithImpacts(links: Partial<Link>[]): Graph {
   const outcome = (id: string) => ({ id, name: id.toUpperCase(), kind: 'outcome' as const, axis: 'wet_dry' as const, labels: { plus: 'wet', zero: 'normal', minus: 'dry' }, global: false, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [] });
@@ -105,7 +109,7 @@ describe('the impact hop (M37, rule 12): switched on, warm from June', () => {
   const m = (i: number) => tl.months[i];
   it('June: X reached from A dry, one tier down (probable), depth 2, the same month A holds its state', () => {
     expect(m(0).nodes.a.value).toBe(-1);
-    expect(m(0).links.ia).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(m(0).links.ia).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(m(0).nodes.x).toMatchObject({ value: 1, confidence: 'probable', viaLinkIds: ['ia'], pendingLinkIds: [], fadedLinkIds: [], inSeason: true, conflicting: false });
   });
   it('a link for the other state never fires: A is never wet, so iplus is never reported', () => {
@@ -113,14 +117,14 @@ describe('the impact hop (M37, rule 12): switched on, warm from June', () => {
   });
   it('July: B wet (probable) pushes X the other way, so X conflicts and cancels to 0, hatched, both links listed', () => {
     expect(m(1).nodes.b.value).toBe(1);
-    expect(m(1).links.ib).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(m(1).links.ib).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(m(1).nodes.x).toMatchObject({ value: 0, conflicting: true, confidence: 'probable' });
     expect([...m(1).nodes.x.viaLinkIds].sort()).toEqual(['ia', 'ib']);
   });
   it('the lag counts from the outcome’s first month in the state: Z from August (month 2), and again at once in June (month 12)', () => {
     expect(m(0).links.ilag).toBeUndefined();
     expect(m(1).links.ilag).toBeUndefined();
-    expect(m(2).links.ilag).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(m(2).links.ilag).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(m(2).nodes.z.value).toBe(-1);
     expect(m(3).nodes.z.value).toBe(-1);
     expect(m(12).nodes.a.value).toBe(-1);
@@ -135,7 +139,7 @@ describe('the impact hop (M37, rule 12): switched on, warm from June', () => {
     expect(m(4).nodes.x).toMatchObject({ value: -1, conflicting: false, viaLinkIds: ['ib'] });
   });
   it('the season gate: W pending in July, applied in December and January, pending again in February', () => {
-    expect(m(1).links.iseason).toEqual({ status: 'pending', confidence: 'probable', depth: 2 });
+    expect(m(1).links.iseason).toEqual(ls({ status: 'pending', confidence: 'probable', depth: 2 }));
     expect(m(1).nodes.w).toMatchObject({ value: 0, pendingLinkIds: ['iseason'], viaLinkIds: [] });
     expect(m(6).links.iseason?.status).toBe('applied');
     expect(m(6).nodes.w.value).toBe(1);
@@ -145,12 +149,12 @@ describe('the impact hop (M37, rule 12): switched on, warm from June', () => {
   it('from a second-hop outcome: C wet through the pushed driver, Y at depth 3, two tiers down (contested)', () => {
     expect(m(0).nodes.d2.value).toBe(1);
     expect(m(0).links.on).toMatchObject({ depth: 2, confidence: 'probable' });
-    expect(m(0).links.ic).toEqual({ status: 'applied', confidence: 'contested', depth: 3 });
+    expect(m(0).links.ic).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 3 }));
     expect(m(0).nodes.y).toMatchObject({ value: 1, confidence: 'contested' });
   });
   it('never above the outcome’s own tier: E is contested, so V is contested although its link is established', () => {
     expect(m(0).nodes.e.confidence).toBe('contested');
-    expect(m(0).links.ie).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(m(0).links.ie).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
   });
   it('maxDepth does not bound the hop: direct links only still reaches X, and Y is gone because C is', () => {
     const direct = propagate(g, { ...on, maxDepth: 1 });
@@ -162,10 +166,10 @@ describe('the impact hop (M37, rule 12): switched on, warm from June', () => {
   it('the confidence filter ghosts an impact link at its effective tier', () => {
     const filtered = propagate(g, { ...on, minConfidence: 'probable' });
     expect(filtered.months[0].links.ia?.status).toBe('applied');
-    expect(filtered.months[0].links.ic).toEqual({ status: 'ghost', confidence: 'contested', depth: 3 });
+    expect(filtered.months[0].links.ic).toEqual(ls({ status: 'ghost', confidence: 'contested', depth: 3 }));
     expect(filtered.months[0].nodes.y.value).toBe(0);
     const strict = propagate(g, { ...on, minConfidence: 'established' });
-    expect(strict.months[0].links.ia).toEqual({ status: 'ghost', confidence: 'probable', depth: 2 });
+    expect(strict.months[0].links.ia).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 2 }));
     expect(strict.months[0].nodes.x.value).toBe(0);
   });
   it('a hold on the driver (rule 9): from the fade no outcome holds a state, so no impact link is reported, not faded either, while the driver’s own links are', () => {
@@ -298,7 +302,7 @@ describe('acceptance: El Niño from June with the impacts on, chain on', () => {
     expect(monthsWith(tl, 'india_foodgrain_output', -1)).toEqual([]);
     const direct = run('el_nino', { maxDepth: 1 });
     expect(monthsWith(direct, 'india_foodgrain_output', -1)).toEqual([0, 1, 2, 3, 12]); // month 12 is June again
-    expect(direct.months[0].links.weak_monsoon_india_foodgrain).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(direct.months[0].links.weak_monsoon_india_foodgrain).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(direct.months[4].links.weak_monsoon_india_foodgrain).toBeUndefined();
     expect(direct.months[4].nodes.india_foodgrain_output.value).toBe(0);
   });
@@ -310,7 +314,7 @@ describe('acceptance: El Niño from June with the impacts on, chain on', () => {
   });
   it('Rift Valley fever risk up in November and December (months 5–6), a month after the wet short rains begin, at contested (a probable link, one tier down)', () => {
     expect(monthsWith(tl, 'east_africa_rift_valley_fever', 1)).toEqual([5, 6]);
-    expect(m(5).links.wet_short_rains_rift_valley_fever).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(m(5).links.wet_short_rains_rift_valley_fever).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
     expect(m(7).links.wet_short_rains_rift_valley_fever).toBeUndefined();
   });
   it('malaria and dengue up on the coast of Peru January–April (months 7–10), the month after the rains begin', () => {
@@ -338,7 +342,7 @@ describe('acceptance: El Niño from June with the impacts on, chain on', () => {
   });
   it('California’s runoff up December–March at contested, capped by the contested link to California', () => {
     expect(monthsWith(tl, 'california_streamflow', 1)).toEqual([6, 7, 8, 9]);
-    expect(m(6).links.wet_california_streamflow).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(m(6).links.wet_california_streamflow).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 2 }));
   });
   it('the Niger’s flow down in August and September (months 2–3), a month after the Sahel dries, at contested', () => {
     expect(monthsWith(tl, 'niger_river_flow', -1)).toEqual([2, 3]);

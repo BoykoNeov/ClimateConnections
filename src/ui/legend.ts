@@ -33,6 +33,9 @@ export function renderLegend(): HTMLElement {
     html += `<div class="legend-row">${line(c)}<span><strong>${c[0].toUpperCase() + c.slice(1)}</strong></span></div>`;
     html += `<p class="legend-note">${CONFIDENCE_TEXT[c]}</p>`;
   }
+  // The arrival window (M30): an applied arrow drawn faint with an outlined head until its later lag has passed.
+  html += `<div class="legend-row window"><svg width="44" height="10"><line x1="1" y1="5" x2="34" y2="5" stroke="#444" stroke-width="2.6" stroke-linecap="round" opacity="0.4"/><path d="M 34 1 L 42 5 L 34 9 z" fill="#fff" stroke="#444" stroke-width="1.2" stroke-linejoin="round" opacity="0.7"/></svg><span>Within its arrival window</span></div>`;
+  html += `<p class="legend-note window">Drawn only with "Show arrival window" on: the effect is applied from the earliest month the studies give and may still be on its way until the latest, after which the arrow is drawn in full. The card's timing line gives the range.</p>`;
   html += `<p class="legend-note weaker">A line can drop one tier while another driver you chose weakens it (the PDO on ENSO's winter links to North America); the card's "How sure are we?" says which driver and why.</p>`;
   html += `<p class="legend-note kinds">A phase can come in kinds (El Niño: classic, or central Pacific). A kind has its own colour and fires the classic links except the ones its card lists as not expected, plus links of its own; a driver set off along a chain is always drawn in the classic kind.</p>`;
   for (const [axis, colors] of Object.entries(AXIS_COLORS) as Array<[keyof typeof AXIS_COLORS, { plus: string; minus: string }]>) {

@@ -9,6 +9,10 @@ import { linksInPlay } from './season';
 import { influencesOn } from './inverse';
 import type { DriverNode, Graph, Link, Scenario } from '../types';
 
+/** An exact link state with any `settled` (M30, reporting only): the
+ *  arrival window is checked in window.test.ts. */
+const ls = (o: object) => ({ settled: expect.any(Boolean), ...o });
+
 /** A driver with a warm phase and a "warm, kind X" variant of it; a second
  *  driver; three places. */
 function graphWithKinds(links: Partial<Link>[]): Graph {
@@ -99,7 +103,7 @@ describe('phase variants (M36, rule 11): propagate', () => {
       expect(m.links.pa, `month ${m.index}`).toEqual(p.months[m.index].links.pa);
       expect(m.nodes.a.value).toBe(p.months[m.index].nodes.a.value);
       expect(m.links.pb).toBeUndefined();
-      expect(m.links.vb).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+      expect(m.links.vb).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
       expect(m.nodes.b.value).toBe(-1);
       expect(m.nodes.b.viaLinkIds).toEqual(['vb']);
       expect(m.nodes.b.confidence).toBe('probable');
@@ -110,7 +114,7 @@ describe('phase variants (M36, rule 11): propagate', () => {
     expect(arrivalMonth(t, 'pa', 'a')).toBe(2); // June start, lag 1, in season from August
     expect(arrivalMonth(t, 'vc', 'c')).toBe(2);
     expect(t.months[1].links.vc).toBeUndefined();
-    expect(t.months[2].links.vc).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(t.months[2].links.vc).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
     expect(t.months[0].nodes.drv.value).toBe(1);
     expect(linksInPlay(g, t).map((l) => l.id)).toEqual(['pa', 'vb', 'vc', 'pd']);
   });
@@ -121,7 +125,7 @@ describe('phase variants (M36, rule 11): propagate', () => {
     expect(t.months[0].nodes.drv.value).toBe(0);
     expect(t.months[1].nodes.drv.value).toBe(1);
     expect(phaseForValue(drv(g), t.months[1].nodes.drv.value)?.id).toBe('warm');
-    expect(t.months[1].links.pb).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(t.months[1].links.pb).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 2 }));
     expect(t.months[1].nodes.b.value).toBe(1);
     for (const m of t.months) {
       expect(m.links.vb, `month ${m.index}`).toBeUndefined();
@@ -133,23 +137,23 @@ describe('phase variants (M36, rule 11): propagate', () => {
     const W = { driver: 'drv', phase: 'warm', sources: ['s'] };
     const g = graphWithKinds([{ id: 'w', from: 'd2', when: 'up', to: 'c', effect: 1, weakened_by: [W] }]);
     const scenario: Scenario = { driverId: 'd2', phaseId: 'up', startMonth: 6, horizonMonths: 12 };
-    expect(propagate(g, scenario).months[0].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
-    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warm' }] }).months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [W] });
-    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warmx' }] }).months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [W] });
-    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'cool' }] }).months[0].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(propagate(g, scenario).months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
+    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warm' }] }).months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [W] }));
+    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warmx' }] }).months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [W] }));
+    expect(propagate(g, { ...scenario, others: [{ driverId: 'drv', phaseId: 'cool' }] }).months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     // The entry names the kind: only the kind counts.
     const gx = graphWithKinds([{ id: 'w', from: 'd2', when: 'up', to: 'c', effect: 1, weakened_by: [{ ...W, phase: 'warmx' }] }]);
-    expect(propagate(gx, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warm' }] }).months[0].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(propagate(gx, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warm' }] }).months[0].links.w).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
     expect(propagate(gx, { ...scenario, others: [{ driverId: 'drv', phaseId: 'warmx' }] }).months[0].links.w.weakenedBy).toEqual([{ ...W, phase: 'warmx' }]);
   });
 
   it('a hold (rule 9) fades the inherited and the kind’s own links, and never reports the excepted one', () => {
     const g = graphWithKinds(LINKS);
     const t = propagate(g, { ...kind, holdMonths: 3 });
-    expect(t.months[2].links.vb).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
-    expect(t.months[3].links.vb).toEqual({ status: 'faded', confidence: 'probable', depth: 1 });
-    expect(t.months[3].links.pa).toEqual({ status: 'faded', confidence: 'established', depth: 1 });
-    expect(t.months[3].links.vc).toEqual({ status: 'faded', confidence: 'contested', depth: 1 });
+    expect(t.months[2].links.vb).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
+    expect(t.months[3].links.vb).toEqual(ls({ status: 'faded', confidence: 'probable', depth: 1 }));
+    expect(t.months[3].links.pa).toEqual(ls({ status: 'faded', confidence: 'established', depth: 1 }));
+    expect(t.months[3].links.vc).toEqual(ls({ status: 'faded', confidence: 'contested', depth: 1 }));
     expect(t.months[3].links.pb).toBeUndefined();
     expect(t.months[3].nodes.b.fadedLinkIds).toEqual(['vb']);
     expect(t.months[3].nodes.drv.value).toBe(0);
@@ -160,20 +164,20 @@ describe('phase variants (M36, rule 11): propagate', () => {
     const t = propagate(g, { driverId: 'd2', phaseId: 'down', startMonth: 6, horizonMonths: 12, others: [{ driverId: 'drv', phaseId: 'warmx', startMonth: 9 }] });
     expect(t.months[2].nodes.b.value).toBe(0);
     expect(t.months[3].nodes.b.value).toBe(-1);
-    expect(t.months[3].links.vb).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(t.months[3].links.vb).toEqual(ls({ status: 'applied', confidence: 'probable', depth: 1 }));
     expect(t.months[3].links.pb).toBeUndefined();
     expect(arrivalMonth(t, 'vc', 'c')).toBe(5);
     const early = propagate(g, { driverId: 'd2', phaseId: 'down', startMonth: 6, horizonMonths: 12, others: [{ driverId: 'drv', phaseId: 'warmx', startMonth: 3, startsBefore: true }] });
-    expect(early.months[0].links.vc).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(early.months[0].links.vc).toEqual(ls({ status: 'applied', confidence: 'contested', depth: 1 }));
   });
 
   it('the confidence filter ghosts the kind’s own link at its own tier', () => {
     const g = graphWithKinds(LINKS);
     const t = propagate(g, { ...kind, minConfidence: 'established' });
-    expect(t.months[0].links.vb).toEqual({ status: 'ghost', confidence: 'probable', depth: 1 });
+    expect(t.months[0].links.vb).toEqual(ls({ status: 'ghost', confidence: 'probable', depth: 1 }));
     expect(t.months[0].nodes.b.value).toBe(0);
-    expect(t.months[2].links.vc).toEqual({ status: 'ghost', confidence: 'contested', depth: 1 });
-    expect(t.months[2].links.pa).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[2].links.vc).toEqual(ls({ status: 'ghost', confidence: 'contested', depth: 1 }));
+    expect(t.months[2].links.pa).toEqual(ls({ status: 'applied', confidence: 'established', depth: 1 }));
   });
 
   it('regression: with the kind and its links removed from the graph, a scenario in the parent phase gives the same timeline, month for month', () => {

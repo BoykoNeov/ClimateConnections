@@ -599,6 +599,19 @@ months, and how surely. All of that is in the data already.
 
 ### M30 — Arrival window
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§4 rule 3 (the arrival-window bullet), §3.4, §5.3, §5.5, §5.6 and §6
+under M30. Departures from the text below, each with its reason: the
+toggle sits under the Legend heading in the controls panel (the legend
+itself is static HTML, and the checkbox needs the control state like the
+other layers); `settled` is reported on every status, not only applied
+links, so the card can say the window on a pending link too, at no cost
+to the map, which draws the window on applied arrows only; the card's
+timing line takes three forms (not yet settled, settled, pending) rather
+than the one sentence below, because "drawn faint until month 4" is
+false once month 4 has passed; and the print caption gains a sentence
+while the toggle is on, as every layer's does.
+
 A link carries a lag *range* but the engine uses only the earliest month
 and the card prints the range as text. Timing uncertainty is the one kind
 of uncertainty the map does not yet show.
@@ -1119,7 +1132,7 @@ lag and season fields.
 
 ```
 Data only (no src/ change):   M20 → M21 → M22 → M26 → M27 → M23 → M24 → M25
-UI only:                      M28, M29, M30 (any order, any time)
+UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M29 (any time)
 Engine, in dependency order:  M32 (duration) → M33 (N drivers) → M34 (years)
                               M35 (modulation) after M23 if the QBO case is wanted
                               M36 (flavours) independent (shipped 2026-09-08)

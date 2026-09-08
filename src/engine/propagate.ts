@@ -239,12 +239,14 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
         if (settled.has(link.to)) continue; // loop guard: never reported, as before the fade
         const target = nodes[link.to];
         if (!target) continue;
+        // The arrival window (M30) is counted from the chosen onset as the lag is.
+        const windowClosed = index >= chosenOnset(scenario, c.driverId) + link.lag_months[1];
         if (CONFIDENCE_ORDER[link.confidence] < minLevel) {
-          links[link.id] = { status: 'ghost', confidence: link.confidence, depth: 1 };
+          links[link.id] = { status: 'ghost', confidence: link.confidence, depth: 1, settled: windowClosed };
           continue;
         }
         target.fadedLinkIds.push(link.id);
-        links[link.id] = { status: 'faded', confidence: link.confidence, depth: 1 };
+        links[link.id] = { status: 'faded', confidence: link.confidence, depth: 1, settled: windowClosed };
       }
     }
 
@@ -275,8 +277,11 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
           // is still applied, with the same effect, in the same months.
           const weakenedBy = (link.weakened_by ?? []).filter((w) => inPhase.some((c) => c.driverId === w.driver && holds(c.driverId, c.phaseId, w.phase)));
           if (weakenedBy.length > 0) confidence = downgrade(confidence, 1);
+          // Rule 3 (M30): the arrival window closes at the later end of the
+          // lag range, counted from the same onset. Reporting only.
+          const windowClosed = index >= start + link.lag_months[1];
           const state = (status: LinkState['status']): LinkState =>
-            weakenedBy.length > 0 ? { status, confidence, depth, weakenedBy } : { status, confidence, depth };
+            weakenedBy.length > 0 ? { status, confidence, depth, weakenedBy, settled: windowClosed } : { status, confidence, depth, settled: windowClosed };
           if (CONFIDENCE_ORDER[confidence] < minLevel) {
             links[link.id] = state('ghost');
             continue;
@@ -342,22 +347,23 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
           const target = nodes[link.to];
           if (!target) continue;
           if (index < start + link.lag_months[0]) continue; // not yet available
+          const windowClosed = index >= start + link.lag_months[1]; // rule 3 (M30), from the outcome's onset
           let confidence = downgrade(link.confidence, depth - 1);
           if (st.confidence) confidence = lowest(confidence, st.confidence);
           if (CONFIDENCE_ORDER[confidence] < minLevel) {
-            links[link.id] = { status: 'ghost', confidence, depth };
+            links[link.id] = { status: 'ghost', confidence, depth, settled: windowClosed };
             continue;
           }
           const inSeason = link.season.length === 0 || link.season.includes(cal);
           if (!inSeason) {
             target.pendingLinkIds.push(link.id);
-            links[link.id] = { status: 'pending', confidence, depth };
+            links[link.id] = { status: 'pending', confidence, depth, settled: windowClosed };
             continue;
           }
           target.inSeason = true;
           target.viaLinkIds.push(link.id);
           target.confidence = lowest(target.confidence, confidence);
-          links[link.id] = { status: 'applied', confidence, depth };
+          links[link.id] = { status: 'applied', confidence, depth, settled: windowClosed };
           const acc = impactSums.get(link.to) ?? { sum: 0, pos: false, neg: false };
           acc.sum += link.effect;
           if (link.effect > 0) acc.pos = true; else acc.neg = true;

@@ -50,6 +50,11 @@ can be compared side by side on one timeline.
   events, and the caveat on each card gives the exceptions.
 - Not exhaustive. Links are included when they are well enough documented to
   cite, not because they are the only effects that exist.
+- Not a timetable. The lag on each connection is a range of months read
+  from the studies. The map applies a connection from the earliest month of
+  the range, and the "Show arrival window" toggle (off by default) draws the
+  arrow faint with an outlined head until the latest month has passed, so
+  the timing uncertainty is on the map and not only on the card.
 - Not a source of precise boundaries. The "affected areas" layer is a set of
   rough, illustrative outlines, and the control that turns it on says so.
 - Not a statement about what happens to people. The "Impacts on people"
@@ -296,6 +301,17 @@ any static file server.
   "1997–98: from the weather to the harvest and the haze" turns the layer
   on and walks through what that El Niño meant for people, including the
   places where it did not follow the map.
+- **Show arrival window** (off by default, under the legend) draws every
+  arrow that has arrived faint, with an outlined head, until the latest
+  month of its lag range has passed: El Niño's arrow to the Indian monsoon
+  (0–3 months) is faint in June, July and August and full from September;
+  its arrow to the coast of Peru (4–8 months) is faint in December and
+  January and full from February. Nothing about when a connection applies
+  changes: the map always applies it from the earliest month, and the
+  toggle only shows how sure the timing is. The card's timing line then
+  reads "may arrive any time from month 4 to month 8 after onset; drawn
+  faint until month 8", or says the month has passed. A connection whose
+  studies give one lag has no window and its card says so.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and
