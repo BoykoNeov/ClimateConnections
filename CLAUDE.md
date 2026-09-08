@@ -26,7 +26,9 @@ first driver whose every link is contested, and since M25 the October
 snow across Siberia as a fourteenth, its matched pair, since M28 a
 "By region" view that lists every driver known to reach one place, and
 since M32 an "Event lasts" control that ends a chosen driver's phase after
-a set number of months, the first engine extension) on a
+a set number of months, the first engine extension, and since M33 any
+number of drivers chosen at once behind a "More drivers" section, the
+second) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -41,15 +43,18 @@ one.
   hide contested links; that is the point of showing them.
 - The engine (`src/engine/`) is pure and DOM-free. Three-level states only.
   Driver-to-driver links follow the loop rules in `docs/PLAN.md` §4 rule 6
-  (fixed onset, loop guard, one tier down per hop); do not relax them. Two
-  chosen drivers (§4 rule 8) add up under the same sum-and-clamp rule and
-  are never pushed; no new combination rule. The second driver's own start
-  month (M12) is read within the twelve months shown and the driver is held
-  out of play (pinned, no phase) before it. With `startsBefore` (M15) that
-  month is read backwards to a negative onset: month 0 stays the first
-  driver's onset, the timeline is never moved or lengthened, and the
-  second driver is simply in phase from month 0 with its lags counted
-  from the earlier month. The season dial (M13) shows
+  (fixed onset, loop guard, one tier down per hop); do not relax them. The
+  chosen drivers (§4 rule 8: one, two since M11, any number since M33 as
+  `Scenario.others`) add up under the same sum-and-clamp rule and are
+  never pushed; no driver twice; no new combination rule. Each chosen
+  driver's own start month (M12) is read within the twelve months shown
+  and the driver is held out of play (pinned, no phase) before it. With
+  `startsBefore` (M15) that month is read backwards to a negative onset:
+  month 0 stays the first driver's onset, the timeline is never moved or
+  lengthened, and the driver is simply in phase from month 0 with its
+  lags counted from the earlier month. `Scenario.secondary` and the
+  `second_*` story fields are the pre-M33 spelling, accepted for one
+  milestone only; new code and data use `others` / `drivers`. The season dial (M13) shows
   the season gate only, read from each link's `season`; it never
   recomputes states and must not hide the lag (its hint says a month can
   be in season and still empty). Compare mode (M14) runs the engine once
@@ -92,7 +97,10 @@ one.
   2026-09-08, and phase duration (M32, the first engine extension:
   `holdMonths`, the `faded` link status, `typical_duration_months`
   required on every driver, `hold_months` in stories, the "Event lasts"
-  control) on 2026-09-08. A new driver
+  control) on 2026-09-08, and any number of chosen drivers (M33, the
+  second engine extension: `Scenario.others`, rule 8 in the plural, the
+  `drivers:` list in stories, the "More drivers" section) on 2026-09-08.
+  A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its
   `typical_duration_months`); the engine and the UI read

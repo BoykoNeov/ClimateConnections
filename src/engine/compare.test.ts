@@ -89,7 +89,7 @@ describe('compareMonth and differing on the shipped data', () => {
 
   it('El Niño alone against El Niño with a negative dipole from September', () => {
     const a = run({});
-    const b = run({ secondary: { driverId: 'iod', phaseId: 'negative', startMonth: 9 } });
+    const b = run({ others: [{ driverId: 'iod', phaseId: 'negative', startMonth: 9 }] });
     // July: the dipole is still pinned in B, so its links are absent there,
     // while in A El Niño has already pushed it positive and southeast
     // Australia dries out: only A acts on it.

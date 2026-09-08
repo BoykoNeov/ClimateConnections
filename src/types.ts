@@ -93,25 +93,33 @@ export interface Story {
   start_month: number;
   /** calendar year of month index 0, for stories about a real event */
   start_year?: number;
-  /** a second driver chosen by hand for the whole story, with its phase (M11);
-   *  both or neither */
-  second_driver?: string;
-  second_phase?: string;
-  /** calendar month the second driver enters its phase (M12); defaults to
-   *  `start_month`. Read within the twelve months shown: a month earlier
-   *  than `start_month` falls in the following year. */
-  second_start_month?: number;
-  /** the second driver began before the first (M15): `second_start_month`
-   *  is read backwards from `start_month`, so the driver is already in its
-   *  phase when the story's year begins. Needs `second_driver`. */
-  second_starts_before?: boolean;
   /** how many months (1–12) the main driver holds its phase (M32); omitted =
    *  the whole year shown */
   hold_months?: number;
-  /** the same for the second driver, counted from its own onset. Needs
-   *  `second_driver`. */
-  second_hold_months?: number;
+  /** the other drivers chosen by hand for the whole story (M11; any number
+   *  since M33), each with its own start month and hold. Never the story's
+   *  own driver, never the same driver twice. The data build also accepts
+   *  the pre-M33 `second_driver` / `second_phase` / `second_start_month` /
+   *  `second_starts_before` / `second_hold_months` fields for one
+   *  milestone and writes them into this list, so the app reads only
+   *  this. */
+  drivers?: StoryDriver[];
   steps: StoryStep[];
+}
+
+/** One driver a story chooses by hand besides its own (M33). */
+export interface StoryDriver {
+  driver: string;
+  phase: string;
+  /** calendar month the driver enters its phase (M12); defaults to the
+   *  story's `start_month`. Read within the twelve months shown: a month
+   *  earlier than `start_month` falls in the following year. */
+  start_month?: number;
+  /** the driver began before the story's own (M15): `start_month` is read
+   *  backwards, so the driver is already in its phase when the year begins */
+  starts_before?: boolean;
+  /** how many months (1–12) it holds its phase (M32), from its own onset */
+  hold_months?: number;
 }
 
 export interface Graph {
@@ -126,8 +134,9 @@ export interface Graph {
 export interface ScenarioDriver {
   driverId: string;
   phaseId: string;
-  /** calendar month (1–12) the driver enters its phase (M12, second driver
-   *  only). Omitted = the scenario's `startMonth`, i.e. month index 0. Read
+  /** calendar month (1–12) the driver enters its phase (M12; any chosen
+   *  driver other than the first). Omitted = the scenario's `startMonth`,
+   *  i.e. month index 0. Read
    *  within the twelve months shown: the driver enters its phase the first
    *  time this calendar month comes up at or after month 0, so a month
    *  earlier than `startMonth` falls in the following year. */
@@ -146,18 +155,25 @@ export interface ScenarioDriver {
 }
 
 export interface Scenario {
+  /** the first driver: month index 0 is its onset */
   driverId: string;
   phaseId: string;
   /** 1–12; calendar month of month index 0 */
   startMonth: number;
   horizonMonths: number;
-  /** how many months (1–12) the main driver holds its phase (M32, rule 9);
+  /** how many months (1–12) the first driver holds its phase (M32, rule 9);
    *  omitted = the whole horizon. See `ScenarioDriver.holdMonths`. */
   holdMonths?: number;
-  /** a second driver chosen by hand (M11). It enters its phase at month 0
-   *  like the first, or in its own `startMonth` (M12), fires its own links
-   *  at the first hop, and is never pushed by a link, not even before it
-   *  enters its phase. Must not name the same driver as `driverId`. */
+  /** every other driver chosen by hand (M11 for one; any number since M33,
+   *  rule 8). Each enters its phase at month 0 like the first, or in its
+   *  own `startMonth` (M12, M15), fires its own links at the first hop at
+   *  full confidence, holds its phase for its own `holdMonths` (M32), and
+   *  is never pushed by a link, not even before it enters its phase. No
+   *  driver may appear twice, `driverId` included; the engine throws. There
+   *  is no order among them beyond their onsets. */
+  others?: ScenarioDriver[];
+  /** @deprecated pre-M33 spelling of a one-element `others`, accepted for
+   *  one milestone: the engine reads it as the first entry of `others`. */
   secondary?: ScenarioDriver;
   /** how many hops of links to follow (M10). 1 = only the scenario driver's
    *  own links, the version-1 behaviour and the default; 2 lets a driver that

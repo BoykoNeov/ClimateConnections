@@ -719,6 +719,16 @@ control's hint says the same in one sentence.
 
 ### M33 — Any number of chosen drivers
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§4 rule 8 (now in the plural) and §10 under M33. As written below:
+`others` replaces `secondary` in the engine (the old spelling read for one
+milestone), `drivers:` replaces the `second_*` story fields (the old ones
+accepted for one milestone and normalised by the build), the "Second
+driver" block is the first row of a list with "More drivers" closed by
+default and "+ Add a driver", compare copies the list, and the tests
+listed below all exist. One reading: "copy A to B" is the compare switch
+itself, which starts B as a copy of A; there is no separate button.
+
 **Why it does not fit.** Rule 8 is written for exactly two. The year table
 (M34) needs all of them.
 

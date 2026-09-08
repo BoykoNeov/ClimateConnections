@@ -125,16 +125,17 @@ stories:
     phase: el_nino                      # a phase id of that driver
     start_month: 5                      # calendar month of month index 0
     start_year: 1997                    # optional; dates the steps ("December 1997")
-    second_driver: iod                  # optional (M11): a second driver chosen by hand
-    second_phase: negative              #   for the whole story; both fields or neither
-    second_start_month: 9               # optional (M12): the month the second driver enters
-                                        #   its phase; defaults to start_month
-    second_starts_before: true          # optional (M15): read that month backwards, so the
-                                        #   second driver is already in its phase at month 0
-    hold_months: 8                      # optional (M32), 1–12: how many months the main driver
-                                        #   holds its phase; omitted = the whole year shown
-    second_hold_months: 12              # optional (M32): the same for the second driver,
-                                        #   counted from its own onset; needs second_driver
+    hold_months: 8                      # optional (M32), 1–12: how many months the story's own
+                                        #   driver holds its phase; omitted = the whole year shown
+    drivers:                            # optional (M11; any number since M33): the other drivers
+      - driver: iod                     #   chosen by hand for the whole story, each with
+        phase: negative                 #   its phase
+        start_month: 9                  #   optional (M12): the month it enters its phase;
+                                        #     defaults to start_month
+        starts_before: true             #   optional (M15): read that month backwards, so the
+                                        #     driver is already in its phase at month 0
+        hold_months: 12                 #   optional (M32): how long it holds its phase, from
+                                        #     its own onset
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -144,26 +145,32 @@ stories:
 ```
 
 Rules enforced by the validator:
-- `driver` must be a driver and `phase` one of its phases. `second_driver`,
-  if given, must be a different driver with `second_phase` as one of its
-  phases. The main driver enters its phase at month 0; the second one at
-  month 0 too, or in `second_start_month` (M12), read within the twelve
-  months shown: the first time that calendar month comes up at or after
-  `start_month`, so a month earlier than `start_month` falls in the
-  following year. Before it the second driver is out of play (no phase, no
-  links, still never pushed); from it its links count their lag.
-  `second_start_month` needs a `second_driver`. With
-  `second_starts_before: true` (M15) the month is read backwards instead:
-  the last time it came up before `start_month`, so the second driver is
-  already in its phase at month 0 and its lags are counted from that
-  earlier month (a lag that has already run is felt from month 0). The
-  same month, read backwards, means a year earlier. Needs a
-  `second_driver`.
-- `hold_months` and `second_hold_months` (M32) end a chosen driver's phase
-  after that many months from its onset: from then it holds no phase and
-  its links are faded, not applied (`docs/PLAN.md` §4 rule 9). Omitted,
-  the driver holds its phase to the end of the year shown, as before.
-  `second_hold_months` needs a `second_driver`.
+- `driver` must be a driver and `phase` one of its phases. Every entry of
+  `drivers` must name a different driver (never the story's own, never
+  the same one twice; the engine throws on a repeat, so the validator
+  refuses it first) with `phase` one of its phases. The story's own
+  driver enters its phase at month 0; each other one at month 0 too, or
+  in its `start_month` (M12), read within the twelve months shown: the
+  first time that calendar month comes up at or after the story's
+  `start_month`, so a month earlier than that falls in the following
+  year. Before it the driver is out of play (no phase, no links, still
+  never pushed); from it its links count their lag. With `starts_before:
+  true` (M15) the month is read backwards instead: the last time it came
+  up before the story's `start_month`, so the driver is already in its
+  phase at month 0 and its lags are counted from that earlier month (a
+  lag that has already run is felt from month 0). The same month, read
+  backwards, means a year earlier. There is no order among the listed
+  drivers beyond their start months.
+- `hold_months` on the story and on each listed driver (M32) end that
+  driver's phase after that many months from its onset: from then it
+  holds no phase and its links are faded, not applied (`docs/PLAN.md` §4
+  rule 9). Omitted, the driver holds its phase to the end of the year
+  shown, as before.
+- The pre-M33 fields `second_driver`, `second_phase`,
+  `second_start_month`, `second_starts_before` and `second_hold_months`
+  are still accepted for one milestone and written into a one-element
+  `drivers` list in `graph.json`; a story cannot give both spellings.
+  New stories should use `drivers`.
 - Every `focus` must be a node id. If it is not a chosen driver, it must
   actually be affected at that month: some link from a chosen driver/phase
   to it (or from a driver a chosen driver has pushed) has

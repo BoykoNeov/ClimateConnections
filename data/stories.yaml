@@ -527,8 +527,9 @@ stories:
       "conflicting"; try swapping the dipole to positive to see that.
     driver: enso
     phase: la_nina
-    second_driver: iod
-    second_phase: negative
+    drivers:
+      - driver: iod
+        phase: negative
     start_month: 6
     start_year: 2010
     steps:
@@ -619,10 +620,11 @@ stories:
       because its clock started earlier.
     driver: enso
     phase: la_nina
-    second_driver: iod
-    second_phase: negative
-    second_start_month: 5
-    second_starts_before: true
+    drivers:
+      - driver: iod
+        phase: negative
+        start_month: 5
+        starts_before: true
     start_month: 9
     start_year: 2016
     steps:
@@ -725,10 +727,11 @@ stories:
       Australia, where the two arrows point the same way.
     driver: sam
     phase: negative
-    second_driver: iod
-    second_phase: positive
-    second_start_month: 6
-    second_starts_before: true
+    drivers:
+      - driver: iod
+        phase: positive
+        start_month: 6
+        starts_before: true
     start_month: 11
     start_year: 2019
     steps:
@@ -812,9 +815,10 @@ stories:
       tendency and the real winter parted ways.
     driver: pdo
     phase: positive
-    second_driver: enso
-    second_phase: el_nino
-    second_start_month: 3
+    drivers:
+      - driver: enso
+        phase: el_nino
+        start_month: 3
     start_month: 11
     start_year: 2014
     steps:
@@ -890,9 +894,10 @@ stories:
       the map cannot settle.
     driver: amo
     phase: positive
-    second_driver: enso
-    second_phase: la_nina
-    second_start_month: 9
+    drivers:
+      - driver: enso
+        phase: la_nina
+        start_month: 9
     start_month: 6
     start_year: 1995
     steps:
@@ -975,10 +980,11 @@ stories:
       that had held since the 1960s.
     driver: atlantic_nino
     phase: warm
-    second_driver: amo
-    second_phase: negative
-    second_start_month: 5
-    second_starts_before: true
+    drivers:
+      - driver: amo
+        phase: negative
+        start_month: 5
+        starts_before: true
     start_month: 5
     start_year: 1984
     steps:
@@ -1362,9 +1368,10 @@ stories:
       further years the map cannot show.
     driver: tropical_eruption
     phase: eruption
-    second_driver: enso
-    second_phase: el_nino
-    second_start_month: 9
+    drivers:
+      - driver: enso
+        phase: el_nino
+        start_month: 9
     start_month: 6
     start_year: 1991
     steps:
@@ -1472,10 +1479,11 @@ stories:
       where the map's held phases and the real year part company.
     driver: qbo
     phase: easterly
-    second_driver: enso
-    second_phase: el_nino
-    second_start_month: 6
-    second_starts_before: true
+    drivers:
+      - driver: enso
+        phase: el_nino
+        start_month: 6
+        starts_before: true
     start_month: 11
     start_year: 2009
     steps:

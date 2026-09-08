@@ -97,6 +97,22 @@ const StoryStep = z.object({
   sources: z.array(Id).min(1, 'every story step needs at least one source'),
 }).strict();
 
+/** One driver a story chooses by hand besides its own (M33): its phase, and
+ *  optionally its own start month (M12), read backwards (M15) and its hold (M32). */
+const StoryDriver = z.object({
+  driver: Id,
+  phase: Id,
+  /** calendar month the driver enters its phase; defaults to the story's start_month */
+  start_month: Month.optional(),
+  /** the driver began before the story's own: start_month is read backwards, so
+   *  the driver is already in its phase at month 0 */
+  starts_before: z.boolean().optional(),
+  /** how many months (1–12) it holds its phase, from its own onset; omitted = the whole year shown */
+  hold_months: Month.optional(),
+}).strict();
+
+const SECOND_FIELDS = ['second_driver', 'second_phase', 'second_start_month', 'second_starts_before', 'second_hold_months'];
+
 const Story = z.object({
   id: Id,
   title: z.string().min(3),
@@ -105,23 +121,37 @@ const Story = z.object({
   phase: Id,
   start_month: Month,
   start_year: z.number().int().min(1800).max(2100).optional(),
-  /** a second driver chosen by hand for the whole story (M11); both or neither */
+  /** how many months (1–12) the story's own driver holds its phase (M32); omitted = the whole year shown */
+  hold_months: Month.optional(),
+  /** the other drivers chosen by hand for the whole story (M11, any number since M33) */
+  drivers: z.array(StoryDriver).optional(),
+  /** the pre-M33 spelling of a one-element `drivers` list, accepted for one
+   *  milestone and written into `drivers` below: a second driver chosen by
+   *  hand (M11; both or neither), its own start month (M12), read backwards
+   *  (M15) and its hold (M32). */
   second_driver: Id.optional(),
   second_phase: Id.optional(),
-  /** calendar month the second driver enters its phase (M12); defaults to start_month */
   second_start_month: Month.optional(),
-  /** the second driver began before the first (M15): second_start_month is read
-   *  backwards from start_month, so the driver is already in its phase at month 0 */
   second_starts_before: z.boolean().optional(),
-  /** how many months (1–12) each chosen driver holds its phase (M32); omitted = the whole year shown */
-  hold_months: Month.optional(),
   second_hold_months: Month.optional(),
   steps: z.array(StoryStep).min(3),
 }).strict()
   .refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together')
   .refine((s) => s.second_start_month === undefined || s.second_driver !== undefined, 'second_start_month needs a second_driver')
   .refine((s) => s.second_starts_before === undefined || s.second_driver !== undefined, 'second_starts_before needs a second_driver')
-  .refine((s) => s.second_hold_months === undefined || s.second_driver !== undefined, 'second_hold_months needs a second_driver');
+  .refine((s) => s.second_hold_months === undefined || s.second_driver !== undefined, 'second_hold_months needs a second_driver')
+  .refine((s) => s.drivers === undefined || s.second_driver === undefined, 'drivers and second_driver cannot both be given: write the second driver as the first entry of drivers')
+  .transform((s) => {
+    // Normalise: the app and graph.json know only `drivers`.
+    if (s.second_driver === undefined) return s;
+    const d = { driver: s.second_driver, phase: s.second_phase };
+    if (s.second_start_month !== undefined) d.start_month = s.second_start_month;
+    if (s.second_starts_before !== undefined) d.starts_before = s.second_starts_before;
+    if (s.second_hold_months !== undefined) d.hold_months = s.second_hold_months;
+    const out = { ...s, drivers: [d] };
+    for (const k of SECOND_FIELDS) delete out[k];
+    return out;
+  });
 
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
@@ -212,17 +242,18 @@ if (nodesFile && linksFile && storiesFile) {
   const appliedAt = (l, onsetIdx, m, start, fade = null) =>
     m >= onsetIdx + l.lag_months[0] && (fade === null || m < fade) && (l.season.length === 0 || l.season.includes(calendarMonth(start, m)));
   /** The drivers a story fixes by hand: [driverId, phaseId, onset month
-   *  index, fade month index or null] for the main one (onset 0) and, if
-   *  any, the second (M11), which enters its phase at month 0 or in its own
-   *  start month (M12), read within the twelve months shown, or backwards
-   *  from the start (M15: a negative onset, already in phase at month 0).
-   *  The fade (M32) is the onset plus the story's hold for that driver. */
+   *  index, fade month index or null] for the main one (onset 0) and each
+   *  of the others (M11; any number since M33), which enters its phase at
+   *  month 0 or in its own start month (M12), read within the twelve months
+   *  shown, or backwards from the start (M15: a negative onset, already in
+   *  phase at month 0). The fade (M32) is the onset plus the story's hold
+   *  for that driver. */
   const chosenOf = (s) => {
     const out = [[s.driver, s.phase, 0, s.hold_months === undefined ? null : s.hold_months]];
-    if (s.second_driver) {
-      const after = ((s.second_start_month ?? s.start_month) - s.start_month + 12) % 12;
-      const onset = s.second_starts_before ? after - 12 : after;
-      out.push([s.second_driver, s.second_phase, onset, s.second_hold_months === undefined ? null : onset + s.second_hold_months]);
+    for (const d of s.drivers ?? []) {
+      const after = ((d.start_month ?? s.start_month) - s.start_month + 12) % 12;
+      const onset = d.starts_before ? after - 12 : after;
+      out.push([d.driver, d.phase, onset, d.hold_months === undefined ? null : onset + d.hold_months]);
     }
     return out;
   };
@@ -256,13 +287,19 @@ if (nodesFile && linksFile && storiesFile) {
     if (!driver) { fail(`story "${s.id}": unknown driver "${s.driver}"`); continue; }
     if (driver.kind !== 'driver') { fail(`story "${s.id}": "${s.driver}" is not a driver`); continue; }
     if (!driver.phases.some((p) => p.id === s.phase)) fail(`story "${s.id}": "${s.phase}" is not a phase of "${s.driver}"`);
-    if (s.second_driver) {
-      const second = nodes.get(s.second_driver);
-      if (!second) { fail(`story "${s.id}": unknown second driver "${s.second_driver}"`); continue; }
-      if (second.kind !== 'driver') { fail(`story "${s.id}": "${s.second_driver}" is not a driver`); continue; }
-      if (second.id === s.driver) { fail(`story "${s.id}": the second driver must differ from "${s.driver}"`); continue; }
-      if (!second.phases.some((p) => p.id === s.second_phase)) fail(`story "${s.id}": "${s.second_phase}" is not a phase of "${s.second_driver}"`);
+    // The other chosen drivers (M33): each a driver, none the story's own,
+    // none twice (the engine throws on a repeat; the validator says it first).
+    let badDrivers = false;
+    const seenDrivers = new Set([s.driver]);
+    for (const d of s.drivers ?? []) {
+      const other = nodes.get(d.driver);
+      if (!other) { fail(`story "${s.id}": unknown chosen driver "${d.driver}"`); badDrivers = true; continue; }
+      if (other.kind !== 'driver') { fail(`story "${s.id}": chosen driver "${d.driver}" is not a driver`); badDrivers = true; continue; }
+      if (seenDrivers.has(other.id)) { fail(`story "${s.id}": driver "${other.id}" is chosen twice`); badDrivers = true; continue; }
+      seenDrivers.add(other.id);
+      if (!other.phases.some((p) => p.id === d.phase)) fail(`story "${s.id}": "${d.phase}" is not a phase of "${d.driver}"`);
     }
+    if (badDrivers) continue;
     const chosenIds = new Set(chosenOf(s).map(([d]) => d));
     let lastMonth = -1;
     s.steps.forEach((step, i) => {

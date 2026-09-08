@@ -49,12 +49,13 @@ function sureBlock(link: Link, ls: LinkState | null): string {
   </div>`;
 }
 
-/** A driver chosen by hand: its phase, and when it enters it (M12: the
- *  second driver may start later than month 0; M15: or before it). */
+/** A driver chosen by hand: its phase, and when it enters it (M12: a
+ *  chosen driver other than the first may start later than month 0; M15:
+ *  or before it). */
 export interface ChosenPhase {
   phaseId: string;
-  /** month index at which the driver enters the phase (0 for the main
-   *  driver; negative when the second driver began before the first) */
+  /** month index at which the driver enters the phase (0 for the first
+   *  driver; negative when another chosen driver began before the first) */
   onset: number;
   /** calendar month (1–12) of that onset */
   startMonth: number;
@@ -62,6 +63,13 @@ export interface ChosenPhase {
   hold: number | null;
   /** month index from which it holds no phase (`onset + hold`); null with no hold */
   fade: number | null;
+  /** the control that sets its hold, to name it: "Event lasts", "Second driver lasts", ... */
+  control: string;
+}
+
+/** "two", "three", ... for small counts, digits beyond. */
+function countWord(n: number): string {
+  return ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen'][n] ?? String(n);
 }
 
 /** Calendar month name `index` months after `startMonth`, for any index. */
@@ -73,7 +81,7 @@ interface Ctx {
   sources: Map<string, Source>;
   nodeById: Map<string, GraphNode>;
   linkById: Map<string, Link>;
-  /** drivers chosen by hand: id -> phase and onset (one, or two since M11) */
+  /** drivers chosen by hand: id -> phase and onset (one; two since M11; any number since M33) */
   chosen: Map<string, ChosenPhase>;
 }
 
@@ -86,7 +94,7 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
   const via = fromLabel ? ` <span class="via">${fromLabel}</span>` : '';
   const toDriver = ctx.nodeById.get(link.to)?.kind === 'driver';
   // Lags count from the month the firing driver entered its phase: the month
-  // it was pushed there, or the second chosen driver's own start month (M12).
+  // it was pushed there, or a chosen driver's own start month (M12).
   const chosenFrom = from ? ctx.chosen.get(from.id) : undefined;
   // Faded (M32): the chosen driver's phase has ended. Either the effect had
   // arrived and is no longer applied, or its lag was longer than the hold
@@ -149,7 +157,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     if (month.index < info.onset) {
       // Chosen by hand, but its own start month has not come yet (M12).
       html += `<div class="state-line zero" style="background:#f0f2f5">Not yet in play: enters ${label} in ${MONTH_NAMES[info.startMonth - 1]}, month ${info.onset}</div>`;
-      html += `<p class="hint">One of two drivers you chose, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
+      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers you chose, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
       html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
       html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
       html += feedbackBlock(node, graph, ctx);
@@ -157,7 +165,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     }
     if (info.fade !== null && info.hold !== null && month.index >= info.fade) {
       // Chosen by hand, but its phase has ended (M32).
-      const control = ctx.chosen.size > 1 && info.onset !== 0 ? '"Second driver lasts"' : '"Event lasts"';
+      const control = `"${esc(info.control)}"`;
       const line = info.fade <= 0
         ? `Over before the year shown began: entered ${label} in ${MONTH_NAMES[info.startMonth - 1]}, held it ${monthsWord(info.hold)}, and ended in ${monthAt(info.startMonth, info.hold)}`
         : `Faded: held ${label} from ${MONTH_NAMES[info.startMonth - 1]} for ${monthsWord(info.hold)}; no phase since ${monthAt(info.startMonth, info.hold)} (month ${info.fade})`;
@@ -180,7 +188,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]}, ${monthsWord(-info.onset)} before the year shown begins, and has held it since: ${monthsWord(held)} so far. Its links count their lag from then, so some of its effects were already being felt at month 0.`;
         if (held > 12) when += ` That is more than a year in one phase, longer than most real events last: treat the later months as a teaching convenience.`;
       }
-      html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}</p>`;
+      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}</p>`;
     } else if (lasts) {
       html += `<p class="hint">${lasts.trim()}</p>`;
     }
@@ -229,7 +237,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     return html;
   }
   html += `<div class="state-line zero" style="background:#f0f2f5">Not part of the current scenario</div>`;
-  html += `<p class="empty">Pick it under "Driver" or "Second driver" in the left panel to see its phases and connections.</p>`;
+  html += `<p class="empty">Pick it under "Driver", "Second driver" or "More drivers" in the left panel to see its phases and connections.</p>`;
   html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
   html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
   return html;

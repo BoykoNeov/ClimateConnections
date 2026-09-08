@@ -11284,8 +11284,12 @@
       "phase": "la_nina",
       "start_month": 6,
       "start_year": 2010,
-      "second_driver": "iod",
-      "second_phase": "negative",
+      "drivers": [
+        {
+          "driver": "iod",
+          "phase": "negative"
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11360,10 +11364,14 @@
       "phase": "la_nina",
       "start_month": 9,
       "start_year": 2016,
-      "second_driver": "iod",
-      "second_phase": "negative",
-      "second_start_month": 5,
-      "second_starts_before": true,
+      "drivers": [
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "start_month": 5,
+          "starts_before": true
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11447,10 +11455,14 @@
       "phase": "negative",
       "start_month": 11,
       "start_year": 2019,
-      "second_driver": "iod",
-      "second_phase": "positive",
-      "second_start_month": 6,
-      "second_starts_before": true,
+      "drivers": [
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "start_month": 6,
+          "starts_before": true
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11516,9 +11528,13 @@
       "phase": "positive",
       "start_month": 11,
       "start_year": 2014,
-      "second_driver": "enso",
-      "second_phase": "el_nino",
-      "second_start_month": 3,
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "start_month": 3
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11577,9 +11593,13 @@
       "phase": "positive",
       "start_month": 6,
       "start_year": 1995,
-      "second_driver": "enso",
-      "second_phase": "la_nina",
-      "second_start_month": 9,
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "start_month": 9
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11641,10 +11661,14 @@
       "phase": "warm",
       "start_month": 5,
       "start_year": 1984,
-      "second_driver": "amo",
-      "second_phase": "negative",
-      "second_start_month": 5,
-      "second_starts_before": true,
+      "drivers": [
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "start_month": 5,
+          "starts_before": true
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11911,9 +11935,13 @@
       "phase": "eruption",
       "start_month": 6,
       "start_year": 1991,
-      "second_driver": "enso",
-      "second_phase": "el_nino",
-      "second_start_month": 9,
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "start_month": 9
+        }
+      ],
       "steps": [
         {
           "month": 0,
@@ -11983,10 +12011,14 @@
       "phase": "easterly",
       "start_month": 11,
       "start_year": 2009,
-      "second_driver": "enso",
-      "second_phase": "el_nino",
-      "second_start_month": 6,
-      "second_starts_before": true,
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "start_month": 6,
+          "starts_before": true
+        }
+      ],
       "steps": [
         {
           "month": 0,

@@ -1,12 +1,25 @@
 // Left panel: stories, the region picker (M28), compare switch (M14), driver
-// picker, phase buttons, optional second driver (M11), start month, a slot
-// for the season dial (M13), confidence filter, legend.
+// picker, phase buttons, the other chosen drivers (M11; a list since M33),
+// start month, a slot for the season dial (M13), confidence filter, legend.
 
 import type { DriverNode, OutcomeNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
 import { renderLegend } from './legend';
 
 export type ConfidenceFilter = 'all' | 'probable' | 'established';
+
+/** A driver chosen by hand besides the first (M11; any number since M33),
+ *  with its own calendar start month (M12; read within the twelve months
+ *  shown, or backwards from the first driver's start when `startsBefore` is
+ *  set, M15) and its own hold (M32, counted from its own onset). */
+export interface OtherDriver {
+  driverId: string;
+  phaseId: string;
+  startMonth: number;
+  startsBefore: boolean;
+  /** how many months (1–12) it holds its phase; null = the whole year shown */
+  hold: number | null;
+}
 
 /** Everything that defines one scenario: what the map on one side draws. */
 export interface ScenarioSettings {
@@ -18,11 +31,25 @@ export interface ScenarioSettings {
   filter: ConfidenceFilter;
   /** follow links through drivers the scenario driver has pushed (M10) */
   chain: boolean;
-  /** a second driver chosen by hand (M11) with its own calendar start month
-   *  (M12; read within the twelve months shown, or backwards from the first
-   *  driver's start when `startsBefore` is set, M15) and its own hold
-   *  (M32, counted from its own onset); null = none */
-  second: { driverId: string; phaseId: string; startMonth: number; startsBefore: boolean; hold: number | null } | null;
+  /** every other driver chosen by hand, in the order they were added: the
+   *  second driver first (M11), then the third and more (M33). Never the
+   *  first driver, never the same driver twice. Empty = one driver. */
+  others: OtherDriver[];
+}
+
+const ORDINALS = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Twelfth', 'Thirteenth', 'Fourteenth', 'Fifteenth', 'Sixteenth'];
+
+/** "First", "Second", ... for a chosen driver's place in the scenario
+ *  (1 = the first driver, 2 = the first of `others`). */
+export function ordinalWord(n: number): string {
+  return ORDINALS[n - 1] ?? `${n}th`;
+}
+
+/** The name of the control that sets how long a chosen driver lasts:
+ *  "Event lasts" alone, "First driver lasts" / "Second driver lasts" / ...
+ *  with more than one driver. `place` is 1 for the first driver. */
+export function lastsControl(place: number, total: number): string {
+  return total > 1 ? `${ordinalWord(place)} driver lasts` : 'Event lasts';
 }
 
 /** The "typical" hold offered for a driver (M32): the middle of its typical
@@ -68,7 +95,7 @@ export interface ControlState extends ScenarioSettings {
 
 /** Scenario A's settings alone. */
 export function scenarioSettings(s: ScenarioSettings): ScenarioSettings {
-  return { driverId: s.driverId, phaseId: s.phaseId, startMonth: s.startMonth, hold: s.hold, filter: s.filter, chain: s.chain, second: s.second };
+  return { driverId: s.driverId, phaseId: s.phaseId, startMonth: s.startMonth, hold: s.hold, filter: s.filter, chain: s.chain, others: s.others };
 }
 
 /** The settings on one side: A, or B in compare mode. */
@@ -91,28 +118,201 @@ export function oppositePhaseId(driver: DriverNode, phaseId: string): string {
   return (opp ?? driver.phases.find((p) => p.id !== phaseId) ?? driver.phases[0]).id;
 }
 
+/** What one row of the other-driver list needs to draw itself. */
+interface RowView {
+  /** its place in the scenario: 2 for the second driver, 3 for the third, ... */
+  place: number;
+  /** the row's own settings, or null for the empty "Second driver (optional)" row */
+  own: OtherDriver | null;
+  /** ids the row's picker must not offer: the first driver and the other rows' drivers */
+  taken: string[];
+  /** the first driver's start month, for the onset and hold hints */
+  startMonth: number;
+}
+
+/** One row of the other-driver list (M33): a driver picker with "None",
+ *  its phase buttons and, once a driver is picked, its own start month
+ *  (M12), before/after the first driver (M15) and its own hold (M32). Row
+ *  0 is the "Second driver (optional)" block the page has had since M11;
+ *  the rows after it sit behind "More drivers". */
+class OtherRow {
+  readonly el: HTMLDivElement;
+  private heading: HTMLHeadingElement;
+  private select: HTMLSelectElement;
+  private phaseBox: HTMLDivElement;
+  private phaseButtons = new Map<string, HTMLButtonElement>();
+  /** driver whose phase buttons are in the box ('' = none) */
+  private renderedId: string | null = null;
+  /** ids the picker's options currently leave out, as a key */
+  private optionsFor: string | null = null;
+  private monthBox: HTMLDivElement;
+  private monthHeading: HTMLHeadingElement;
+  private monthSelect: HTMLSelectElement;
+  private orderButtons = new Map<'after' | 'before', HTMLButtonElement>();
+  private onsetHint: HTMLParagraphElement;
+  private holdHeading: HTMLHeadingElement;
+  private holdSelect: HTMLSelectElement;
+  private holdHint: HTMLParagraphElement;
+
+  constructor(private owner: ControlsView, private index: number) {
+    this.el = document.createElement('div');
+    this.el.className = 'other-driver';
+    this.el.dataset.index = String(index);
+    this.heading = document.createElement('h2');
+    this.el.append(this.heading);
+    this.select = document.createElement('select');
+    this.select.dataset.role = 'other-driver';
+    this.select.addEventListener('change', () => {
+      if (!this.select.value) { this.owner.removeOther(this.index); return; }
+      // Like the main driver: first phase, and the month its events usually begin.
+      const d = this.owner.driverById(this.select.value);
+      this.owner.setOther(this.index, { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, startsBefore: false, hold: null });
+    });
+    this.el.append(this.select);
+    this.phaseBox = document.createElement('div');
+    this.phaseBox.className = 'phase-buttons';
+    this.el.append(this.phaseBox);
+    if (index === 0) {
+      const hint = document.createElement('p');
+      hint.className = 'hint';
+      hint.textContent = 'Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by another; choose its neutral phase to hold it out of play. "More drivers" below adds a third and more.';
+      this.el.append(hint);
+    }
+
+    // The driver's own start month, read within the twelve months shown (a
+    // month before the first driver's start falls in the next year) or,
+    // with "Before the first driver" (M15), backwards from the start.
+    this.monthBox = document.createElement('div');
+    this.monthBox.className = 'second-month';
+    this.monthBox.hidden = true;
+    this.monthHeading = document.createElement('h2');
+    this.monthBox.append(this.monthHeading);
+    this.monthSelect = document.createElement('select');
+    this.monthSelect.dataset.role = 'other-month';
+    MONTH_NAMES.forEach((name, i) => {
+      const o = document.createElement('option');
+      o.value = String(i + 1);
+      o.textContent = name;
+      this.monthSelect.append(o);
+    });
+    this.monthSelect.addEventListener('change', () => this.owner.patchOther(this.index, { startMonth: Number(this.monthSelect.value) }));
+    this.monthBox.append(this.monthSelect);
+    const order = document.createElement('div');
+    order.className = 'phase-buttons second-order';
+    order.setAttribute('role', 'group');
+    for (const [key, label] of [['after', 'After the first driver'], ['before', 'Before the first driver']] as const) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn order-btn';
+      b.dataset.order = key;
+      b.textContent = label;
+      b.addEventListener('click', () => this.owner.patchOther(this.index, { startsBefore: key === 'before' }));
+      order.append(b);
+      this.orderButtons.set(key, b);
+    }
+    this.monthBox.append(order);
+    this.onsetHint = document.createElement('p');
+    this.onsetHint.className = 'hint';
+    this.monthBox.append(this.onsetHint);
+    // The driver's own hold (M32), counted from its own onset.
+    this.holdHeading = document.createElement('h2');
+    this.monthBox.append(this.holdHeading);
+    this.holdSelect = this.owner.makeHoldSelect('');
+    this.holdSelect.dataset.role = 'other-hold';
+    this.holdSelect.addEventListener('change', () => {
+      const own = this.owner.other(this.index);
+      if (own) this.owner.patchOther(this.index, { hold: this.owner.holdFromSelect(this.holdSelect, this.owner.driverById(own.driverId)) });
+    });
+    this.monthBox.append(this.holdSelect);
+    this.holdHint = document.createElement('p');
+    this.holdHint.className = 'hint';
+    this.monthBox.append(this.holdHint);
+    this.el.append(this.monthBox);
+  }
+
+  /** Rebuild the picker's options: none, then every driver not taken elsewhere. */
+  private renderOptions(taken: string[]): void {
+    const key = taken.join('|');
+    if (this.optionsFor === key) return;
+    this.optionsFor = key;
+    this.select.innerHTML = '';
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = 'None';
+    this.select.append(none);
+    for (const d of this.owner.drivers) {
+      if (taken.includes(d.id)) continue;
+      const o = document.createElement('option');
+      o.value = d.id;
+      o.textContent = d.name.replace(/\s*\(.*\)$/, '');
+      this.select.append(o);
+    }
+  }
+
+  /** Rebuild the phase buttons (only when the driver changed); empty when none. */
+  private renderPhases(driver: DriverNode | null): void {
+    if (this.renderedId === (driver?.id ?? '')) return;
+    this.renderedId = driver?.id ?? '';
+    this.phaseBox.innerHTML = '';
+    this.phaseButtons.clear();
+    if (!driver) return;
+    for (const p of driver.phases) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn';
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
+      b.addEventListener('click', () => this.owner.patchOther(this.index, { phaseId: p.id }));
+      this.phaseBox.append(b);
+      this.phaseButtons.set(p.id, b);
+    }
+  }
+
+  reflect(v: RowView): void {
+    const word = ordinalWord(v.place);
+    this.heading.textContent = `${word} driver${v.place === 2 ? ' (optional)' : ''}`;
+    this.select.setAttribute('aria-label', `Pick a ${word.toLowerCase()} driver phenomenon, or none`);
+    this.renderOptions(v.taken);
+    const driver = v.own ? this.owner.driverById(v.own.driverId) : null;
+    this.select.value = driver?.id ?? '';
+    this.renderPhases(driver);
+    for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === v.own?.phaseId));
+    this.monthBox.hidden = !driver;
+    if (!driver || !v.own) return;
+    this.monthHeading.textContent = `${word} driver begins in`;
+    this.monthSelect.setAttribute('aria-label', `Calendar month the ${word.toLowerCase()} driver enters its phase`);
+    this.monthSelect.value = String(v.own.startMonth);
+    for (const [key, b] of this.orderButtons) b.setAttribute('aria-pressed', String((key === 'before') === v.own.startsBefore));
+    let when: string;
+    if (v.own.startsBefore) {
+      // Read backwards (M15): the last time the month came up before the start.
+      const back = (v.startMonth - v.own.startMonth + 12) % 12;
+      const ago = back === 0 ? 'A year before the first driver' : back === 1 ? 'One month before the first driver' : `${back} months before the first driver${v.own.startMonth > v.startMonth ? ', in the previous year' : ''}`;
+      when = `${ago}: already under way when the year shown begins, so its effects can be felt from month 0.`;
+    } else {
+      const offset = (v.own.startMonth - v.startMonth + 12) % 12;
+      when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${v.own.startMonth < v.startMonth ? ', in the following year' : ''}.`;
+    }
+    this.onsetHint.textContent = `${when} ${driver.onset_hint}`;
+    this.holdHeading.textContent = `${word} driver lasts`;
+    this.holdSelect.setAttribute('aria-label', `How many months the ${word.toLowerCase()} driver holds its phase`);
+    const after = (v.own.startMonth - v.startMonth + 12) % 12;
+    this.owner.reflectHold(this.holdSelect, this.holdHint, driver, v.own.hold, v.startMonth, v.own.startsBefore ? after - 12 : after);
+  }
+}
+
 export class ControlsView {
   private phaseButtons = new Map<string, HTMLButtonElement>();
   private phaseBox: HTMLDivElement;
   private driverSelect: HTMLSelectElement | null = null;
   private driverHeading: HTMLHeadingElement;
-  /** second-driver picker and its phase buttons (only with more than one driver) */
-  private secondSelect: HTMLSelectElement | null = null;
-  private secondBox: HTMLDivElement | null = null;
-  private secondPhaseButtons = new Map<string, HTMLButtonElement>();
-  /** driver whose options the second-driver picker currently excludes */
-  private secondOptionsFor: string | null = null;
-  /** driver whose phase buttons are in the second box ('' = none) */
-  private renderedSecondId: string | null = null;
-  /** the second driver's own start month (M12): heading, picker and hint, shown only with a second driver */
-  private secondMonthBox: HTMLDivElement | null = null;
-  private secondMonthSelect: HTMLSelectElement | null = null;
-  /** before / after the first driver (M15) */
-  private orderButtons = new Map<'after' | 'before', HTMLButtonElement>();
-  private secondOnsetHint: HTMLParagraphElement | null = null;
-  /** the second driver's own hold (M32), in the same box */
-  private secondHoldSelect: HTMLSelectElement | null = null;
-  private secondHoldHint: HTMLParagraphElement | null = null;
+  /** the other chosen drivers (M11; a list since M33), only with more than
+   *  one driver: row 0 in `otherHost`, the rest behind "More drivers" */
+  private rows: OtherRow[] = [];
+  private otherHost: HTMLDivElement | null = null;
+  private moreBox: HTMLDetailsElement | null = null;
+  private moreSummary: HTMLElement | null = null;
+  private moreHost: HTMLDivElement | null = null;
+  private addButton: HTMLButtonElement | null = null;
   private onsetHint: HTMLParagraphElement;
   /** "Event lasts" (M32): heading, picker and hint under the start month */
   private holdHeading: HTMLHeadingElement;
@@ -140,13 +340,14 @@ export class ControlsView {
   /** a story was picked from the dropdown (null = "none") */
   onStory: (storyId: string | null) => void = () => {};
 
-  constructor(container: HTMLElement, private drivers: DriverNode[], stories: Story[], regions: OutcomeNode[], private state: ControlState) {
+  constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], regions: OutcomeNode[], private state: ControlState) {
     container.innerHTML = '';
 
     const hs = document.createElement('h2');
     hs.textContent = 'Stories';
     container.append(hs);
     this.storySelect = document.createElement('select');
+    this.storySelect.dataset.role = 'story';
     this.storySelect.setAttribute('aria-label', 'Play a story');
     const none = document.createElement('option');
     none.value = '';
@@ -171,6 +372,7 @@ export class ControlsView {
     hr.textContent = 'By region';
     container.append(hr);
     this.regionSelect = document.createElement('select');
+    this.regionSelect.dataset.role = 'region';
     this.regionSelect.setAttribute('aria-label', 'Pick a place to see every driver that reaches it');
     const noRegion = document.createElement('option');
     noRegion.value = '';
@@ -244,6 +446,7 @@ export class ControlsView {
     if (drivers.length > 1) {
       this.driverHeading.textContent = 'Driver';
       const sel = document.createElement('select');
+      sel.dataset.role = 'driver';
       sel.setAttribute('aria-label', 'Pick a driver phenomenon');
       for (const d of drivers) {
         const o = document.createElement('option');
@@ -255,10 +458,10 @@ export class ControlsView {
       sel.addEventListener('change', () => {
         // A new driver starts in its first phase and in the month its events
         // usually begin (a winter pattern should not start in June). If it
-        // was the second driver, the second slot empties: no driver twice.
+        // was one of the other chosen drivers, that row goes: no driver twice.
         const d = this.driverById(sel.value);
-        const second = this.edited().second?.driverId === d.id ? null : this.edited().second;
-        this.updateScenario({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, hold: null, second });
+        const others = this.edited().others.filter((o) => o.driverId !== d.id);
+        this.updateScenario({ driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, hold: null, others });
       });
       container.append(sel);
       this.driverSelect = sel;
@@ -267,93 +470,32 @@ export class ControlsView {
     this.phaseBox.className = 'phase-buttons';
     container.append(this.phaseBox);
 
-    // Second driver (M11): optional, chosen by hand, with a start month of its
-    // own (M12). Offered only when there is more than one driver.
+    // The other chosen drivers (M11; any number since M33), each with a
+    // start month of its own (M12). Offered only when there is more than one
+    // driver. The second driver's row is always there; the rows after it,
+    // and the button that adds one, sit behind "More drivers", closed by
+    // default so the page opens as it did with one optional second driver.
     if (drivers.length > 1) {
-      const h2s = document.createElement('h2');
-      h2s.textContent = 'Second driver (optional)';
-      container.append(h2s);
-      const sel2 = document.createElement('select');
-      sel2.setAttribute('aria-label', 'Pick a second driver phenomenon, or none');
-      sel2.addEventListener('change', () => {
-        if (!sel2.value) { this.updateScenario({ second: null }); return; }
-        // Like the main driver: first phase, and the month its events usually begin.
-        const d = this.driverById(sel2.value);
-        this.updateScenario({ second: { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, startsBefore: false, hold: null } });
-      });
-      container.append(sel2);
-      this.secondSelect = sel2;
-      this.secondBox = document.createElement('div');
-      this.secondBox.className = 'phase-buttons';
-      container.append(this.secondBox);
-      const hint2nd = document.createElement('p');
-      hint2nd.className = 'hint';
-      hint2nd.textContent = 'Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by the other; choose its neutral phase to hold it out of play.';
-      container.append(hint2nd);
-
-      // The second driver's own start month, read within the twelve months
-      // shown (a month before the first driver's start falls in the next year)
-      // or, with "Before the first driver" (M15), backwards from the start.
-      const box2 = document.createElement('div');
-      box2.className = 'second-month';
-      box2.hidden = true;
-      const h2m = document.createElement('h2');
-      h2m.textContent = 'Second driver begins in';
-      box2.append(h2m);
-      const month2 = document.createElement('select');
-      month2.setAttribute('aria-label', 'Calendar month the second driver enters its phase');
-      MONTH_NAMES.forEach((name, i) => {
-        const o = document.createElement('option');
-        o.value = String(i + 1);
-        o.textContent = name;
-        month2.append(o);
-      });
-      month2.addEventListener('change', () => {
-        const second = this.edited().second;
-        if (!second) return;
-        this.updateScenario({ second: { ...second, startMonth: Number(month2.value) } });
-      });
-      box2.append(month2);
-      this.secondMonthSelect = month2;
-      const order = document.createElement('div');
-      order.className = 'phase-buttons second-order';
-      order.setAttribute('role', 'group');
-      order.setAttribute('aria-label', 'Does the second driver begin after or before the first?');
-      for (const [key, label] of [['after', 'After the first driver'], ['before', 'Before the first driver']] as const) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'phase-btn order-btn';
-        b.dataset.order = key;
-        b.textContent = label;
-        b.addEventListener('click', () => {
-          const second = this.edited().second;
-          if (!second) return;
-          this.updateScenario({ second: { ...second, startsBefore: key === 'before' } });
-        });
-        order.append(b);
-        this.orderButtons.set(key, b);
-      }
-      box2.append(order);
-      this.secondOnsetHint = document.createElement('p');
-      this.secondOnsetHint.className = 'hint';
-      box2.append(this.secondOnsetHint);
-      // The second driver's own hold (M32), counted from its own onset.
-      const h2h = document.createElement('h2');
-      h2h.textContent = 'Second driver lasts';
-      box2.append(h2h);
-      const hold2 = this.makeHoldSelect('How many months the second driver holds its phase');
-      hold2.addEventListener('change', () => {
-        const second = this.edited().second;
-        if (!second) return;
-        this.updateScenario({ second: { ...second, hold: this.holdFromSelect(hold2, this.driverById(second.driverId)) } });
-      });
-      box2.append(hold2);
-      this.secondHoldSelect = hold2;
-      this.secondHoldHint = document.createElement('p');
-      this.secondHoldHint.className = 'hint';
-      box2.append(this.secondHoldHint);
-      container.append(box2);
-      this.secondMonthBox = box2;
+      this.otherHost = document.createElement('div');
+      container.append(this.otherHost);
+      this.moreBox = document.createElement('details');
+      this.moreBox.className = 'more-drivers';
+      this.moreBox.hidden = true;
+      this.moreSummary = document.createElement('summary');
+      this.moreBox.append(this.moreSummary);
+      this.moreHost = document.createElement('div');
+      this.moreBox.append(this.moreHost);
+      this.addButton = document.createElement('button');
+      this.addButton.type = 'button';
+      this.addButton.className = 'add-driver';
+      this.addButton.textContent = '+ Add a driver';
+      this.addButton.addEventListener('click', () => this.addOther());
+      this.moreBox.append(this.addButton);
+      const hintMore = document.createElement('p');
+      hintMore.className = 'hint';
+      hintMore.textContent = 'Every driver you add is chosen by hand like the second: its own phase, start month and length, its links at full confidence, never pushed. Three or more pushes on one place still add up and clamp to one step; two against one is drawn as the majority, hatched, and the card lists all of them. There is no order among them beyond their start months.';
+      this.moreBox.append(hintMore);
+      container.append(this.moreBox);
     }
 
     const h2 = document.createElement('h2');
@@ -361,6 +503,7 @@ export class ControlsView {
     container.append(h2);
     this.monthHeading = h2;
     const month = document.createElement('select');
+    month.dataset.role = 'month';
     MONTH_NAMES.forEach((name, i) => {
       const o = document.createElement('option');
       o.value = String(i + 1);
@@ -382,6 +525,7 @@ export class ControlsView {
     this.holdHeading.textContent = 'Event lasts';
     container.append(this.holdHeading);
     this.holdSelect = this.makeHoldSelect('How many months the driver holds its phase');
+    this.holdSelect.dataset.role = 'hold';
     this.holdSelect.addEventListener('change', () => this.updateScenario({ hold: this.holdFromSelect(this.holdSelect, this.driverById(this.edited().driverId)) }));
     container.append(this.holdSelect);
     this.holdHint = document.createElement('p');
@@ -403,6 +547,7 @@ export class ControlsView {
     h3.textContent = 'Show connections';
     container.append(h3);
     const filter = document.createElement('select');
+    filter.dataset.role = 'filter';
     for (const [v, label] of [['all', 'All, including contested'], ['probable', 'Probable and established'], ['established', 'Established only']] as const) {
       const o = document.createElement('option');
       o.value = v;
@@ -469,15 +614,48 @@ export class ControlsView {
     this.reflect();
   }
 
-  private driverById(id: string): DriverNode {
+  driverById(id: string): DriverNode {
     const d = this.drivers.find((x) => x.id === id);
     if (!d) throw new Error(`unknown driver ${id}`);
     return d;
   }
 
+  // ---- the other chosen drivers (M33), edited by their rows
+  /** The settings of the other driver in row `index`, or null for an empty row. */
+  other(index: number): OtherDriver | null {
+    return this.edited().others[index] ?? null;
+  }
+
+  /** Put a driver in row `index` (appending when the row was empty). */
+  setOther(index: number, d: OtherDriver): void {
+    const others = [...this.edited().others];
+    others[Math.min(index, others.length)] = d;
+    this.updateScenario({ others });
+  }
+
+  patchOther(index: number, patch: Partial<OtherDriver>): void {
+    const own = this.other(index);
+    if (own) this.setOther(index, { ...own, ...patch });
+  }
+
+  removeOther(index: number): void {
+    this.updateScenario({ others: this.edited().others.filter((_, i) => i !== index) });
+  }
+
+  /** "Add a driver": the first driver not yet chosen, in its first phase
+   *  and its usual start month, appended to the list. */
+  private addOther(): void {
+    const s = this.edited();
+    const taken = new Set([s.driverId, ...s.others.map((o) => o.driverId)]);
+    const d = this.drivers.find((x) => !taken.has(x.id));
+    if (!d) return;
+    if (this.moreBox) this.moreBox.open = true;
+    this.updateScenario({ others: [...s.others, { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, startsBefore: false, hold: null }] });
+  }
+
   /** A hold picker (M32): the whole year, the driver's typical length
    *  (its text is filled in by `reflectHold`), then 1–12 months. */
-  private makeHoldSelect(label: string): HTMLSelectElement {
+  makeHoldSelect(label: string): HTMLSelectElement {
     const sel = document.createElement('select');
     sel.setAttribute('aria-label', label);
     const whole = document.createElement('option');
@@ -497,16 +675,16 @@ export class ControlsView {
     return sel;
   }
 
-  private holdFromSelect(sel: HTMLSelectElement, driver: DriverNode): number | null {
+  holdFromSelect(sel: HTMLSelectElement, driver: DriverNode): number | null {
     if (sel.value === '') return null;
     if (sel.value === 'typical') return typicalHold(driver);
     return Number(sel.value);
   }
 
   /** Reflect a hold in its picker and hint. `onset` is the driver's month
-   *  index (0, or the second driver's own, possibly negative) so the hint
-   *  can name the month the phase ends. */
-  private reflectHold(sel: HTMLSelectElement, hint: HTMLParagraphElement, driver: DriverNode, hold: number | null, startMonth: number, onset: number): void {
+   *  index (0, or another chosen driver's own, possibly negative) so the
+   *  hint can name the month the phase ends. */
+  reflectHold(sel: HTMLSelectElement, hint: HTMLParagraphElement, driver: DriverNode, hold: number | null, startMonth: number, onset: number): void {
     const typical = typicalHold(driver);
     sel.options[1].textContent = `Typical for this driver (${typical === 1 ? '1 month' : `${typical} months`})`;
     sel.value = hold === null ? '' : hold === typical ? 'typical' : String(hold);
@@ -541,9 +719,13 @@ export class ControlsView {
     else this.update(patch);
   }
 
-  /** Reflect a state set from outside (a story) without firing onChange. */
+  /** Reflect a state set from outside (a story) without firing onChange.
+   *  "More drivers" opens when the scenario has a third driver or more, so
+   *  the student can see them, and closes otherwise (a story is a fresh
+   *  scenario). */
   setState(patch: Partial<ControlState>): void {
     this.state = { ...this.state, ...patch };
+    if (this.moreBox && 'others' in patch) this.moreBox.open = this.edited().others.length >= 2;
     this.reflect();
   }
 
@@ -552,43 +734,30 @@ export class ControlsView {
     this.storySelect.value = storyId ?? '';
   }
 
-  /** Rebuild the second-driver picker's options: none, then every driver but the main one. */
-  private renderSecondOptions(mainId: string): void {
-    if (!this.secondSelect || this.secondOptionsFor === mainId) return;
-    this.secondOptionsFor = mainId;
-    this.secondSelect.innerHTML = '';
-    const none = document.createElement('option');
-    none.value = '';
-    none.textContent = 'None';
-    this.secondSelect.append(none);
-    for (const d of this.drivers) {
-      if (d.id === mainId) continue;
-      const o = document.createElement('option');
-      o.value = d.id;
-      o.textContent = d.name.replace(/\s*\(.*\)$/, '');
-      this.secondSelect.append(o);
+  /** One row per other chosen driver, at least one (the optional second
+   *  driver), the second and later rows behind "More drivers". */
+  private reflectOthers(s: ScenarioSettings): void {
+    if (!this.otherHost || !this.moreBox || !this.moreSummary || !this.moreHost || !this.addButton) return;
+    const want = Math.max(1, s.others.length);
+    while (this.rows.length > want) this.rows.pop()!.el.remove();
+    while (this.rows.length < want) {
+      const row = new OtherRow(this, this.rows.length);
+      (this.rows.length === 0 ? this.otherHost : this.moreHost).append(row.el);
+      this.rows.push(row);
     }
-  }
-
-  /** Rebuild the second driver's phase buttons (only when it changed); empty when none. */
-  private renderSecondPhases(driver: DriverNode | null): void {
-    if (!this.secondBox || this.renderedSecondId === (driver?.id ?? '')) return;
-    this.renderedSecondId = driver?.id ?? '';
-    this.secondBox.innerHTML = '';
-    this.secondPhaseButtons.clear();
-    if (!driver) return;
-    for (const p of driver.phases) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'phase-btn';
-      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => {
-        const cur = this.edited().second;
-        this.updateScenario({ second: { driverId: driver.id, phaseId: p.id, startMonth: cur?.startMonth ?? driver.default_start_month, startsBefore: cur?.startsBefore ?? false, hold: cur?.hold ?? null } });
-      });
-      this.secondBox.append(b);
-      this.secondPhaseButtons.set(p.id, b);
-    }
+    const ids = [s.driverId, ...s.others.map((o) => o.driverId)];
+    this.rows.forEach((row, i) => row.reflect({
+      place: i + 2,
+      own: s.others[i] ?? null,
+      taken: ids.filter((id) => id !== s.others[i]?.driverId),
+      startMonth: s.startMonth,
+    }));
+    // "More drivers" only once there is a second driver to add to; the
+    // button only while a driver is left to add.
+    const extra = Math.max(0, s.others.length - 1);
+    this.moreBox.hidden = s.others.length === 0;
+    this.moreSummary.textContent = extra === 0 ? 'More drivers' : `More drivers (${extra} chosen)`;
+    this.addButton.hidden = ids.length >= this.drivers.length;
   }
 
   /** Rebuild the phase buttons for the current driver (only when it changed). */
@@ -629,37 +798,10 @@ export class ControlsView {
     this.renderPhases(driver);
     if (this.driverSelect) this.driverSelect.value = driver.id;
     for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === s.phaseId));
-    if (this.secondSelect) {
-      this.renderSecondOptions(driver.id);
-      const second = s.second ? this.driverById(s.second.driverId) : null;
-      this.secondSelect.value = second?.id ?? '';
-      this.renderSecondPhases(second);
-      for (const [id, b] of this.secondPhaseButtons) b.setAttribute('aria-pressed', String(id === s.second?.phaseId));
-      // The second driver's own start month (M12), only while one is chosen.
-      if (this.secondMonthBox && this.secondMonthSelect && this.secondOnsetHint) {
-        this.secondMonthBox.hidden = !second;
-        if (second && s.second) {
-          this.secondMonthSelect.value = String(s.second.startMonth);
-          for (const [key, b] of this.orderButtons) b.setAttribute('aria-pressed', String((key === 'before') === s.second.startsBefore));
-          let when: string;
-          if (s.second.startsBefore) {
-            // Read backwards (M15): the last time the month came up before the start.
-            const back = (s.startMonth - s.second.startMonth + 12) % 12;
-            const ago = back === 0 ? 'A year before the first driver' : back === 1 ? 'One month before the first driver' : `${back} months before the first driver${s.second.startMonth > s.startMonth ? ', in the previous year' : ''}`;
-            when = `${ago}: already under way when the year shown begins, so its effects can be felt from month 0.`;
-          } else {
-            const offset = (s.second.startMonth - s.startMonth + 12) % 12;
-            when = offset === 0 ? 'Same month as the first driver.' : offset === 1 ? 'One month after the first driver.' : `${offset} months after the first driver${s.second.startMonth < s.startMonth ? ', in the following year' : ''}.`;
-          }
-          this.secondOnsetHint.textContent = `${when} ${second.onset_hint}`;
-          if (this.secondHoldSelect && this.secondHoldHint) {
-            const after = (s.second.startMonth - s.startMonth + 12) % 12;
-            this.reflectHold(this.secondHoldSelect, this.secondHoldHint, second, s.second.hold, s.startMonth, s.second.startsBefore ? after - 12 : after);
-          }
-        }
-      }
-      this.monthHeading.textContent = second ? 'First driver begins in' : 'Event begins in';
-      this.holdHeading.textContent = second ? 'First driver lasts' : 'Event lasts';
+    if (this.otherHost) {
+      this.reflectOthers(s);
+      this.monthHeading.textContent = s.others.length > 0 ? 'First driver begins in' : 'Event begins in';
+      this.holdHeading.textContent = lastsControl(1, s.others.length + 1);
     }
     this.monthSelect.value = String(s.startMonth);
     this.reflectHold(this.holdSelect, this.holdHint, driver, s.hold, s.startMonth, 0);

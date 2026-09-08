@@ -89,10 +89,11 @@ data/*.yaml  --(scripts/build-data.mjs: validate + convert)-->  public/data/grap
   schema, writes a single JSON file the app loads at startup. Fails the build
   on any error.
 - **Engine** (`src/engine/`): pure TypeScript with no DOM access. Takes the
-  graph plus a scenario (driver id, phase, start month, since M11 an
-  optional second driver and phase, since M12 that driver's own start
-  month and since M15 whether that month lies before the first driver's)
-  and returns a per-month state table.
+  graph plus a scenario (driver id, phase, start month, since M11 other
+  drivers chosen by hand with their phases, one until M33 and any number
+  since, since M12 each one's own start month, since M15 whether that
+  month lies before the first driver's, and since M32 how long each
+  holds its phase) and returns a per-month state table.
   Fully unit-testable.
 - **UI** (`src/ui/`): D3 for the map and arrows, hand-rolled DOM for the
   panels. Reads engine output; never reads YAML directly.
@@ -322,49 +323,63 @@ Semantics (implement exactly this; do not improvise):
    The app runs with `maxDepth` 3 (every driver can appear once) when
    "Follow links through other drivers" is on, and 1 when it is off.
 7. The function is pure. No Date, no randomness, no DOM.
-8. Two chosen drivers (M11). The optional `secondary` scenario field names a
-   second driver and phase, chosen by hand:
-   - Both chosen drivers enter their phase at month 0 and hold it for the
-     whole horizon. Both fire their links at the first hop, at full
-     confidence; rules 3–5 apply unchanged, so at a shared target the two
-     drivers' effects add up and opposite signs set `conflicting`.
-   - A chosen driver is never pushed: a link into it from the other chosen
+8. Any number of chosen drivers (M11 for one; rewritten in the plural in
+   M33). The optional `others` scenario field lists every driver chosen
+   by hand besides the first, each with its phase (`ScenarioDriver`):
+   - Every chosen driver enters its phase at month 0 (or in its own start
+     month, below) and holds it for the whole horizon (or its own hold,
+     rule 9). Every chosen driver fires its links at the first hop, at
+     full confidence; rules 3–5 apply unchanged, so at a shared target the
+     chosen drivers' effects add up and opposite signs set `conflicting`.
+     Three drivers on one place can conflict two against one and still
+     clamp to ±1 with `conflicting` set; all three links are listed in
+     `viaLinkIds`. No new combination rule.
+   - A chosen driver is never pushed: a link into it from any other chosen
      driver (or from a pushed driver) is skipped and not reported, the same
      loop guard as rule 6. Drivers that are not chosen can still be pushed
-     by either chosen driver and followed at depth.
-   - The same driver cannot be chosen twice; the engine throws.
-   - A neutral second phase applies nothing but still pins the driver: it
-     cannot be pushed, so the result is the single-driver scenario with that
-     driver held out of play (its chain is cut).
-   - Own start month (M12). `secondary.startMonth` (calendar month 1–12,
-     optional) is read within the twelve months shown: the second driver's
-     onset is the first month index at or after 0 whose calendar month is
-     `startMonth`, i.e. `(startMonth - scenario.startMonth + 12) % 12`, so a
-     month earlier in the calendar than the scenario's falls in the
-     following year. Omitted, or equal to the scenario's start month, means
-     onset 0 and the M11 result exactly. Before its onset the second driver
-     holds no phase (value 0), fires nothing (its links are not reported,
-     not even as pending) and is still pinned: a link into it is skipped
-     and not reported, as above. From its onset it holds its phase to the
-     end of the horizon and its links count their lag from that onset, as
-     a pushed driver's do from the month it was pushed. Exported as
-     `chosenOnset(scenario, driverId)` (0 for the main driver).
-   - Begins before the first (M15). `secondary.startsBefore` (optional
-     boolean) reads `startMonth` backwards instead: the onset is
+     by any chosen driver and followed at depth.
+   - The same driver cannot be chosen twice, the first driver included;
+     the engine throws. There is no order among the other chosen drivers
+     beyond their onsets.
+   - A neutral phase applies nothing but still pins the driver: it cannot
+     be pushed, so the result is the scenario without that driver, with
+     the driver held out of play (its chain is cut).
+   - Own start month (M12). `startMonth` on a `ScenarioDriver` (calendar
+     month 1–12, optional) is read within the twelve months shown: the
+     driver's onset is the first month index at or after 0 whose calendar
+     month is `startMonth`, i.e. `(startMonth - scenario.startMonth + 12)
+     % 12`, so a month earlier in the calendar than the scenario's falls
+     in the following year. Omitted, or equal to the scenario's start
+     month, means onset 0 and the M11 result exactly. Before its onset the
+     driver holds no phase (value 0), fires nothing (its links are not
+     reported, not even as pending) and is still pinned: a link into it is
+     skipped and not reported, as above. From its onset it holds its
+     phase to the end of the horizon and its links count their lag from
+     that onset, as a pushed driver's do from the month it was pushed.
+     Exported as `chosenOnset(scenario, driverId)` (0 for the first
+     driver).
+   - Begins before the first (M15). `startsBefore` (optional boolean)
+     reads `startMonth` backwards instead: the onset is
      `(startMonth - scenario.startMonth + 12) % 12 - 12`, an index from -12
      (the same calendar month a year earlier; also the result when
      `startMonth` is omitted) to -1. Month index 0 is still the first
-     driver's onset and the horizon is unchanged: the second driver is
-     simply already in its phase at month 0 and holds it to the end, and
-     its links count their lag from the negative onset, so a link whose lag
+     driver's onset and the horizon is unchanged: the driver is simply
+     already in its phase at month 0 and holds it to the end, and its
+     links count their lag from the negative onset, so a link whose lag
      has already run is available (applied or pending) from month 0 and
      one whose lag is longer than the head start arrives at
      `onset + lag`. Everything else in rule 8 stands: never pushed, sum
      and clamp, one hop at full confidence. `startsBefore: false` is the
      M12 result exactly.
+   - The pre-M33 spelling `secondary` (one `ScenarioDriver`) is read as
+     the first entry of `others` for one milestone, so every M11–M32
+     scenario gives the same timeline either way (a regression test runs
+     every shipped story both ways); `chosenDrivers(scenario)` returns the
+     first driver then `others` in order, and `otherDrivers(scenario)`
+     the list alone.
 9. Phase duration (M32). A chosen driver may carry `holdMonths` (an
-   integer 1–12; `Scenario.holdMonths` for the main driver,
-   `ScenarioDriver.holdMonths` for the second; the engine throws on any
+   integer 1–12; `Scenario.holdMonths` for the first driver,
+   `ScenarioDriver.holdMonths` for each other chosen driver; the engine throws on any
    other value). Omitted, the driver holds its phase to the end of the
    horizon: the behaviour of rules 2 and 8 exactly.
    - From month index `onset + holdMonths` (the *fade*, exported as
@@ -384,7 +399,7 @@ Semantics (implement exactly this; do not improvise):
      chain is cut at the same month: the pushed driver has no phase and
      its own links are not reported at all (not faded, not pending).
    - A hold of 12 from onset 0 fades the driver at month 12, the last
-     month shown and the same calendar month a year on. A second driver
+     month shown and the same calendar month a year on. A chosen driver
      that began before the first (M15) counts its hold from its negative
      onset, so its fade may be 0 or negative: it then holds no phase in
      any month shown and its links are faded from month 0.
@@ -489,7 +504,18 @@ phase description and the timescale.
   driver's `default_start_month`; a hint under it says how many months
   after the first driver that is ("in the following year" when the month
   wraps) and repeats the driver's onset hint. Picking the second driver as
-  the main one empties the second slot. Under the month picker (M15) two
+  the main one empties the second slot. Since M33 this block is the first
+  row of a list: once a second driver is chosen a collapsed "More
+  drivers" line appears under it (closed by default, §0 rule 15 of
+  `docs/PLAN_V3.md`, so the page opens as before) holding the "Third
+  driver", "Fourth driver", ... rows, each the same block ("Third driver
+  begins in", before/after, "Third driver lasts"), and a "+ Add a driver"
+  button that appends the first driver not yet chosen in its first phase
+  and usual start month (hidden once every driver is chosen). Every row's
+  picker leaves out the drivers taken elsewhere; "None" on a row removes
+  it and the rows after it move up; picking as the main driver one that
+  is chosen elsewhere drops that row. A story with two or more other
+  drivers opens the section; one with fewer closes it. Under the month picker (M15) two
   buttons, "After the first driver" and "Before the first driver", say
   which way the month is read; with "before" the hint says how many
   months earlier that is ("in the previous year" when the month wraps, "A
@@ -501,8 +527,8 @@ phase description and the timescale.
   earlier".
 - Start month selector (default: June, because El Niño events typically
   begin to develop in boreal late spring/summer). Its heading reads "Event
-  begins in", or "First driver begins in" while a second driver is chosen.
-- "Event lasts" (M32; "First driver lasts" with a second driver), under
+  begins in", or "First driver begins in" while another driver is chosen.
+- "Event lasts" (M32; "First driver lasts" with more than one driver), under
   the start month: "The whole year shown (default)", "Typical for this
   driver (N months)" read from `typical_duration_months` (the middle of
   the range, rounded up, at most 12), then 1–12 months. The hint gives
@@ -510,8 +536,9 @@ phase description and the timescale.
   ("Fades in December, month 6"), and always the one sentence: an effect
   that needs longer to arrive than the event lasts never arrives on this
   map; in reality the ocean can carry an effect past the end of an event.
-  Picking a driver resets the hold to the whole year. The second driver's
-  box gets its own "Second driver lasts" picker and hint, counted from
+  Picking a driver resets the hold to the whole year. Each other chosen
+  driver's row gets its own "Second driver lasts" / "Third driver lasts"
+  / ... picker and hint, counted from
   its own onset ("Over before the year shown begins" when the fade falls
   at or before month 0). From the fade the driver's marker takes the
   neutral style of a driver out of play (grey, unlabelled unless
@@ -531,9 +558,10 @@ phase description and the timescale.
 - Season dial (M13), under the start month: the calendar year as a circle
   of twelve month sectors, January at the top, clockwise. The month on
   screen is filled and follows the timeline; a dark triangle outside the
-  ring marks where the year shown begins, a dot in the phase colour where a
-  second driver begins (hollow, M15, when it began before the year shown:
-  the tooltip says since when). Inside, one ring for the whole scenario: each
+  ring marks where the year shown begins, a dot in the phase colour where
+  each other chosen driver begins (hollow, M15, when it began before the
+  year shown: the tooltip says since when; two beginning in the same month
+  sit side by side within that month's sector, M33). Inside, one ring for the whole scenario: each
   month shaded by how many of the links in play (applied or pending at
   some month; ghosts excluded) pass the season gate, against the busiest
   month, with the count "k of N in season now" in the centre. While a
@@ -578,10 +606,11 @@ illustrative outlines, not scientific boundaries, and the control says so.
   The side being edited carries the accent; clicking a title makes that
   side the edited one.
 - Both maps follow the one timeline by month index. Scenario B is a full
-  scenario of its own (driver, phase, start month, second driver and its
-  month, confidence filter, chain); the areas toggle is shared. The
-  existing scenario controls, the dial, the timeline's ticks and
-  second-onset mark and the card's details all follow the edited side.
+  scenario of its own (driver, phase, start month, the other chosen
+  drivers with their months and holds, confidence filter, chain); the
+  areas toggle is shared. Switching compare on copies the whole list to
+  B. The existing scenario controls, the dial, the timeline's ticks and
+  onset marks and the card's details all follow the edited side.
   When the two start months differ the header shows "Month N" with both
   calendar months underneath.
 - B starts as a copy of A with the opposite phase (El Niño → La Niña; from
@@ -1972,6 +2001,84 @@ drivers stays in one place.
   `hold_months` from its rows), or the UI items M29–M31, each with its
   own sign-off.
 
+### M33 — Any number of chosen drivers (version 3, signed off 2026-09-08)
+- The second engine extension of version 3, taken at the user's "work on
+  M33". Section 4 rule 8 rewritten in the plural as above:
+  `Scenario.others: ScenarioDriver[]` replaces `Scenario.secondary`, which
+  the engine reads as a one-element `others` for one milestone (M34 may
+  remove it); `otherDrivers(scenario)` merges the two spellings, and
+  `chosenDrivers`, `chosenOnset` and `chosenFade` read the list. Every
+  rule-8 statement about "the second driver" now holds for each chosen
+  driver other than the first: its own onset (M12/M15 arithmetic
+  unchanged), its own hold (M32), first hop at full tier, never pushed,
+  the same driver never twice (the first driver included; the engine
+  throws), no order beyond the onsets, sum and clamp unchanged so two
+  against one clamps to ±1 with `conflicting` set. No new combination
+  rule. Engine tests in `src/engine/propagate.test.ts` (eight: `secondary`
+  as a one-element `others` giving the same timeline and chosen list
+  across the M12/M15/M32 cases and an empty list the single-driver
+  scenario; three drivers two against one and four drivers two against
+  two; four drivers with three onsets, one negative; each driver's own
+  hold from its own onset; no chosen driver pushed from any other or from
+  a pushed driver, with the pushed driver still followed; a neutral phase
+  among many pinning its driver; the same driver twice refused whichever
+  way it is spelled; a bad hold on any of them refused); the story tests
+  build `others` from the story's list, check that graph.json carries no
+  old field, and run every shipped story with one other driver both ways
+  for the same timeline; the acceptance and compare tests use `others`.
+- Data: stories gain `drivers:` (a list of `driver`, `phase`, optional
+  `start_month`, `starts_before`, `hold_months`), replacing
+  `second_driver` / `second_phase` / `second_start_month` /
+  `second_starts_before` / `second_hold_months`. The validator still
+  accepts the old fields for one milestone, refuses the two spellings at
+  once and any driver chosen twice (the story's own included), checks
+  every listed driver and phase, and writes only `drivers` into
+  graph.json, so the app and the tests read one shape. The eight shipped
+  stories with a second driver were migrated (graph.json unchanged apart
+  from the field name); no shipped story chooses three drivers yet.
+- UI as §5.6 above: `ScenarioSettings.others: OtherDriver[]` replaces
+  `second`; the "Second driver (optional)" block is row 0 of a list
+  (`OtherRow` in `src/ui/controls.ts`), the rows after it and "+ Add a
+  driver" behind a `<details class="more-drivers">` closed by default
+  ("More drivers (N chosen)" once there are more); headings by ordinal
+  ("Third driver", "Third driver begins in", "Third driver lasts";
+  `ordinalWord`, `lastsControl`); the timeline's onset ticks carry the
+  driver's name and merge when two begin in the same month
+  (`TimelineView.setOtherOnsets`); the dial draws one dot per other
+  driver (`DialModel.others`); the pane title adds one " + " per driver;
+  the print caption lists them ("..., and A: x beginning in June and B: y
+  already under way since May, 4 months earlier"); the card says "One of
+  three drivers you chose" and names the row's own control when a driver
+  has faded (`ChosenPhase.control`). Selects in `#controls` carry a
+  `data-role` (story, region, driver, other-driver, other-month,
+  other-hold, month, hold, filter) because the list moves the later ones.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m33.mjs` (41
+  checks): plain load as in M32 (one empty second-driver row, nine
+  selects, no "More drivers"); the AMO as second driver showing the
+  collapsed section and the first-driver headings; "+ Add a driver"
+  appending the IOD as "Third driver" with its own month and hold pickers
+  and every picker leaving out the drivers taken elsewhere; the QBO
+  easterly from June as the third driver, so El Niño, the positive AMO
+  and the QBO meet at the Atlantic hurricanes in August: quieter, two
+  against one, conflicting ring, all three arrows applied and three
+  "from" lines on the card; named ticks at September and December and two
+  dial dots, side by side when both begin in September; the QBO's own
+  hold from its own onset with the card naming "Third driver lasts"; a
+  fourth driver ("Fourth driver", "One of four drivers you chose") and
+  "None" removing it; "None" on the second row moving the QBO up with its
+  month and hold; the QBO picked as the main driver dropping its row;
+  compare mode copying the list to B, its titles with three drivers, and
+  the IOD dropped from B alone; the 2016 story setting the dipole since
+  May with the section closed and the 1997 story clearing the list;
+  print. Screenshots `m33-01-three-drivers-august.png`,
+  `m33-02-more-drivers-panel.png`, `m33-03-compare.png`.
+- Not in M33: a new combination rule (two against one is drawn as the
+  majority, hatched, not weighed); a story with three drivers (the data
+  allows it; none was needed); removing `secondary` and the old story
+  fields (one milestone of grace, as the plan says). Next in
+  `docs/PLAN_V3.md`: M34 (a table of real years, whose rows are M33
+  scenarios), or the UI items M29–M31, each with its own sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -2168,7 +2275,8 @@ writing mechanism text):
   ice; M25: the Eurasian October snow); region-first navigation (done,
   M28: "By region", every driver that reaches a place); phase duration
   (done, M32: "Event lasts", the first engine extension of version 3);
-  spreadsheet-to-YAML importer if outside contributors join.
+  any number of chosen drivers (done, M33: "More drivers", rule 8 in the
+  plural); spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean
   Basin Mode, Atlantic and Pacific Meridional Modes, the QBO, two

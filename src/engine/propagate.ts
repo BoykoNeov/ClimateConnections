@@ -34,25 +34,37 @@ function checkHold(hold: number | undefined, driverId: string): void {
   if (!Number.isInteger(hold) || hold < 1 || hold > 12) throw new Error(`holdMonths for "${driverId}" must be an integer from 1 to 12, got ${hold}`);
 }
 
-/** The drivers whose phases the scenario fixes by hand: the main driver and,
- *  since M11, an optional second one. The main driver enters its phase at
- *  month 0; the second one at month 0 too, or in its own start month (M12).
- *  Either may hold its phase for a set number of months (M32). */
+/** The drivers chosen by hand besides the first (M33, rule 8): `others`,
+ *  with the pre-M33 `secondary` read as its first entry for one milestone.
+ *  Every entry is copied without undefined fields, so two spellings of the
+ *  same choice compare equal. */
+export function otherDrivers(scenario: Scenario): ScenarioDriver[] {
+  const raw = [...(scenario.secondary ? [scenario.secondary] : []), ...(scenario.others ?? [])];
+  return raw.map(({ driverId, phaseId, startMonth, startsBefore, holdMonths }) => {
+    const d: ScenarioDriver = { driverId, phaseId };
+    if (startMonth !== undefined) d.startMonth = startMonth;
+    if (startsBefore) d.startsBefore = true;
+    if (holdMonths !== undefined) d.holdMonths = holdMonths;
+    return d;
+  });
+}
+
+/** The drivers whose phases the scenario fixes by hand: the first driver
+ *  and, since M11, any others (one until M33, any number since). The first
+ *  driver enters its phase at month 0; each other one at month 0 too, or
+ *  in its own start month (M12, M15). Any of them may hold its phase for a
+ *  set number of months (M32). The same driver may not appear twice; the
+ *  engine throws. */
 export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
   checkHold(scenario.holdMonths, scenario.driverId);
   const main: ScenarioDriver = { driverId: scenario.driverId, phaseId: scenario.phaseId };
   if (scenario.holdMonths !== undefined) main.holdMonths = scenario.holdMonths;
   const out: ScenarioDriver[] = [main];
-  if (scenario.secondary) {
-    if (scenario.secondary.driverId === scenario.driverId) {
-      throw new Error(`scenario chooses driver "${scenario.driverId}" twice`);
-    }
-    const { driverId, phaseId, startMonth, startsBefore, holdMonths } = scenario.secondary;
-    checkHold(holdMonths, driverId);
-    const d: ScenarioDriver = { driverId, phaseId };
-    if (startMonth !== undefined) d.startMonth = startMonth;
-    if (startsBefore) d.startsBefore = true;
-    if (holdMonths !== undefined) d.holdMonths = holdMonths;
+  const seen = new Set([scenario.driverId]);
+  for (const d of otherDrivers(scenario)) {
+    if (seen.has(d.driverId)) throw new Error(`scenario chooses driver "${d.driverId}" twice`);
+    seen.add(d.driverId);
+    checkHold(d.holdMonths, d.driverId);
     out.push(d);
   }
   return out;
@@ -61,27 +73,27 @@ export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
 /** Month index from which a chosen driver holds no phase any more (M32,
  *  rule 9): its onset plus its `holdMonths`; null when it holds its phase to
  *  the end of the horizon (no `holdMonths`). May be 0 or negative for a
- *  second driver that began before the first (M15) and was over before the
- *  year shown begins: it then holds no phase in any month shown. */
+ *  driver that began before the first (M15) and was over before the year
+ *  shown begins: it then holds no phase in any month shown. */
 export function chosenFade(scenario: Scenario, driverId: string): number | null {
   const hold = driverId === scenario.driverId ? scenario.holdMonths
-    : scenario.secondary?.driverId === driverId ? scenario.secondary.holdMonths : undefined;
+    : otherDrivers(scenario).find((d) => d.driverId === driverId)?.holdMonths;
   if (hold === undefined) return null;
   checkHold(hold, driverId);
   return chosenOnset(scenario, driverId) + hold;
 }
 
-/** Month index at which a chosen driver enters its phase: 0 for the main
- *  driver and for a second driver without a start month of its own; otherwise
- *  the first month index at or after 0 whose calendar month is the second
- *  driver's start month (M12). A start month earlier in the calendar than the
- *  scenario's therefore falls in the following year. With `startsBefore`
- *  (M15) the month is read backwards instead: the last time it came up
- *  before month 0, an index from -12 to -1, so the driver is already in its
- *  phase when the year shown begins. */
+/** Month index at which a chosen driver enters its phase: 0 for the first
+ *  driver and for any other chosen driver without a start month of its own;
+ *  otherwise the first month index at or after 0 whose calendar month is
+ *  that driver's start month (M12). A start month earlier in the calendar
+ *  than the scenario's therefore falls in the following year. With
+ *  `startsBefore` (M15) the month is read backwards instead: the last time
+ *  it came up before month 0, an index from -12 to -1, so the driver is
+ *  already in its phase when the year shown begins. */
 export function chosenOnset(scenario: Scenario, driverId: string): number {
-  const s = scenario.secondary;
-  if (!s || s.driverId !== driverId) return 0;
+  const s = otherDrivers(scenario).find((d) => d.driverId === driverId);
+  if (!s) return 0;
   const after = s.startMonth === undefined ? 0 : (s.startMonth - scenario.startMonth + 12) % 12;
   return s.startsBefore ? after - 12 : after;
 }
@@ -108,7 +120,8 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     const key = `${l.from}|${l.when}`;
     linksFrom.set(key, [...(linksFrom.get(key) ?? []), l]);
   }
-  // The chosen drivers (one, or two since M11) and the value of their phases.
+  // The chosen drivers (one; two since M11; any number since M33) and the
+  // value of their phases.
   const chosen = chosenDrivers(scenario);
   const chosenValue = new Map<string, Value>();
   for (const c of chosen) {
@@ -118,9 +131,9 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
   }
 
   // First month index at which a driver entered a phase. A chosen driver
-  // enters its phase at month 0 (the second one in its own start month, M12,
-  // which may lie before month 0, M15: a negative onset, so links whose lag
-  // has already run are available from month 0); a driver set off by a link
+  // enters its phase at month 0 (any but the first in its own start month,
+  // M12, which may lie before month 0, M15: a negative onset, so links whose
+  // lag has already run are available from month 0); a driver set off by a link
   // enters its phase the first month that link is applied, and keeps that
   // onset for the rest of the scenario (each link fires once: its lag is
   // counted from that onset).
@@ -132,7 +145,7 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     const nodes: Record<string, NodeState> = {};
     for (const n of graph.nodes) nodes[n.id] = emptyState();
     const links: Record<string, LinkState> = {};
-    // Chosen drivers already in their phase this month. A second driver with
+    // Chosen drivers already in their phase this month. A chosen driver with
     // a later start month holds no phase before it: value 0, no links. One
     // that began before the first (negative onset) is in phase throughout.
     // A driver whose hold has run out (M32) holds no phase from its fade
@@ -148,7 +161,7 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
 
     // Drivers whose phase is already fixed this month. A link into one of them
     // is skipped: a chosen driver is never pushed (not by its own effects, not
-    // by the other chosen driver, not before its own start month and not
+    // by another chosen driver, not before its own start month and not
     // after its phase has ended), and a driver set off at a shallower hop is
     // not pushed again (loop guard).
     const settled = new Set<string>(chosen.map((c) => c.driverId));

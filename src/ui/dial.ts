@@ -1,6 +1,6 @@
 // Season dial (M13): the calendar year as a circle. Twelve month sectors
 // (January at the top, clockwise), the month on screen filled, a mark where
-// the year shown begins (and one where a second driver begins), and inside
+// the year shown begins (and one where each other chosen driver begins), and inside
 // either a ring of how many of the scenario's links are in season each month
 // or, while a place is selected, one ring per link acting on it showing the
 // months it can be felt. Clicking a month jumps the timeline to it. The dial
@@ -26,9 +26,10 @@ export interface DialModel {
   startMonth: number;
   /** calendar month on screen */
   currentMonth: number;
-  /** a second driver's own start month and phase colour (M12), or null;
-   *  `before` (M15) when it began before the year shown, `onset` its month index */
-  second: { month: number; color: string; name: string; before: boolean; onset: number } | null;
+  /** each other chosen driver's own start month and phase colour (M12; any
+   *  number since M33); `before` (M15) when it began before the year shown,
+   *  `onset` its month index. Empty = one driver. */
+  others: { month: number; color: string; name: string; before: boolean; onset: number }[];
   /** the season gate for every link in play, January first */
   profile: SeasonMonth[];
   /** the links acting on the selected place, or null when nothing is selected */
@@ -145,9 +146,11 @@ export class SeasonDialView {
         return `${MONTH_NAMES[d - 1]}: month ${index(d)} after onset. ${p.inSeason.length} of ${total} connections in season. Click to jump there.`;
       });
 
-    // Onset marks: a dark triangle where the year shown begins, a dot in the
-    // second driver's phase colour where it begins (a hollow one when it
-    // began before the year shown, M15: that month came up last year).
+    // Onset marks: a dark triangle where the year shown begins, a dot in
+    // each other chosen driver's phase colour where it begins (a hollow one
+    // when it began before the year shown, M15: that month came up last
+    // year). Two drivers beginning in the same month sit side by side
+    // within that month's sector.
     this.marks.selectAll('*').remove();
     const a = (startMonth - 0.5) * 30;
     const [tx, ty] = point(R_MARK, a);
@@ -156,10 +159,14 @@ export class SeasonDialView {
       .attr('d', 'M0,-5L5,4L-5,4Z')
       .attr('transform', `translate(${tx.toFixed(2)},${ty.toFixed(2)}) rotate(${a + 180})`)
       .append('title').text(`The year shown begins here: ${MONTH_NAMES[startMonth - 1]}, month 0`);
-    if (model.second && model.second.month !== startMonth) {
-      const b = (model.second.month - 0.5) * 30;
+    const atMonth = new Map<number, number>();
+    for (const other of model.others) {
+      if (other.month === startMonth) continue;
+      const stacked = atMonth.get(other.month) ?? 0;
+      atMonth.set(other.month, stacked + 1);
+      const b = (other.month - 0.5) * 30 + [0, 9, -9, 18, -18][stacked % 5];
       const [sx, sy] = point(R_MARK, b);
-      const { before, onset, name, color, month } = model.second;
+      const { before, onset, name, color, month } = other;
       this.marks.append('circle')
         .attr('class', before ? 'dial-second before' : 'dial-second')
         .attr('cx', sx.toFixed(2)).attr('cy', sy.toFixed(2)).attr('r', 4.5)

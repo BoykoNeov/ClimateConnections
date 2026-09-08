@@ -9,9 +9,10 @@ export class TimelineView {
   private ticks: HTMLDivElement;
   private timer: number | null = null;
   private horizon: number;
-  /** month index at which a second driver enters its phase (M12), negative
-   *  when it began before the first (M15); null = none or month 0 */
-  private secondOnset: number | null = null;
+  /** month index at which each other chosen driver enters its phase (M12;
+   *  any number since M33), negative when it began before the first (M15),
+   *  with the driver's short name; onsets at month 0 are left out */
+  private otherOnsets: { index: number; name: string }[] = [];
   /** month indices at which a chosen driver's phase ends (M32), with a tooltip each */
   private fades: { index: number; title: string }[] = [];
   onChange: (index: number) => void = () => {};
@@ -80,16 +81,16 @@ export class TimelineView {
     this.input.setAttribute('aria-valuetext', this.valueText(this.index));
   }
 
-  /** Mark the tick where a second driver enters its phase (null or 0 = no
-   *  mark). A negative index (M15) marks the first tick instead: the driver
-   *  was already under way when the year shown began. */
-  setSecondOnset(index: number | null): void {
-    this.secondOnset = index && index !== 0 ? index : null;
+  /** Mark the ticks where the other chosen drivers enter their phase (an
+   *  onset at 0 gets no mark). A negative index (M15) marks the first tick
+   *  instead: the driver was already under way when the year shown began. */
+  setOtherOnsets(onsets: { index: number; name: string }[]): void {
+    this.otherOnsets = onsets.filter((o) => o.index !== 0);
     this.renderTicks();
   }
 
   /** Mark the ticks where a chosen driver's phase ends (M32). Indices
-   *  outside the timeline (a second driver over before it began) are not
+   *  outside the timeline (a chosen driver over before the year began) are not
    *  marked; the card and the hint say so instead. */
   setFades(fades: { index: number; title: string }[]): void {
     this.fades = fades.filter((f) => f.index >= 0 && f.index <= this.horizon);
@@ -101,13 +102,14 @@ export class TimelineView {
     for (let i = 0; i <= this.horizon; i++) {
       const s = document.createElement('span');
       s.textContent = MONTH_NAMES[calendarMonth(this.startMonth, i) - 1].slice(0, 3);
-      if (i === this.secondOnset) {
+      const here = this.otherOnsets.filter((o) => o.index === i);
+      const before = i === 0 ? this.otherOnsets.filter((o) => o.index < 0) : [];
+      if (here.length > 0) {
         s.className = 'second-onset';
-        s.title = 'The second driver enters its phase here';
-      } else if (i === 0 && this.secondOnset !== null && this.secondOnset < 0) {
-        const ago = -this.secondOnset;
+        s.title = here.map((o) => `${o.name} enters its phase here`).join('. ');
+      } else if (before.length > 0) {
         s.className = 'second-before';
-        s.title = `The second driver entered its phase ${ago === 1 ? 'a month' : `${ago} months`} before this and is already under way`;
+        s.title = before.map((o) => `${o.name} entered its phase ${-o.index === 1 ? 'a month' : `${-o.index} months`} before this and is already under way`).join('. ');
       }
       const fades = this.fades.filter((f) => f.index === i);
       if (fades.length > 0) {

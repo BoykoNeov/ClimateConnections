@@ -18,8 +18,8 @@ science is, and where that comes from.
 
 The map currently holds fourteen drivers, 62 outcome regions, 208 cited links
 (twenty-nine of them between the drivers) and eighteen guided stories. A scenario is
-one driver in one phase, optionally with a second driver in a phase of its
-own; a driver can also push another driver into a phase, and the map then
+one driver in one phase, optionally with any number of other drivers each
+in a phase of its own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
 opposite ways the map says so rather than picking a winner. Two scenarios
 can be compared side by side on one timeline.
@@ -139,6 +139,21 @@ any static file server.
   between them are listed on the cards, not drawn. Choosing the second
   driver's neutral phase holds it out of play, which shows what a year
   looks like when the other driver does not respond.
+- **More drivers** appears under the second driver once one is chosen,
+  closed by default. Open it and **+ Add a driver** adds a third driver
+  (then a fourth, and so on, up to every driver on the map), each with the
+  same controls as the second: its phase, **Third driver begins in**,
+  before or after the first, and **Third driver lasts**. Every driver you
+  add is chosen by hand like the second: its links fire at full
+  confidence, it is never pushed, and its effects add up with the rest.
+  Three pushes on one place still add up to one step: two against one is
+  drawn as the majority with the dashed conflict ring, and the card lists
+  all three with the driver each comes from. There is no order among
+  them beyond their start months. "None" on a row removes it; picking a
+  driver as the first that is already chosen below drops that row. In
+  compare mode B starts with the same list as A. The timeline underlines
+  each driver's start tick with its name, and the season dial puts a dot
+  for each.
 - **Event begins in** (labelled **First driver begins in** while a second
   driver is chosen) picks the calendar month of onset. Picking a driver
   moves it to that driver's usual start: June for ENSO and the dipole, which
@@ -178,7 +193,7 @@ any static file server.
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase
-  colour marks where a second driver begins. The ring inside is shaded by
+  colour marks where each other chosen driver begins. The ring inside is shaded by
   how many of the scenario's connections are in season each month, with
   the count in the centre. Click a place on the map and the dial shows one
   ring per connection acting on it instead, coloured over the months it
@@ -267,16 +282,18 @@ docs/PLAN.md         the plan: scope, schema, engine semantics, milestones
 docs/DATA_FORMAT.md  field-by-field schema for the three data files
 ```
 
-The engine takes a scenario (driver, phase, start month, and optionally a
-second driver and phase) and, for each of the thirteen month indices from
+The engine takes a scenario (driver, phase, start month, and optionally
+any number of other drivers, each with a phase, a start month and a length
+of its own) and, for each of the thirteen month indices from
 onset, decides which links apply: the link's phase must match, the month
 must be at or past the link's minimum lag, and the calendar month must be
 in the link's season. Applied links push the target one step along its
 axis; the sum is clamped to a three-level state (+1, 0, −1). A link that is
 past its lag but out of season is "pending" and drawn muted. Opposite
-pushes on the same node are flagged as conflicting. A second chosen driver
-starts at month 0 like the first and is treated the same way; the two
-drivers' pushes simply add up.
+pushes on the same node are flagged as conflicting. Every other chosen
+driver starts at month 0 like the first, or in its own month, and is
+treated the same way; the drivers' pushes simply add up, and no driver may
+be chosen twice.
 
 A link may also point at another driver. It pushes that driver into a phase
 the same way, and the engine then follows that driver's own links for up to
@@ -351,8 +368,9 @@ The full schema is in `docs/DATA_FORMAT.md`.
 
 Stories are guided walkthroughs in `data/stories.yaml`: a title, an intro, a
 phase and start month (optionally a start year for a real event, and
-optionally a second driver and phase chosen for the whole story, with a
-start month of its own if it began in a different month), then a
+optionally a `drivers` list of other drivers chosen for the whole story,
+each with a phase and, if it began in a different month, a start month of
+its own), then a
 list of steps, each with a month index, a node to focus, a short text and
 sources. The validator refuses a step that points at a node the scenario
 does not affect at that month, so a story cannot claim more than the links

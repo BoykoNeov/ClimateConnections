@@ -665,3 +665,185 @@ describe('propagate: phase duration', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------- M33: any number of chosen drivers
+// Rule 8 in the plural: `others` lists every chosen driver but the first.
+// Each has its own onset (M12/M15) and hold (M32), fires at the first hop
+// at full confidence, is never pushed, and adds up with the rest under the
+// same sum-and-clamp rule. No driver twice. `secondary` is read as a
+// one-element `others` for one milestone.
+function graphWithMany(links: Partial<Link>[]): Graph {
+  const g = graphWith(links);
+  for (const [id, name] of [['d3', 'Third driver'], ['d4', 'Fourth driver']] as const) {
+    g.nodes.push({
+      id, name, kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+      phases: [{ id: 'up', label: 'Up', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'down', label: 'Down', color: '#000000', summary: '', value: -1 }],
+    });
+  }
+  return g;
+}
+
+describe('propagate: any number of chosen drivers (M33)', () => {
+  it('reads `secondary` as a one-element `others`: the same timeline, the same chosen list', () => {
+    const g = graphWithMany([
+      { id: 'x', to: 'a', effect: 1, lag_months: [2, 2] },
+      { id: 'y', from: 'd2', when: 'up', to: 'a', effect: -1, lag_months: [1, 1], season: [1, 2, 3] },
+      { id: 'push', to: 'd2', effect: -1 },
+    ]);
+    for (const d of [
+      { driverId: 'd2', phaseId: 'up' },
+      { driverId: 'd2', phaseId: 'up', startMonth: 9 },
+      { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true },
+      { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true, holdMonths: 5 },
+      { driverId: 'd2', phaseId: 'mid' },
+    ]) {
+      const old: Scenario = { ...base, maxDepth: 3, secondary: d };
+      const now: Scenario = { ...base, maxDepth: 3, others: [d] };
+      expect(propagate(g, now).months).toEqual(propagate(g, old).months);
+      expect(chosenDrivers(now)).toEqual(chosenDrivers(old));
+      expect(chosenOnset(now, 'd2')).toBe(chosenOnset(old, 'd2'));
+      expect(chosenFade(now, 'd2')).toBe(chosenFade(old, 'd2'));
+    }
+    // Both spellings at once: `secondary` first, then `others`.
+    expect(chosenDrivers({ ...base, secondary: { driverId: 'd2', phaseId: 'up' }, others: [{ driverId: 'd3', phaseId: 'down' }] }).map((c) => c.driverId)).toEqual(['drv', 'd2', 'd3']);
+    // An empty list is the single-driver scenario.
+    expect(propagate(g, { ...base, others: [] }).months).toEqual(propagate(g, base).months);
+    expect(chosenDrivers({ ...base, others: [] })).toEqual([{ driverId: 'drv', phaseId: 'warm' }]);
+  });
+
+  it('three drivers on one place: two against one still clamps to ±1 and is flagged conflicting, with all three links listed', () => {
+    const g = graphWithMany([
+      { id: 'x', to: 'a', effect: 1, confidence: 'established' },
+      { id: 'y', from: 'd2', when: 'up', to: 'a', effect: 1, confidence: 'probable' },
+      { id: 'z', from: 'd3', when: 'down', to: 'a', effect: -1, confidence: 'contested' },
+    ]);
+    const t = propagate(g, { ...base, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'down' }] });
+    for (const m of t.months) {
+      expect(m.nodes.a.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.a.conflicting).toBe(true);
+      expect(m.nodes.a.confidence).toBe('contested');
+      expect([...m.nodes.a.viaLinkIds].sort()).toEqual(['x', 'y', 'z']);
+      for (const id of ['x', 'y', 'z']) expect(m.links[id]).toEqual({ status: 'applied', confidence: g.links.find((l) => l.id === id)!.confidence, depth: 1 });
+      expect(m.nodes.drv.value).toBe(1);
+      expect(m.nodes.d2.value).toBe(1);
+      expect(m.nodes.d3.value).toBe(-1);
+    }
+    // Two against two cancel: no state, conflicting.
+    const four = propagate(graphWithMany([
+      { id: 'x', to: 'a', effect: 1 }, { id: 'y', from: 'd2', when: 'up', to: 'a', effect: 1 },
+      { id: 'z', from: 'd3', when: 'down', to: 'a', effect: -1 }, { id: 'w', from: 'd4', when: 'down', to: 'a', effect: -1 },
+    ]), { ...base, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'down' }, { driverId: 'd4', phaseId: 'down' }] });
+    expect(four.months[0].nodes.a.value).toBe(0);
+    expect(four.months[0].nodes.a.conflicting).toBe(true);
+    expect(four.months[0].nodes.a.viaLinkIds).toHaveLength(4);
+  });
+
+  it('four drivers with three onsets of their own, one negative: each counts its lag from its own onset and holds no phase before it', () => {
+    // June start. d2 from September (onset 3), d3 since March (onset -3), d4 at month 0.
+    const g = graphWithMany([
+      { id: 'y', from: 'd2', when: 'up', to: 'a', effect: 1, lag_months: [2, 2] },
+      { id: 'z', from: 'd3', when: 'down', to: 'b', effect: -1, lag_months: [5, 5] },
+      { id: 'w', from: 'd4', when: 'up', to: 'c', effect: 1, lag_months: [1, 1] },
+    ]);
+    const s: Scenario = { ...base, others: [
+      { driverId: 'd2', phaseId: 'up', startMonth: 9 },
+      { driverId: 'd3', phaseId: 'down', startMonth: 3, startsBefore: true },
+      { driverId: 'd4', phaseId: 'up' },
+    ] };
+    expect(chosenOnset(s, 'drv')).toBe(0);
+    expect(chosenOnset(s, 'd2')).toBe(3);
+    expect(chosenOnset(s, 'd3')).toBe(-3);
+    expect(chosenOnset(s, 'd4')).toBe(0);
+    const t = propagate(g, s);
+    for (const m of t.months) {
+      expect(m.nodes.d2.value, `d2 month ${m.index}`).toBe(m.index >= 3 ? 1 : 0);
+      expect(m.nodes.d3.value, `d3 month ${m.index}`).toBe(-1);
+      expect(m.nodes.d4.value, `d4 month ${m.index}`).toBe(1);
+      expect(m.nodes.a.value, `a month ${m.index}`).toBe(m.index >= 5 ? 1 : 0);       // 3 + 2
+      expect(m.nodes.b.value, `b month ${m.index}`).toBe(m.index >= 2 ? -1 : 0);      // -3 + 5
+      expect(m.nodes.c.value, `c month ${m.index}`).toBe(m.index >= 1 ? 1 : 0);       // 0 + 1
+      if (m.index < 3) expect(m.links.y).toBeUndefined();
+    }
+  });
+
+  it('each chosen driver has its own hold, counted from its own onset, and fades on its own', () => {
+    const g = graphWithMany([
+      { id: 'x', to: 'a', effect: 1 },
+      { id: 'y', from: 'd2', when: 'up', to: 'b', effect: 1 },
+      { id: 'z', from: 'd3', when: 'down', to: 'c', effect: -1 },
+    ]);
+    const s: Scenario = { ...base, holdMonths: 4, others: [
+      { driverId: 'd2', phaseId: 'up', startMonth: 9, holdMonths: 2 },
+      { driverId: 'd3', phaseId: 'down' },
+    ] };
+    expect(chosenFade(s, 'drv')).toBe(4);
+    expect(chosenFade(s, 'd2')).toBe(5);
+    expect(chosenFade(s, 'd3')).toBeNull();
+    const t = propagate(g, s);
+    for (const m of t.months) {
+      expect(m.nodes.a.value, `a month ${m.index}`).toBe(m.index < 4 ? 1 : 0);
+      expect(m.links.x?.status, `x month ${m.index}`).toBe(m.index < 4 ? 'applied' : 'faded');
+      const on = m.index === 3 || m.index === 4;
+      expect(m.nodes.b.value, `b month ${m.index}`).toBe(on ? 1 : 0);
+      expect(m.links.y?.status, `y month ${m.index}`).toBe(m.index < 3 ? undefined : on ? 'applied' : 'faded');
+      expect(m.nodes.c.value, `c month ${m.index}`).toBe(-1);
+      expect(m.nodes.d3.value).toBe(-1);
+    }
+  });
+
+  it('never pushes any chosen driver, from any other chosen driver or from a pushed one, and never reports those links', () => {
+    const g = graphWithMany([
+      { id: 'p2', to: 'd2', effect: -1 },
+      { id: 'p3', from: 'd2', when: 'up', to: 'd3', effect: 1 },
+      { id: 'p1', from: 'd3', when: 'down', to: 'drv', effect: -1 },
+      { id: 'p4', to: 'd4', effect: 1 },                       // d4 is not chosen: pushed, and its links followed
+      { id: 'p4b', from: 'd4', when: 'up', to: 'd3', effect: 1 }, // ... but not into a chosen driver
+      { id: 'own', from: 'd4', when: 'up', to: 'c', effect: 1 },
+    ]);
+    const t = propagate(g, { ...base, maxDepth: 3, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'down' }] });
+    for (const m of t.months) {
+      expect(m.nodes.drv.value).toBe(1);
+      expect(m.nodes.d2.value).toBe(1);
+      expect(m.nodes.d3.value).toBe(-1);
+      for (const id of ['drv', 'd2', 'd3']) expect(m.nodes[id].viaLinkIds, `${id} month ${m.index}`).toEqual([]);
+      for (const id of ['p1', 'p2', 'p3', 'p4b']) expect(m.links[id], `${id} month ${m.index}`).toBeUndefined();
+      expect(m.nodes.d4.value).toBe(1);
+      expect(m.links.p4?.status).toBe('applied');
+      expect(m.links.own).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+      expect(m.nodes.c.value).toBe(1);
+    }
+  });
+
+  it('a neutral phase among many pins that driver and applies nothing; the rest are unchanged', () => {
+    const g = graphWithMany([
+      { id: 'x', to: 'a', effect: 1 }, { id: 'push', to: 'd3', effect: 1 },
+      { id: 'y', from: 'd2', when: 'up', to: 'b', effect: 1 }, { id: 'z', from: 'd3', when: 'up', to: 'c', effect: 1 },
+    ]);
+    const t = propagate(g, { ...base, maxDepth: 3, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'mid' }] });
+    const two = propagate(g, { ...base, maxDepth: 3, others: [{ driverId: 'd2', phaseId: 'up' }] });
+    for (const m of t.months) {
+      expect(m.nodes.a.value).toBe(1);
+      expect(m.nodes.b.value).toBe(1);
+      expect(m.nodes.d3.value).toBe(0);
+      expect(m.nodes.c.value).toBe(0);
+      expect(m.links.push).toBeUndefined();
+      expect(m.links.z).toBeUndefined();
+    }
+    expect(two.months[1].nodes.d3.value).toBe(1);
+    expect(two.months[1].nodes.c.value).toBe(1);
+  });
+
+  it('refuses the same driver twice, whichever way it is spelled', () => {
+    const g = graphWithMany([]);
+    expect(() => propagate(g, { ...base, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd2', phaseId: 'down' }] })).toThrow(/"d2" twice/);
+    expect(() => propagate(g, { ...base, others: [{ driverId: 'd3', phaseId: 'up' }, { driverId: 'drv', phaseId: 'cool' }] })).toThrow(/"drv" twice/);
+    expect(() => propagate(g, { ...base, secondary: { driverId: 'd2', phaseId: 'up' }, others: [{ driverId: 'd2', phaseId: 'up' }] })).toThrow(/"d2" twice/);
+    expect(() => chosenDrivers({ ...base, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'up' }, { driverId: 'd2', phaseId: 'up' }] })).toThrow(/twice/);
+  });
+
+  it('refuses a bad hold on any of them', () => {
+    for (const bad of [0, 13, 2.5]) {
+      expect(() => propagate(graphWithMany([]), { ...base, others: [{ driverId: 'd2', phaseId: 'up' }, { driverId: 'd3', phaseId: 'up', holdMonths: bad }] })).toThrow(/holdMonths for "d3"/);
+    }
+  });
+});

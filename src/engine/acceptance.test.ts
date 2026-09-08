@@ -422,9 +422,9 @@ describe('acceptance: driver-to-driver data', () => {
 function runTwo(a: [string, string], b: [string, string], startMonth: number, secondStartMonth?: number, startsBefore = false): Timeline {
   return propagate(graph, {
     driverId: a[0], phaseId: a[1], startMonth, horizonMonths: HORIZON, maxDepth: 3,
-    secondary: secondStartMonth === undefined ? { driverId: b[0], phaseId: b[1] }
+    others: [secondStartMonth === undefined ? { driverId: b[0], phaseId: b[1] }
       : startsBefore ? { driverId: b[0], phaseId: b[1], startMonth: secondStartMonth, startsBefore: true }
-      : { driverId: b[0], phaseId: b[1], startMonth: secondStartMonth },
+      : { driverId: b[0], phaseId: b[1], startMonth: secondStartMonth }],
   });
 }
 
@@ -541,8 +541,7 @@ describe('acceptance: two chosen drivers, in general', () => {
     expect(story).toBeDefined();
     expect(story!.driver).toBe('enso');
     expect(story!.phase).toBe('la_nina');
-    expect(story!.second_driver).toBe('iod');
-    expect(story!.second_phase).toBe('negative');
+    expect(story!.drivers).toEqual([{ driver: 'iod', phase: 'negative' }]);
   });
 });
 
@@ -659,12 +658,13 @@ describe('acceptance: second start month, in general', () => {
       expect(m.links.el_nino_positive_iod).toBeUndefined();
     }
   });
-  it('every shipped story with a second start month keeps it in 1–12 and has a second driver', () => {
+  it('every shipped story with a start month on a chosen driver keeps it in 1–12', () => {
     for (const s of graph.stories) {
-      if (s.second_start_month === undefined) continue;
-      expect(s.second_driver).toBeDefined();
-      expect(s.second_start_month).toBeGreaterThanOrEqual(1);
-      expect(s.second_start_month).toBeLessThanOrEqual(12);
+      for (const d of s.drivers ?? []) {
+        if (d.start_month === undefined) continue;
+        expect(d.start_month).toBeGreaterThanOrEqual(1);
+        expect(d.start_month).toBeLessThanOrEqual(12);
+      }
     }
   });
 });
@@ -725,9 +725,7 @@ describe('acceptance: La Niña from September with a negative dipole since May (
   });
   it('the shipped 2016 story starts the dipole in May, before La Niña in September', () => {
     const s = graph.stories.find((x) => x.id === 'negative_iod_then_la_nina_2016')!;
-    expect(s.second_driver).toBe('iod');
-    expect(s.second_starts_before).toBe(true);
-    expect(s.second_start_month).toBe(5);
+    expect(s.drivers).toEqual([{ driver: 'iod', phase: 'negative', start_month: 5, starts_before: true }]);
     expect(s.start_month).toBe(9);
     expect(s.start_year).toBe(2016);
   });
@@ -775,10 +773,12 @@ describe('acceptance: a second driver that begins before the first, in general',
       expect(m.links.el_nino_positive_iod).toBeUndefined();
     }
   });
-  it('every shipped story that starts its second driver before the first has a second driver', () => {
+  it('every shipped story that starts a chosen driver before the first names its start month', () => {
     for (const s of graph.stories) {
-      if (s.second_starts_before === undefined) continue;
-      expect(s.second_driver).toBeDefined();
+      for (const d of s.drivers ?? []) {
+        if (d.starts_before === undefined) continue;
+        expect(d.start_month).toBeDefined();
+      }
     }
   });
 });
@@ -934,8 +934,8 @@ describe('acceptance: the 2019 story, a negative SAM with a positive dipole sinc
   it('the shipped story uses these settings', () => {
     const s = graph.stories.find((x) => x.id === 'negative_sam_2019_black_summer')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['sam', 'negative', 'iod', 'positive', 6, true, 11, 2019]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['sam', 'negative', [{ driver: 'iod', phase: 'positive', start_month: 6, starts_before: true }], 11, 2019]);
   });
 });
 
@@ -1074,8 +1074,8 @@ describe('acceptance: the 2014–15 story, a positive PDO with El Niño from Mar
   it('the shipped story uses these settings', () => {
     const s = graph.stories.find((x) => x.id === 'positive_pdo_2014_15')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['pdo', 'positive', 'enso', 'el_nino', 3, undefined, 11, 2014]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['pdo', 'positive', [{ driver: 'enso', phase: 'el_nino', start_month: 3 }], 11, 2014]);
   });
 });
 
@@ -1226,8 +1226,8 @@ describe('acceptance: the 1995 story, a positive AMO with La Niña from Septembe
   it('the shipped story uses these settings', () => {
     const s = graph.stories.find((x) => x.id === 'positive_amo_1995')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['amo', 'positive', 'enso', 'la_nina', 9, undefined, 6, 1995]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['amo', 'positive', [{ driver: 'enso', phase: 'la_nina', start_month: 9 }], 6, 1995]);
   });
 });
 
@@ -1373,8 +1373,8 @@ describe('acceptance: the 1984 story, an Atlantic Niño inside a cool AMO', () =
   it('the shipped story uses these settings', () => {
     const s = graph.stories.find((x) => x.id === 'atlantic_nino_1984')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['atlantic_nino', 'warm', 'amo', 'negative', 5, true, 5, 1984]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['atlantic_nino', 'warm', [{ driver: 'amo', phase: 'negative', start_month: 5, starts_before: true }], 5, 1984]);
   });
 });
 
@@ -1589,11 +1589,11 @@ describe('acceptance: the 1998 scenario, a warm basin with the El Niño that beg
   it('the shipped story uses the basin alone from February 1998, held eight months since M32', () => {
     const s = graph.stories.find((x) => x.id === 'warm_basin_1998_yangtze')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year, s.hold_months]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998, 8]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year, s.hold_months]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998, 8]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 3, 4, 5, 6, 12]);
   });
   it('with M32 the El Niño can be held twelve months from June 1997: over by May 1998, before the Yangtze arrives, and no conflict at the typhoons', () => {
-    const tl = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON, maxDepth: 3, secondary: { driverId: 'enso', phaseId: 'el_nino', startMonth: 6, startsBefore: true, holdMonths: 12 } });
+    const tl = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON, maxDepth: 3, others: [{ driverId: 'enso', phaseId: 'el_nino', startMonth: 6, startsBefore: true, holdMonths: 12 }] });
     expect(chosenFade(tl.scenario, 'enso')).toBe(4);
     expect(tl.months[3].nodes.enso.value).toBe(1);
     expect(tl.months[4].nodes.enso.value).toBe(0);
@@ -1770,7 +1770,7 @@ describe('acceptance: the 2005 story, the mode alone from March', () => {
   const s = graph.stories.find((x) => x.id === 'positive_amm_2005_amazon')!;
   it('ships with the mode positive from March 2005, no second driver, six steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['atlantic_meridional_mode', 'positive', undefined, 3, 2005]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year]).toEqual(['atlantic_meridional_mode', 'positive', undefined, 3, 2005]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 1, 3, 6, 7, 12]);
   });
   it('shows the hurricanes arrow at full tier from June with ENSO hollow all year', () => {
@@ -1920,7 +1920,7 @@ describe('acceptance: the 2014–15 story, the mode alone from March with the ch
   const s = graph.stories.find((x) => x.id === 'positive_pmm_2014_15')!;
   it('ships with the mode positive from March 2014, no second driver, five steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['pacific_meridional_mode', 'positive', undefined, 3, 2014]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year]).toEqual(['pacific_meridional_mode', 'positive', undefined, 3, 2014]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 3, 6, 9, 12]);
     expect(s.steps.map((st) => st.focus)).toEqual(['pacific_meridional_mode', 'west_pacific_typhoons', 'enso', 'enso', 'enso']);
   });
@@ -2074,15 +2074,15 @@ describe('acceptance: the 1991 Pinatubo story, the eruption from June with El Ni
   const s = graph.stories.find((x) => x.id === 'pinatubo_1991')!;
   it('ships with the eruption from June 1991, El Niño as a second driver from September, five steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['tropical_eruption', 'eruption', 'enso', 'el_nino', 9, undefined, 6, 1991]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['tropical_eruption', 'eruption', [{ driver: 'enso', phase: 'el_nino', start_month: 9 }], 6, 1991]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 3, 6, 9, 12]);
     expect(s.steps.map((st) => st.focus)).toEqual(['tropical_eruption', 'global_mean_temperature', 'northern_europe_winter', 'enso', 'indian_summer_monsoon']);
   });
   it('at the story’s steps: cooling in September from the volcano alone, the two drivers disagreeing about the global temperature from December, northern Europe mild in December, no arrow from the volcano into the chosen El Niño, the monsoon weaker in June through both arrows', () => {
     const tl = propagate(graph, {
       driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3,
-      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month },
+      others: [{ driverId: s.drivers![0].driver, phaseId: s.drivers![0].phase, startMonth: s.drivers![0].start_month }],
     });
     expect(tl.months[2].nodes.enso.value).toBe(0);
     expect(tl.months[3].nodes.enso.value).toBe(1);
@@ -2108,7 +2108,7 @@ describe('acceptance: the 1991 Pinatubo story, the eruption from June with El Ni
     // Chain off: both chosen drivers say weaker and nothing argues.
     const direct = propagate(graph, {
       driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 1,
-      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month },
+      others: [{ driverId: s.drivers![0].driver, phaseId: s.drivers![0].phase, startMonth: s.drivers![0].start_month }],
     });
     expect(direct.months[12].nodes.indian_summer_monsoon.value).toBe(-1);
     expect(direct.months[12].nodes.indian_summer_monsoon.conflicting).toBe(false);
@@ -2325,15 +2325,15 @@ describe('acceptance: the 2009–10 story, the easterly QBO from November with E
   const s = graph.stories.find((x) => x.id === 'easterly_qbo_2009_10')!;
   it('ships with the QBO easterly from November 2009, El Niño as a second driver that began in June, five steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
-      .toEqual(['qbo', 'easterly', 'enso', 'el_nino', 6, true, 11, 2009]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year])
+      .toEqual(['qbo', 'easterly', [{ driver: 'enso', phase: 'el_nino', start_month: 6, starts_before: true }], 11, 2009]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 1, 3, 9, 12]);
     expect(s.steps.map((st) => st.focus)).toEqual(['qbo', 'nao', 'northern_europe_winter', 'atlantic_hurricanes', 'qbo']);
   });
   it('at the story’s steps: the NAO pushed by the QBO alone in December and by both drivers from January, northern Europe cold in February through the pushed NAO, the hurricanes hatched in August (the QBO and El Niño say quieter, the El Niño’s warm Atlantic says busier), the QBO held to the end', () => {
     const tl = propagate(graph, {
       driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3,
-      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month, startsBefore: true },
+      others: [{ driverId: s.drivers![0].driver, phaseId: s.drivers![0].phase, startMonth: s.drivers![0].start_month, startsBefore: true }],
     });
     expect(tl.months[0].nodes.enso.value).toBe(1);
     expect(tl.months[0].nodes.nao.value).toBe(0);
@@ -2358,7 +2358,7 @@ describe('acceptance: the 2009–10 story, the easterly QBO from November with E
     // Chain off: nobody argues, the two chosen drivers both say quieter.
     const direct = propagate(graph, {
       driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 1,
-      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month, startsBefore: true },
+      others: [{ driverId: s.drivers![0].driver, phaseId: s.drivers![0].phase, startMonth: s.drivers![0].start_month, startsBefore: true }],
     });
     expect(direct.months[9].nodes.atlantic_hurricanes.value).toBe(-1);
     expect(direct.months[9].nodes.atlantic_hurricanes.conflicting).toBe(false);
@@ -2483,7 +2483,7 @@ describe('acceptance: the 2012–13 story, low Barents–Kara ice from October',
   const s = graph.stories.find((x) => x.id === 'low_ice_2012_13')!;
   it('ships with low ice from October 2012, no second driver, five steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['barents_kara_ice', 'low', undefined, 10, 2012]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year]).toEqual(['barents_kara_ice', 'low', undefined, 10, 2012]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 2, 3, 4, 12]);
     expect(s.steps.map((st) => st.focus)).toEqual(['barents_kara_ice', 'siberia_winter', 'east_asia_winter', 'nao', 'barents_kara_ice']);
     for (const st of s.steps) expect(st.sources.length, `step ${st.month}`).toBeGreaterThan(0);
@@ -2592,7 +2592,7 @@ describe('acceptance: high October snow with the chain on, alone and with the Ba
   it('with low Barents–Kara ice chosen as a second driver in the same October, the NAO carries both precursors’ arrows, agreeing, and nothing on the map is hatched: the map draws both, which is not evidence that they add up', () => {
     const two = propagate(graph, {
       driverId: 'eurasian_october_snow', phaseId: 'high', startMonth: 10, horizonMonths: HORIZON, maxDepth: 3,
-      secondary: { driverId: 'barents_kara_ice', phaseId: 'low', startMonth: 10 },
+      others: [{ driverId: 'barents_kara_ice', phaseId: 'low', startMonth: 10 }],
     });
     for (const i of [2, 3, 4]) {
       const m = two.months[i];
@@ -2610,7 +2610,7 @@ describe('acceptance: the 2009–10 story, high October snow from October', () =
   const s = graph.stories.find((x) => x.id === 'high_snow_2009_10')!;
   it('ships with high snow from October 2009, no second driver, five steps', () => {
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['eurasian_october_snow', 'high', undefined, 10, 2009]);
+    expect([s.driver, s.phase, s.drivers, s.start_month, s.start_year]).toEqual(['eurasian_october_snow', 'high', undefined, 10, 2009]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 2, 3, 4, 12]);
     expect(s.steps.map((st) => st.focus)).toEqual(['eurasian_october_snow', 'nao', 'northern_europe_winter', 'eastern_north_america_winter', 'eurasian_october_snow']);
     for (const st of s.steps) expect(st.sources.length, `step ${st.month}`).toBeGreaterThan(0);
