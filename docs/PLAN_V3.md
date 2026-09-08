@@ -454,6 +454,18 @@ story short, and the card says so.
 
 ### M27 — Outcome regions, third batch
 
+**Shipped 2026-09-08.** Five of the ten candidates below shipped: Central
+Asia, the US Midwest, northeastern Canada (as `hudson_bay_winter`),
+India's pre-monsoon heat and Tibetan snow, with thirteen links and
+twenty-five sources. The record is in `docs/PLAN.md` §10 under M27, with
+the reasons for the five dropped (Japan/Korea and the Caribbean duplicate
+nodes already on the map; Mongolia waits for M24; southern Brazil in
+winter and Iberia in spring could not be sourced beyond what the map
+has) and the marker moves the label-overlap check forced. The PDO link
+into the Midwest was not drawn: the PDO sources found are for winter
+precipitation. Tibet gained a positive-IOD link the table below does not
+list, from two recent studies, contested.
+
 Data only, as in the fifteen-region batch before M16. Candidates, each with
 the driver(s) that reach it and the review source to start from; ship the
 ones whose links can be sourced, drop the rest:

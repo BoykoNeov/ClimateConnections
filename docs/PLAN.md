@@ -1380,6 +1380,82 @@ drivers stays in one place.
   `docs/PLAN_V3.md`: M27, the third batch of outcome regions, or M23,
   the Quasi-Biennial Oscillation.
 
+### M27 — Outcome regions, third batch (version 3, signed off 2026-09-08)
+- Data only: five new outcome nodes and thirteen links from drivers
+  already on the map; no new driver, no story, no change to `src/`. Of
+  the ten candidates in `docs/PLAN_V3.md`, five shipped:
+  `central_asia_winter` (Iran to southern Kazakhstan, November–April,
+  wet_dry; El Niño wetter and La Niña drier, both probable, lag 4–10);
+  `us_midwest_summer` (the upper Mississippi basin, May–August, wet_dry;
+  La Niña drier probable, El Niño wetter contested, lag 0–2, the caveats
+  saying the summer link has come and gone over the last century and that
+  the map's held phase shades the following summer too);
+  `hudson_bay_winter` (Hudson Bay, northern Quebec, Labrador, Baffin
+  Island, December–March, warm_cool; the NAO positive colder and negative
+  milder, both established, no lag; El Niño milder and La Niña colder,
+  both contested, because one regression study confines ENSO's winter
+  effect to western and central Canada and finds the east cool in El Niño
+  winters with a neutral PDO); `india_premonsoon_heat` (northern and
+  central India, March–May, warm_cool; El Niño hotter and La Niña cooler
+  in the following spring, lag 8–11, contested, because the composites
+  are not significant in that season and one study ties a heat-wave type
+  to Pacific cooling; a warm Indian Ocean basin hotter, lag 0–3,
+  contested, one source); `tibet_winter_snow` (November–March, high_low;
+  El Niño deeper snow, lag 4–9, contested, because the relationship with
+  spring snow cover changed sign in the early 2000s; a positive Indian
+  Ocean Dipole deeper early-winter snow, November–January, lag 4–6,
+  contested; no La Niña link, so Tibet stays untouched in a La Niña).
+- Five candidates dropped, with the reason: Japan and Korea winter
+  duplicates `east_asia_winter` (same region, same two links, same
+  source); the Caribbean rainy season duplicates
+  `central_america_rainfall`, whose name includes the Caribbean and which
+  already carries both ENSO phases and the positive AMM, citing Giannini
+  2000; Mongolia winter waits for M24, its only driver; southern Brazil
+  winter's review sources verify only the spring signal the map already
+  has in `southeast_south_america`; Iberian spring would sit on top of
+  the Mediterranean winter node, whose season already includes March,
+  and the AMO spring claim could not be verified from the abstracts. The
+  PDO into the Midwest was not drawn: the PDO sources found are for
+  winter precipitation.
+- Sources: twenty-five new, all resolved on Crossref, twenty-two with
+  abstracts read (Hurrell & van Loon 1997, Hoell et al. 2014 and You et
+  al. 2020 carry no abstract on Crossref or OpenAlex and are cited for
+  what their titles and companion papers establish). 309 in all.
+- Markers: the label-overlap check moved three of the five. Central Asia
+  to 40°N 69°E (from 36°N 62°E, under the Middle East label);
+  northeastern Canada to 60°N 78°W (from 58°N, under the Prairies
+  label); the Midwest to 36.15°N 89.7°W, the southern tip of Missouri,
+  because no position in the Midwest's own latitude band clears the
+  Pacific Northwest, Great Plains and Eastern US labels, and freeing one
+  would have meant moving three existing markers with margins under a
+  unit. Tibet's label is "Tibet" rather than "Tibet snow", which reaches
+  the Yangtze marker from every position east of 79°E. All labels are
+  drawn all the time; only the marker fill follows the scenario.
+- Tests: an M27 block. The five nodes and thirteen links present, cited
+  and caveated; El Niño from June with direct links (Central Asia wet
+  months 5–10, the Midwest wet 0–2 and 11–12, northeastern Canada mild
+  6–9, Tibet deep 5–9, India hot 9–11 and pending in February, the
+  tiers); La Niña reversing all but Tibet, which stays untouched; the
+  NAO on northeastern Canada with no lag, established, both phases; the
+  positive dipole on Tibet in November–January and the warm basin on
+  India in March–May; with the chain on, El Niño reaching Tibet (its own
+  link plus the pushed dipole), northeastern Canada (its own plus the
+  pushed negative NAO) and India (its own plus the pushed warm basin)
+  twice each, the same way, never conflicting; "established only"
+  ghosting the new El Niño links while the NAO still reaches
+  northeastern Canada. The basin-mode link count updated to ten. 621
+  tests.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m27.mjs`): 72
+  markers, no label overlap, El Niño in June, November, December,
+  January and March with the double arrows, cards for Central Asia,
+  India's heat and northeastern Canada with the "How sure are we?" block
+  and DOI links, the chain off, the La Niña reversal with Tibet hollow,
+  "established only" ghosts, the NAO in both phases, the dipole on
+  Tibet, the basin on India, the print caption; eleven screenshots under
+  `W:\temp\claude\ClimateConnections\m27\`.
+- Not in M27: the five dropped candidates; Mongolia returns with M24.
+  Next in `docs/PLAN_V3.md`: M23, the Quasi-Biennial Oscillation.
+
 ---
 
 ## 7. Version-1 acceptance checklist

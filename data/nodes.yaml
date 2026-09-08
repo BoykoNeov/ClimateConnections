@@ -1851,3 +1851,123 @@ nodes:
       Atlantic springs, not El Niños. El Niño's own Amazon drought falls
       in the wet season, on the northern side of the basin.
     sources: [marengo_2008, zeng_2008, marengo_2011, phillips_2009]
+
+  # ---- Outcome regions, third batch (M27). Data only: no new driver. Five
+  # of the plan's ten candidates shipped; the rest are duplicates of nodes
+  # already on the map, wait for a driver not yet shipped, or could not be
+  # sourced (docs/PLAN.md §10, M27).
+  - id: central_asia_winter
+    name: Central and southwest Asia cold-season precipitation
+    label: Central Asia
+    kind: outcome
+    lat: 40
+    lon: 69
+    area: [[48, 45], [76, 45], [76, 25], [48, 25]]
+    region: Iran, Afghanistan, northern Pakistan, Turkmenistan, Uzbekistan, Tajikistan, southern Kazakhstan
+    timescale: November–April, when nearly all the year's rain and snow falls
+    axis: wet_dry
+    labels:
+      plus: Cold season tends to be wetter than usual, with more mountain snow
+      zero: Near normal
+      minus: Cold season tends to be drier than usual, with raised drought risk
+    summary: >
+      The dry lands between the Caspian Sea and the Hindu Kush get most of
+      their rain and snow from winter storms that travel east out of the
+      Mediterranean. El Niño tends to feed those storms with extra moisture
+      from the Arabian Sea and the cold season runs wet; La Niña tends to
+      do the opposite. The drought of 1998–2001 that emptied granaries
+      from Iran to Afghanistan fell in a long La Niña.
+    sources: [barlow_2002, hoell_2015]
+
+  - id: us_midwest_summer
+    name: US Midwest summer rainfall
+    label: US Midwest
+    kind: outcome
+    lat: 36.15
+    lon: -89.7
+    area: [[-95, 47], [-82, 47], [-82, 36], [-95, 36]]
+    region: Iowa, Wisconsin, Illinois, Missouri, Indiana; the upper Mississippi basin
+    timescale: May–August, the growing season
+    axis: wet_dry
+    labels:
+      plus: Summer tends to be wetter than usual, with flooding on the Mississippi possible
+      zero: Near normal
+      minus: Summer tends to be drier than usual, with drought and crop loss possible
+    summary: >
+      The Corn Belt's summer rain comes from moist Gulf air meeting storms
+      on the jet stream. In a La Niña summer the jet tends to sit far north
+      over Canada and the rain misses the Midwest, as in the drought of
+      1988; in an El Niño summer the jet tends to sit further south and
+      the rain can be relentless, as in the floods of 1993. The link is
+      weaker and less steady than ENSO's winter links, and has come and
+      gone over the last century.
+    sources: [trenberth_guillemot_1996, mo_2009]
+
+  - id: hudson_bay_winter
+    name: Northeastern Canada winter temperature
+    label: NE Canada winter
+    kind: outcome
+    lat: 60
+    lon: -78
+    area: [[-96, 66], [-56, 66], [-56, 50], [-96, 50]]
+    region: Hudson Bay, northern Quebec, Labrador, Baffin Island
+    timescale: December–March
+    axis: warm_cool
+    labels:
+      plus: Winter tends to be milder than usual
+      zero: Near normal
+      minus: Winter tends to be colder than usual
+    summary: >
+      Winter over Hudson Bay and Labrador is set mostly by the North
+      Atlantic. A positive North Atlantic Oscillation pulls cold air down
+      the west side of the Icelandic low over Labrador and Baffin Island;
+      a negative one leaves the region mild. El Niño's mild winters reach
+      here too, but much more weakly than on the Prairies, and studies
+      disagree about how far east that warmth extends.
+    sources: [bonsal_2001, hurrell_1995]
+
+  - id: india_premonsoon_heat
+    name: India pre-monsoon heat
+    label: India heat
+    kind: outcome
+    lat: 26
+    lon: 76
+    area: [[68, 32], [88, 32], [88, 18], [68, 18]]
+    region: Northern and central India, from Rajasthan to Odisha
+    timescale: March–May, before the monsoon arrives
+    axis: warm_cool
+    labels:
+      plus: Pre-monsoon tends to be hotter than usual, with more and longer heat waves
+      zero: Near normal
+      minus: Pre-monsoon tends to be cooler than usual, with fewer heat waves
+    summary: >
+      The hottest weeks of India's year come in April and May, before the
+      monsoon rains. Heat waves in those weeks kill more people than any
+      other weather in the country. The spring after an El Niño tends to
+      be hotter than usual, with a warm Indian Ocean adding to it, as in
+      1998, 2010 and 2016; the links are real but modest next to the
+      long-term warming trend, and some heat waves have other causes.
+    sources: [rohini_2016, ratnam_2016]
+
+  - id: tibet_winter_snow
+    name: Tibetan Plateau winter snow
+    label: Tibet
+    kind: outcome
+    lat: 33
+    lon: 88
+    area: [[78, 37], [100, 37], [100, 28], [78, 28]]
+    region: The Tibetan Plateau and the Himalaya
+    timescale: November–March
+    axis: high_low
+    labels:
+      plus: Snow tends to be deeper than usual
+      zero: Near normal
+      minus: Snow tends to be shallower than usual
+    summary: >
+      Snow on the high plateau matters beyond Tibet: a deep snowpack cools
+      the plateau into spring and is one of the oldest proposed
+      forerunners of a weak Indian monsoon. El Niño winters tend to bring
+      more snow, carried on a wave in the jet stream, and a positive
+      Indian Ocean Dipole tends to add early-winter snowfall; both are
+      recent, contested findings from a short satellite record.
+    sources: [you_2020, shaman_tziperman_2005]

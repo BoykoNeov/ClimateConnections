@@ -13,7 +13,7 @@ known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds eleven drivers, 56 outcome regions, 184 cited links
+The map currently holds eleven drivers, 61 outcome regions, 197 cited links
 (twenty-five of them between the drivers) and fifteen guided stories. A scenario is
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then

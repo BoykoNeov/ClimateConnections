@@ -4070,6 +4070,437 @@ links:
       and one coupled model's first response is La Niña-like.
     sources: [adams_2003, emile_geay_2008, khodri_2017, maher_2015, predybaylo_2017, ohba_2013, stevenson_2017, dee_2020, mcgregor_timmermann_2011]
 
+  # ================================================ OUTCOME REGIONS, THIRD BATCH (M27)
+  # Data only: links from drivers already on the map into five new outcome
+  # nodes. Asymmetric where the literature is: Tibet has no La Niña link.
+  # ---- Central and southwest Asia
+  - id: el_nino_central_asia
+    from: enso
+    when: el_nino
+    to: central_asia_winter
+    effect: 1
+    lag_months: [4, 10]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      In an El Niño winter the air over the Indian Ocean and the western
+      Pacific sinks and pressure there rises. Around the northwest edge of
+      that high, winds tend to blow from the Arabian Sea and tropical
+      Africa toward Iran and Afghanistan, feeding the winter storms that
+      cross from the Mediterranean with extra moisture, so they drop more
+      rain and mountain snow.
+    caveat: >
+      The signal is strongest in autumn and spring and patchier in
+      midwinter, and it varies from place to place: parts of Iran show it
+      clearly, others hardly at all. A model ensemble gives an El Niño
+      cold season roughly even odds of landing in the wettest third and a
+      one-in-four chance of landing in the driest, so a wet season is a
+      lean, not a promise. The connection has strengthened in recent
+      decades and may not hold in every era.
+    evidence_note: >
+      Observed precipitation, moisture flux and pressure data and an
+      atmospheric model agree on extra southwesterly moisture into the
+      region in warm ENSO events, greatest in the transition seasons;
+      Iranian station rainfall in El Niño autumns was several times that
+      of La Niña autumns over 1951–1990; seasonal November–April
+      precipitation over southwest Asia correlates with ENSO and Pacific
+      decadal patterns; a regional climate model reproduces the observed
+      increase in the warm ENSO phase over northern Pakistan, Afghanistan
+      and Tajikistan through stronger western disturbances; an ensemble
+      forced with 1979–2015 conditions puts above-average precipitation
+      in both El Niño types, with the spread between members nearly as
+      large as the mean shift.
+    sources: [mariotti_2007, nazemosadat_cordery_2000, hoell_2015, syed_2010, hoell_2018]
+
+  - id: la_nina_central_asia
+    from: enso
+    when: la_nina
+    to: central_asia_winter
+    effect: -1
+    lag_months: [4, 10]
+    season: [11, 12, 1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      In a La Niña winter the rising air and heavy rain sit over the warm
+      pool of the western Pacific and eastern Indian Ocean. That rain
+      sends a wave through the atmosphere that strengthens sinking air
+      over Iran and Afghanistan and steers moisture away, so the winter
+      storms arrive dry or not at all.
+    caveat: >
+      The drying is clearest when La Niña comes with an unusually warm
+      western Pacific, as in 1998–2001; a La Niña centred in the eastern
+      Pacific barely shifts the odds in one model ensemble. Two or three
+      years of La Niña do far more harm than one, because reservoirs and
+      soils run down, and the famine of 2000–2001 owed as much to war as
+      to weather.
+    evidence_note: >
+      The 1998–2001 drought that affected sixty million people fell in a
+      prolonged La Niña with warm western-Pacific waters, and cold-season
+      precipitation over the region varies opposite to rainfall over the
+      eastern Indian Ocean; a study of recent warm-west-Pacific La Niñas
+      traces Northern Hemisphere drought, southwest Asia included, to
+      the same forcing; central-Pacific La Niñas push the region's
+      November–April precipitation into the driest third more than seven
+      times in ten in an ensemble, while eastern-Pacific La Niñas do not
+      change the odds; the observational analysis behind the El Niño link
+      finds the reverse pattern in cold events.
+    sources: [barlow_2002, hoell_2014, hoell_2018, mariotti_2007]
+
+  # ---- US Midwest summer
+  - id: la_nina_us_midwest
+    from: enso
+    when: la_nina
+    to: us_midwest_summer
+    effect: -1
+    lag_months: [0, 2]
+    season: [5, 6, 7, 8]
+    confidence: probable
+    mechanism: >
+      With cold water on the equator and the tropical rain belt pushed
+      north, a wave of high pressure tends to set up over the central
+      United States in late spring and the jet stream, with its storms,
+      is displaced far north into Canada. Moist Gulf air still flows
+      north but little of it is lifted into rain, and the soil dries out,
+      which feeds the heat and the drought.
+    caveat: >
+      Summer links are weaker and less reliable than ENSO's winter ones,
+      and this one has switched on and off over the last century: it was
+      strong from 1948 to 1978 and hard to find from 1979 on, depending
+      on what the North Pacific was doing. Not every La Niña summer is
+      dry, and the 1988 drought had begun on the West Coast a year
+      earlier for other reasons. The map holds the phase for the year, so
+      the following summer is shaded too; the evidence is for the summer
+      the event is in.
+    evidence_note: >
+      Record low April–June 1988 rainfall in the north-central United
+      States followed a wave train from the tropical Pacific that a
+      planetary-wave model reproduces from the displaced rain belt over
+      cold equatorial water; in 1988 the jet and storm track were the
+      furthest north of any year from 1979 to 1993; model composites put
+      ENSO's drought influence over the Great Plains with cold events
+      favouring drought; the central-US summer teleconnection was active
+      in 1871–1916 and 1948–78 and absent in 1917–47 and after 1979.
+    sources: [trenberth_1988, trenberth_guillemot_1996, mo_2009, hu_feng_2001]
+
+  - id: el_nino_us_midwest
+    from: enso
+    when: el_nino
+    to: us_midwest_summer
+    effect: 1
+    lag_months: [0, 2]
+    season: [5, 6, 7, 8]
+    confidence: contested
+    mechanism: >
+      Warm water on the equator shifts the tropical rain belt and the
+      heating of the atmosphere, and the jet stream over North America
+      tends to sit further south than usual for the season, in a
+      springlike position across the central United States. Storms then
+      run along it over the Midwest, lifting Gulf moisture into repeated
+      heavy rain.
+    caveat: >
+      Genuinely unsettled. The 1993 flood summer fits, and one analysis of
+      1950–1990 finds Great Plains summer rain rising with warm tropical
+      Pacific water, but the same teleconnection was absent for decades at
+      a time, and over the central-eastern United States ENSO's summer and
+      winter effects run opposite and cancel. Most El Niños begin in
+      spring or summer and their summer effects are much weaker than the
+      winter ones. The map holds the phase for the year, so the following
+      summer is shaded too.
+    evidence_note: >
+      The 1993 floods came with a mature El Niño, a broader jet stream and
+      storm track displaced well south of normal, the furthest south by
+      over 200 km of any year from 1979 to 1993; Great Plains summer
+      precipitation over 1950–1990 covaries with El Niño–La Niña water in
+      the tropical Pacific; model composites give warm events a wet-spell
+      tendency over the Plains; against it, the central-US summer
+      teleconnection was absent in 1917–47 and after 1979, and drought
+      and wet spells over the central-eastern United States are short
+      because ENSO's summer and winter effects there oppose each other.
+    sources: [trenberth_guillemot_1996, ting_wang_1997, mo_2009, hu_feng_2001, mo_schemm_2008]
+
+  # ---- Northeastern Canada winter
+  - id: positive_nao_hudson_bay
+    from: nao
+    when: positive
+    to: hudson_bay_winter
+    effect: -1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      A positive North Atlantic Oscillation deepens the Icelandic low. The
+      winds on its western side blow from the north across Baffin Island,
+      Labrador and Hudson Bay, pulling Arctic air south while Europe on
+      the eastern side gets the mild westerlies. It is the same see-saw
+      that makes Greenland cold when Europe is warm.
+    caveat: >
+      Strongest toward Labrador and Baffin Island and weaker on the west
+      side of Hudson Bay, where ENSO and the Pacific matter more. The
+      oscillation swings from week to week, so a positive winter on
+      average still has mild spells; and the winter of 2009–10, with the
+      most negative index on record, still froze the region.
+    evidence_note: >
+      The positive winters of the 1980s and early 1990s brought cold
+      conditions to the northwest Atlantic while Europe warmed; the NAO
+      is the dominant mode for Canadian winter temperature, its effect
+      confined mainly to the northeast of the country; high-index winters
+      show more frequent and longer cold spells over eastern Canada;
+      decadal swings of the oscillation are mirrored in temperatures over
+      Greenland and eastern Canada.
+    sources: [hurrell_1995, bonsal_2001, shabbar_bonsal_2004, hurrell_van_loon_1997, hurrell_2003]
+
+  - id: negative_nao_hudson_bay
+    from: nao
+    when: negative
+    to: hudson_bay_winter
+    effect: 1
+    lag_months: [0, 0]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      With the Icelandic low weak and the Azores high feeble, the flow of
+      Arctic air down the Labrador coast slackens. Milder Atlantic air
+      reaches Hudson Bay and the northeast, blocking highs over Greenland
+      hold it there, and the cold spills into Europe instead. Winter sea
+      ice on the bay and along Labrador tends to form late and thin.
+    caveat: >
+      As for the positive phase: clearest toward the Labrador coast, and
+      a negative winter is mild on average, not every week. The mildness
+      arrives as the phase does, with no lag, and it ends when the phase
+      ends, which the map cannot show. Where El Niño is also pushing the
+      region mild the two cannot be told apart on the map.
+    evidence_note: >
+      Regressions of winter temperature on the NAO index reverse sign
+      between Europe and the northwest Atlantic, so the negative phase
+      warms Labrador and eastern Canada as the positive cools it; the NAO
+      explains more of northeastern Canada's winter temperature variance
+      than ENSO or the PDO; low-index winters bring fewer cold spells over
+      eastern Canada.
+    sources: [hurrell_1995, hurrell_van_loon_1997, bonsal_2001, shabbar_bonsal_2004]
+
+  - id: el_nino_hudson_bay
+    from: enso
+    when: el_nino
+    to: hudson_bay_winter
+    effect: 1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      The heating of the air over the warm eastern Pacific launches the
+      wave train across North America that lifts the jet stream north
+      over western Canada. Mild Pacific air follows it, and in most
+      El Niño winters the warmth spreads east across southern Canada,
+      reaching Hudson Bay as a weaker version of the Prairie signal.
+    caveat: >
+      The warmth fades eastward and studies disagree about whether it
+      reaches the northeast at all: one composite finds El Niño winters
+      warm over most of Canada, another finds the east warm only when the
+      Pacific Decadal Oscillation is also positive and cool when it is
+      neutral. The North Atlantic Oscillation matters more here, and in a
+      winter when it is positive its cold tends to win.
+    evidence_note: >
+      A canonical correlation analysis of Canadian temperatures finds
+      El Niño winters warm over most of the country, weakening eastward;
+      most of southern Canada sees mean winter temperature shifted to
+      warmer values in El Niño; El Niño winters have more warm spells and
+      fewer cold spells across most of Canada; against it, the ENSO
+      effect on winter temperature is mainly over western and central
+      Canada, and in El Niño winters with a neutral PDO the east is
+      cooler than normal.
+    sources: [shabbar_khandekar_1996, shabbar_2006, shabbar_bonsal_2004, bonsal_2001]
+
+  - id: la_nina_hudson_bay
+    from: enso
+    when: la_nina
+    to: hudson_bay_winter
+    effect: -1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      Cold water on the equator weakens the wave train that steers the
+      jet stream north, so Arctic air spills south across Canada more
+      often. The cooling is strongest on the Prairies and reaches the
+      northeast weakly, and more often through Arctic outbreaks than
+      through a steady cold.
+    caveat: >
+      Weaker and less consistent than the El Niño warming and, like it,
+      strongest in the west. The eastern response depends on what the
+      North Pacific and the North Atlantic are doing in the same winter,
+      and one composite finds the eastern cooling small. Treat the map's
+      cold as a lean, and look at the NAO first.
+    evidence_note: >
+      La Niña winters are cold over most of Canada in the canonical
+      correlation analysis, weaker in the east; La Niña winters show more
+      cold spells and fewer warm spells across most of the country; the
+      regression analysis finds the ENSO influence confined mainly to
+      western and central Canada.
+    sources: [shabbar_khandekar_1996, shabbar_bonsal_2004, bonsal_2001]
+
+  # ---- India pre-monsoon heat
+  - id: el_nino_india_heat
+    from: enso
+    when: el_nino
+    to: india_premonsoon_heat
+    effect: 1
+    lag_months: [8, 11]
+    season: [3, 4, 5]
+    confidence: contested
+    mechanism: >
+      An El Niño peaks in winter and its warmth spreads through the
+      tropics over the following months: the air over India is warmer,
+      the winter rains that moisten the soil of the north are often
+      short, and a persistent high with clear skies and dry ground sets
+      up over central and northwestern India in the spring after the
+      event, the ingredients of a heat wave.
+    caveat: >
+      Unsettled. Composites of El Niño years are warmer in the following
+      pre-monsoon season, but not significantly so over large areas; the
+      significant warmth is in the monsoon and post-monsoon seasons of
+      the event year, which this node does not show. One study ties one
+      type of Indian heat wave to cooling in the Pacific, the opposite
+      sign, and another to blocking over the North Atlantic, with no
+      Pacific link at all. The warming trend has added more to India's
+      heat waves than any El Niño.
+    evidence_note: >
+      Heat waves over India during 1961–2013 vary with central Pacific
+      and tropical Indian Ocean temperatures, with more frequent El Niños
+      expected to lengthen them; composites over 1901–2007 show El Niño
+      years warm through the monsoon, post-monsoon and the following
+      winter and pre-monsoon, significant only in the monsoon and
+      post-monsoon seasons; against it, one of two heat-wave types over
+      coastal eastern India is tied to anomalous cooling in the Pacific,
+      and the other over north-central India to North Atlantic blocking.
+    sources: [rohini_2016, kothawale_2010, ratnam_2016]
+
+  - id: la_nina_india_heat
+    from: enso
+    when: la_nina
+    to: india_premonsoon_heat
+    effect: -1
+    lag_months: [8, 11]
+    season: [3, 4, 5]
+    confidence: contested
+    mechanism: >
+      A La Niña cools the tropics as an El Niño warms them, and the
+      cooling lingers into the following spring. With a cooler
+      atmosphere and fewer persistent highs over the north, the
+      pre-monsoon tends to run less hot and heat waves tend to be fewer
+      and shorter.
+    caveat: >
+      Unsettled, and thinner than the El Niño side: the cool composite is
+      the mirror image of a warm one that is itself not significant in
+      this season, and one analysis links heat waves along India's east
+      coast to Pacific cooling, which would make a La Niña spring hotter
+      there, not cooler. No La Niña spring is safe from heat: 2022's
+      March heat came in a La Niña.
+    evidence_note: >
+      Composites of La Niña years over 1901–2007 are close to the mirror
+      of El Niño's, with negative temperature anomalies persisting from
+      the event's monsoon season to the following pre-monsoon; against
+      it, heat waves over coastal eastern India are associated with
+      anomalous cooling in the Pacific through a weakened sea breeze.
+    sources: [kothawale_2010, ratnam_2016]
+
+  - id: warm_basin_india_heat
+    from: indian_ocean_basin
+    when: warm
+    to: india_premonsoon_heat
+    effect: 1
+    lag_months: [0, 3]
+    season: [3, 4, 5]
+    confidence: contested
+    mechanism: >
+      A warm Indian Ocean warms the air above it and the moist air
+      flowing onto India from the south. It also weakens the contrast
+      between the land and the sea that drives the sea breezes along the
+      coast, so the coast gets less relief, and the whole subcontinent
+      starts the hot season from a higher floor.
+    caveat: >
+      One study's finding, on a short record, and hard to separate from
+      El Niño because the basin warms after one: the springs of 1998,
+      2010 and 2016 had both. The basin-wide warming trend of recent
+      decades is bound up with the same statistic. Treat this as one
+      more reason a post-El Niño spring runs hot, not as an independent
+      forecast.
+    evidence_note: >
+      The variability of heat waves over India during 1961–2013 is
+      influenced by tropical Indian Ocean as well as central Pacific
+      temperatures, and warming of the tropical Indian Ocean is expected
+      to bring more frequent and longer heat waves.
+    sources: [rohini_2016]
+
+  # ---- Tibetan Plateau winter snow
+  - id: el_nino_tibet_snow
+    from: enso
+    when: el_nino
+    to: tibet_winter_snow
+    effect: 1
+    lag_months: [4, 9]
+    season: [11, 12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      Two routes are proposed. Rain over the central Pacific in an El
+      Niño winter launches waves along the jet stream that cross North
+      America, the Atlantic and North Africa and arrive over the
+      Himalaya, where they favour rising air and snowfall. And the
+      suppressed rain over the western Pacific sets up a cyclonic swirl
+      that pulls cold air and tropical moisture onto the eastern plateau,
+      where both cool the ground and thicken the snow.
+    caveat: >
+      Contested and built on a short satellite snow record. The proposed
+      wave path is a speculation supported by ray tracing; the two
+      studies that find more snow disagree about where on the plateau it
+      falls; and the relationship between ENSO and spring snow cover
+      changed sign in the early 2000s, positive before and negative
+      after. Some studies find the plateau's snow independent of ENSO
+      altogether. The map shows the lean of the longer record.
+    evidence_note: >
+      Statistical analysis and ray tracing of the short satellite record
+      link wintertime central-Pacific ENSO conditions to Rossby waves
+      reaching the plateau and to increased winter snowfall; station
+      snow depth and model experiments show positive ENSO deepening
+      early-winter snow over the eastern plateau through suppressed
+      western-Pacific convection, with more snowfall doing more than
+      cold; against it, the ENSO–spring snow cover correlation was
+      significantly positive in 1988–2003 and clearly negative in
+      2004–19, with some studies finding no relationship.
+    sources: [shaman_tziperman_2005, jiang_2019, shen_2021, wang_2022]
+
+  - id: positive_iod_tibet_snow
+    from: iod
+    when: positive
+    to: tibet_winter_snow
+    effect: 1
+    lag_months: [4, 6]
+    season: [11, 12, 1]
+    confidence: contested
+    mechanism: >
+      A positive dipole means heavy rain over the warm western Indian
+      Ocean in autumn. That rain sends a wave northeastward through the
+      atmosphere that sets up a cyclonic swirl over the central and
+      western plateau in early winter, drawing moisture in from the
+      Arabian Sea and the Bay of Bengal and lifting it into snow.
+    caveat: >
+      Two recent studies of a short record, and a dipole usually comes
+      with an El Niño, so the two are hard to separate: one study finds
+      the dipole matters most on the central and western plateau and
+      ENSO on the east, the other finds the dipole's effect holds even
+      with a neutral Pacific. The dipole fades by December, so the snow
+      it adds is early-winter snow, and what happens to the snowpack
+      after that is up to the winter.
+    evidence_note: >
+      Station snow depth and model simulations show a positive dipole
+      inducing an anomalous cyclonic circulation over the central
+      western plateau in early winter, transporting extra moisture from
+      the tropics for more snowfall; a positive dipole with either a
+      positive or a neutral ENSO excites the southern Eurasia pattern
+      whose cyclone around the plateau, with enhanced southwesterlies
+      over the Arabian Sea and Bay of Bengal, brings heavy
+      November–December snowfall in observations and in CAM5 experiments.
+    sources: [jiang_2019, shen_2021]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -4940,3 +5371,79 @@ sources:
   - key: newhall_1997
     citation: "Newhall, C. G., Hendley, J. W., & Stauffer, P. H. (1997). The cataclysmic 1991 eruption of Mount Pinatubo, Philippines. U.S. Geological Survey Fact Sheet 113-97."
     url: https://pubs.usgs.gov/fs/1997/fs113-97/
+  # ---- Outcome regions, third batch (M27)
+  - key: mariotti_2007
+    citation: "Mariotti, A. (2007). How ENSO impacts precipitation in southwest central Asia. Geophysical Research Letters, 34, L16706."
+    url: https://doi.org/10.1029/2007GL030078
+  - key: barlow_2002
+    citation: "Barlow, M., Cullen, H., & Lyon, B. (2002). Drought in Central and Southwest Asia: La Niña, the warm pool, and Indian Ocean precipitation. Journal of Climate, 15(7), 697–700."
+    url: https://doi.org/10.1175/1520-0442(2002)015<0697:DICASA>2.0.CO;2
+  - key: hoell_2015
+    citation: "Hoell, A., Shukla, S., Barlow, M., Cannon, F., Kelley, C., & Funk, C. (2015). The forcing of monthly precipitation variability over southwest Asia during the boreal cold season. Journal of Climate, 28(18), 7038–7056."
+    url: https://doi.org/10.1175/JCLI-D-14-00757.1
+  - key: hoell_2014
+    citation: "Hoell, A., Funk, C., & Barlow, M. (2014). The regional forcing of Northern Hemisphere drought during recent warm tropical west Pacific Ocean La Niña events. Climate Dynamics, 42(11–12), 3289–3311."
+    url: https://doi.org/10.1007/s00382-013-1799-4
+  - key: hoell_2018
+    citation: "Hoell, A., Barlow, M., Xu, T., & Zhang, T. (2018). Cold season southwest Asia precipitation sensitivity to El Niño–Southern Oscillation events. Journal of Climate, 31(11), 4463–4482."
+    url: https://doi.org/10.1175/JCLI-D-17-0456.1
+  - key: syed_2010
+    citation: "Syed, F. S., Giorgi, F., Pal, J. S., & Keay, K. (2010). Regional climate model simulation of winter climate over Central–Southwest Asia, with emphasis on NAO and ENSO effects. International Journal of Climatology, 30(2), 220–235."
+    url: https://doi.org/10.1002/joc.1887
+  - key: nazemosadat_cordery_2000
+    citation: "Nazemosadat, M. J., & Cordery, I. (2000). On the relationships between ENSO and autumn rainfall in Iran. International Journal of Climatology, 20(1), 47–61."
+    url: https://doi.org/10.1002/(SICI)1097-0088(200001)20:1<47::AID-JOC461>3.0.CO;2-P
+  - key: hu_feng_2001
+    citation: "Hu, Q., & Feng, S. (2001). Variations of teleconnection of ENSO and interannual variation in summer rainfall in the central United States. Journal of Climate, 14(11), 2469–2480."
+    url: https://doi.org/10.1175/1520-0442(2001)014<2469:VOTOEA>2.0.CO;2
+  - key: ting_wang_1997
+    citation: "Ting, M., & Wang, H. (1997). Summertime U.S. precipitation variability and its relation to Pacific sea surface temperature. Journal of Climate, 10(8), 1853–1873."
+    url: https://doi.org/10.1175/1520-0442(1997)010<1853:SUSPVA>2.0.CO;2
+  - key: trenberth_1988
+    citation: "Trenberth, K. E., Branstator, G. W., & Arkin, P. A. (1988). Origins of the 1988 North American drought. Science, 242(4886), 1640–1645."
+    url: https://doi.org/10.1126/science.242.4886.1640
+  - key: trenberth_guillemot_1996
+    citation: "Trenberth, K. E., & Guillemot, C. J. (1996). Physical processes involved in the 1988 drought and 1993 floods in North America. Journal of Climate, 9(6), 1288–1298."
+    url: https://doi.org/10.1175/1520-0442(1996)009<1288:PPIITD>2.0.CO;2
+  - key: mo_2009
+    citation: "Mo, K. C., Schemm, J.-K. E., & Yoo, S.-H. (2009). Influence of ENSO and the Atlantic Multidecadal Oscillation on drought over the United States. Journal of Climate, 22(22), 5962–5982."
+    url: https://doi.org/10.1175/2009JCLI2966.1
+  - key: mo_schemm_2008
+    citation: "Mo, K. C., & Schemm, J. E. (2008). Droughts and persistent wet spells over the United States and Mexico. Journal of Climate, 21(5), 980–994."
+    url: https://doi.org/10.1175/2007JCLI1616.1
+  - key: shabbar_2006
+    citation: "Shabbar, A. (2006). The impact of El Niño-Southern Oscillation on the Canadian climate. Advances in Geosciences, 6, 149–153."
+    url: https://doi.org/10.5194/adgeo-6-149-2006
+  - key: hurrell_van_loon_1997
+    citation: "Hurrell, J. W., & van Loon, H. (1997). Decadal variations in climate associated with the North Atlantic Oscillation. Climatic Change, 36(3–4), 301–326."
+    url: https://doi.org/10.1023/A:1005314315270
+  - key: bonsal_2001
+    citation: "Bonsal, B. R., Shabbar, A., & Higuchi, K. (2001). Impacts of low frequency variability modes on Canadian winter temperature. International Journal of Climatology, 21(1), 95–108."
+    url: https://doi.org/10.1002/joc.590
+  - key: shabbar_bonsal_2004
+    citation: "Shabbar, A., & Bonsal, B. (2004). Associations between low frequency variability modes and winter temperature extremes in Canada. Atmosphere-Ocean, 42(2), 127–140."
+    url: https://doi.org/10.3137/ao.420204
+  - key: rohini_2016
+    citation: "Rohini, P., Rajeevan, M., & Srivastava, A. K. (2016). On the variability and increasing trends of heat waves over India. Scientific Reports, 6, 26153."
+    url: https://doi.org/10.1038/srep26153
+  - key: kothawale_2010
+    citation: "Kothawale, D. R., Munot, A. A., & Krishna Kumar, K. (2010). Surface air temperature variability over India during 1901–2007, and its association with ENSO. Climate Research, 42(1), 89–104."
+    url: https://doi.org/10.3354/cr00857
+  - key: ratnam_2016
+    citation: "Ratnam, J. V., Behera, S. K., Ratna, S. B., Rajeevan, M., & Yamagata, T. (2016). Anatomy of Indian heatwaves. Scientific Reports, 6, 24395."
+    url: https://doi.org/10.1038/srep24395
+  - key: shaman_tziperman_2005
+    citation: "Shaman, J., & Tziperman, E. (2005). The effect of ENSO on Tibetan Plateau snow depth: A stationary wave teleconnection mechanism and implications for the South Asian monsoons. Journal of Climate, 18(12), 2067–2079."
+    url: https://doi.org/10.1175/JCLI3391.1
+  - key: jiang_2019
+    citation: "Jiang, X., Zhang, T., Tam, C.-Y., Chen, J., Lau, N.-C., Yang, S., & Wang, Z. (2019). Impacts of ENSO and IOD on snow depth over the Tibetan Plateau: Roles of convections over the western North Pacific and Indian Ocean. Journal of Geophysical Research: Atmospheres, 124(22), 11961–11975."
+    url: https://doi.org/10.1029/2019JD031384
+  - key: shen_2021
+    citation: "Shen, H., Gong, Z., Liu, B., Guo, Y., Feng, X., Wen, T., Wang, X., & Feng, G. (2021). Remote effects of IOD and ENSO on motivating the atmospheric pattern favorable for snowfall over the Tibetan Plateau in early winter. Frontiers in Climate, 3, 694384."
+    url: https://doi.org/10.3389/fclim.2021.694384
+  - key: wang_2022
+    citation: "Wang, Z., Wu, R., Yang, S., & Lu, M. (2022). An interdecadal change in the influence of ENSO on the spring Tibetan Plateau snow-cover variability in the early 2000s. Journal of Climate, 35(2), 725–743."
+    url: https://doi.org/10.1175/JCLI-D-21-0348.1
+  - key: you_2020
+    citation: "You, Q., Wu, T., Shen, L., Pepin, N., Zhang, L., Jiang, Z., Wu, Z., Kang, S., & AghaKouchak, A. (2020). Review of snow cover variation over the Tibetan Plateau and its influence on the broad climate system. Earth-Science Reviews, 201, 103043."
+    url: https://doi.org/10.1016/j.earscirev.2019.103043

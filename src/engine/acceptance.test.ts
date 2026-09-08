@@ -1416,15 +1416,16 @@ describe('acceptance: warm Indian Ocean basin, February start', () => {
     expect(tl.months[4].nodes.indian_summer_monsoon.value).toBe(1);
     expect(tl.months[4].nodes.west_pacific_typhoons.value).toBe(-1);
   });
-  it('tiers: the Yangtze established, typhoons and South China probable, the monsoon and the cyclones contested, the push on ENSO probable', () => {
+  it('tiers: the Yangtze established, typhoons and South China probable, the monsoon, the cyclones and India’s spring heat (M27) contested, the push on ENSO probable', () => {
     const own = graph.links.filter((l) => l.from === 'indian_ocean_basin');
-    expect(own).toHaveLength(9);
+    expect(own).toHaveLength(10);
     const tier = (to: string) => own.filter((l) => l.to === to).map((l) => `${l.when}:${l.confidence}`).sort();
     expect(tier('yangtze_summer_rainfall')).toEqual(['cool:probable', 'warm:established']);
     expect(tier('west_pacific_typhoons')).toEqual(['cool:contested', 'warm:probable']);
     expect(tier('south_china_rainfall')).toEqual(['cool:probable', 'warm:probable']);
     expect(tier('indian_summer_monsoon')).toEqual(['warm:contested']);
     expect(tier('north_indian_ocean_cyclones')).toEqual(['warm:contested']);
+    expect(tier('india_premonsoon_heat')).toEqual(['warm:contested']);
     expect(tier('enso')).toEqual(['warm:probable']);
     expect(tl.months[4].nodes.yangtze_summer_rainfall.confidence).toBe('established');
     expect(tl.months[4].nodes.indian_summer_monsoon.confidence).toBe('contested');
@@ -2099,5 +2100,96 @@ describe('acceptance: the 1991 Pinatubo story, the eruption from June with El Ni
     expect(direct.months[12].nodes.indian_summer_monsoon.value).toBe(-1);
     expect(direct.months[12].nodes.indian_summer_monsoon.conflicting).toBe(false);
     expect([...direct.months[12].nodes.indian_summer_monsoon.viaLinkIds].sort()).toEqual(['el_nino_indian_monsoon', 'eruption_indian_monsoon']);
+  });
+});
+
+describe('acceptance: outcome regions, third batch (M27), data only', () => {
+  const NEW = ['central_asia_winter', 'us_midwest_summer', 'hudson_bay_winter', 'india_premonsoon_heat', 'tibet_winter_snow'];
+  it('ships five new outcome nodes with thirteen cited, caveated links into them and no new driver', () => {
+    for (const id of NEW) {
+      const n = graph.nodes.find((x) => x.id === id)!;
+      expect(n, id).toBeDefined();
+      expect(n.kind).toBe('outcome');
+      const into = graph.links.filter((l) => l.to === id);
+      expect(into.length, id).toBeGreaterThan(0);
+      for (const l of into) {
+        expect(l.sources.length, l.id).toBeGreaterThan(0);
+        expect(l.caveat.trim().length, l.id).toBeGreaterThan(20);
+      }
+    }
+    expect(graph.links.filter((l) => NEW.includes(l.to))).toHaveLength(13);
+    expect(graph.nodes.filter((n) => n.kind === 'outcome')).toHaveLength(61);
+    expect(graph.nodes.filter((n) => n.kind === 'driver')).toHaveLength(11);
+  });
+  it('El Niño from June, direct links: Central Asia wet November–April, the Midwest wet in the summer the event is in and again from the next May, northeastern Canada mild and Tibet snowy through the winter, India hot in the following spring', () => {
+    const tl = run('el_nino');
+    expect(monthsWith(tl, 'central_asia_winter', 1)).toEqual([5, 6, 7, 8, 9, 10]);
+    expect(monthsWith(tl, 'us_midwest_summer', 1)).toEqual([0, 1, 2, 11, 12]);
+    expect(monthsWith(tl, 'hudson_bay_winter', 1)).toEqual([6, 7, 8, 9]);
+    expect(monthsWith(tl, 'tibet_winter_snow', 1)).toEqual([5, 6, 7, 8, 9]);
+    expect(monthsWith(tl, 'india_premonsoon_heat', 1)).toEqual([9, 10, 11]);
+    for (const id of NEW) expect(monthsWith(tl, id, -1), `${id} also shows the opposite sign`).toHaveLength(0);
+    expect(tl.months[6].nodes.central_asia_winter.confidence).toBe('probable');
+    expect(tl.months[0].nodes.us_midwest_summer.confidence).toBe('contested');
+    expect(tl.months[6].nodes.hudson_bay_winter.confidence).toBe('contested');
+    expect(tl.months[6].nodes.tibet_winter_snow.confidence).toBe('contested');
+    expect(tl.months[9].nodes.india_premonsoon_heat.confidence).toBe('contested');
+    // India's heat is out of season and pending until March.
+    expect(tl.months[8].nodes.india_premonsoon_heat.value).toBe(0);
+    expect(tl.months[8].nodes.india_premonsoon_heat.pendingLinkIds).toContain('el_nino_india_heat');
+  });
+  it('La Niña reverses all but Tibet, which has no La Niña link and stays untouched (no faked symmetry)', () => {
+    const tl = run('la_nina');
+    expect(monthsWith(tl, 'central_asia_winter', -1)).toEqual([5, 6, 7, 8, 9, 10]);
+    expect(monthsWith(tl, 'us_midwest_summer', -1)).toEqual([0, 1, 2, 11, 12]);
+    expect(tl.months[0].nodes.us_midwest_summer.confidence).toBe('probable');
+    expect(monthsWith(tl, 'hudson_bay_winter', -1)).toEqual([6, 7, 8, 9]);
+    expect(monthsWith(tl, 'india_premonsoon_heat', -1)).toEqual([9, 10, 11]);
+    for (const id of NEW) expect(monthsWith(tl, id, 1), `${id} copies the El Niño sign`).toHaveLength(0);
+    for (const m of tl.months) {
+      expect(m.nodes.tibet_winter_snow.value, `Tibet at month ${m.index}`).toBe(0);
+      expect(m.nodes.tibet_winter_snow.viaLinkIds).toHaveLength(0);
+      expect(m.nodes.tibet_winter_snow.pendingLinkIds).toHaveLength(0);
+    }
+  });
+  it('the NAO sets northeastern Canada with no lag, December–March, established: positive cold, negative mild', () => {
+    const pos = propagate(graph, { driverId: 'nao', phaseId: 'positive', startMonth: 12, horizonMonths: HORIZON });
+    expect(monthsWith(pos, 'hudson_bay_winter', -1)).toEqual([0, 1, 2, 3, 12]);
+    expect(pos.months[0].nodes.hudson_bay_winter.confidence).toBe('established');
+    const neg = propagate(graph, { driverId: 'nao', phaseId: 'negative', startMonth: 12, horizonMonths: HORIZON });
+    expect(monthsWith(neg, 'hudson_bay_winter', 1)).toEqual([0, 1, 2, 3, 12]);
+    expect(neg.months[0].nodes.hudson_bay_winter.confidence).toBe('established');
+  });
+  it('the positive dipole from June adds early-winter snow to Tibet in November–January; a warm basin from February heats India in March–May, both contested', () => {
+    const iod = propagate(graph, { driverId: 'iod', phaseId: 'positive', startMonth: 6, horizonMonths: HORIZON });
+    expect(monthsWith(iod, 'tibet_winter_snow', 1)).toEqual([5, 6, 7]);
+    expect(iod.months[5].nodes.tibet_winter_snow.confidence).toBe('contested');
+    const basin = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON });
+    expect(basin.months[1].calendarMonth).toBe(3);
+    expect(monthsWith(basin, 'india_premonsoon_heat', 1)).toEqual([1, 2, 3]);
+    expect(basin.months[1].nodes.india_premonsoon_heat.confidence).toBe('contested');
+  });
+  it('with the chain on, El Niño reaches Tibet twice in November (its own link and the pushed positive dipole), northeastern Canada twice in January (its own link and the pushed negative NAO) and India twice in March (its own link and the pushed warm basin), always the same way, never conflicting', () => {
+    const tl = propagate(graph, { driverId: 'enso', phaseId: 'el_nino', startMonth: 6, horizonMonths: HORIZON, maxDepth: 3 });
+    expect(tl.months[5].calendarMonth).toBe(11);
+    expect([...tl.months[5].nodes.tibet_winter_snow.viaLinkIds].sort()).toEqual(['el_nino_tibet_snow', 'positive_iod_tibet_snow']);
+    expect(tl.months[5].nodes.tibet_winter_snow.value).toBe(1);
+    expect(tl.months[5].nodes.tibet_winter_snow.conflicting).toBe(false);
+    expect(tl.months[7].calendarMonth).toBe(1);
+    expect([...tl.months[7].nodes.hudson_bay_winter.viaLinkIds].sort()).toEqual(['el_nino_hudson_bay', 'negative_nao_hudson_bay']);
+    expect(tl.months[7].nodes.hudson_bay_winter.value).toBe(1);
+    expect(tl.months[7].nodes.hudson_bay_winter.conflicting).toBe(false);
+    expect(tl.months[9].calendarMonth).toBe(3);
+    expect([...tl.months[9].nodes.india_premonsoon_heat.viaLinkIds].sort()).toEqual(['el_nino_india_heat', 'warm_basin_india_heat']);
+    expect(tl.months[9].nodes.india_premonsoon_heat.value).toBe(1);
+    expect(tl.months[9].nodes.india_premonsoon_heat.conflicting).toBe(false);
+    for (const m of tl.months) for (const id of NEW) expect(m.nodes[id].conflicting, `${id} at month ${m.index}`).toBe(false);
+  });
+  it('under "established only" the new El Niño links are ghosts: nothing reaches the five regions from El Niño; the NAO still reaches northeastern Canada', () => {
+    const est = propagate(graph, { driverId: 'enso', phaseId: 'el_nino', startMonth: 6, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    for (const m of est.months) for (const id of NEW) expect(m.nodes[id].value, `${id} at month ${m.index}`).toBe(0);
+    expect(est.months[6].links.el_nino_central_asia.status).toBe('ghost');
+    const nao = propagate(graph, { driverId: 'nao', phaseId: 'positive', startMonth: 12, horizonMonths: HORIZON, minConfidence: 'established' });
+    expect(nao.months[1].nodes.hudson_bay_winter.value).toBe(-1);
   });
 });

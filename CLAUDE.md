@@ -64,7 +64,9 @@ one.
   Atlantic Meridional Mode as a ninth (M21), the Pacific Meridional
   Mode as a tenth (M22) and a large tropical volcanic eruption as an
   eleventh (M26, taken before M23–M25 as the plan's order suggests) on
-  2026-09-08. A new driver
+  2026-09-08, and the third batch of outcome regions (M27: Central Asia,
+  the US Midwest, northeastern Canada, India's pre-monsoon heat, Tibetan
+  snow; data only, no driver) on 2026-09-08. A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
   everything from the data. Do not start another version 2 or version 3
