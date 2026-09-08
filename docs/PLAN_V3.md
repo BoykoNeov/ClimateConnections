@@ -398,6 +398,24 @@ North America. It pairs with M24 as a matched teaching unit.
 
 ### M26 — Fourteenth driver: a large tropical volcanic eruption
 
+**Shipped 2026-09-08**, before M23–M25 as §7 suggests, so it is the
+eleventh driver on the map. The record of what was built is in
+`docs/PLAN.md` §10 under M26. Departures from the text below, each with
+its reason: the quiet phase's id is `neutral`, not `none`, so the driver
+reads like every other in the data and the tests (its label is "No
+eruption"); the marker is at 0°N 158°E east of New Guinea, because every
+position in the Philippine Sea failed the label-overlap check; the
+monsoon links use lag 4–15 rather than 6–15 (the haze spreads and
+thickens in three or four months, and lag 4 lets an April eruption reach
+the same summer's monsoon) and the winter links lag 2–8 rather than 3–8
+(so a December eruption still reaches February); the story's last step
+is at month 12, not 11, because that is the first June after the
+eruption, and it explains that with the chain on the monsoon marker is
+hatched (El Niño's pushed dipole and basin argue with the volcano) while
+with it off both chosen drivers say weaker. The NAO push and the winter
+warming are shipped probable as planned, with caveats that name Driscoll
+2012 and Polvani 2019.
+
 An event, not an oscillation, but it fits the schema: the validator asks
 only that a driver has at least two phases, one of them value 0. Phases:
 `eruption` (value −1, the driver's own axis is "cooling forcing") and

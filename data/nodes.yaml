@@ -568,6 +568,63 @@ nodes:
           side is far weaker in the record than the warm side and its
           arrows are drawn as contested.
     sources: [chiang_vimont_2004, chang_2007_pmm, vimont_2001, vimont_2003, anderson_2003, alexander_2010, amaya_2019, linkin_nigam_2008, di_lorenzo_2015, stuecker_2018, noaa_psl_pmm]
+  - id: tropical_eruption
+    name: Large tropical volcanic eruption
+    label: Tropical eruption
+    kind: driver
+    lat: 0
+    lon: 158
+    region: Any volcano in the tropics, from Pinatubo and Krakatau to Rabaul and El Chichón; the marker sits in the western Pacific, on the equator
+    timescale: Rare, a few times a century; the effects last two to three years
+    summary: >
+      A volcano near the equator that blasts sulphur gas into the
+      stratosphere, above the weather. Within weeks the gas turns into a
+      haze of tiny droplets of sulphuric acid that spreads around the
+      whole planet and takes about two years to thin away. The haze
+      reflects some sunlight back to space, so the world runs a few tenths
+      of a degree cooler for a year or two. It also warms the stratosphere
+      over the tropics more than over the poles, and in the first northern
+      winter that tends to strengthen the polar jet and give northern
+      Europe and Siberia a mild winter while the planet as a whole is
+      cool. Less sunlight means less evaporation and less rain, and the
+      African and Indian monsoons of the following summer tend to be
+      weaker. Whether the eruption also nudges the Pacific toward El Niño
+      is genuinely unsettled, and that arrow is dotted. This is the one
+      driver on the map that is an event rather than a swing: it has no
+      opposite phase, and the map holds it on for twelve months as a
+      stand-in for a cloud that fades over two years, so the second cool
+      year is not shown. A big eruption far from the tropics (Iceland,
+      Alaska) spreads its haze over one hemisphere only, behaves
+      differently, and is not on this map.
+    onset_hint: Any month; Pinatubo erupted in June 1991, and the season of an eruption changes what the first year looks like.
+    default_start_month: 6
+    phases:
+      - id: eruption
+        value: -1
+        label: Eruption
+        color: "#6b3e26"
+        summary: >
+          Sulphur from a large tropical eruption has reached the
+          stratosphere. Expect a cooler year, a milder first winter over
+          northern Eurasia, weaker African and Indian monsoons the next
+          summer, and perhaps a nudge toward El Niño. Pinatubo in June
+          1991 is the textbook case: about twenty million tonnes of
+          sulphur dioxide, a haze that circled the globe in three weeks,
+          and a world half a degree cooler by the following summer. Note
+          that the map keeps the eruption on for the whole year shown; in
+          reality the haze thins steadily and its effects fade over two to
+          three years.
+      - id: neutral
+        value: 0
+        label: No eruption
+        color: "#999999"
+        summary: >
+          No eruption large enough to reach the stratosphere. Small
+          eruptions, of which there are dozens a year, put their ash into
+          the lower air, where rain washes it out within days, and none of
+          the volcanic tendencies on this map apply. No eruption of
+          Pinatubo's size has happened since 1991.
+    sources: [robock_2000, timmreck_2012, mccormick_1995, bluth_1992, newhall_1997, self_1996, parker_1996]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon

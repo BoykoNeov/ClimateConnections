@@ -225,8 +225,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'sam'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode and the Atlantic and Pacific meridional modes as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'sam', 'tropical_eruption'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode, the Atlantic and Pacific meridional modes and a tropical eruption as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -250,6 +250,7 @@ describe('acceptance: drivers', () => {
     expect(start('indian_ocean_basin')).toBe(2);
     expect(start('atlantic_meridional_mode')).toBe(3);
     expect(start('pacific_meridional_mode')).toBe(3);
+    expect(start('tropical_eruption')).toBe(6);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -384,15 +385,15 @@ describe('acceptance: driver-to-driver data', () => {
   const drivers = graph.nodes.filter((n) => n.kind === 'driver');
   const driverIds = new Set(drivers.map((d) => d.id));
   const d2d = graph.links.filter((l) => driverIds.has(l.to));
-  it('every driver has phases valued +1, 0 and -1', () => {
+  it('every driver has phases valued +1, 0 and -1, except the tropical eruption (M26), an event with no opposite phase: -1 and 0 only', () => {
     for (const d of drivers) {
       if (d.kind !== 'driver') continue;
-      expect(d.phases.map((p) => p.value).sort()).toEqual([-1, 0, 1]);
+      expect(d.phases.map((p) => p.value).sort(), d.id).toEqual(d.id === 'tropical_eruption' ? [-1, 0] : [-1, 0, 1]);
     }
   });
-  it('ships twenty-three driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twenty-five driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'eruption_el_nino', 'eruption_positive_nao', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
       'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'negative_pmm_la_nina', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'positive_pmm_el_nino', 'warm_basin_la_nina',
     ]);
     for (const l of d2d) {
@@ -1919,5 +1920,184 @@ describe('acceptance: the 2014–15 story, the mode alone from March with the ch
     expect(tl.months[9].nodes.indonesia_rainfall.value).toBe(-1);
     expect(tl.months[12].calendarMonth).toBe(3);
     expect(tl.months[12].nodes.enso.value).toBe(1);
+  });
+});
+
+
+
+// ---------------------------------------------------------------- M26: eleventh driver (a large tropical volcanic eruption)
+// An event, not a swing: one active phase (eruption) and a quiet one. The
+// map holds it on for the whole year shown. Nothing pushes it.
+function runVol(phaseId: string, startMonth = 6, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'tropical_eruption', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+describe('acceptance: a tropical eruption from June, direct links only', () => {
+  const tl = runVol('eruption');
+  it('the driver has two phases, eruption (−1) and neutral (0), and every link leaves from the eruption; nothing points into it', () => {
+    const d = graph.nodes.find((n) => n.id === 'tropical_eruption')!;
+    expect(d.kind).toBe('driver');
+    if (d.kind !== 'driver') return;
+    expect(d.phases.map((p) => [p.id, p.value])).toEqual([['eruption', -1], ['neutral', 0]]);
+    expect(d.default_start_month).toBe(6);
+    const own = graph.links.filter((l) => l.from === 'tropical_eruption');
+    expect(own).toHaveLength(7);
+    expect(own.every((l) => l.when === 'eruption')).toBe(true);
+    expect(graph.links.filter((l) => l.to === 'tropical_eruption')).toHaveLength(0);
+    const tier = (to: string) => own.filter((l) => l.to === to).map((l) => l.confidence);
+    expect(tier('global_mean_temperature')).toEqual(['established']);
+    expect(tier('sahel_rainfall')).toEqual(['probable']);
+    expect(tier('indian_summer_monsoon')).toEqual(['probable']);
+    expect(tier('northern_europe_winter')).toEqual(['probable']);
+    expect(tier('western_russia_winter')).toEqual(['probable']);
+    expect(tier('nao')).toEqual(['probable']);
+    expect(tier('enso')).toEqual(['contested']);
+  });
+  it('the world cools from September (lag 3) to the end of the year shown, rated established, nothing before', () => {
+    expect(tl.months[0].calendarMonth).toBe(6);
+    expect(monthsWith(tl, 'global_mean_temperature', -1)).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(tl.months[2].nodes.global_mean_temperature.pendingLinkIds).toHaveLength(0);
+    expect(tl.months[3].nodes.global_mean_temperature.confidence).toBe('established');
+    expect(tl.months[3].links.eruption_global_cooling).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+  });
+  it('northern Europe and western Russia mild in the first winter only (December–February, months 6–8), pending from August and again from March', () => {
+    for (const id of ['northern_europe_winter', 'western_russia_winter']) {
+      expect(monthsWith(tl, id, 1), id).toEqual([6, 7, 8]);
+      expect(monthsWith(tl, id, -1), id).toHaveLength(0);
+      expect(tl.months[1].nodes[id].pendingLinkIds, `${id} July`).toHaveLength(0);
+      expect(tl.months[2].nodes[id].pendingLinkIds, `${id} August`).toHaveLength(1);
+      expect(tl.months[9].nodes[id].pendingLinkIds, `${id} March`).toHaveLength(1);
+      expect(tl.months[6].nodes[id].confidence, id).toBe('probable');
+    }
+  });
+  it('the Indian monsoon weaker at month 12 (the next June) only; the Sahel waits all year because its rains come in July, past the year shown', () => {
+    expect(monthsWith(tl, 'indian_summer_monsoon', -1)).toEqual([12]);
+    expect(tl.months[3].nodes.indian_summer_monsoon.pendingLinkIds).toHaveLength(0);
+    expect(tl.months[4].nodes.indian_summer_monsoon.pendingLinkIds).toEqual(['eruption_indian_monsoon']);
+    expect(tl.months[12].nodes.indian_summer_monsoon.confidence).toBe('probable');
+    expect(monthsWith(tl, 'sahel_rainfall', -1)).toHaveLength(0);
+    for (const m of tl.months.slice(4)) expect(m.nodes.sahel_rainfall.pendingLinkIds, `Sahel month ${m.index}`).toEqual(['eruption_sahel']);
+    // An eruption in March reaches the Sahel's rains in July (month 4).
+    expect(monthsWith(runVol('eruption', 3), 'sahel_rainfall', -1)).toEqual([4, 5, 6]);
+  });
+  it('the NAO is pushed positive December–March (months 6–9) rated probable, and ENSO toward El Niño from December rated contested; a December eruption still reaches February', () => {
+    expect(monthsWith(tl, 'nao', 1)).toEqual([6, 7, 8, 9]);
+    expect(tl.months[6].nodes.nao.viaLinkIds).toEqual(['eruption_positive_nao']);
+    expect(tl.months[6].nodes.nao.confidence).toBe('probable');
+    expect(tl.months[5].nodes.enso.value).toBe(0);
+    expect(monthsWith(tl, 'enso', 1)).toEqual([6, 7, 8, 9, 10, 11, 12]);
+    expect(tl.months[6].nodes.enso.viaLinkIds).toEqual(['eruption_el_nino']);
+    expect(tl.months[6].nodes.enso.confidence).toBe('contested');
+    const dec = runVol('eruption', 12);
+    expect(monthsWith(dec, 'northern_europe_winter', 1)).toEqual([2, 12]);
+    expect(monthsWith(dec, 'nao', 1)).toEqual([2, 3, 12]);
+  });
+  it('the neutral phase (no eruption) has no links and touches nothing', () => {
+    const none = runVol('neutral', 6, 3);
+    for (const m of none.months) {
+      expect(Object.keys(m.links), `month ${m.index}`).toHaveLength(0);
+      for (const st of Object.values(m.nodes)) { expect(st.viaLinkIds).toHaveLength(0); expect(st.pendingLinkIds).toHaveLength(0); }
+    }
+  });
+  it('under "established only" the cooling is the one arrow that applies; every other arrow of this driver is a ghost and no driver is pushed', () => {
+    const est = propagate(graph, { driverId: 'tropical_eruption', phaseId: 'eruption', startMonth: 6, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    expect(monthsWith(est, 'global_mean_temperature', -1)).toEqual([3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    for (const m of est.months) {
+      for (const [id, l] of Object.entries(m.links)) {
+        if (id === 'eruption_global_cooling') continue;
+        expect(l.status, `${id} at month ${m.index}`).toBe('ghost');
+      }
+      expect(m.nodes.nao.value, `NAO month ${m.index}`).toBe(0);
+      expect(m.nodes.enso.value, `ENSO month ${m.index}`).toBe(0);
+      expect(m.nodes.northern_europe_winter.viaLinkIds, `N Europe month ${m.index}`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: a tropical eruption from June with the chain on', () => {
+  const tl = runVol('eruption', 6, 3);
+  it('December: the NAO is pushed positive at depth 1 and its winter map follows one tier down; northern Europe carries both arrows the same way without conflict', () => {
+    const dec = tl.months[6];
+    expect(dec.calendarMonth).toBe(12);
+    expect(dec.links.eruption_positive_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect([...dec.nodes.northern_europe_winter.viaLinkIds].sort()).toEqual(['eruption_northern_europe_winter', 'positive_nao_northern_europe']);
+    expect(dec.nodes.northern_europe_winter.value).toBe(1);
+    expect(dec.nodes.northern_europe_winter.conflicting).toBe(false);
+    expect(dec.links.positive_nao_northern_europe).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(dec.nodes.mediterranean_winter_rainfall.value).toBe(-1);
+    expect(dec.nodes.mediterranean_winter_rainfall.viaLinkIds).toEqual(['positive_nao_mediterranean']);
+    // The pushed NAO pushes the Atlantic meridional mode negative from February (lag 2), a third hop.
+    expect(tl.months[8].nodes.atlantic_meridional_mode.value).toBe(-1);
+    expect(tl.months[8].links.positive_nao_negative_amm?.depth).toBe(2);
+  });
+  it('December: ENSO is pushed toward El Niño rated contested, and El Niño’s map follows at the floor tier (Indonesia dry through the pushed El Niño)', () => {
+    const dec = tl.months[6];
+    expect(dec.links.eruption_el_nino).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(dec.nodes.enso.value).toBe(1);
+    expect(dec.nodes.indonesia_rainfall.value).toBe(-1);
+    expect(dec.nodes.indonesia_rainfall.viaLinkIds).toEqual(['el_nino_indonesia']);
+    expect(dec.links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+  });
+  it('from March the pushed El Niño’s warming arrow reaches the global temperature and disagrees with the volcano’s cooling: value 0, flagged as conflicting (the map cannot weigh them)', () => {
+    expect(monthsWith(tl, 'global_mean_temperature', -1)).toEqual([3, 4, 5, 6, 7, 8]);
+    for (const m of tl.months.slice(9)) {
+      const g = m.nodes.global_mean_temperature;
+      expect(g.value, `month ${m.index}`).toBe(0);
+      expect(g.conflicting, `month ${m.index}`).toBe(true);
+      expect([...g.viaLinkIds].sort(), `month ${m.index}`).toEqual(['el_nino_global_temperature', 'eruption_global_cooling']);
+    }
+    expect(tl.months[8].nodes.global_mean_temperature.conflicting).toBe(false);
+  });
+  it('the eruption is never pushed: no links in, its phase held all year', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.tropical_eruption.value, `month ${m.index}`).toBe(-1);
+      expect(m.nodes.tropical_eruption.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: the 1991 Pinatubo story, the eruption from June with El Niño chosen from September', () => {
+  const s = graph.stories.find((x) => x.id === 'pinatubo_1991')!;
+  it('ships with the eruption from June 1991, El Niño as a second driver from September, five steps', () => {
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
+      .toEqual(['tropical_eruption', 'eruption', 'enso', 'el_nino', 9, undefined, 6, 1991]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 3, 6, 9, 12]);
+    expect(s.steps.map((st) => st.focus)).toEqual(['tropical_eruption', 'global_mean_temperature', 'northern_europe_winter', 'enso', 'indian_summer_monsoon']);
+  });
+  it('at the story’s steps: cooling in September from the volcano alone, the two drivers disagreeing about the global temperature from December, northern Europe mild in December, no arrow from the volcano into the chosen El Niño, the monsoon weaker in June through both arrows', () => {
+    const tl = propagate(graph, {
+      driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3,
+      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month },
+    });
+    expect(tl.months[2].nodes.enso.value).toBe(0);
+    expect(tl.months[3].nodes.enso.value).toBe(1);
+    expect(tl.months[3].nodes.global_mean_temperature.value).toBe(-1);
+    expect(tl.months[3].nodes.global_mean_temperature.viaLinkIds).toEqual(['eruption_global_cooling']);
+    expect(tl.months[6].nodes.global_mean_temperature.value).toBe(0);
+    expect(tl.months[6].nodes.global_mean_temperature.conflicting).toBe(true);
+    expect(tl.months[6].nodes.northern_europe_winter.value).toBe(1);
+    expect(tl.months[6].nodes.northern_europe_winter.viaLinkIds).toContain('eruption_northern_europe_winter');
+    expect(tl.months[6].nodes.nao.value).toBe(1);
+    // March: El Niño's own push on the NAO (negative, lag 6 from September) meets the volcano's (positive): they cancel.
+    expect(tl.months[9].nodes.nao.value).toBe(0);
+    expect(tl.months[9].nodes.nao.conflicting).toBe(true);
+    for (const m of tl.months) expect(m.links.eruption_el_nino, `month ${m.index}`).toBeUndefined();
+    expect(tl.months[12].calendarMonth).toBe(6);
+    // June, chain on: the volcano and the El Niño say weaker, the El Niño's pushed
+    // positive dipole and warm basin say stronger, and the map cannot weigh them.
+    expect(tl.months[12].nodes.indian_summer_monsoon.value).toBe(0);
+    expect(tl.months[12].nodes.indian_summer_monsoon.conflicting).toBe(true);
+    expect([...tl.months[12].nodes.indian_summer_monsoon.viaLinkIds].sort()).toEqual(['el_nino_indian_monsoon', 'eruption_indian_monsoon', 'positive_iod_indian_monsoon', 'warm_basin_indian_monsoon']);
+    expect(tl.months[12].nodes.sahel_rainfall.value).toBe(0);
+    expect(tl.months[12].nodes.sahel_rainfall.pendingLinkIds).toContain('eruption_sahel');
+    // Chain off: both chosen drivers say weaker and nothing argues.
+    const direct = propagate(graph, {
+      driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 1,
+      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month },
+    });
+    expect(direct.months[12].nodes.indian_summer_monsoon.value).toBe(-1);
+    expect(direct.months[12].nodes.indian_summer_monsoon.conflicting).toBe(false);
+    expect([...direct.months[12].nodes.indian_summer_monsoon.viaLinkIds].sort()).toEqual(['el_nino_indian_monsoon', 'eruption_indian_monsoon']);
   });
 });

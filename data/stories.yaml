@@ -1339,3 +1339,112 @@ stories:
           raises the odds, and roughly one spring in three, like 2014,
           comes to nothing.
         sources: [levine_mcphaden_2016, noaa_cpc_oni, murakami_2017, larson_kirtman_2013]
+
+  - id: pinatubo_1991
+    title: "1991: Pinatubo"
+    intro: >
+      On 15 June 1991 Mount Pinatubo in the Philippines produced the
+      largest volcanic eruption in living memory and put about twenty
+      million tonnes of sulphur dioxide into the stratosphere. The year
+      shown begins that June with the eruption on. An El Niño was already
+      building in the Pacific and is set as a second driver from
+      September, chosen by hand: the record has one, and the map's own
+      arrow from the volcano to ENSO is contested. Watch the world cool
+      from September, northern Europe turn mild in December while the
+      planet as a whole is cool, and the map argue with itself about the
+      following June's monsoon. Then read the last step for the two
+      further years the map cannot show.
+    driver: tropical_eruption
+    phase: eruption
+    second_driver: enso
+    second_phase: el_nino
+    second_start_month: 9
+    start_month: 6
+    start_year: 1991
+    steps:
+      - month: 0
+        focus: tropical_eruption
+        text: >
+          After two months of warnings and the evacuation of tens of
+          thousands of people, Pinatubo blew on 15 June 1991, in the
+          middle of a typhoon. Ash fell across Luzon, but what mattered
+          for the world's climate was the sulphur dioxide carried thirty
+          kilometres up, three times what El Chichón had released in 1982.
+          Satellites watched the cloud circle the globe in about three
+          weeks and straddle the equator, which is why its haze spread
+          over both hemispheres. The map shows the volcano's arrows
+          waiting: the haze takes months to spread and thicken, and its
+          effects arrive in order, the cooling first, the winter next,
+          the monsoons last.
+        sources: [newhall_1997, bluth_1992, self_1996, mccormick_1995]
+
+      - month: 3
+        focus: global_mean_temperature
+        text: >
+          By September the haze covered most of the planet and direct
+          sunlight at remote observatories was down by a quarter. The map
+          now shows the world cooling, a solid arrow, the one link of
+          this driver that nobody disputes. Within months of the eruption
+          a climate model had forecast the dip: cooling from late 1991,
+          deepest in late 1992, and large enough to overwhelm the warmth
+          of the El Niño that was developing. That El Niño enters the map
+          this month as the second driver, and from December its own
+          arrow will point at this region the other way, so the marker
+          will show the two disagreeing. The map cannot weigh them; the
+          forecast could, and it was right.
+        sources: [hansen_1992, dutton_christy_1992, mccormick_1995, parker_1996]
+
+      - month: 6
+        focus: northern_europe_winter
+        text: >
+          December, and northern Europe and western Russia turn mild on
+          the map while the planet as a whole is cool. This is the winter
+          warming of volcanic years: the haze heats the tropical
+          stratosphere, the polar vortex strengthens, and the westerlies
+          carry Atlantic air deep into Eurasia. With the chain on, the
+          map also pushes the North Atlantic Oscillation positive and the
+          NAO's own winter map follows one tier down. The winter of
+          1991–92 really was mild across northern Eurasia and North
+          America. Read the caveat before you credit the volcano: the
+          pattern is an average over a dozen eruptions, and one careful
+          study concludes that this particular mild winter was probably
+          chance, or the El Niño's doing.
+        sources: [robock_mao_1992, shindell_2004, fischer_2007, polvani_2019, coupe_robock_2021]
+
+      - month: 9
+        focus: enso
+        text: >
+          March 1992. The El Niño peaked through the winter, a moderate
+          event by the standards of 1982 or 1997, and the map has held
+          two drivers since September. Notice what it does not draw: no
+          arrow from the volcano to ENSO, because the El Niño is chosen
+          by hand and a chosen driver is never pushed. Pick the volcano
+          alone with the chain on and the dotted arrow appears in
+          December instead. Whether eruptions favour El Niño is one of the
+          open questions on this map: the models and some proxies say
+          yes, a thousand years of Pacific coral says no detectable
+          effect, and 1991 cannot settle it, because this El Niño was
+          already under way when the mountain blew.
+        sources: [noaa_cpc_oni, khodri_2017, dee_2020, emile_geay_2008, predybaylo_2017]
+
+      - month: 12
+        focus: indian_summer_monsoon
+        text: >
+          June 1992: the map's last month, and the first monsoon month
+          after the haze has spread, so the dashed arrow to the Indian
+          monsoon is applied at last, with the El Niño's own arrow beside
+          it, both saying weaker. If the chain is on the marker is hatched
+          instead: the El Niño has pushed the Indian Ocean into a positive
+          dipole and a warm basin, whose arrows say stronger, and the map
+          cannot weigh four arrows against each other, the same tension
+          the 1997 story shows. In reality India's 1992 monsoon came in
+          modestly below normal, and rainfall over land worldwide, with
+          the rivers it feeds, fell to the lowest in the record between
+          October 1991 and September 1992. The Sahel's rains come a month
+          later, just past the year shown, and its arrow stays waiting.
+          Here the map stops and the real story does not: by mid-1992 the
+          world was about half a degree cooler than before the eruption,
+          1992 and 1993 were both cool years, and the haze had mostly
+          settled out by 1994. The map holds the eruption on for twelve
+          months as a stand-in for a cloud that fades over two years.
+        sources: [trenberth_dai_2007, iles_hegerl_2014, zambri_robock_2016, parker_1996, robock_2000]

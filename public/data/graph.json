@@ -617,6 +617,44 @@
       ]
     },
     {
+      "id": "tropical_eruption",
+      "name": "Large tropical volcanic eruption",
+      "label": "Tropical eruption",
+      "lat": 0,
+      "lon": 158,
+      "region": "Any volcano in the tropics, from Pinatubo and Krakatau to Rabaul and El Chichón; the marker sits in the western Pacific, on the equator",
+      "timescale": "Rare, a few times a century; the effects last two to three years",
+      "summary": "A volcano near the equator that blasts sulphur gas into the stratosphere, above the weather. Within weeks the gas turns into a haze of tiny droplets of sulphuric acid that spreads around the whole planet and takes about two years to thin away. The haze reflects some sunlight back to space, so the world runs a few tenths of a degree cooler for a year or two. It also warms the stratosphere over the tropics more than over the poles, and in the first northern winter that tends to strengthen the polar jet and give northern Europe and Siberia a mild winter while the planet as a whole is cool. Less sunlight means less evaporation and less rain, and the African and Indian monsoons of the following summer tend to be weaker. Whether the eruption also nudges the Pacific toward El Niño is genuinely unsettled, and that arrow is dotted. This is the one driver on the map that is an event rather than a swing: it has no opposite phase, and the map holds it on for twelve months as a stand-in for a cloud that fades over two years, so the second cool year is not shown. A big eruption far from the tropics (Iceland, Alaska) spreads its haze over one hemisphere only, behaves differently, and is not on this map.\n",
+      "sources": [
+        "robock_2000",
+        "timmreck_2012",
+        "mccormick_1995",
+        "bluth_1992",
+        "newhall_1997",
+        "self_1996",
+        "parker_1996"
+      ],
+      "kind": "driver",
+      "onset_hint": "Any month; Pinatubo erupted in June 1991, and the season of an eruption changes what the first year looks like.",
+      "default_start_month": 6,
+      "phases": [
+        {
+          "id": "eruption",
+          "label": "Eruption",
+          "color": "#6b3e26",
+          "summary": "Sulphur from a large tropical eruption has reached the stratosphere. Expect a cooler year, a milder first winter over northern Eurasia, weaker African and Indian monsoons the next summer, and perhaps a nudge toward El Niño. Pinatubo in June 1991 is the textbook case: about twenty million tonnes of sulphur dioxide, a haze that circled the globe in three weeks, and a world half a degree cooler by the following summer. Note that the map keeps the eruption on for the whole year shown; in reality the haze thins steadily and its effects fade over two to three years.\n",
+          "value": -1
+        },
+        {
+          "id": "neutral",
+          "label": "No eruption",
+          "color": "#999999",
+          "summary": "No eruption large enough to reach the stratosphere. Small eruptions, of which there are dozens a year, put their ash into the lower air, where rain washes it out within days, and none of the volcanic tendencies on this map apply. No eruption of Pinatubo's size has happened since 1991.\n",
+          "value": 0
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -7275,6 +7313,210 @@
         "murakami_2017",
         "collins_2016"
       ]
+    },
+    {
+      "id": "eruption_global_cooling",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "global_mean_temperature",
+      "effect": -1,
+      "lag_months": [
+        3,
+        12
+      ],
+      "season": [],
+      "confidence": "established",
+      "mechanism": "The haze of sulphuric-acid droplets in the stratosphere reflects a few per cent of incoming sunlight back to space. Less sunlight reaches the surface, the land and the upper ocean lose more heat than they gain, and the world's average temperature drops by a few tenths of a degree, most in the first summer after the eruption, then creeps back over two or three years as the haze settles out.\n",
+      "caveat": "The dip is small next to a strong El Niño or the warming trend, and is easiest to see once El Niño's own warmth is taken out of the record. The map cannot weigh a cooling volcano against a warming El Niño: when both point at this region it shows a disagreement, as in 1992, when in reality the volcano won and the world cooled despite the El Niño.\n",
+      "evidence_note": "A climate-model forecast made within months of Pinatubo predicted cooling from late 1991 peaking in late 1992, large enough to overwhelm the developing El Niño's warmth; observed global temperatures fell by up to half a degree by mid-1992, and satellite lower-troposphere temperatures by half a degree by September 1992; a composite of five major tropical eruptions shows significant cooling once ENSO is removed; ten reanalyses agree on tropical cooling after most but not all eruptions; the observed drying of the air amplified the cooling, which a model could not reproduce without water-vapour feedback.\n",
+      "sources": [
+        "robock_2000",
+        "hansen_1992",
+        "parker_1996",
+        "dutton_christy_1992",
+        "soden_2002",
+        "wunderlich_mitchell_2017",
+        "mccormick_1995"
+      ]
+    },
+    {
+      "id": "eruption_sahel",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "sahel_rainfall",
+      "effect": -1,
+      "lag_months": [
+        4,
+        15
+      ],
+      "season": [
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "A cooler surface evaporates less, so there is less water in the air to rain out, and the land cools faster than the sea, which weakens the contrast that draws the summer monsoon inland. If the haze sits more in the northern hemisphere, as most tropical clouds do, the tropical rain belt also shifts south, away from the Sahel.\n",
+      "caveat": "Comes mostly from models and a handful of twentieth-century eruptions; in the observed record the summer signal is only marginally detectable, and the sign depends on which hemisphere gets more haze: a cloud that stays south of the equator can leave the Sahel wetter. The high-latitude eruptions that dried the Sahel most, Laki in 1783 among them, are not on this map. For a June eruption the next Sahel rains fall in the month after the year shown, so the arrow stays waiting.\n",
+      "evidence_note": "Global and monsoon rainfall drop after eruptions in CMIP5 models and in three observational datasets, with the rain belt shifting away from the hemisphere holding more aerosol; land precipitation and river runoff fell to record lows in the year after Pinatubo once ENSO is accounted for; a hemispherically lopsided haze shifts Sahelian rainfall, with northern-hemisphere loading drying the Sahel in a model and in the record; most CMIP5 models show clear reductions of summer monsoon rainfall in the first year after large eruptions since 1850; the warm-season influence is only marginally detectable in the observations; a model of the 1783 Laki eruption dried the Sahel by one to three millimetres a day and cut the flow of the Nile.\n",
+      "sources": [
+        "iles_hegerl_2014",
+        "iles_2013",
+        "haywood_2013",
+        "trenberth_dai_2007",
+        "zambri_robock_2016",
+        "robock_2000",
+        "oman_2006"
+      ]
+    },
+    {
+      "id": "eruption_indian_monsoon",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "indian_summer_monsoon",
+      "effect": -1,
+      "lag_months": [
+        4,
+        15
+      ],
+      "season": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "confidence": "probable",
+      "mechanism": "The monsoon is driven by the summer contrast between hot land and cooler sea. Under the haze the land cools faster than the ocean, the contrast weakens, and a cooler atmosphere holds less water, so the first monsoon after the haze has spread tends to bring less rain.\n",
+      "caveat": "Most of the evidence is from models. The tree-ring record of monsoon Asia shows drier central Asia but wetter mainland south-east Asia in eruption years, which the models do not reproduce, and India's own monsoon of 1992 was only modestly below normal. Both the eruption and any El Niño it may favour point the same way, so the two are hard to separate in the record.\n",
+      "evidence_note": "Monsoon rainfall decreases after eruptions in CMIP5 models and in observations; most CMIP5 models show clear reductions of summer monsoon rainfall in the first year after large eruptions; in a last-millennium ensemble northern-hemisphere cooling shifts the rain belt toward the equator and suppresses the south-east Asian monsoon even without an El Niño; drought reconstructions find drier central Asia but wetter mainland south-east Asia in eruption years, so models may miss part of the response; large eruptions strengthen the coupling between ENSO and the Indian monsoon in a model and in a millennium of records; land rainfall and runoff fell to record lows in the year after Pinatubo.\n",
+      "sources": [
+        "iles_hegerl_2014",
+        "zambri_robock_2016",
+        "stevenson_2016",
+        "anchukaitis_2010",
+        "singh_2020",
+        "trenberth_dai_2007"
+      ]
+    },
+    {
+      "id": "eruption_northern_europe_winter",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "northern_europe_winter",
+      "effect": 1,
+      "lag_months": [
+        2,
+        8
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "The haze absorbs some sunlight and warms the stratosphere over the tropics more than over the pole. The sharper contrast strengthens the winter polar vortex, the jet beneath it shifts north, and mild Atlantic air is carried deep into northern Europe in the first winter after the eruption, outweighing the cooling from lost sunlight. This is the \"winter warming\" of a cool volcanic year.\n",
+      "caveat": "The observed pattern is an average over a dozen eruptions and a single winter can go either way; models produce it weakly if at all, and one study argues the mild winter of 1991–92 after Pinatubo was probably chance, or the El Niño's doing, rather than the volcano's. Second winters show little of it, and the map's season gate cannot tell a first winter from a second.\n",
+      "evidence_note": "The twelve largest eruptions of 1883–1992 were followed by winter warming over Eurasia and North America significant at the 95% level, in the first winter for tropical eruptions; the same pattern follows fifteen tropical eruptions in half a millennium of European reconstructions, with a positive NAO; four centuries of records give a mean response resembling the Arctic Oscillation but a spread larger than the mean; the winter warming after Pinatubo is reproduced in one model and much more weakly than observed or not at all in the IPCC AR4 and CMIP5 ensembles, though most CMIP5 models show it when only the first winter is examined; large ensembles find the effect tiny next to winter-to-winter variability, and the 1991–92 warming is reproduced in one model only with the observed El Niño sea-surface temperatures specified; all datasets in a ten-reanalysis comparison show the warm anomaly over northern Europe.\n",
+      "sources": [
+        "robock_mao_1992",
+        "fischer_2007",
+        "shindell_2004",
+        "kirchner_1999",
+        "graf_1993",
+        "zambri_robock_2016",
+        "stenchikov_2006",
+        "driscoll_2012",
+        "polvani_2019",
+        "coupe_robock_2021",
+        "wunderlich_mitchell_2017"
+      ]
+    },
+    {
+      "id": "eruption_western_russia_winter",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "western_russia_winter",
+      "effect": 1,
+      "lag_months": [
+        2,
+        8
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "The same strengthened winter vortex and stronger westerlies that warm northern Europe reach furthest east over Russia and Siberia, the core of the winter-warming pattern, where the first winter after a tropical eruption tends to be milder than usual even while the planet as a whole is cooler.\n",
+      "caveat": "The same evidence as for northern Europe, with the same doubts: a tendency averaged over a dozen eruptions, weak in most models, and possibly chance in the one winter, 1991–92, that everyone remembers. The map cannot tell a first winter from a second, and the second shows little of it.\n",
+      "evidence_note": "Warming over Eurasia after the twelve largest eruptions since 1883, in the first winter after tropical ones; warm anomalies throughout northern Eurasia in four centuries of cold-season reconstructions and in model simulations of them; observed January circulation changes after three eruptions explained by stationary-wave changes under a strengthened polar-night jet; CMIP5 models fail to capture the Eurasian warming when two winters are combined but most show it in the first winter alone; the effect is tiny against internal variability in large ensembles.\n",
+      "sources": [
+        "robock_mao_1992",
+        "shindell_2004",
+        "kodera_1994",
+        "kirchner_1999",
+        "driscoll_2012",
+        "zambri_robock_2016",
+        "polvani_2019"
+      ]
+    },
+    {
+      "id": "eruption_positive_nao",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "nao",
+      "effect": 1,
+      "lag_months": [
+        2,
+        8
+      ],
+      "season": [
+        12,
+        1,
+        2,
+        3
+      ],
+      "confidence": "probable",
+      "mechanism": "Heating of the tropical stratosphere by the haze strengthens the winter polar vortex, and a strong vortex reaches down to the surface as a positive North Atlantic Oscillation: the Iceland low deeper, the Azores high stronger, the westerlies across the Atlantic stronger and further north.\n",
+      "caveat": "Found in the pressure record after most large eruptions but, in the words of one review of ten reanalyses, not as clear cut as the literature suggests: the spread between eruptions is large, models make the vortex response small, and the polar response turns out not to be a direct effect of the heating but to go through stratospheric wave activity, sensitive to the shape of the cloud. Drawn dashed for that reason; with the chain on, the NAO's own winter arrows follow one tier down.\n",
+      "evidence_note": "Both the Arctic Oscillation and the NAO are excited in the first winter after thirteen major eruptions since 1870, significant at 95%, the signal larger for the NAO; the winter response to fifteen tropical eruptions in European reconstructions follows a positive NAO; four centuries of records give a mean response resembling the Arctic Oscillation; ten reanalyses and the Hadley Centre pressure record confirm a positive NAO tendency in the winters after large eruptions, with a large spread for individual eruptions; AR4 models simulate a positive Arctic Oscillation but with far weaker surface effects, and CMIP5 models generally fail to capture the strengthened vortex and positive NAO; in one Earth-system model the vortex response is insignificant for observation-based forcings and depends on the structure of the aerosol cloud.\n",
+      "sources": [
+        "christiansen_2008",
+        "fischer_2007",
+        "shindell_2004",
+        "wunderlich_mitchell_2017",
+        "stenchikov_2006",
+        "driscoll_2012",
+        "toohey_2014",
+        "robock_2000",
+        "kodera_1994"
+      ]
+    },
+    {
+      "id": "eruption_el_nino",
+      "from": "tropical_eruption",
+      "when": "eruption",
+      "to": "enso",
+      "effect": 1,
+      "lag_months": [
+        6,
+        12
+      ],
+      "season": [],
+      "confidence": "contested",
+      "mechanism": "Two routes are proposed. The haze cools land faster than sea, and cooling over tropical Africa weakens the West African monsoon and sends a wave of westerly wind along the equator that reaches the western Pacific and lets warm water spread east. And in the eastern Pacific the cold water welling up from below is cooled less than the surface around it, so the west cools more than the east, the trade winds slacken, and the Pacific drifts toward El Niño in the year after the eruption.\n",
+      "caveat": "Genuinely unsettled. Coral and tree-ring records and CMIP5 composites lean toward an El Niño in the year after big tropical eruptions, but a thousand years of central-Pacific coral finds no significant response, one model starts with a La Niña before any El Niño, and the answer depends on the season of the eruption and on what the Pacific was already doing: an eruption in a La Niña year does little. Pinatubo's own El Niño was already under way when it erupted, so 1991 cannot settle the question.\n",
+      "evidence_note": "Proxy records show an El Niño-like response to volcanic forcing over the past several centuries; in an intermediate model only eruptions larger than Pinatubo shift El Niño likelihood above internal variability, and volcanism raises the odds by about half on average rather than triggering events; CMIP5 shows an El Niño tending to peak in the year after large eruptions, with targeted simulations tracing it to cooling over tropical Africa; 122 CMIP5 members show co-occurring El Niño and positive Indian Ocean Dipole events peaking six to twelve months after the forcing peaks; a Pinatubo-size eruption produces a significant El Niño response a year on in one coupled model except when the Pacific starts in La Niña, and more strongly for summer eruptions; another coupled model gives an El Niño-like warming a year after the peak forcing, and the eruption season matters for the eruption-year response; against it, fossil corals from the central Pacific show only a weak, insignificant El Niño-like tendency over the last millennium, and one coupled model's first response is La Niña-like.\n",
+      "sources": [
+        "adams_2003",
+        "emile_geay_2008",
+        "khodri_2017",
+        "maher_2015",
+        "predybaylo_2017",
+        "ohba_2013",
+        "stevenson_2017",
+        "dee_2020",
+        "mcgregor_timmermann_2011"
+      ]
     }
   ],
   "sources": [
@@ -8491,6 +8733,211 @@
       "key": "noaa_psl_pmm",
       "citation": "NOAA Physical Sciences Laboratory. Pacific Meridional Mode (PMM) index, monthly, 1948–present.",
       "url": "https://psl.noaa.gov/data/timeseries/monthly/PMM/"
+    },
+    {
+      "key": "robock_2000",
+      "citation": "Robock, A. (2000). Volcanic eruptions and climate. Reviews of Geophysics, 38(2), 191–219.",
+      "url": "https://doi.org/10.1029/1998RG000054"
+    },
+    {
+      "key": "hansen_1992",
+      "citation": "Hansen, J., Lacis, A., Ruedy, R., & Sato, M. (1992). Potential climate impact of Mount Pinatubo eruption. Geophysical Research Letters, 19(2), 215–218.",
+      "url": "https://doi.org/10.1029/91GL02788"
+    },
+    {
+      "key": "iles_hegerl_2014",
+      "citation": "Iles, C. E., & Hegerl, G. C. (2014). The global precipitation response to volcanic eruptions in the CMIP5 models. Environmental Research Letters, 9(10), 104012.",
+      "url": "https://doi.org/10.1088/1748-9326/9/10/104012"
+    },
+    {
+      "key": "iles_2013",
+      "citation": "Iles, C. E., Hegerl, G. C., Schurer, A. P., & Zhang, X. (2013). The effect of volcanic eruptions on global precipitation. Journal of Geophysical Research: Atmospheres, 118(16), 8770–8786.",
+      "url": "https://doi.org/10.1002/jgrd.50678"
+    },
+    {
+      "key": "oman_2006",
+      "citation": "Oman, L., Robock, A., Stenchikov, G. L., & Thordarson, T. (2006). High-latitude eruptions cast shadow over the African monsoon and the flow of the Nile. Geophysical Research Letters, 33, L18711.",
+      "url": "https://doi.org/10.1029/2006GL027665"
+    },
+    {
+      "key": "haywood_2013",
+      "citation": "Haywood, J. M., Jones, A., Bellouin, N., & Stephenson, D. (2013). Asymmetric forcing from stratospheric aerosols impacts Sahelian rainfall. Nature Climate Change, 3(7), 660–665.",
+      "url": "https://doi.org/10.1038/nclimate1857"
+    },
+    {
+      "key": "trenberth_dai_2007",
+      "citation": "Trenberth, K. E., & Dai, A. (2007). Effects of Mount Pinatubo volcanic eruption on the hydrological cycle as an analog of geoengineering. Geophysical Research Letters, 34, L15702.",
+      "url": "https://doi.org/10.1029/2007GL030524"
+    },
+    {
+      "key": "zambri_robock_2016",
+      "citation": "Zambri, B., & Robock, A. (2016). Winter warming and summer monsoon reduction after volcanic eruptions in Coupled Model Intercomparison Project 5 (CMIP5) simulations. Geophysical Research Letters, 43(20), 10920–10928.",
+      "url": "https://doi.org/10.1002/2016GL070460"
+    },
+    {
+      "key": "anchukaitis_2010",
+      "citation": "Anchukaitis, K. J., Buckley, B. M., Cook, E. R., Cook, B. I., D'Arrigo, R. D., & Ammann, C. M. (2010). Influence of volcanic eruptions on the climate of the Asian monsoon region. Geophysical Research Letters, 37, L22703.",
+      "url": "https://doi.org/10.1029/2010GL044843"
+    },
+    {
+      "key": "stevenson_2016",
+      "citation": "Stevenson, S., Otto-Bliesner, B., Fasullo, J., & Brady, E. (2016). \"El Niño like\" hydroclimate responses to last millennium volcanic eruptions. Journal of Climate, 29(8), 2907–2921.",
+      "url": "https://doi.org/10.1175/JCLI-D-15-0239.1"
+    },
+    {
+      "key": "singh_2020",
+      "citation": "Singh, M., Krishnan, R., Goswami, B., Choudhury, A. D., Swapna, P., Vellore, R., Prajeesh, A. G., Sandeep, N., Venkataraman, C., Donner, R. V., Marwan, N., & Kurths, J. (2020). Fingerprint of volcanic forcing on the ENSO–Indian monsoon coupling. Science Advances, 6(38), eaba8164.",
+      "url": "https://doi.org/10.1126/sciadv.aba8164"
+    },
+    {
+      "key": "robock_mao_1992",
+      "citation": "Robock, A., & Mao, J. (1992). Winter warming from large volcanic eruptions. Geophysical Research Letters, 19(24), 2405–2408.",
+      "url": "https://doi.org/10.1029/92GL02627"
+    },
+    {
+      "key": "shindell_2004",
+      "citation": "Shindell, D. T., Schmidt, G. A., Mann, M. E., & Faluvegi, G. (2004). Dynamic winter climate response to large tropical volcanic eruptions since 1600. Journal of Geophysical Research: Atmospheres, 109, D05104.",
+      "url": "https://doi.org/10.1029/2003JD004151"
+    },
+    {
+      "key": "fischer_2007",
+      "citation": "Fischer, E. M., Luterbacher, J., Zorita, E., Tett, S. F. B., Casty, C., & Wanner, H. (2007). European climate response to tropical volcanic eruptions over the last half millennium. Geophysical Research Letters, 34, L05707.",
+      "url": "https://doi.org/10.1029/2006GL027992"
+    },
+    {
+      "key": "kirchner_1999",
+      "citation": "Kirchner, I., Stenchikov, G. L., Graf, H.-F., Robock, A., & Antuña, J. C. (1999). Climate model simulation of winter warming and summer cooling following the 1991 Mount Pinatubo volcanic eruption. Journal of Geophysical Research: Atmospheres, 104(D16), 19039–19055.",
+      "url": "https://doi.org/10.1029/1999JD900213"
+    },
+    {
+      "key": "graf_1993",
+      "citation": "Graf, H.-F., Kirchner, I., Robock, A., & Schult, I. (1993). Pinatubo eruption winter climate effects: Model versus observations. Climate Dynamics, 9(2), 81–93.",
+      "url": "https://doi.org/10.1007/BF00210011"
+    },
+    {
+      "key": "kodera_1994",
+      "citation": "Kodera, K. (1994). Influence of volcanic eruptions on the troposphere through stratospheric dynamical processes in the Northern Hemisphere winter. Journal of Geophysical Research: Atmospheres, 99(D1), 1273–1282.",
+      "url": "https://doi.org/10.1029/93JD02731"
+    },
+    {
+      "key": "stenchikov_2006",
+      "citation": "Stenchikov, G., Hamilton, K., Stouffer, R. J., Robock, A., Ramaswamy, V., Santer, B., & Graf, H.-F. (2006). Arctic Oscillation response to volcanic eruptions in the IPCC AR4 climate models. Journal of Geophysical Research: Atmospheres, 111, D07107.",
+      "url": "https://doi.org/10.1029/2005JD006286"
+    },
+    {
+      "key": "driscoll_2012",
+      "citation": "Driscoll, S., Bozzo, A., Gray, L. J., Robock, A., & Stenchikov, G. (2012). Coupled Model Intercomparison Project 5 (CMIP5) simulations of climate following volcanic eruptions. Journal of Geophysical Research: Atmospheres, 117, D17105.",
+      "url": "https://doi.org/10.1029/2012JD017607"
+    },
+    {
+      "key": "toohey_2014",
+      "citation": "Toohey, M., Krüger, K., Bittner, M., Timmreck, C., & Schmidt, H. (2014). The impact of volcanic aerosol on the Northern Hemisphere stratospheric polar vortex: Mechanisms and sensitivity to forcing structure. Atmospheric Chemistry and Physics, 14(23), 13063–13079.",
+      "url": "https://doi.org/10.5194/acp-14-13063-2014"
+    },
+    {
+      "key": "polvani_2019",
+      "citation": "Polvani, L. M., Banerjee, A., & Schmidt, A. (2019). Northern Hemisphere continental winter warming following the 1991 Mt. Pinatubo eruption: Reconciling models and observations. Atmospheric Chemistry and Physics, 19(9), 6351–6366.",
+      "url": "https://doi.org/10.5194/acp-19-6351-2019"
+    },
+    {
+      "key": "coupe_robock_2021",
+      "citation": "Coupe, J., & Robock, A. (2021). The influence of stratospheric soot and sulfate aerosols on the Northern Hemisphere wintertime atmospheric circulation. Journal of Geophysical Research: Atmospheres, 126(11), e2020JD034513.",
+      "url": "https://doi.org/10.1029/2020JD034513"
+    },
+    {
+      "key": "christiansen_2008",
+      "citation": "Christiansen, B. (2008). Volcanic eruptions, large-scale modes in the Northern Hemisphere, and the El Niño–Southern Oscillation. Journal of Climate, 21(5), 910–922.",
+      "url": "https://doi.org/10.1175/2007JCLI1657.1"
+    },
+    {
+      "key": "wunderlich_mitchell_2017",
+      "citation": "Wunderlich, F., & Mitchell, D. M. (2017). Revisiting the observed surface climate response to large volcanic eruptions. Atmospheric Chemistry and Physics, 17(1), 485–499.",
+      "url": "https://doi.org/10.5194/acp-17-485-2017"
+    },
+    {
+      "key": "adams_2003",
+      "citation": "Adams, J. B., Mann, M. E., & Ammann, C. M. (2003). Proxy evidence for an El Niño-like response to volcanic forcing. Nature, 426(6964), 274–278.",
+      "url": "https://doi.org/10.1038/nature02101"
+    },
+    {
+      "key": "emile_geay_2008",
+      "citation": "Emile-Geay, J., Seager, R., Cane, M. A., Cook, E. R., & Haug, G. H. (2008). Volcanoes and ENSO over the past millennium. Journal of Climate, 21(13), 3134–3148.",
+      "url": "https://doi.org/10.1175/2007JCLI1884.1"
+    },
+    {
+      "key": "khodri_2017",
+      "citation": "Khodri, M., Izumo, T., Vialard, J., Janicot, S., Cassou, C., Lengaigne, M., Mignot, J., Gastineau, G., Guilyardi, E., Lebas, N., Robock, A., & McPhaden, M. J. (2017). Tropical explosive volcanic eruptions can trigger El Niño by cooling tropical Africa. Nature Communications, 8, 778.",
+      "url": "https://doi.org/10.1038/s41467-017-00755-6"
+    },
+    {
+      "key": "maher_2015",
+      "citation": "Maher, N., McGregor, S., England, M. H., & Sen Gupta, A. (2015). Effects of volcanism on tropical variability. Geophysical Research Letters, 42(14), 6024–6033.",
+      "url": "https://doi.org/10.1002/2015GL064751"
+    },
+    {
+      "key": "predybaylo_2017",
+      "citation": "Predybaylo, E., Stenchikov, G. L., Wittenberg, A. T., & Zeng, F. (2017). Impacts of a Pinatubo-size volcanic eruption on ENSO. Journal of Geophysical Research: Atmospheres, 122(2), 925–947.",
+      "url": "https://doi.org/10.1002/2016JD025796"
+    },
+    {
+      "key": "ohba_2013",
+      "citation": "Ohba, M., Shiogama, H., Yokohata, T., & Watanabe, M. (2013). Impact of strong tropical volcanic eruptions on ENSO simulated in a coupled GCM. Journal of Climate, 26(14), 5169–5182.",
+      "url": "https://doi.org/10.1175/JCLI-D-12-00471.1"
+    },
+    {
+      "key": "stevenson_2017",
+      "citation": "Stevenson, S., Fasullo, J. T., Otto-Bliesner, B. L., Tomas, R. A., & Gao, C. (2017). Role of eruption season in reconciling model and proxy responses to tropical volcanism. Proceedings of the National Academy of Sciences, 114(8), 1822–1826.",
+      "url": "https://doi.org/10.1073/pnas.1612505114"
+    },
+    {
+      "key": "dee_2020",
+      "citation": "Dee, S. G., Cobb, K. M., Emile-Geay, J., Ault, T. R., Edwards, R. L., Cheng, H., & Charles, C. D. (2020). No consistent ENSO response to volcanic forcing over the last millennium. Science, 367(6485), 1477–1481.",
+      "url": "https://doi.org/10.1126/science.aax2000"
+    },
+    {
+      "key": "mcgregor_timmermann_2011",
+      "citation": "McGregor, S., & Timmermann, A. (2011). The effect of explosive tropical volcanism on ENSO. Journal of Climate, 24(8), 2178–2191.",
+      "url": "https://doi.org/10.1175/2010JCLI3990.1"
+    },
+    {
+      "key": "mccormick_1995",
+      "citation": "McCormick, M. P., Thomason, L. W., & Trepte, C. R. (1995). Atmospheric effects of the Mt Pinatubo eruption. Nature, 373(6513), 399–404.",
+      "url": "https://doi.org/10.1038/373399a0"
+    },
+    {
+      "key": "bluth_1992",
+      "citation": "Bluth, G. J. S., Doiron, S. D., Schnetzler, C. C., Krueger, A. J., & Walter, L. S. (1992). Global tracking of the SO2 clouds from the June, 1991 Mount Pinatubo eruptions. Geophysical Research Letters, 19(2), 151–154.",
+      "url": "https://doi.org/10.1029/91GL02792"
+    },
+    {
+      "key": "soden_2002",
+      "citation": "Soden, B. J., Wetherald, R. T., Stenchikov, G. L., & Robock, A. (2002). Global cooling after the eruption of Mount Pinatubo: A test of climate feedback by water vapor. Science, 296(5568), 727–730.",
+      "url": "https://doi.org/10.1126/science.296.5568.727"
+    },
+    {
+      "key": "parker_1996",
+      "citation": "Parker, D. E., Wilson, H., Jones, P. D., Christy, J. R., & Folland, C. K. (1996). The impact of Mount Pinatubo on world-wide temperatures. International Journal of Climatology, 16(5), 487–497.",
+      "url": "https://doi.org/10.1002/(SICI)1097-0088(199605)16:5<487::AID-JOC39>3.0.CO;2-J"
+    },
+    {
+      "key": "dutton_christy_1992",
+      "citation": "Dutton, E. G., & Christy, J. R. (1992). Solar radiative forcing at selected locations and evidence for global lower tropospheric cooling following the eruptions of El Chichón and Pinatubo. Geophysical Research Letters, 19(23), 2313–2316.",
+      "url": "https://doi.org/10.1029/92GL02495"
+    },
+    {
+      "key": "timmreck_2012",
+      "citation": "Timmreck, C. (2012). Modeling the climatic effects of large explosive volcanic eruptions. WIREs Climate Change, 3(6), 545–564.",
+      "url": "https://doi.org/10.1002/wcc.192"
+    },
+    {
+      "key": "self_1996",
+      "citation": "Self, S., Zhao, J.-X., Holasek, R. E., Torres, R. C., & King, A. J. (1996). The atmospheric impact of the 1991 Mount Pinatubo eruption. In C. G. Newhall & R. S. Punongbayan (Eds.), Fire and Mud: Eruptions and Lahars of Mount Pinatubo, Philippines. Philippine Institute of Volcanology and Seismology and University of Washington Press.",
+      "url": "https://pubs.usgs.gov/pinatubo/self/"
+    },
+    {
+      "key": "newhall_1997",
+      "citation": "Newhall, C. G., Hendley, J. W., & Stauffer, P. H. (1997). The cataclysmic 1991 eruption of Mount Pinatubo, Philippines. U.S. Geological Survey Fact Sheet 113-97.",
+      "url": "https://pubs.usgs.gov/fs/1997/fs113-97/"
     }
   ],
   "stories": [
@@ -9550,6 +9997,78 @@
             "noaa_cpc_oni",
             "murakami_2017",
             "larson_kirtman_2013"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pinatubo_1991",
+      "title": "1991: Pinatubo",
+      "intro": "On 15 June 1991 Mount Pinatubo in the Philippines produced the largest volcanic eruption in living memory and put about twenty million tonnes of sulphur dioxide into the stratosphere. The year shown begins that June with the eruption on. An El Niño was already building in the Pacific and is set as a second driver from September, chosen by hand: the record has one, and the map's own arrow from the volcano to ENSO is contested. Watch the world cool from September, northern Europe turn mild in December while the planet as a whole is cool, and the map argue with itself about the following June's monsoon. Then read the last step for the two further years the map cannot show.\n",
+      "driver": "tropical_eruption",
+      "phase": "eruption",
+      "start_month": 6,
+      "start_year": 1991,
+      "second_driver": "enso",
+      "second_phase": "el_nino",
+      "second_start_month": 9,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "tropical_eruption",
+          "text": "After two months of warnings and the evacuation of tens of thousands of people, Pinatubo blew on 15 June 1991, in the middle of a typhoon. Ash fell across Luzon, but what mattered for the world's climate was the sulphur dioxide carried thirty kilometres up, three times what El Chichón had released in 1982. Satellites watched the cloud circle the globe in about three weeks and straddle the equator, which is why its haze spread over both hemispheres. The map shows the volcano's arrows waiting: the haze takes months to spread and thicken, and its effects arrive in order, the cooling first, the winter next, the monsoons last.\n",
+          "sources": [
+            "newhall_1997",
+            "bluth_1992",
+            "self_1996",
+            "mccormick_1995"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "global_mean_temperature",
+          "text": "By September the haze covered most of the planet and direct sunlight at remote observatories was down by a quarter. The map now shows the world cooling, a solid arrow, the one link of this driver that nobody disputes. Within months of the eruption a climate model had forecast the dip: cooling from late 1991, deepest in late 1992, and large enough to overwhelm the warmth of the El Niño that was developing. That El Niño enters the map this month as the second driver, and from December its own arrow will point at this region the other way, so the marker will show the two disagreeing. The map cannot weigh them; the forecast could, and it was right.\n",
+          "sources": [
+            "hansen_1992",
+            "dutton_christy_1992",
+            "mccormick_1995",
+            "parker_1996"
+          ]
+        },
+        {
+          "month": 6,
+          "focus": "northern_europe_winter",
+          "text": "December, and northern Europe and western Russia turn mild on the map while the planet as a whole is cool. This is the winter warming of volcanic years: the haze heats the tropical stratosphere, the polar vortex strengthens, and the westerlies carry Atlantic air deep into Eurasia. With the chain on, the map also pushes the North Atlantic Oscillation positive and the NAO's own winter map follows one tier down. The winter of 1991–92 really was mild across northern Eurasia and North America. Read the caveat before you credit the volcano: the pattern is an average over a dozen eruptions, and one careful study concludes that this particular mild winter was probably chance, or the El Niño's doing.\n",
+          "sources": [
+            "robock_mao_1992",
+            "shindell_2004",
+            "fischer_2007",
+            "polvani_2019",
+            "coupe_robock_2021"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "enso",
+          "text": "March 1992. The El Niño peaked through the winter, a moderate event by the standards of 1982 or 1997, and the map has held two drivers since September. Notice what it does not draw: no arrow from the volcano to ENSO, because the El Niño is chosen by hand and a chosen driver is never pushed. Pick the volcano alone with the chain on and the dotted arrow appears in December instead. Whether eruptions favour El Niño is one of the open questions on this map: the models and some proxies say yes, a thousand years of Pacific coral says no detectable effect, and 1991 cannot settle it, because this El Niño was already under way when the mountain blew.\n",
+          "sources": [
+            "noaa_cpc_oni",
+            "khodri_2017",
+            "dee_2020",
+            "emile_geay_2008",
+            "predybaylo_2017"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "indian_summer_monsoon",
+          "text": "June 1992: the map's last month, and the first monsoon month after the haze has spread, so the dashed arrow to the Indian monsoon is applied at last, with the El Niño's own arrow beside it, both saying weaker. If the chain is on the marker is hatched instead: the El Niño has pushed the Indian Ocean into a positive dipole and a warm basin, whose arrows say stronger, and the map cannot weigh four arrows against each other, the same tension the 1997 story shows. In reality India's 1992 monsoon came in modestly below normal, and rainfall over land worldwide, with the rivers it feeds, fell to the lowest in the record between October 1991 and September 1992. The Sahel's rains come a month later, just past the year shown, and its arrow stays waiting. Here the map stops and the real story does not: by mid-1992 the world was about half a degree cooler than before the eruption, 1992 and 1993 were both cool years, and the haze had mostly settled out by 1994. The map holds the eruption on for twelve months as a stand-in for a cloud that fades over two years.\n",
+          "sources": [
+            "trenberth_dai_2007",
+            "iles_hegerl_2014",
+            "zambri_robock_2016",
+            "parker_1996",
+            "robock_2000"
           ]
         }
       ]

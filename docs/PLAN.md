@@ -1291,8 +1291,94 @@ drivers stays in one place.
   2014–15 story stepped to its end, the print caption.
 - Not in M22: the North Pacific Oscillation as a driver; any link from
   ENSO back into the mode (Stuecker's fast feedback is named in the
-  caveat, not drawn, to keep the loop rules simple). Next in
-  `docs/PLAN_V3.md`: M26, a large tropical volcanic eruption.
+  caveat, not drawn, to keep the loop rules simple).
+
+### M26 — Eleventh driver: a large tropical volcanic eruption (version 3, signed off 2026-09-08)
+- Data: `tropical_eruption` driver node with two phases, `eruption`
+  (value −1, the driver's own axis is "cooling forcing") and `neutral`
+  (value 0, labelled "No eruption"; the id is `neutral` rather than the
+  plan's `none` so the driver reads like every other in the data and the
+  tests). Label "Tropical eruption", no area, `default_start_month` 6
+  (Pinatubo, June 1991), marker at 0°N 158°E in the western Pacific east
+  of New Guinea, not off the Philippines as proposed: the label-overlap
+  check found every position in the Philippine Sea clashing with the
+  Philippines, South China or typhoon labels. No new outcome node. Five
+  outcome links, all from the eruption phase: the global temperature
+  cooler (established, lag 3–12, all year); the Sahel and the Indian
+  monsoon weaker (probable, lag 4–15, in their rainy seasons; lag 4 is
+  the time the haze takes to spread and thicken, so a June eruption
+  reaches the next June's monsoon at month 12 and the Sahel's July falls
+  just past the year shown, which the Sahel caveat says); northern
+  Europe and western Russia milder in the first winter (probable, lag
+  2–8, December–February, the "winter warming"; lag 2 so an eruption late
+  in the year still reaches the winter that follows). Two
+  driver-to-driver links: the eruption pushes the NAO positive (probable,
+  lag 2–8, December–March) and ENSO toward El Niño (**contested**, lag
+  6–12, all year; Adams 2003 and Khodri 2017 for, Dee 2020 against).
+  Nothing pushes the eruption. Forty-one new sources, thirty-nine
+  resolved on Crossref (one DOI corrected after the check: Graf et al.
+  1993), thirty-three with abstracts read, plus two USGS pages for the
+  eruption itself. One story, "1991: Pinatubo" (the eruption from June
+  1991, El Niño chosen by hand as a second driver from September 1991),
+  five steps: the cloud circling the globe in three weeks; September's
+  cooling with the forecast that predicted it; December's winter warming
+  with the study that calls the 1991–92 winter chance; March 1992 at the
+  El Niño, where the map draws no arrow from the volcano into the chosen
+  El Niño and the text says why; June 1992 at the monsoon, where the
+  map stops and the real story does not.
+- Honesty notes carried in the data: the driver card says the map holds
+  the eruption on for twelve months as a stand-in for a haze that fades
+  over two years, that a high-latitude eruption behaves differently and
+  is not on the map, and that the El Niño arrow is unsettled. The global
+  temperature caveat says the map cannot weigh a cooling volcano against
+  a warming El Niño. The winter links' caveats name the studies that find
+  the winter warming weak in models and the 1991–92 case possibly
+  chance. This driver is the most-cited reason for M32 (phase duration).
+- What the engine shows, asserted in tests: from a June eruption the
+  world cools from September to the end of the year shown; northern
+  Europe and western Russia are mild in December–February only; the
+  monsoon weakens at month 12 and the Sahel waits all year (an eruption
+  in March reaches the Sahel's July); the NAO is pushed positive
+  December–March and ENSO toward El Niño from December; with the chain
+  on the NAO's winter map follows one tier down (the Mediterranean dry,
+  northern Europe carrying two arrows the same way, the AMM pushed
+  negative at a third hop) and El Niño's map follows at the floor tier;
+  from March the pushed El Niño's warming arrow meets the volcano's
+  cooling on the global temperature and the marker is hatched
+  (conflicting), which is honest: the map has no magnitudes. In the
+  Pinatubo story the two chosen drivers disagree about the global
+  temperature from December, cancel each other on the NAO in March (El
+  Niño's negative push meets the volcano's positive one), and in June
+  the monsoon is hatched with the chain on (the El Niño's pushed positive
+  dipole and warm basin say stronger) and weaker with it off; the story
+  text says so. The "every driver has three phases" test now exempts the
+  eruption.
+- Schema, engine, UI: unchanged. A driver is data. The validator already
+  allowed a two-phase driver (at least two phases, one of them 0).
+- Tests: acceptance blocks for the eruption from June with direct links
+  only (phases and tiers, the cooling, the first winter, the monsoon and
+  the waiting Sahel, the NAO and ENSO pushes, a December eruption
+  reaching February, the neutral phase touching nothing, "established
+  only" leaving the cooling alone), with the chain on (the NAO's map one
+  tier down, El Niño's at the floor, the global-temperature conflict
+  from March, never pushed back) and the Pinatubo story (fields, five
+  steps, the states at each step with the chain on and off). Existing
+  expectations updated: eleven drivers, twenty-five driver-to-driver
+  links, the three-phase rule with its one exception.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m26.mjs`):
+  67 markers, the new marker placed with no label overlap, the driver
+  dropdown keeping June, the two phase buttons, everything waiting in
+  June, the solid cooling arrow in September, December with the chain on
+  (northern Europe and western Russia mild, the NAO and ENSO induced,
+  the NAO's map one tier down), the hatched global temperature in March,
+  the monsoon hatched with the chain on and weaker with it off in June
+  with the Sahel waiting, "established only" leaving the cooling alone,
+  "No eruption" drawing nothing, the Pinatubo story stepped to its end,
+  the print caption.
+- Not in M26: high-latitude eruptions, the solar cycle, any
+  climate-change framing, a fade of the haze (M32). Next in
+  `docs/PLAN_V3.md`: M27, the third batch of outcome regions, or M23,
+  the Quasi-Biennial Oscillation.
 
 ---
 
@@ -1428,6 +1514,12 @@ west_pacific_typhoons (+ probable / − contested) and
 east_pacific_hurricanes (positive phase only, +, contested), and pushes
 ENSO (positive → El Niño probable, negative → La Niña contested).
 
+A large tropical volcanic eruption (M26) adds no outcome node either; its
+one active phase acts on global_mean_temperature (−, established),
+sahel_rainfall and indian_summer_monsoon (−, probable),
+northern_europe_winter and western_russia_winter (+, probable), and
+pushes the NAO positive (probable) and ENSO toward El Niño (contested).
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1465,7 +1557,7 @@ writing mechanism text):
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
   Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
   the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
-  the Pacific Meridional Mode);
+  the Pacific Meridional Mode; M26: a large tropical volcanic eruption);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean
