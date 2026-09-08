@@ -533,6 +533,43 @@ illustrative outlines, not scientific boundaries, and the control says so.
 - Print: both maps side by side with their titles, the side switch hidden,
   and the caption "Two scenarios compared. A: … B: …".
 
+### 5.10 Region mode (M28)
+- A "By region" section under Stories: a dropdown "Where I live…" of every
+  outcome node, alphabetical by name, each option naming the place and its
+  region. Picking one enters region mode; picking "Where I live…" again,
+  Escape, a story, or a click on a driver marker leaves it.
+- Region mode shows one map and no month: the timeline is hidden, the
+  month display reads "By region", and every scenario control from Compare
+  down to the map checkboxes is greyed out and inert (the legend stays).
+  The scenario is kept, not drawn, and comes back as it was.
+- The map draws the place selected and hollow with its own outline only,
+  every driver that reaches it with a plain dark ring and its label ("can
+  reach": no phase, no colour), the other drivers grey and unlabelled, the
+  other places hollow and unlabelled. Each incoming link is an arrow in
+  its own tier's line style, coloured by the phase that fires it and
+  ending in that phase's arrowhead; arrows from one driver are spread
+  sideways a few units so El Niño's and La Niña's both show. Nothing is
+  computed: `src/engine/inverse.ts` reads the links into the node and
+  groups them by driver and phase, with a twelve-month season strip per
+  link; no scenario runs, no state is invented, nothing is added up.
+- The card: the place, a line "Everything known to reach this place on
+  this map: N drivers, M connections", a note that nothing is added up
+  here, the place's summary, then one heading per driver and, phase by
+  phase, each link as "El Niño: <the place's own label for the effect>",
+  its tier badge, its season in words and its lag in words ("arriving 0–3
+  months after the event begins"), the season strip, the mechanism, the
+  usual "How sure are we?" block and the sources. Under each phase a
+  button "Watch <phase> arrive" leaves region mode for the single-driver
+  scenario of that driver and phase from its default start month, with
+  the place selected and the timeline playing from month 0. A click on a
+  reaching driver's marker does the same with the first of its phases
+  that reaches the place; a click on another place switches the region.
+- The URL hash carries region mode and nothing else: "#region=<node id>"
+  is written on entering and cleared on leaving, a page opened with it
+  starts in region mode, and a change to the hash is followed. Compare
+  and stories are off in region mode. Print caption: "Everything that is
+  known to reach <place> on this map: N drivers, …".
+
 ---
 
 ## 6. Milestones
@@ -1731,6 +1768,65 @@ drivers stays in one place.
   (M20–M27); what remains is UI (M28–M31), the engine extensions
   (M32–M37) and the roadmap items (M38–M40), each with its own sign-off.
 
+### M28 — Region-first navigation, "where I live" (version 3, signed off 2026-09-08)
+- The first UI item of version 3, taken at the user's "your choice" after
+  the data-only drivers were done. No data change, no engine rule change:
+  `src/engine/inverse.ts` (pure, additive) exports `influencesOn(graph,
+  nodeId)`, every link into a node grouped by driver and then phase, in
+  graph and phase order, each with its own tier and a twelve-month season
+  strip built on `src/engine/season.ts`; `regionNodes(graph)`, the
+  outcome nodes by name; `countInfluences`. Tests in
+  `src/engine/inverse.test.ts` (eleven: grouping and order, empty for a
+  node nothing reaches, a phase that fires nothing left out, the tier
+  never downgraded, and on the shipped data: the monsoon reached by six
+  drivers along eight links with ENSO both ways, the Sahel by five, a
+  one-link place still carrying its caveat, every place reached by at
+  least one driver, every link into a place listed exactly once).
+- UI as §5.10: the "By region" picker, the inert scenario controls, the
+  region map (`MapView.renderRegion`, sharing the arrow and marker joins
+  with the scenario render through `drawArrows` / `drawNodes`; `arcPath`
+  gained a sideways `spread` for arrows that share a path, fanning out
+  over the first third of the way and running parallel into the target,
+  and breaking at the seam as the projected path would), the region card
+  (`renderRegionCard`), the "Watch … arrive" buttons, the hash.
+- Departure from `docs/PLAN_V3.md`: its acceptance example says five
+  drivers reach Kiribati; in the data one does. The check uses the Indian
+  summer monsoon (six drivers, eight links, ENSO in both phases) and the
+  Sahel (five drivers) instead, and East Asia summer for the one-link
+  case. The card's per-link line uses the place's own outcome label
+  ("Monsoon tends to be weaker than usual") rather than a bare "drier",
+  since that is the word the scenario card uses for the same place.
+- Also fixed on the way: the B map pane was never hidden outside compare
+  mode (an author `display: flex` beats the browser's `[hidden]` rule),
+  so an empty second map sat under the first since M14, and the pane's
+  title strip kept its last compare-mode text after compare was switched
+  off; `.pane[hidden]` and `.pane-head[hidden]` now say `display: none`.
+  The timeline gets the same rule.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m28.mjs`:
+  plain load unchanged; the monsoon in region mode (hash, timeline
+  hidden, controls inert, one map, month display, caption, the place
+  selected and hollow, each of the fourteen drivers ringed or grey as the
+  data says, the other places hollow and unlabelled, eight region arrows,
+  ENSO's two in red and blue with their own arrowheads and about seven
+  units apart at the middle and at the head, the IOD's contested and
+  orange, the place's own area only, six driver headings on the card,
+  eight "How sure are we?" blocks and strips, eight watch buttons, DOI
+  links); East Asia summer with one link and its caveat; northern Europe
+  with the NAO both ways across the seam drawn as two different paths;
+  a click on the Sahel switching the region; a click on ENSO leaving into
+  El Niño from June with the Sahel selected and the timeline playing; the
+  eruption watch button; "#region=sahel_rainfall" on load, a bad id
+  ignored, a hash change followed; a story leaving region mode and
+  region mode ending a story; Escape; "Where I live…"; compare switched
+  off by region mode; print with the watch buttons hidden.
+- Not in M28: a search box; clicking the map background; a region view
+  of a driver node (the driver card's "Feedback from other drivers"
+  already lists what pushes it); showing the chain (a driver reaching the
+  place through another driver), which the card says to look for under
+  "Driver". Next in `docs/PLAN_V3.md`: M29 (sources page), M30 (arrival
+  window), M31 (a second language) or the engine set from M32, each with
+  its own sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -1924,7 +2020,8 @@ writing mechanism text):
   the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
   the Pacific Meridional Mode; M26: a large tropical volcanic eruption;
   M23: the Quasi-Biennial Oscillation; M24: the Barents–Kara autumn sea
-  ice; M25: the Eurasian October snow);
+  ice; M25: the Eurasian October snow); region-first navigation (done,
+  M28: "By region", every driver that reaches a place);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

@@ -1,9 +1,10 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, Link, LinkState, MonthState, NodeState, Source } from '../types';
+import type { DriverNode, Graph, GraphNode, Link, LinkState, MonthState, NodeState, OutcomeNode, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
 import { phaseForValue } from '../engine/propagate';
 import { compareNode, type Verdict } from '../engine/compare';
+import { countInfluences, type DriverInfluences, type Influence } from '../engine/inverse';
 import { stateColor } from './map';
 
 function esc(s: string): string {
@@ -273,5 +274,72 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   html += `<p>${esc(node.summary.trim())}</p>`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
+  container.innerHTML = html;
+}
+
+// ---------------------------------------------------------------- region mode (M28)
+
+/** "October–December", "all year", "June, September–November". */
+function seasonRanges(link: Link): string {
+  if (link.season.length === 0) return 'all year';
+  const months = [...link.season].sort((a, b) => a - b);
+  // Runs of consecutive months, joined across the year end (Dec–Feb).
+  const runs: number[][] = [];
+  for (const m of months) {
+    const last = runs[runs.length - 1];
+    if (last && last[last.length - 1] === m - 1) last.push(m);
+    else runs.push([m]);
+  }
+  if (runs.length > 1 && runs[0][0] === 1 && runs[runs.length - 1][runs[runs.length - 1].length - 1] === 12) {
+    runs[0] = [...runs.pop()!, ...runs[0]];
+  }
+  return runs.map((r) => (r.length === 1 ? MONTH_NAMES[r[0] - 1] : `${MONTH_NAMES[r[0] - 1]}–${MONTH_NAMES[r[r.length - 1] - 1]}`)).join(', ');
+}
+
+/** "arriving 0–2 months after the event begins", "arriving 4 months after". */
+function lagWords(link: Link): string {
+  const [a, b] = link.lag_months;
+  if (a === b) return a === 0 ? 'arriving as soon as the event begins' : `arriving ${monthsWord(a)} after the event begins`;
+  return `arriving ${a}–${b} months after the event begins`;
+}
+
+/** Twelve cells, January first, the in-season ones filled. */
+function stripHtml(inf: Influence, color: string): string {
+  const cells = inf.months.map((on, i) => `<i class="${on ? 'on' : ''}" style="${on ? `background:${color}` : ''}" title="${MONTH_NAMES[i]}${on ? ': in season' : ''}">${MONTH_NAMES[i][0]}</i>`).join('');
+  return `<span class="strip" aria-label="In season: ${esc(seasonRanges(inf.link))}">${cells}</span>`;
+}
+
+/**
+ * Region mode (M28): the place, then one block per driver that reaches it,
+ * phase by phase, each link with its tendency, tier, season, lag, the
+ * mechanism, "How sure are we?" and sources. Nothing is computed: every
+ * line is read from the data as it stands. A button per phase hands the
+ * page a single-driver scenario to watch.
+ */
+export function renderRegionCard(container: HTMLElement, graph: Graph, node: OutcomeNode, groups: DriverInfluences[]): void {
+  const sources = new Map(graph.sources.map((s) => [s.key, s]));
+  const total = countInfluences(groups);
+  let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
+  html += `<div class="state-line zero" style="background:#f0f2f5">Everything known to reach this place on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, ${total === 1 ? 'one connection' : `${total} connections`}</div>`;
+  html += `<p class="hint">Each connection is listed as the research rates it, with the months it is felt and how long after the driver's event it tends to arrive. Nothing is added up here: to see two drivers act together, or a driver reach this place through another, pick them under "Driver" on the left.</p>`;
+  html += `<p>${esc(node.summary.trim())}</p>`;
+  for (const g of groups) {
+    html += `<h2>${esc(shortName(g.driver))}</h2>`;
+    for (const ph of g.phases) {
+      for (const inf of ph.links) {
+        const l = inf.link;
+        const tendency = l.effect > 0 ? node.labels.plus : node.labels.minus;
+        html += `<div class="link-block region-link">
+          <h4><span class="swatch" style="background:${ph.phase.color}"></span>${esc(ph.phase.label)}: ${esc(tendency)} <span class="badge ${inf.confidence}">${inf.confidence}</span></h4>
+          <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}</p>
+          <p>${esc(l.mechanism.trim())}</p>
+          ${sureBlock(l, null)}
+          ${sourcesHtml(l.sources, sources)}
+        </div>`;
+      }
+      html += `<p class="watch"><button type="button" class="watch-btn" data-driver="${esc(g.driver.id)}" data-phase="${esc(ph.phase.id)}"><span class="swatch" style="background:${ph.phase.color}"></span>Watch ${esc(ph.phase.label)} arrive</button></p>`;
+    }
+  }
+  html += `<h2>Sources for the place</h2>${sourcesHtml(node.sources, sources)}`;
   container.innerHTML = html;
 }

@@ -1,14 +1,15 @@
 import './style.css';
-import type { Confidence, DriverNode, Graph, Link, MonthState, Scenario, Timeline } from '../src/types';
+import type { Confidence, DriverNode, Graph, Link, MonthState, OutcomeNode, Scenario, Timeline } from '../src/types';
 import { MONTH_NAMES } from './types';
 import { chosenOnset, propagate } from './engine/propagate';
 import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
 import { differing } from './engine/compare';
+import { influencesOn, regionNodes } from './engine/inverse';
 import { MapView, stateColor } from './ui/map';
 import { SeasonDialView, seasonWords, type DialRing } from './ui/dial';
 import { TimelineView } from './ui/timeline';
 import { ControlsView, editedSide, scenarioSettings, sideSettings, type ConfidenceFilter, type ControlState, type ScenarioSettings, type Side } from './ui/controls';
-import { renderCard, type CardCompare, type ChosenPhase } from './ui/card';
+import { renderCard, renderRegionCard, type CardCompare, type ChosenPhase } from './ui/card';
 import { StoryView } from './ui/story';
 
 const HORIZON = 12;
@@ -45,8 +46,12 @@ interface Chosen {
   phases: Map<string, ChosenPhase>;
 }
 
-function shortName(d: DriverNode): string {
+function shortName(d: DriverNode | OutcomeNode): string {
   return d.name.replace(/\s*\(.*\)$/, '');
+}
+
+function esc(s: string): string {
+  return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 }
 
 async function main(): Promise<void> {
@@ -61,7 +66,15 @@ async function main(): Promise<void> {
     return d;
   };
 
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, showAllLabels: false, chain: true, second: null, compare: null };
+  const regions = regionNodes(graph);
+  const regionById = (id: string | null): OutcomeNode | null => (id ? regions.find((n) => n.id === id) ?? null : null);
+  /** Region mode (M28) is the one thing the URL hash carries: "#region=<id>",
+   *  so a teacher can link straight to "everything that reaches Nairobi". */
+  const regionFromHash = (): string | null => {
+    const m = /^#region=([\w-]+)$/.exec(location.hash);
+    return m && regionById(m[1]) ? m[1] : null;
+  };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, showAllLabels: false, chain: true, second: null, compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -73,8 +86,9 @@ async function main(): Promise<void> {
   const monthEl = document.getElementById('month-display')!;
   const captionEl = document.getElementById('print-caption')!;
 
-  const tl = new TimelineView(document.getElementById('timeline')!, HORIZON, controls.startMonth);
-  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, controls);
+  const tlEl = document.getElementById('timeline')!;
+  const tl = new TimelineView(tlEl, HORIZON, controls.startMonth);
+  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, regions, controls);
   const story = new StoryView(document.getElementById('story')!, new Map(graph.sources.map((s) => [s.key, s])));
   const dial = new SeasonDialView(ctl.dialHost);
 
@@ -83,7 +97,11 @@ async function main(): Promise<void> {
     const el = mapEl.querySelector<HTMLElement>(`.pane[data-side="${side}"]`)!;
     const head = el.querySelector<HTMLButtonElement>('.pane-head')!;
     const map = new MapView(el.querySelector<HTMLElement>('.pane-map')!, graph, side === 'a' ? '' : 'b-');
-    map.onNodeClick = (id) => { selectedNodeId = selectedNodeId === id ? null : id; draw(); };
+    map.onNodeClick = (id) => {
+      if (controls.region) { regionClick(id); return; }
+      selectedNodeId = selectedNodeId === id ? null : id;
+      draw();
+    };
     // Clicking a map's title makes it the side the controls edit.
     head.addEventListener('click', () => {
       if (!controls.compare || controls.compare.side === side) return;
@@ -177,7 +195,64 @@ async function main(): Promise<void> {
     head.setAttribute('aria-label', `Scenario ${side.toUpperCase()}: ${title}. ${when.textContent}. Edit this scenario`);
   }
 
+  /**
+   * Region mode (M28): one map, no month. The place, every driver that
+   * reaches it and each incoming link as the data rates it; the card lists
+   * them driver by driver. No scenario runs and nothing is added up.
+   */
+  function drawRegion(node: OutcomeNode): void {
+    const groups = influencesOn(graph, node.id);
+    mapEl.classList.remove('compare');
+    for (const side of SIDES) {
+      const p = pane(side);
+      p.el.hidden = side === 'b';
+      p.head.hidden = true;
+      p.el.classList.remove('editing');
+    }
+    pane('a').prevApplied = new Set();
+    pane('a').map.renderRegion({ nodeId: node.id, groups, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels });
+    monthEl.innerHTML = `By region<small>everything that reaches ${esc(shortName(node))}</small>`;
+    captionEl.textContent = `Everything that is known to reach ${node.name} on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, each connection in its own season and confidence tier, no month or scenario chosen. Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    renderRegionCard(cardEl, graph, node, groups);
+  }
+
+  /** A click on the map in region mode: a driver opens its own scenario
+   *  (the first of its phases that reaches the place, or its first phase),
+   *  another place becomes the region. */
+  function regionClick(id: string): void {
+    const node = graph.nodes.find((n) => n.id === id);
+    if (!node) return;
+    if (node.kind === 'outcome') {
+      if (node.id === controls.region) return;
+      ctl.setState({ region: node.id });
+      applyControls({ ...controls, region: node.id });
+      return;
+    }
+    const groups = influencesOn(graph, controls.region!);
+    const reaching = groups.find((g) => g.driver.id === node.id);
+    watch(node.id, reaching ? reaching.phases[0].phase.id : node.phases[0].id);
+  }
+
+  /** From "what reaches my home" to "watch it arrive" (M28): leave region
+   *  mode for the single-driver scenario, with the place selected so its
+   *  card follows the year, and play from month 0. */
+  function watch(driverId: string, phaseId: string): void {
+    const d = driverById(driverId);
+    const phase = d.phases.find((p) => p.id === phaseId) ?? d.phases[0];
+    const regionId = controls.region;
+    const next: Partial<ControlState> = { driverId: d.id, phaseId: phase.id, startMonth: d.default_start_month, second: null, compare: null, region: null };
+    selectedNodeId = regionId;
+    monthIndex = 0;
+    tl.setIndex(0);
+    ctl.setState(next);
+    applyControls({ ...controls, ...next });
+    tl.play();
+  }
+
   function draw(): void {
+    const region = regionById(controls.region);
+    tlEl.hidden = !!region;
+    if (region) { drawRegion(region); return; }
     const compare = !!controls.compare;
     const edited = editedSide(controls);
     mapEl.classList.toggle('compare', compare);
@@ -246,11 +321,33 @@ async function main(): Promise<void> {
     const wasCompare = !!controls.compare;
     Object.assign(controls, s);
     const scenarioChanged = keyA !== JSON.stringify(scenarioSettings(controls)) || keyB !== JSON.stringify(controls.compare?.b ?? null) || wasCompare !== !!controls.compare;
-    if (scenarioChanged && story.active) story.exit();
+    // Region mode is one place, not a scenario: entering it ends a story too.
+    if ((scenarioChanged || controls.region) && story.active) story.exit();
+    if (controls.region) tl.pause();
+    syncHash();
     recompute();
     draw();
   }
   ctl.onChange = applyControls;
+  /** Keep "#region=<id>" in the address bar in step with region mode, and
+   *  follow it when the address changes (back button, a pasted link). */
+  function syncHash(): void {
+    const want = controls.region ? `#region=${controls.region}` : '';
+    if (location.hash === want || (!want && !location.hash)) return;
+    history.replaceState(null, '', want || location.pathname + location.search);
+  }
+  window.addEventListener('hashchange', () => {
+    const id = regionFromHash();
+    if (id === controls.region) return;
+    ctl.setState({ region: id });
+    applyControls({ ...controls, region: id });
+  });
+  // "Watch <phase> arrive" buttons on the region card.
+  cardEl.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button.watch-btn');
+    if (!btn || !controls.region) return;
+    watch(btn.dataset.driver!, btn.dataset.phase!);
+  });
   tl.onChange = (i) => { monthIndex = i; draw(); };
   // The dial jumps by calendar month: the first time that month comes up in
   // the year shown. Like the scrubber, it pauses play and leaves a story alone.
@@ -266,8 +363,10 @@ async function main(): Promise<void> {
     controls.startMonth = s.start_month;
     controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase, startMonth: s.second_start_month ?? s.start_month, startsBefore: !!s.second_starts_before } : null;
     controls.compare = null;
-    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, second: controls.second, compare: null });
+    controls.region = null;
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, second: controls.second, compare: null, region: null });
     tl.pause();
+    syncHash();
     recompute();
     story.start(s);
   };
@@ -293,6 +392,11 @@ async function main(): Promise<void> {
     const t = e.target;
     if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
     let used = false;
+    if (controls.region) {
+      // No month to step through; Escape goes back to the scenario.
+      if (e.key === 'Escape') { ctl.setState({ region: null }); applyControls({ ...controls, region: null }); e.preventDefault(); }
+      return;
+    }
     if (story.active) {
       if (e.key === 'ArrowRight') { story.next(); used = true; }
       else if (e.key === 'ArrowLeft') { story.prev(); used = true; }

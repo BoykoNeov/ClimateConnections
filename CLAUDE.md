@@ -23,7 +23,8 @@ swing, since M23 the Quasi-Biennial Oscillation as a twelfth, a
 band of wind in the stratosphere with no region of its own, since M24
 the autumn sea ice of the Barents and Kara seas as a thirteenth, the
 first driver whose every link is contested, and since M25 the October
-snow across Siberia as a fourteenth, its matched pair) on a
+snow across Siberia as a fourteenth, its matched pair, and since M28 a
+"By region" view that lists every driver known to reach one place) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -75,7 +76,12 @@ one.
   plan's order suggests) on 2026-09-08, and the Barents–Kara autumn sea
   ice as a thirteenth (M24) and the Eurasian October snow as a
   fourteenth (M25), the two contested Arctic precursors as one matched
-  lesson, on 2026-09-08. A new driver
+  lesson, on 2026-09-08, and region-first navigation (M28, the first UI
+  item: `src/engine/inverse.ts` reads the links into a place, grouped by
+  driver and phase; it runs no scenario, invents no state and adds
+  nothing up, and the map and card in region mode draw only what it
+  returns; the URL hash carries region mode and nothing else) on
+  2026-09-08. A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story); the engine and the UI read
   everything from the data. Do not start another version 2 or version 3

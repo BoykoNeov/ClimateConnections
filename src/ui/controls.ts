@@ -1,8 +1,8 @@
-// Left panel: compare switch (M14), driver picker, phase buttons, optional
-// second driver (M11), start month, a slot for the season dial (M13),
-// confidence filter, legend.
+// Left panel: stories, the region picker (M28), compare switch (M14), driver
+// picker, phase buttons, optional second driver (M11), start month, a slot
+// for the season dial (M13), confidence filter, legend.
 
-import type { DriverNode, Story } from '../types';
+import type { DriverNode, OutcomeNode, Story } from '../types';
 import { MONTH_NAMES } from '../types';
 import { renderLegend } from './legend';
 
@@ -34,6 +34,10 @@ export interface ControlState extends ScenarioSettings {
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
+  /** region mode (M28): the outcome node whose incoming links the map shows
+   *  instead of a scenario; null = scenario mode. Compare and stories are
+   *  off while it is set; the scenario settings are kept but not drawn. */
+  region: string | null;
 }
 
 /** Scenario A's settings alone. */
@@ -86,6 +90,9 @@ export class ControlsView {
   private monthHeading: HTMLHeadingElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
+  /** region mode (M28): the place picker and the box of scenario controls it greys out */
+  private regionSelect: HTMLSelectElement;
+  private scenarioBox: HTMLDivElement;
   private filterSelect: HTMLSelectElement;
   private chainBox: HTMLInputElement;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
@@ -100,7 +107,7 @@ export class ControlsView {
   /** a story was picked from the dropdown (null = "none") */
   onStory: (storyId: string | null) => void = () => {};
 
-  constructor(container: HTMLElement, private drivers: DriverNode[], stories: Story[], private state: ControlState) {
+  constructor(container: HTMLElement, private drivers: DriverNode[], stories: Story[], regions: OutcomeNode[], private state: ControlState) {
     container.innerHTML = '';
 
     const hs = document.createElement('h2');
@@ -124,6 +131,38 @@ export class ControlsView {
     hintS.className = 'hint';
     hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
     container.append(hintS);
+
+    // Region mode (M28): pick a place and see every driver that reaches it.
+    // No scenario runs; the controls below are greyed out until "None".
+    const hr = document.createElement('h2');
+    hr.textContent = 'By region';
+    container.append(hr);
+    this.regionSelect = document.createElement('select');
+    this.regionSelect.setAttribute('aria-label', 'Pick a place to see every driver that reaches it');
+    const noRegion = document.createElement('option');
+    noRegion.value = '';
+    noRegion.textContent = 'Where I live…';
+    this.regionSelect.append(noRegion);
+    for (const n of regions) {
+      const o = document.createElement('option');
+      o.value = n.id;
+      o.textContent = `${n.name} · ${n.region}`;
+      this.regionSelect.append(o);
+    }
+    this.regionSelect.addEventListener('change', () => this.update({ region: this.regionSelect.value || null, compare: this.regionSelect.value ? null : this.state.compare }));
+    container.append(this.regionSelect);
+    const hintR = document.createElement('p');
+    hintR.className = 'hint';
+    hintR.textContent = 'Every driver known to reach that place, in which phase, in which months and how surely. Nothing is animated: pick "Where I live…" again, or click a driver on the map, to go back to a scenario.';
+    container.append(hintR);
+
+    // Everything from here to the legend describes a scenario; region mode
+    // greys it out (inert: no clicks, no focus) rather than hiding it, so the
+    // panel keeps its shape.
+    this.scenarioBox = document.createElement('div');
+    this.scenarioBox.className = 'scenario-controls';
+    container.append(this.scenarioBox);
+    container = this.scenarioBox;
 
     // Compare mode (M14): two scenarios side by side on one timeline. The
     // scenario controls below edit the side picked here.
@@ -361,10 +400,10 @@ export class ControlsView {
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';
     h4.className = 'print-keep';
-    container.append(h4);
+    this.scenarioBox.parentElement!.append(h4);
     const legend = renderLegend();
     legend.classList.add('print-keep');
-    container.append(legend);
+    this.scenarioBox.parentElement!.append(legend);
 
     this.reflect();
   }
@@ -462,6 +501,12 @@ export class ControlsView {
   }
 
   private reflect(): void {
+    // Region mode (M28): the picker, and the scenario controls greyed out.
+    this.regionSelect.value = this.state.region ?? '';
+    this.scenarioBox.classList.toggle('off', !!this.state.region);
+    this.scenarioBox.toggleAttribute('inert', !!this.state.region);
+    this.scenarioBox.setAttribute('aria-hidden', String(!!this.state.region));
+
     // Compare switch and side buttons (M14).
     const compare = this.state.compare;
     this.compareBox.checked = !!compare;

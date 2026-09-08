@@ -10,6 +10,7 @@ import type { Topology, GeometryCollection } from 'topojson-specification';
 import world from 'world-atlas/countries-110m.json';
 import type { Graph, GraphNode, Link, LinkStatus, MonthState, Confidence, Axis, Value } from '../types';
 import { phaseForValue } from '../engine/propagate';
+import type { DriverInfluences } from '../engine/inverse';
 
 export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   wet_dry: { plus: '#2166ac', minus: '#b35806' },
@@ -89,6 +90,27 @@ interface ArrowDatum {
   /** confidence after the per-hop downgrade: the line style */
   confidence: Confidence;
   color: string;
+  /** arrowhead marker id (without the map's prefix) */
+  marker: string;
+  /** region mode (M28): sideways offset in drawing units so links from the
+   *  same driver do not lie on top of one another; 0 = the plain path */
+  spread: number;
+}
+
+/** Region mode (M28): what the map draws for a place instead of a scenario.
+ *  Every driver that reaches the place, its incoming links coloured by the
+ *  phase that fires them, no month, no state. */
+export interface RegionRender {
+  nodeId: string;
+  groups: DriverInfluences[];
+  showAreas: boolean;
+  showAllLabels: boolean;
+}
+
+/** Sideways offsets for `n` arrows sharing a path: 0 for one, ±7 for two, ... */
+export function spreads(n: number): number[] {
+  const step = 7;
+  return Array.from({ length: n }, (_, i) => (i - (n - 1) / 2) * step);
 }
 
 export class MapView {
@@ -189,10 +211,11 @@ export class MapView {
    * seam splits it, leaving one edge and re-entering at the other, because
    * a bowed curve would sweep across the whole map. See docs/PLAN.md §5.3.
    */
-  private arcPath(from: GraphNode, to: GraphNode): string {
+  private arcPath(from: GraphNode, to: GraphNode, spread = 0): string {
     const interp = geoInterpolate([from.lon, from.lat], [to.lon, to.lat]);
     const n = 48;
     const coords: [number, number][] = [];
+    const pts: ([number, number] | null)[] = [];
     let prev: [number, number] | null = null;
     let crossesSeam = false;
     for (let i = 0; i <= n; i++) {
@@ -201,10 +224,12 @@ export class MapView {
       const p = this.projection(c);
       if (p && prev && Math.hypot(p[0] - prev[0], p[1] - prev[1]) > this.width / 4) crossesSeam = true;
       if (p) prev = p;
+      pts.push(p ?? null);
     }
     const shortHop = geoDistance([from.lon, from.lat], [to.lon, to.lat]) < Math.PI / 4;
     if (!crossesSeam || shortHop) {
-      return this.path({ type: 'LineString', coordinates: coords } as GeoPermissibleObjects) ?? '';
+      if (spread === 0) return this.path({ type: 'LineString', coordinates: coords } as GeoPermissibleObjects) ?? '';
+      return this.offsetPath(pts, spread);
     }
     const a = this.projection([from.lon, from.lat]);
     const b = this.projection([to.lon, to.lat]);
@@ -217,9 +242,45 @@ export class MapView {
     // Bow away from the equator so the curve does not pile onto the driver's row.
     const sign = my < this.height / 2 ? -1 : 1;
     const bow = 0.18 * len * sign;
-    const cx = mx + (-dy / len) * bow * (dx < 0 ? -1 : 1);
-    const cy = my + (dx / len) * bow * (dx < 0 ? -1 : 1);
+    // A sideways offset of the control point moves the curve's middle by half of it.
+    const cx = mx + (-dy / len) * (bow * (dx < 0 ? -1 : 1) + 2 * spread);
+    const cy = my + (dx / len) * (bow * (dx < 0 ? -1 : 1) + 2 * spread);
     return `M${a[0]},${a[1]} Q${cx},${cy} ${b[0]},${b[1]}`;
+  }
+
+  /**
+   * A great-circle path pushed sideways by `spread` drawing units (region
+   * mode, M28): the offset fans out over the first third of the way and then
+   * runs parallel to the true path into the target, so two arrowheads from
+   * one driver land side by side on the marker. Built in screen space; a
+   * jump wider than a quarter of the map (the projection seam) breaks the
+   * line as the projected path would.
+   */
+  private offsetPath(pts: ([number, number] | null)[], spread: number): string {
+    const n = pts.length - 1;
+    const near = (p: [number, number], q: [number, number] | null | undefined): q is [number, number] =>
+      !!q && Math.hypot(q[0] - p[0], q[1] - p[1]) < this.width / 4;
+    let d = '';
+    let prev: [number, number] | null = null;
+    for (let i = 0; i <= n; i++) {
+      const p = pts[i];
+      if (!p) { prev = null; continue; }
+      const before = pts[i - 1];
+      const after = pts[i + 1];
+      let tx = 1;
+      let ty = 0;
+      if (near(p, after)) { tx = after[0] - p[0]; ty = after[1] - p[1]; }
+      else if (near(p, before)) { tx = p[0] - before[0]; ty = p[1] - before[1]; }
+      const tl = Math.hypot(tx, ty) || 1;
+      const t = i / n;
+      const profile = t < 0.3 ? t / 0.3 : 1;
+      const x = p[0] + (-ty / tl) * spread * profile;
+      const y = p[1] + (tx / tl) * spread * profile;
+      const jump = prev && Math.hypot(x - prev[0], y - prev[1]) > this.width / 4;
+      d += !prev || jump ? `M${x},${y}` : `L${x},${y}`;
+      prev = [x, y];
+    }
+    return d;
   }
 
   render(month: MonthState, opts: RenderOptions): void {
@@ -263,17 +324,9 @@ export class MapView {
       const target = this.nodeById.get(link.to);
       if (!from || !target) continue;
       const color = ls.status === 'ghost' ? '#c7c9cf' : stateColor(target, link.effect);
-      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color });
+      arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0 });
     }
-
-    const sel = this.gLinks.selectAll<SVGPathElement, ArrowDatum>('path.link').data(arrows, (d) => d.link.id);
-    sel.exit().remove();
-    const enter = sel.enter().append('path');
-    const merged = enter.merge(sel)
-      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : ''}`)
-      .attr('stroke', (d) => d.color)
-      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${this.markerId(d.target, d.link.effect, d.kind)})`)
-      .attr('d', (d) => this.arcPath(d.from, d.target));
+    const merged = this.drawArrows(arrows, '');
 
     // Arrival animation: fade in, and for solid lines draw along the path.
     merged.filter((d) => opts.arrivals.has(d.link.id) && d.kind === 'applied').each(function (d) {
@@ -289,22 +342,8 @@ export class MapView {
     });
 
     // ---- nodes
-    const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(this.graph.nodes, (d) => d.id);
-    const nEnter = nodes.enter().append('g')
-      .attr('tabindex', 0)
-      .attr('role', 'button')
-      .attr('aria-label', (d) => d.name)
-      .on('click', (_e, d) => this.onNodeClick(d.id))
-      .on('keydown', (e: KeyboardEvent, d) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); this.onNodeClick(d.id); }
-      });
-    nEnter.append('circle');
-    nEnter.append('text').attr('dy', '0.35em');
-    // Outer ring shown only on nodes the other scenario treats differently (M14).
-    nEnter.append('circle').attr('class', 'diff').attr('r', (d) => (d.kind === 'driver' ? 17 : 12));
-    const nMerged = nEnter.merge(nodes);
-    nMerged
-      .attr('class', (d) => {
+    this.drawNodes({
+      cls: (d) => {
         const st = month.nodes[d.id];
         const cls = ['node', d.kind];
         if (d.kind === 'outcome') {
@@ -326,21 +365,112 @@ export class MapView {
         const labelled = opts.showAllLabels || reached || opts.selectedNodeId === d.id || opts.focusNodeId === d.id || !!opts.differs?.has(d.id);
         if (!labelled) cls.push('unlabelled');
         return cls.join(' ');
-      })
-      .attr('transform', (d) => {
-        const p = this.projection([d.lon, d.lat]);
-        return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
-      });
-    nMerged.select('circle')
-      .attr('fill', (d) => this.nodeFill(d, month, opts))
-      .attr('stroke', (d) => {
+      },
+      fill: (d) => this.nodeFill(d, month, opts),
+      stroke: (d) => {
         const st = month.nodes[d.id];
         if (d.kind === 'driver') return !opts.chosen.has(d.id) && st.viaLinkIds.length ? '#1f2328' : '#ffffff';
         if (st.conflicting && st.value === 0) return '#1f2328';
         if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return stateColor(d, 1); // hollow: the axis colour as a ring
         return this.nodeColor(d, month, opts); // pending: the expected colour; applied: the state colour
-      })
-      .attr('stroke-opacity', (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6));
+      },
+      strokeOpacity: (d) => (d.kind === 'driver' || month.nodes[d.id].viaLinkIds.length ? 1 : 0.6),
+    });
+  }
+
+  /**
+   * Region mode (M28): the place, every driver that reaches it, and each
+   * incoming link as an arrow in its own tier's line style coloured by the
+   * phase that fires it. No month and no state: outcomes are hollow, the
+   * reaching drivers wear a plain dark ring ("can reach", no phase), the
+   * others are grey. Arrows from one driver are spread sideways so two
+   * phases (El Niño and La Niña) both show.
+   */
+  renderRegion(r: RegionRender): void {
+    const target = this.nodeById.get(r.nodeId);
+    if (!target) return;
+    const reaching = new Set(r.groups.map((g) => g.driver.id));
+
+    // ---- areas: only the place's own outline
+    const areaNodes = r.showAreas && this.areas.has(target.id) ? [target] : [];
+    const areaSel = this.gAreas.selectAll<SVGPathElement, GraphNode>('path.area').data(areaNodes, (d) => d.id);
+    areaSel.exit().remove();
+    areaSel.enter().append('path')
+      .on('click', (_e, d) => this.onNodeClick(d.id))
+      .merge(areaSel)
+      .attr('class', 'area selected region')
+      .attr('fill', '#1f2328')
+      .attr('stroke', '#1f2328')
+      .attr('d', (d) => this.path(this.areas.get(d.id)!));
+    this.gBase.select('path.sphere').attr('stroke', null).attr('stroke-width', null);
+
+    // ---- arrows: one per incoming link, driver by driver
+    const arrows: ArrowDatum[] = [];
+    for (const g of r.groups) {
+      const links = g.phases.flatMap((p) => p.links.map((l) => ({ link: l.link, phase: p.phase })));
+      const offsets = spreads(links.length);
+      links.forEach(({ link, phase }, i) => {
+        arrows.push({ link, from: g.driver, target, kind: 'applied', confidence: link.confidence, color: phase.color, marker: `phase-${g.driver.id}-${phase.id}`, spread: offsets[i] });
+      });
+    }
+    this.drawArrows(arrows, ' region');
+
+    // ---- nodes
+    this.drawNodes({
+      cls: (d) => {
+        const cls = ['node', d.kind];
+        let labelled = r.showAllLabels;
+        if (d.id === target.id) { cls.push('hollow', 'selected', 'region-target'); labelled = true; }
+        else if (d.kind === 'driver' && reaching.has(d.id)) { cls.push('reach'); labelled = true; }
+        else if (d.kind === 'driver') cls.push('inactive');
+        else cls.push('hollow');
+        if (!labelled) cls.push('unlabelled');
+        return cls.join(' ');
+      },
+      fill: (d) => (d.kind === 'driver' && !reaching.has(d.id) ? INACTIVE_DRIVER : '#ffffff'),
+      stroke: (d) => (d.kind === 'driver' ? (reaching.has(d.id) ? '#1f2328' : '#ffffff') : stateColor(d, 1)),
+      strokeOpacity: (d) => (d.kind === 'driver' || d.id === target.id ? 1 : 0.6),
+    });
+  }
+
+  /** Join the arrows onto the link layer; returns the merged selection. */
+  private drawArrows(arrows: ArrowDatum[], extraClass: string): Selection<SVGPathElement, ArrowDatum, SVGGElement, unknown> {
+    const sel = this.gLinks.selectAll<SVGPathElement, ArrowDatum>('path.link').data(arrows, (d) => d.link.id);
+    sel.exit().remove();
+    const enter = sel.enter().append('path');
+    return enter.merge(sel)
+      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : ''}${extraClass}`)
+      .attr('stroke', (d) => d.color)
+      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker})`)
+      .attr('d', (d) => this.arcPath(d.from, d.target, d.spread));
+  }
+
+  /** Join every node onto the marker layer with the given styling. */
+  private drawNodes(style: { cls: (d: GraphNode) => string; fill: (d: GraphNode) => string; stroke: (d: GraphNode) => string; strokeOpacity: (d: GraphNode) => number }): void {
+    const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(this.graph.nodes, (d) => d.id);
+    const nEnter = nodes.enter().append('g')
+      .attr('tabindex', 0)
+      .attr('role', 'button')
+      .attr('aria-label', (d) => d.name)
+      .on('click', (_e, d) => this.onNodeClick(d.id))
+      .on('keydown', (e: KeyboardEvent, d) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); this.onNodeClick(d.id); }
+      });
+    nEnter.append('circle');
+    nEnter.append('text').attr('dy', '0.35em');
+    // Outer ring shown only on nodes the other scenario treats differently (M14).
+    nEnter.append('circle').attr('class', 'diff').attr('r', (d) => (d.kind === 'driver' ? 17 : 12));
+    const nMerged = nEnter.merge(nodes);
+    nMerged
+      .attr('class', style.cls)
+      .attr('transform', (d) => {
+        const p = this.projection([d.lon, d.lat]);
+        return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
+      });
+    nMerged.select('circle')
+      .attr('fill', style.fill)
+      .attr('stroke', style.stroke)
+      .attr('stroke-opacity', style.strokeOpacity);
     nMerged.select('text')
       .attr('x', (d) => (d.kind === 'driver' ? 0 : 10))
       .attr('y', (d) => (d.kind === 'driver' ? 24 : 0))

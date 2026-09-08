@@ -537,6 +537,20 @@ About twenty links. No new drivers. The "global" node kind stays as it is.
 
 ### M28 — Region-first navigation ("where I live")
 
+**Shipped 2026-09-08**, the first UI item, taken after the data-only
+drivers were done. The record is in `docs/PLAN.md` §5.10 and §6 under
+M28. Departures from the text below, each with its reason: the acceptance
+example names Kiribati with five drivers, but in the data one driver
+reaches the central Pacific islands, so the check uses the Indian summer
+monsoon (six drivers, eight links, ENSO in both phases) and the Sahel
+(five); the card also carries a "Watch <phase> arrive" button per phase,
+because a driver that reaches a place in both its phases would otherwise
+leave the marker click to guess which phase to show (it takes the first);
+clicking another place's marker switches the region (the dropdown is
+still the way in; only the map background stays out); Escape leaves region
+mode like it leaves a story. One fix on the way: the B map pane was never
+hidden outside compare mode.
+
 Today the flow is driver → map. A student in Nairobi wants the inverse:
 pick a place, see every driver that reaches it, in which phase, in which
 months, and how surely. All of that is in the data already.

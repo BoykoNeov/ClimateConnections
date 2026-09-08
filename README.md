@@ -180,6 +180,18 @@ any static file server.
   sets the scenario, steps through the year, highlights one region at a
   time and explains what happened in that event. Changing the phase or start
   month by hand leaves the story.
+- **By region** (under Stories) turns the map round: pick the place you
+  live in from "Where I live…" and the map shows every driver known to
+  reach it, each incoming arrow in its own confidence style and coloured
+  by the phase that fires it (El Niño red and La Niña blue side by side),
+  with the timeline and the scenario controls set aside. The card lists
+  the drivers one by one: the phase, what it tends to do there, how sure
+  the science is, the months it is felt, how long after the event it
+  tends to arrive, the usual "How sure are we?" and the sources. Nothing
+  is added up in this view. "Watch El Niño arrive" under a phase, or a
+  click on a driver's marker, goes back to the scenario for that driver
+  with your place selected and the year playing. The address bar carries
+  the place (`#region=…`), so a link opens straight on it.
 - **Compare** (under Stories) draws two scenarios side by side on the same
   timeline: El Niño against La Niña, a year with and without a second
   driver, the chain on against off, all links against established only.
