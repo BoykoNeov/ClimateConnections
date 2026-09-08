@@ -64,6 +64,11 @@ can be compared side by side on one timeline.
   the timing uncertainty is on the map and not only on the card.
 - Not a source of precise boundaries. The "affected areas" layer is a set of
   rough, illustrative outlines, and the control that turns it on says so.
+- Not a map of where nothing happens. With "Hide unaffected regions" on,
+  a place is left off because no connection on this map has reached it in
+  the month shown, which is a statement about what this map holds for that
+  month and not about the world. The layer is off by default and one click
+  brings every place back.
 - Not a picture of the ordinary weather. The "Seasonal features" layer
   (off by default) draws five fixtures of the year, an H or L in a circle
   as on a weather chart, in the months they are present. They are the
@@ -359,6 +364,18 @@ serve it (`npm run preview`) rather than double-clicking `dist/index.html`.
   from a feature and no arrow starts or ends at one; the story "Winter's
   machinery: how El Niño reaches Alaska and Europe" turns the layer on and
   follows an El Niño through two of them.
+- **Hide unaffected regions** (off by default, under the legend) draws
+  only the places a connection has reached in the month shown. A place
+  whose connection is still out of season, whose event has ended, or which
+  only the faint grey lines of the confidence filter touch is left off
+  with its arrows until the month it is reached, so the map shows what the
+  drivers are acting on now rather than every place on it: under El Niño
+  from June, December goes from 76 markers to 43. The drivers, the place
+  you have clicked and the place a story is pointing at always stay, and
+  in the side-by-side view both maps hide the same places so they can be
+  read against each other. A place is left off because nothing on this map
+  is acting on it in that month, never because nothing happens there; one
+  click brings everything back.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and

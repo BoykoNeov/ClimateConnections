@@ -96,6 +96,11 @@ export interface ControlState extends ScenarioSettings {
    *  weather the links work through, on both sides and in region mode.
    *  Off by default; a way of looking, like the areas layer. */
   showFeatures: boolean;
+  /** hide the places nothing has reached (M42): draw only the places an
+   *  applied arrow reaches in the month on screen, on both sides (by the
+   *  union of the two, so the maps keep the same markers). Off by
+   *  default; a way of looking, like the areas layer. */
+  hideUnaffected: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -424,6 +429,8 @@ export class ControlsView {
   private windowBox: HTMLInputElement;
   /** seasonal features (M41) */
   private featuresBox: HTMLInputElement;
+  /** hide the places the month says nothing about (M42) */
+  private hideBox: HTMLInputElement;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
   private compareBox: HTMLInputElement;
   private sideBox: HTMLDivElement;
@@ -776,6 +783,22 @@ export class ControlsView {
     const named = featureNames.length === 0 ? '' : ` (${featureNames.slice(0, -1).join(', ')}${featureNames.length > 1 ? ' and ' : ''}${featureNames[featureNames.length - 1]})`;
     hintF.textContent = `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring, in the months they are present. They are the machinery the arrows work through, not causes on the map: nothing is computed from them and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.`;
     this.scenarioBox.parentElement!.append(hintF);
+    // Hide unaffected regions (M42): the eighth checkbox, after "Seasonal
+    // features" so the browser scripts' indices still hold. Off by default
+    // (rule 15 of docs/PLAN_V3.md).
+    const hideLabel = document.createElement('label');
+    hideLabel.className = 'check';
+    this.hideBox = document.createElement('input');
+    this.hideBox.type = 'checkbox';
+    this.hideBox.dataset.role = 'hide';
+    this.hideBox.checked = state.hideUnaffected;
+    this.hideBox.addEventListener('change', () => this.update({ hideUnaffected: this.hideBox.checked }));
+    hideLabel.append(this.hideBox, document.createTextNode(' Hide unaffected regions'));
+    this.scenarioBox.parentElement!.append(hideLabel);
+    const hintH = document.createElement('p');
+    hintH.className = 'hint';
+    hintH.textContent = 'On: only the places a connection has reached in the month shown are drawn, the ones with a full arrow. A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay. A place is hidden because nothing on this map is acting on it in this month, not because nothing happens there.';
+    this.scenarioBox.parentElement!.append(hintH);
     const legend = renderLegend();
     legend.classList.add('print-keep');
     this.scenarioBox.parentElement!.append(legend);
@@ -983,5 +1006,6 @@ export class ControlsView {
     this.impactsBox.checked = this.state.showImpacts;
     this.windowBox.checked = this.state.showWindow;
     this.featuresBox.checked = this.state.showFeatures;
+    this.hideBox.checked = this.state.hideUnaffected;
   }
 }

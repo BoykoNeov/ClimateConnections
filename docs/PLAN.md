@@ -721,6 +721,22 @@ and lowest-confidence selection.
   layer on, the features the listed links work through, filled, with no
   month. With the layer off nothing of this is drawn and the page is the
   one M30 shipped.
+- Hiding the places nothing has reached (M42): with "Hide unaffected
+  regions" on, a place's marker, its label, its area, its impact square and
+  the arrows into it are drawn only while a connection has reached that
+  place in the month on screen — the same test that decides a marker's
+  name with "Label every region" off, an applied link ending there. A
+  place whose arrows are only expected (pending, out of season), ended
+  (faded, M32) or left out by the confidence filter (ghost) is not drawn
+  at all, and those arrows go with it, so no arrowhead is left pointing at
+  a marker that is not there; a place that has been reached keeps every
+  arrow into it. Never hidden: every driver, the selected place, the place
+  a playing story points at, and a place compare mode rings as differing.
+  The seasonal features are their own layer and are not hidden. Nothing
+  about the engine, the cards, the counts or the dial changes. Compare
+  mode draws the union of the two sides, so both maps carry the same
+  markers; region mode ignores the toggle. Off, the page is the one M41
+  shipped.
 
 ### 5.3 Arrows
 - One arrow per active link, from driver to target, drawn as a great-circle
@@ -982,6 +998,22 @@ carries `via`, with a pointer to the layer while it is off.
   like the areas layer: switching it ends no story and leaves no year. A
   story with `features: true` turns it on when it starts. The legend
   gains a row with the symbol and a note.
+- "Hide unaffected regions" (M42): a checkbox under the Legend heading,
+  the eighth in the controls (after "Seasonal features", so the browser
+  scripts' indices still hold), **off by default** (rule 15 of
+  `docs/PLAN_V3.md`). On, the map draws only the places a connection has
+  reached in the month on screen (§5.2), on both sides in compare mode and
+  by the union of the two, so a class sees the places a driver is acting
+  on instead of every dot on the map. Its hint says that only a place with
+  a full arrow is drawn, that a place still out of season, one whose event
+  has ended and one only the filter's grey lines touch is left off with its
+  arrows until the month it is reached, which places are kept whatever
+  happens, and the sentence that matters: a place is hidden because
+  nothing on this map is acting on it in this month, not because nothing
+  happens there. A way of looking, like the areas layer: switching
+  it ends no story, leaves no year and changes no card. Region mode
+  ignores it. The legend gains a note, and the print caption says while it
+  is on that the places with no connection this month are left off.
 - A permanent one-line disclaimer under the title: "Shows historical
   tendencies from published research. Not a forecast, not a simulation."
 
@@ -995,6 +1027,8 @@ outcome has no polygon; instead the map's outer edge is tinted with its
 state colour. The layer never restyles points or arrows; it is additive,
 and the "Show affected areas" checkbox turns it off. Areas are
 illustrative outlines, not scientific boundaries, and the control says so.
+A place hidden by "Hide unaffected regions" (M42, §5.2) draws no area
+either, so the two layers never disagree.
 
 ### 5.8 Accessibility and print
 - All colors must also be distinguishable by line style or shape.
@@ -1039,6 +1073,10 @@ illustrative outlines, not scientific boundaries, and the control says so.
   compare on ends a story, like any change to the scenario by hand.
 - Print: both maps side by side with their titles, the side switch hidden,
   and the caption "Two scenarios compared. A: … B: …".
+- "Hide unaffected regions" (M42) is shared, like the areas toggle, and
+  the two maps hide the same places: a place is drawn when *either* side
+  has reached it this month, so the maps can always be read against each
+  other and a dark ring is never left alone on one of them.
 
 ### 5.10 Region mode (M28)
 - A "By region" section under Stories: a dropdown "Where I live…" of every
@@ -1076,6 +1114,9 @@ illustrative outlines, not scientific boundaries, and the control says so.
   starts in region mode, and a change to the hash is followed. Compare
   and stories are off in region mode. Print caption: "Everything that is
   known to reach <place> on this map: N drivers, …".
+- "Hide unaffected regions" (M42) does not apply here: region mode has no
+  month and no scenario, and draws every driver on purpose, the ones that
+  reach the place with a ring and the rest in grey.
 
 ---
 
@@ -3154,6 +3195,71 @@ drivers stays in one place.
 
 ---
 
+### M42 — Hide unaffected regions (version 3, signed off 2026-09-08)
+- The fourth UI item of version 3, added to `docs/PLAN_V3.md` §3 on
+  2026-09-08 after the user asked to "hide regions that are currently not
+  affected by the selected phenomena". One reading was put to them before
+  any code was written and answered: *currently* is the month on screen,
+  not the whole year. The plan text (§5.2, §5.6, §5.7, §5.9, §5.10 and the
+  M42 section of `docs/PLAN_V3.md`) was written first (rule 14 of
+  `docs/PLAN_V3.md`).
+- Data, schema and engine: unchanged. Nothing new is computed and every
+  timeline is the one M41 shipped.
+- `src/engine/reached.ts`: one pure reader, `reachedThisMonth(graph,
+  month)`, the ids of the nodes an `applied` link ends at this month — the
+  map's own sense of "reached", the same test the marker labels use, so
+  the layer hides exactly the markers "Label every region" leaves unnamed.
+  A first pass counted every reported arrow (pending, faded and ghost
+  too); measured on El Niño from June with the chain on, that hid 13 of
+  the 62 places in December against 30 for the rule shipped, and a pending
+  arrow does not mean "currently affected", so it was dropped.
+- UI: `ControlState.hideUnaffected` and the "Hide unaffected regions"
+  checkbox, the eighth, under the Legend heading after "Seasonal features"
+  (data-role `hide`, off by default, rule 15), its hint saying which
+  places are drawn, which are kept whatever happens, and that a place is
+  hidden because nothing on this map is acting on it in this month, not
+  because nothing happens there; `RenderOptions.visibleNodeIds` (null =
+  draw everything) and one `hidden()` test in `MapView.render` used by the
+  areas layer, the marker layer and the arrow list, so a hidden place
+  takes its label, its area, its impact square and the arrows into it with
+  it and no arrowhead is left pointing at nothing; a place that has been
+  reached keeps every arrow into it, pending, faded and ghost included.
+  Never hidden: the fourteen drivers, the selected place, a playing
+  story's focus and a marker compare mode rings as differing. Compare mode
+  passes the union of the two sides, so both maps carry the same markers.
+  Region mode ignores it. The seasonal features are their own layer and
+  are untouched. The legend note and the print caption's sentence. A way
+  of looking, like the areas layer: it ends no story and leaves no year.
+- Tests: `src/engine/reached.test.ts` (15): the reader on hand-built
+  months (applied reaches, pending, faded and ghost do not, one applied
+  arrow is enough, an unknown link id is skipped); the shipped data under
+  El Niño from June (the set follows the month, the monsoon goes while its
+  arrow waits out of season and comes back with it, a strict filter leaves
+  fewer places, the chosen driver is not in the set, reading changes
+  nothing); and the tie-down — the set equals the places with a non-empty
+  `viaLinkIds`, month by month on every story, every recorded year, the
+  impacts hop, a hold, a filter and the chain off. 983 tests.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m42.mjs` (24
+  checks; screenshots `m42-01-off.png` … `m42-07-off-again.png` under
+  `W:\temp\claude\ClimateConnections\m42`): eight checkboxes with the
+  eighth off on load and 76 markers; on in December, 43 markers, every one
+  of them reached, no orphan arrow, pending arrows still drawn into places
+  that are drawn; every driver kept; the areas layer following; month 0
+  emptier than month 6 and consistent; a place hidden at month 0 drawn at
+  month 6; the selected place staying while nothing reaches it and going
+  again when unselected; the impact squares following; the five features
+  untouched; compare mode with identical markers on both maps and every
+  dark ring drawn; the print caption; a story keeping the toggle and its
+  focus always drawn; a real year keeping the year with the toggle
+  switched either way; region mode unchanged; the toggle off giving back
+  all 76.
+- Not in M42: hiding for the whole year; hiding drivers, features or an
+  arrow into a place that is drawn; a count of what is hidden; a fade-out
+  animation; region mode. Next in `docs/PLAN_V3.md`: M29, M31 and the
+  roadmap items M38–M40, each with its own sign-off.
+
+---
+
 ## 7. Version-1 acceptance checklist
 
 - [x] Every link in `links.yaml` has a source that resolves and a caveat.
@@ -3358,7 +3464,9 @@ writing mechanism text):
   contested Arctic precursors, tropical eruptions) and a third batch of
   regions; region-first navigation, a sources page, an arrival window, a
   second language, seasonal features (done, M41: the fixtures of the
-  year's weather the links work through, drawn and never computed); engine extensions for what does not fit today (phase
+  year's weather the links work through, drawn and never computed),
+  hiding the places no connection has reached in the month shown (done,
+  M42); engine extensions for what does not fit today (phase
   duration, any number of chosen drivers, a hand-curated table of real
   years in place of the NOAA overlay, links that weaken other links, El
   Niño flavours, impacts on people); then quiz mode, the globe view and

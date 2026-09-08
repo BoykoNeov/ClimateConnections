@@ -67,6 +67,13 @@ export interface RenderOptions {
    *  them, and dim the other arrows while one is selected. Off, nothing of
    *  them is drawn. */
   showFeatures?: boolean;
+  /** hide the places nothing has reached (M42, §5.2): the ids of the nodes
+   *  an applied arrow reaches this month (`reachedThisMonth`). null, or
+   *  absent, draws every node as before; a set draws that set only, plus
+   *  the drivers, the selected node, a playing story's focus and the
+   *  markers compare mode rings as differing. The arrows into a node left
+   *  out are not drawn either. */
+  visibleNodeIds?: Set<string> | null;
 }
 
 /** One seasonal feature as the map draws it this month (M41). */
@@ -335,8 +342,18 @@ export class MapView {
   render(month: MonthState, opts: RenderOptions): void {
     for (const id of opts.chosen.keys()) if (!this.nodeById.has(id)) return;
 
+    // ---- hiding the places nothing has reached (M42, §5.2): a node
+    // outside `visibleNodeIds` is not drawn at all — no marker, no label,
+    // no area, no impact square, and no arrow into it. Drivers are the
+    // phenomena the student picks and the map's anchors, so they are always
+    // drawn; so are the selected node, a playing story's focus and a marker
+    // compare mode rings as differing.
+    const hidden = (d: GraphNode): boolean =>
+      !!opts.visibleNodeIds && d.kind !== 'driver' && !opts.visibleNodeIds.has(d.id)
+      && opts.selectedNodeId !== d.id && opts.focusNodeId !== d.id && !opts.differs?.has(d.id);
+
     // ---- affected areas (under the arrows, same colour/state as the marker)
-    const areaNodes = opts.showAreas ? this.graph.nodes.filter((n) => this.areas.has(n.id)) : [];
+    const areaNodes = opts.showAreas ? this.graph.nodes.filter((n) => this.areas.has(n.id) && !hidden(n)) : [];
     const areaSel = this.gAreas.selectAll<SVGPathElement, GraphNode>('path.area').data(areaNodes, (d) => d.id);
     areaSel.exit().remove();
     areaSel.enter().append('path')
@@ -380,6 +397,11 @@ export class MapView {
       // The arrival window (M30): only an applied arrow is drawn faint, and only with the layer on.
       const unsettled = !!opts.showWindow && ls.status === 'applied' && !ls.settled;
       const dimmed = selectedFeature !== null && !(link.via ?? []).includes(selectedFeature);
+      // An arrow into a place the layer hides (M42) is not drawn either, so
+      // no arrowhead is left pointing at a marker that is not there. A place
+      // an applied arrow has reached is drawn, and keeps its pending, faded
+      // and ghost arrows as before.
+      if (hidden(target)) continue;
       arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0, unsettled, dimmed });
     }
     const merged = this.drawArrows(arrows, '');
@@ -403,8 +425,10 @@ export class MapView {
       ? featuresThisMonth(this.graph, month).filter(featureDrawn).map((f) => ({ node: f.feature, present: f.present, active: f.applied.length > 0, pending: f.pending.length > 0 }))
       : [], selectedFeature);
 
-    // ---- nodes (impacts, M37, only with their layer on; never the features, which have their own layer)
-    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'feature' && (n.kind !== 'impact' || !!opts.showImpacts)), {
+    // ---- nodes (impacts, M37, only with their layer on; never the features,
+    // which have their own layer; never a place this month says nothing
+    // about, M42)
+    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'feature' && (n.kind !== 'impact' || !!opts.showImpacts) && !hidden(n)), {
       cls: (d) => {
         const st = month.nodes[d.id];
         const cls = ['node', d.kind];

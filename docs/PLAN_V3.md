@@ -32,8 +32,10 @@ Three kinds of work, in rough order of cost:
    of outcome regions are specified.
 2. **UI additions that need no engine change** (§3). Region-first
    navigation, a sources page, an arrival window on the arrows, a second
-   language, and (M41, added 2026-09-08) seasonal features: the fixtures
-   of the year's weather the links work through, drawn in their months.
+   language, (M41, added 2026-09-08) seasonal features: the fixtures
+   of the year's weather the links work through, drawn in their months,
+   and (M42, added 2026-09-08) hiding the places no connection has
+   reached in the month on screen.
 3. **Engine extensions for phenomena that do not fit today** (§4). Each
    one names the exact rule it adds, why the current rules cannot express
    the phenomenon, and what the honest limit of the new rule is. Phase
@@ -771,6 +773,118 @@ vortex, the monsoon trough): a later data-only batch, since the map
 reads everything about a feature from the data; the subtropical jets
 (bands, not centres); any arrow drawn to or from a feature.
 
+### M42 — Hide the places a month says nothing about
+
+**Asked for 2026-09-08** ("hide regions that are currently not affected by
+the selected phenomena") and taken as the fourth UI item of version 3. One
+reading needed a decision and the user made it before any code was
+written: *currently* means **the month on screen**, not the whole year, so
+a place appears in the month an arrow reaches it and goes again when none
+does. The plan text (`docs/PLAN.md` §5.2, §5.6, §5.7, §5.9, §5.10 and this
+section) was written before the code, as rule 14 asks.
+
+The map draws every node in every month. Under one driver most of them are
+hollow circles that nothing reaches, so a class looking for what El Niño
+does to the monsoon reads a screen of grey dots around the four that
+matter. "Label every region" already hides the *names* of the places the
+month does not reach; this hides the places themselves.
+
+**Data.** None. No node, link, source or story changes.
+
+**Schema.** None.
+
+**Engine.** None, and none may be added: the toggle changes what is drawn,
+never what is computed, and a scenario gives exactly the timeline it gave
+before. `src/engine/reached.ts` holds one pure reader,
+`reachedThisMonth(graph, month)`: the ids of the nodes an *applied* link
+ends at in that month. It runs no scenario, invents no state and adds
+nothing up.
+
+**What counts as reached.** The map already has a word for this and the
+layer must not invent a second one: a place is reached while a connection
+has arrived there, which is what `viaLinkIds` holds and what decides
+whether a marker keeps its name with "Label every region" off (§5.2). So
+the layer hides exactly the markers that rule leaves unnamed. The three
+other statuses do not hold a place on the map: `pending` is past its lag
+but out of season, so nothing is acting; `faded` (M32) is a connection
+whose event has ended; `ghost` is one the confidence filter left out. A
+place with none but those goes, **and its arrows go with it**, so no
+arrowhead is left pointing at a marker that is not there; a place that has
+been reached keeps every arrow into it, pending, faded and ghost included.
+Four kinds of node are drawn whatever happens: every driver (they are the
+phenomena the student picks, and the map's anchors), the place that is
+selected, the place a playing story is pointing at, and, in compare mode,
+a place the two scenarios treat differently.
+
+The alternative — counting any reported arrow, so that a place waiting out
+of season stays — was written first and measured: under El Niño from June
+with the chain on it hid 13 of the 62 places in December against 30 for
+the rule above. It is not a decluttering at all, and "currently affected"
+is not what a pending arrow means.
+
+**UI.** `ControlState.hideUnaffected` and the "Hide unaffected regions"
+checkbox, the eighth in the controls, under the Legend heading after
+"Seasonal features" so the browser scripts' indices still hold, **off by
+default** (rule 15). `RenderOptions.visibleNodeIds`: null draws everything
+as today, a set draws that set plus the four exemptions. The markers,
+their labels, their areas, the impact squares and the arrows into them
+follow it; the seasonal features (their own layer, read from what the
+month reports and not from what is drawn), the cards, the dial, the
+timeline and the year and region panels do not change at all. A way of looking, like the areas
+layer: switching it ends no story and leaves no year. Region mode ignores
+it (it has no month and no scenario, and draws every driver deliberately).
+Compare mode draws the union of the two sides, so the two maps always
+carry the same markers and a dark ring is never left alone on one of them.
+The print caption says, while it is on, that places with no connection
+this month are left off.
+
+**Tests.** `src/engine/reached.test.ts` (15 tests): the reader on a
+hand-built month (an applied arrow reaches its place; a pending, faded or
+ghost one does not; one applied arrow is enough beside any number of
+others; a link id the graph does not hold is skipped); on the shipped data
+under El Niño from June, that the set grows and shrinks with the month,
+that the monsoon goes while its arrow waits out of season and comes back
+with it, that a strict filter leaves fewer places, that the chosen driver
+itself is not in the set (which is why drivers are drawn anyway), and that
+reading changes nothing (the timeline is identical before and after); and
+the rule that ties it down — the set equals the places with a non-empty
+`viaLinkIds`, checked month by month on every shipped story, every
+recorded year, the impacts hop, a hold, a filter and the chain off, with a
+faded month showing that an ended event does not hold a place.
+
+**Browser check.** `cdp-m42.mjs`: the eighth checkbox off on load with the
+usual marker count; on, only the reached places left, the count matching
+the reader; a hidden place coming back the month its arrow arrives; the
+selected place staying drawn after its arrow goes; the story focus
+staying; compare mode with the same markers on both maps and every dark
+ring visible; the areas layer following; region mode unchanged; the print
+caption; the toggle ending no story and leaving no year.
+
+**Honesty note.** Hiding is the one thing this map has never done, and an
+emptier map is easier to misread: "nothing is drawn there" can be taken as
+"nothing happens there". It also takes away, for the places it hides, two
+things the map shows on purpose: the faint grey line of a connection the
+confidence filter left out, and the hollow ring of one that is expected
+but out of season. Four defences: the toggle is off by default, so no
+classroom sees this unless a teacher asks for it; the hint, the legend
+note and the print caption all say in the same words that a place is left
+off because nothing on this map is acting on it in this month, not because
+nothing happens there, and that the arrows on their way are left off with
+it; a place that has been reached keeps every arrow into it, so the grey
+lines and the out-of-season arrows are never hidden where the eye is
+already looking; and nothing about the cards, the counts, the season dial
+or the engine changes, so the tool still knows and says everything it did
+with the toggle off — one click brings it all back.
+
+**Not in M42.** Hiding a place for the whole year (the reading the user
+did not choose: it would need a pass over all twelve months and would
+leave a place drawn and empty for eleven of them); hiding drivers, the
+seasonal features, or an arrow into a place that is drawn; a count of what
+is hidden, or a way to bring one hidden place back other than clicking it
+in the card or turning the layer off; a fade-out animation on the markers
+that go; region mode; any change to what the engine computes or the cards
+say.
+
 ---
 
 ## 4. Engine extensions for phenomena that do not fit today
@@ -1246,7 +1360,8 @@ lag and season fields.
 
 ```
 Data only (no src/ change):   M20 → M21 → M22 → M26 → M27 → M23 → M24 → M25
-UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M41 (shipped 2026-09-08), M29 (any time)
+UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M41 (shipped 2026-09-08),
+                              M42 (shipped 2026-09-08), M29 (any time)
 Engine, in dependency order:  M32 (duration) → M33 (N drivers) → M34 (years)
                               M35 (modulation) after M23 if the QBO case is wanted
                               M36 (flavours) independent (shipped 2026-09-08)
@@ -1272,6 +1387,9 @@ Reasoning for the order:
   data plus a small pure function once those two exist.
 - **M28 and M29 any time.** They touch no engine rule and can go in
   between drivers when a change of pace is wanted.
+- **M42 after M41.** It hides markers, so it wants the map's last layer
+  already on it: the check that nothing is hidden under a feature, an
+  impact square or an arrowhead is easier once all of them exist.
 - **M37 last** because it changes what the tool is about (weather to
   people) and should be decided with the rest of the map settled.
 

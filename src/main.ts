@@ -5,6 +5,7 @@ import { chosenFade, chosenOnset, phaseForValue, propagate } from './engine/prop
 import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
 import { differing } from './engine/compare';
 import { influencesOn, regionNodes } from './engine/inverse';
+import { reachedThisMonth } from './engine/reached';
 import { MapView, stateColor } from './ui/map';
 import { SeasonDialView, seasonWords, type DialRing } from './ui/dial';
 import { TimelineView } from './ui/timeline';
@@ -93,7 +94,7 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, showFeatures: false, chain: true, others: [], compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, showFeatures: false, hideUnaffected: false, chain: true, others: [], compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -336,6 +337,13 @@ async function main(): Promise<void> {
     }
     const months = new Map<Side, MonthState>(shown().map((side) => [side, pane(side).timeline.months[monthIndex]]));
     const differs = compare ? new Set(differing(months.get('a')!, months.get('b')!)) : undefined;
+    // Hide unaffected regions (M42): the places an applied arrow reaches.
+    // In compare mode the two maps share one set, the union of the sides, so
+    // both carry the same markers and a dark ring is never left alone on one
+    // of them. null = draw every place, as the map has always done.
+    const visibleNodeIds = controls.hideUnaffected
+      ? new Set(shown().flatMap((side) => [...reachedThisMonth(graph, months.get(side)!)]))
+      : null;
 
     const titles = new Map<Side, string>();
     const chosenBySide = new Map<Side, Chosen>();
@@ -350,7 +358,7 @@ async function main(): Promise<void> {
       const c = chosenFor(s, p.timeline, month);
       chosenBySide.set(side, c);
       titles.set(side, scenarioTitle(s, c));
-      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, showWindow: controls.showWindow, showFeatures: controls.showFeatures, differs });
+      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, showWindow: controls.showWindow, showFeatures: controls.showFeatures, visibleNodeIds, differs });
       if (compare) setHead(p.head, side, titles.get(side)!, month);
     }
 
@@ -364,7 +372,7 @@ async function main(): Promise<void> {
     } else {
       monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     }
-    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') + (controls.showWindow ? ` ${WINDOW_CAPTION.trim()}` : '') + (controls.showFeatures ? ` ${FEATURES_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
+    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') + (controls.showWindow ? ` ${WINDOW_CAPTION.trim()}` : '') + (controls.showFeatures ? ` ${FEATURES_CAPTION.trim()}` : '') + (controls.hideUnaffected ? ` ${HIDE_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
     if (differs) ctl.compareNote.textContent = differs.size === 0 ? 'The two maps agree this month.' : differs.size === 1 ? 'One marker differs this month (dark ring).' : `${differs.size} markers differ this month (dark rings).`;
 
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -596,13 +604,16 @@ async function main(): Promise<void> {
   /** The arrival window (M30) in a printed caption: what a faint arrow with an outlined head means. */
   const WINDOW_CAPTION = 'A faint arrow with an outlined head is within its arrival window: the effect is applied from the earliest month the studies give and may still be on its way until the latest, after which the arrow is drawn in full. ';
 
+  /** Hiding the places nothing has reached (M42) in a printed caption. */
+  const HIDE_CAPTION = 'Only the places a connection has reached in the month shown are drawn: one whose connection is out of season, whose event has ended, or which the confidence filter left out is left off, with its arrows, until the month it is reached. That is what this map holds for this month, not a claim that nothing happens there. ';
+
   /** Seasonal features (M41) in a printed caption: what the chart symbols are and are not. */
   const FEATURES_CAPTION = 'An H or L in a circle (a ring for the polar vortex) is a seasonal feature, a fixture of the year\'s weather drawn in the months it is present; it is filled in while an arrow drawn this month works through it, nothing is computed from it, and no arrow starts or ends at it. ';
 
   function printCaption(months: Map<Side, MonthState>, chosen: Map<Side, Chosen>): string {
     const parts = shown().map((side) => scenarioSentence(sideSettings(controls, side), chosen.get(side)!, months.get(side)!));
     const body = controls.compare ? `Two scenarios compared. A: ${parts[0]}B: ${parts[1]}` : parts[0];
-    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}${controls.showWindow ? WINDOW_CAPTION : ''}${controls.showFeatures ? FEATURES_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}${controls.showWindow ? WINDOW_CAPTION : ''}${controls.showFeatures ? FEATURES_CAPTION : ''}${controls.hideUnaffected ? HIDE_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
   recompute();

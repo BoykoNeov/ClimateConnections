@@ -45,7 +45,10 @@ since M41 seasonal features: a fourth node kind for the fixtures of the
 year's weather the links work through, the Aleutian Low, the Icelandic
 Low, the Azores High, the Siberian High and the Arctic polar vortex,
 drawn in their months behind a "Seasonal features" toggle that is off by
-default, filled while an arrow works through them, never computed from) on a
+default, filled while an arrow works through them, never computed
+from, and since M42 a "Hide unaffected regions" toggle, also off by
+default, that draws only the places a connection has reached in the month
+shown) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -162,6 +165,20 @@ one.
   feature's card lives in `src/ui/card.ts`. Do not turn a feature into a
   pushed waypoint, give it a state or a strength, or draw an arrow to or
   from one.
+- Hiding unaffected regions (M42) is drawing only, and adds no rule:
+  `src/engine/reached.ts` holds one pure reader, `reachedThisMonth`, the
+  nodes an `applied` link ends at this month — the map's own sense of
+  "reached" (`viaLinkIds`), the same test the marker labels use. With the
+  "Hide unaffected regions" checkbox on (the eighth, off by default) a
+  place outside that set is not drawn at all and neither are the arrows
+  into it, so no arrowhead is left pointing at nothing; a place that has
+  been reached keeps every arrow into it. Never hidden: the drivers, the
+  selected place, a story's focus and a compare-mode difference. Compare
+  mode passes the union of the two sides; region mode ignores the toggle;
+  the seasonal features are their own layer. Do not count a pending,
+  faded or ghost arrow as reaching a place (it hides almost nothing and a
+  pending arrow is not "currently affected"), do not hide a driver, and
+  do not turn the toggle on by default.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -219,7 +236,10 @@ one.
   `feature` node kind and `Link.via`, §4 rule 13, `src/engine/features.ts`,
   the "Seasonal features" checkbox, the H / L / ring markers, the feature
   card, the "Works through" line, the winter-machinery story) on
-  2026-09-08.
+  2026-09-08, and hiding unaffected regions (M42, the fourth UI item,
+  drawing only, no engine or data change: `src/engine/reached.ts`, the
+  "Hide unaffected regions" checkbox, `RenderOptions.visibleNodeIds`, the
+  arrows into a hidden place dropped with it) on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its
@@ -250,6 +270,6 @@ npm run build          # static site to dist/
 ## Layout (see docs/PLAN.md §2 for the full tree)
 - `data/` — nodes.yaml (drivers, outcomes, impacts, seasonal features), links.yaml, stories.yaml, years.yaml
 - `scripts/build-data.mjs` — validator + converter; `scripts/years-schema.mjs` — the years table's checks
-- `src/engine/` — propagate.ts, years.ts, features.ts (readers only) and tests
+- `src/engine/` — propagate.ts, years.ts, features.ts and reached.ts (readers only) and tests
 - `src/ui/` — map, timeline, card, controls, legend, story and year panels
 - `docs/` — PLAN.md, DATA_FORMAT.md
