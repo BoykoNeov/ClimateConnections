@@ -8,11 +8,11 @@ function graphWith(links: Partial<Link>[]): Graph {
   return {
     nodes: [
       {
-        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: '', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: '', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'warm', label: 'Warm', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'cool', label: 'Cool', color: '#000000', summary: '', value: -1 }],
       },
       {
-        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: '', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: '', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'up', label: 'Up', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'down', label: 'Down', color: '#000000', summary: '', value: -1 }],
       },
       { id: 'a', name: 'A', kind: 'outcome', axis: 'wet_dry', labels: { plus: '', zero: '', minus: '' }, global: false, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [] },
@@ -97,6 +97,16 @@ describe('linksInPlay', () => {
     // Chain on: d2 is pushed at month 2 and its links join.
     const chain = propagate(g, { ...base, maxDepth: 2 });
     expect(linksInPlay(g, chain).map((l) => l.id)).toEqual(['l0', 'l1', 'l2', 'l3']);
+  });
+});
+
+describe('links in play and phase duration (M32)', () => {
+  it('a link that was applied before the fade stays in play; one that only ever appears faded is not', () => {
+    const g = graphWith([{ lag_months: [0, 0] }, { id: 'late', to: 'b', lag_months: [9, 9] }]);
+    const t = propagate(g, { driverId: 'drv', phaseId: 'warm', startMonth: 6, horizonMonths: 12, holdMonths: 4 });
+    expect(t.months[6].links.l0?.status).toBe('faded');
+    expect(t.months[6].links.late?.status).toBe('faded');
+    expect(linksInPlay(g, t).map((l) => l.id)).toEqual(['l0']);
   });
 });
 

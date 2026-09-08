@@ -23,8 +23,10 @@ swing, since M23 the Quasi-Biennial Oscillation as a twelfth, a
 band of wind in the stratosphere with no region of its own, since M24
 the autumn sea ice of the Barents and Kara seas as a thirteenth, the
 first driver whose every link is contested, and since M25 the October
-snow across Siberia as a fourteenth, its matched pair, and since M28 a
-"By region" view that lists every driver known to reach one place) on a
+snow across Siberia as a fourteenth, its matched pair, since M28 a
+"By region" view that lists every driver known to reach one place, and
+since M32 an "Event lasts" control that ends a chosen driver's phase after
+a set number of months, the first engine extension) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -54,6 +56,12 @@ one.
   per side on the same month index and only compares the results
   (`src/engine/compare.ts`); it never blends the two scenarios or invents
   a third state, and a story is one scenario, so it turns compare off.
+  Phase duration (M32, §4 rule 9) is a hold on a chosen driver only:
+  from `onset + holdMonths` it has no phase and its links are reported
+  `faded`, never applied; a lag at or beyond the hold never fires (no
+  hidden ocean memory: the chain is the honest way to show it, and the
+  card and hint say so); no hold is the old timeline exactly. Do not
+  relax it into a fade into the opposite phase; that is a push.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -81,9 +89,13 @@ one.
   driver and phase; it runs no scenario, invents no state and adds
   nothing up, and the map and card in region mode draw only what it
   returns; the URL hash carries region mode and nothing else) on
-  2026-09-08. A new driver
+  2026-09-08, and phase duration (M32, the first engine extension:
+  `holdMonths`, the `faded` link status, `typical_duration_months`
+  required on every driver, `hold_months` in stories, the "Event lasts"
+  control) on 2026-09-08. A new driver
   is data only (a driver node, its outcome
-  nodes, links, sources and a story); the engine and the UI read
+  nodes, links, sources and a story, and since M32 its
+  `typical_duration_months`); the engine and the UI read
   everything from the data. Do not start another version 2 or version 3
   item without sign-off.
 - Plain language in user-facing text. Students read the cards.

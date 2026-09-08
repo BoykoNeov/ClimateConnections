@@ -58,6 +58,15 @@ export interface ChosenPhase {
   onset: number;
   /** calendar month (1–12) of that onset */
   startMonth: number;
+  /** how many months it holds the phase (M32); null = the whole year shown */
+  hold: number | null;
+  /** month index from which it holds no phase (`onset + hold`); null with no hold */
+  fade: number | null;
+}
+
+/** Calendar month name `index` months after `startMonth`, for any index. */
+function monthAt(startMonth: number, index: number): string {
+  return MONTH_NAMES[((((startMonth - 1 + index) % 12) + 12) % 12)];
 }
 
 interface Ctx {
@@ -68,7 +77,7 @@ interface Ctx {
   chosen: Map<string, ChosenPhase>;
 }
 
-function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: LinkState | null): string {
+function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null): string {
   const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   const from = ctx.nodeById.get(link.from);
   // Say where the link comes from when that is not obvious: "through" a
@@ -76,17 +85,29 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending', ls: Link
   const fromLabel = !from || !ls ? '' : ls.depth > 1 ? `through ${esc(shortName(from))}` : ctx.chosen.size > 1 ? `from ${esc(shortName(from))}` : '';
   const via = fromLabel ? ` <span class="via">${fromLabel}</span>` : '';
   const toDriver = ctx.nodeById.get(link.to)?.kind === 'driver';
-  const heading = status === 'pending' ? 'Expected, but out of season right now' : toDriver ? 'What pushes it there' : 'Why this happens';
   // Lags count from the month the firing driver entered its phase: the month
   // it was pushed there, or the second chosen driver's own start month (M12).
   const chosenFrom = from ? ctx.chosen.get(from.id) : undefined;
+  // Faded (M32): the chosen driver's phase has ended. Either the effect had
+  // arrived and is no longer applied, or its lag was longer than the hold
+  // and it never arrives on this map.
+  const never = status === 'faded' && !!chosenFrom && chosenFrom.hold !== null && link.lag_months[0] >= chosenFrom.hold;
+  const heading = status === 'pending' ? 'Expected, but out of season right now'
+    : status === 'faded' ? (never ? 'Never arrives: the event ended first' : 'Faded: the event has ended')
+    : toDriver ? 'What pushes it there' : 'Why this happens';
   const onsetNote = ls && ls.depth > 1 && from ? ` Month 0 here is when ${esc(shortName(from))} was pushed into this phase.`
     : ls && from && chosenFrom && chosenFrom.onset > 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase (month ${chosenFrom.onset} on the timeline).`
     : ls && from && chosenFrom && chosenFrom.onset < 0 ? ` Month 0 here is ${MONTH_NAMES[chosenFrom.startMonth - 1]}, when ${esc(shortName(from))} entered its phase, ${monthsWord(-chosenFrom.onset)} before the year shown begins.` : '';
-  return `<div class="link-block">
+  let fadeNote = '';
+  if (status === 'faded' && from && chosenFrom && chosenFrom.hold !== null && chosenFrom.fade !== null) {
+    fadeNote = never
+      ? ` This effect needs ${monthsWord(link.lag_months[0])} to arrive and the event was set to last ${monthsWord(chosenFrom.hold)}, so on this map it never arrives; in reality the ocean can carry such an effect past the end of the event.`
+      : ` Faded: ${esc(shortName(from))} was set to last ${monthsWord(chosenFrom.hold)} and its phase ended in ${monthAt(chosenFrom.startMonth, chosenFrom.hold)}${chosenFrom.fade > 0 ? ` (month ${chosenFrom.fade})` : ', before the year shown'}, so this effect is no longer applied.`;
+  }
+  return `<div class="link-block${status === 'faded' ? ' faded' : ''}">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
-    <p class="hint">${esc(timing)}${onsetNote}</p>
+    <p class="hint">${esc(timing)}${onsetNote}${fadeNote}</p>
     ${sureBlock(link, ls)}
     ${sourcesHtml(link.sources, ctx.sources)}
   </div>`;
@@ -134,7 +155,22 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
       html += feedbackBlock(node, graph, ctx);
       return html;
     }
+    if (info.fade !== null && info.hold !== null && month.index >= info.fade) {
+      // Chosen by hand, but its phase has ended (M32).
+      const control = ctx.chosen.size > 1 && info.onset !== 0 ? '"Second driver lasts"' : '"Event lasts"';
+      const line = info.fade <= 0
+        ? `Over before the year shown began: entered ${label} in ${MONTH_NAMES[info.startMonth - 1]}, held it ${monthsWord(info.hold)}, and ended in ${monthAt(info.startMonth, info.hold)}`
+        : `Faded: held ${label} from ${MONTH_NAMES[info.startMonth - 1]} for ${monthsWord(info.hold)}; no phase since ${monthAt(info.startMonth, info.hold)} (month ${info.fade})`;
+      html += `<div class="state-line zero" style="background:#f0f2f5">${line}</div>`;
+      html += `<p class="hint">You set how long this event lasts under ${control}. Since it ended its arrows are drawn grey and faded and apply nothing: the effects that had arrived have stopped, and any whose lag had not run by then never arrives on this map, though in reality the ocean can carry an effect past the end of an event. It is still not pushed by any other driver: a driver you chose stays pinned.</p>`;
+      html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
+      html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+      html += feedbackBlock(node, graph, ctx);
+      return html;
+    }
     html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
+    // Set to end (M32): say when.
+    const lasts = info.fade !== null && info.hold !== null ? ` Set to last ${monthsWord(info.hold)}: it fades in ${monthAt(info.startMonth, info.hold)} (month ${info.fade}), and from then its arrows apply nothing.` : '';
     if (ctx.chosen.size > 1) {
       let when = '';
       if (info.onset > 0) when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]} (month ${info.onset} on the timeline); its links count their lag from then.`;
@@ -144,7 +180,9 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]}, ${monthsWord(-info.onset)} before the year shown begins, and has held it since: ${monthsWord(held)} so far. Its links count their lag from then, so some of its effects were already being felt at month 0.`;
         if (held > 12) when += ` That is more than a year in one phase, longer than most real events last: treat the later months as a teaching convenience.`;
       }
-      html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}</p>`;
+      html += `<p class="hint">One of two drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}</p>`;
+    } else if (lasts) {
+      html += `<p class="hint">${lasts.trim()}</p>`;
     }
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
@@ -178,6 +216,18 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     return html;
   }
+  if (st.fadedLinkIds.length > 0) {
+    // The push into it came from an event that has ended (M32).
+    const first = ctx.linkById.get(st.fadedLinkIds[0])!;
+    const phase = phaseForValue(node, first.effect);
+    const pushers = [...new Set(st.fadedLinkIds.map((id) => ctx.linkById.get(id)?.from).filter((x): x is string => !!x))].map((id) => shortName(ctx.nodeById.get(id)!));
+    html += `<div class="state-line zero" style="background:#f0f2f5">No phase: the push toward ${esc(phase?.label ?? 'a phase')} from ${esc(pushers.join(' and '))} has faded</div>`;
+    html += `<p class="hint">The event that pushed it has ended, so it holds no phase and its own links do not fire.</p>`;
+    for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
+    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
+    html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+    return html;
+  }
   html += `<div class="state-line zero" style="background:#f0f2f5">Not part of the current scenario</div>`;
   html += `<p class="empty">Pick it under "Driver" or "Second driver" in the left panel to see its phases and connections.</p>`;
   html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
@@ -199,12 +249,13 @@ function stateWords(node: GraphNode, st: NodeState): { text: string; color: stri
   if (node.kind === 'driver') {
     if (st.value === 0 && st.viaLinkIds.length === 0) {
       if (st.pendingLinkIds.length > 0) return { text: 'expected to be pushed, out of season', color: '#f0f2f5' };
+      if (st.fadedLinkIds.length > 0) return { text: 'no phase: the push has faded', color: '#f0f2f5' };
       return { text: st.conflicting ? 'no phase: pushes cancel out' : 'not in play', color: '#f0f2f5' };
     }
     const phase = phaseForValue(node, st.value);
     return { text: phase?.label ?? 'a phase', color: phase?.color ?? '#f0f2f5' };
   }
-  if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return { text: 'no known effect', color: '#f0f2f5' };
+  if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return { text: st.fadedLinkIds.length > 0 ? 'faded: the event has ended' : 'no known effect', color: '#f0f2f5' };
   if (st.viaLinkIds.length === 0) return { text: 'expected, out of season', color: '#f0f2f5' };
   const label = st.value > 0 ? node.labels.plus : st.value < 0 ? node.labels.minus : node.labels.zero;
   return { text: st.conflicting ? `${label} (conflicting)` : label, color: st.value === 0 ? '#f0f2f5' : stateColor(node, st.value) };
@@ -269,11 +320,14 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     html += `<p class="hint">Two or more links push this place opposite ways this month. The map adds them up; here they ${st.value === 0 ? 'cancel out, so the marker is hatched' : 'do not fully cancel'}. Read each link’s "How sure are we?" to judge which is likelier to win.</p>`;
   }
   if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) {
-    html += `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
+    html += st.fadedLinkIds.length > 0
+      ? `<p class="empty">Nothing acts here now: the only known ${st.fadedLinkIds.length === 1 ? 'effect' : 'effects'} came from an event that has ended (below).</p>`
+      : `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
   }
   html += `<p>${esc(node.summary.trim())}</p>`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
+  for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
   container.innerHTML = html;
 }
 

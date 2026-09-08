@@ -7,7 +7,7 @@ import graphJson from '../../public/data/graph.json';
 const graph = graphJson as unknown as Graph;
 
 function st(patch: Partial<NodeState>): NodeState {
-  return { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], inSeason: true, conflicting: false, ...patch };
+  return { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], fadedLinkIds: [], inSeason: true, conflicting: false, ...patch };
 }
 
 describe('compareNode', () => {

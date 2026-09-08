@@ -151,6 +151,8 @@ html, body { margin: 0; height: 100%; }
 .link.probable { stroke-width: 2.1; stroke-dasharray: 7 5; }
 .link.contested { stroke-width: 1.6; stroke-dasharray: 1.5 4; opacity: 0.7; }
 .link.pending { opacity: 0.22; }
+/* the event that fired it has ended (M32): like pending, but grey (the stroke is set by the map) */
+.link.faded { opacity: 0.22; }
 .link.ghost { stroke: var(--ghost) !important; opacity: 0.45; }
 
 .node { cursor: pointer; }
@@ -267,6 +269,9 @@ html, body { margin: 0; height: 100%; }
 /* the second driver was already under way when the year shown began (M15) */
 .ticks span.second-before { color: #1f2328; font-weight: 700; text-decoration: underline dotted; }
 .ticks span.second-before::before { content: '◂'; margin-right: 1px; }
+/* a chosen driver's phase ends here (M32) */
+.ticks span.fade { color: #1f2328; font-weight: 700; }
+.ticks span.fade::after { content: '▾'; margin-left: 1px; color: var(--muted); }
 .key-hint { margin: 4px 0 0; font-size: 11px; color: var(--muted); }
 .key-hint kbd {
   display: inline-block; font: inherit; font-size: 10px; line-height: 1; padding: 2px 5px; margin-right: 2px;

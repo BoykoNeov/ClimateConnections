@@ -1,7 +1,7 @@
 import './style.css';
 import type { Confidence, DriverNode, Graph, Link, MonthState, OutcomeNode, Scenario, Timeline } from '../src/types';
 import { MONTH_NAMES } from './types';
-import { chosenOnset, propagate } from './engine/propagate';
+import { chosenFade, chosenOnset, propagate } from './engine/propagate';
 import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
 import { differing } from './engine/compare';
 import { influencesOn, regionNodes } from './engine/inverse';
@@ -74,7 +74,7 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, showAllLabels: false, chain: true, second: null, compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, chain: true, second: null, compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -115,11 +115,16 @@ async function main(): Promise<void> {
   const shown = (): Side[] => (controls.compare ? SIDES : ['a']);
 
   function scenarioFor(s: ScenarioSettings): Scenario {
-    return {
+    const scenario: Scenario = {
       driverId: s.driverId, phaseId: s.phaseId, startMonth: s.startMonth, horizonMonths: HORIZON,
       maxDepth: s.chain ? MAX_DEPTH : 1, minConfidence: FILTER_MIN[s.filter],
-      secondary: s.second ?? undefined,
     };
+    if (s.hold !== null) scenario.holdMonths = s.hold;
+    if (s.second) {
+      scenario.secondary = { driverId: s.second.driverId, phaseId: s.second.phaseId, startMonth: s.second.startMonth, startsBefore: s.second.startsBefore };
+      if (s.second.hold !== null) scenario.secondary.holdMonths = s.second.hold;
+    }
+    return scenario;
   }
 
   function recompute(): void {
@@ -133,33 +138,49 @@ async function main(): Promise<void> {
     // The timeline's ticks and second-onset mark follow the side being edited.
     const e = sideSettings(controls, editedSide(controls));
     if (e.startMonth !== tlStart) { tlStart = e.startMonth; tl.setStartMonth(e.startMonth); }
-    tl.setSecondOnset(e.second ? chosenOnset(pane(editedSide(controls)).timeline.scenario, e.second.driverId) : null);
+    const scenario = pane(editedSide(controls)).timeline.scenario;
+    tl.setSecondOnset(e.second ? chosenOnset(scenario, e.second.driverId) : null);
+    // A small mark where a chosen driver's phase ends (M32).
+    const fades: { index: number; title: string }[] = [];
+    for (const id of [e.driverId, e.second?.driverId]) {
+      if (!id) continue;
+      const fade = chosenFade(scenario, id);
+      if (fade !== null) fades.push({ index: fade, title: `${shortName(driverById(id))} ends here: no phase from this month on` });
+    }
+    tl.setFades(fades);
   }
 
   /** The drivers chosen by hand on one side: id -> phase colour for the map
-   *  (only once the driver is in its phase: a second driver with a later start
-   *  month is drawn grey until then; one that began before the first, M15, is
-   *  in phase throughout), id -> phase and onset for the card. */
+   *  (only while the driver is in its phase: a second driver with a later
+   *  start month is drawn grey until then; one that began before the first,
+   *  M15, is in phase from month 0; one whose hold has run out, M32, is grey
+   *  from its fade month on), id -> phase, onset and hold for the card. */
   function chosenFor(s: ScenarioSettings, timeline: Timeline, month: MonthState): Chosen {
     const driver = driverById(s.driverId);
     const phase = driver.phases.find((p) => p.id === s.phaseId)!;
     const second = s.second ? driverById(s.second.driverId) : null;
     const secondPhase = second && s.second ? second.phases.find((p) => p.id === s.second!.phaseId)! : null;
-    const colors = new Map<string, string>([[driver.id, phase.color]]);
-    const phases = new Map<string, ChosenPhase>([[driver.id, { phaseId: phase.id, onset: 0, startMonth: s.startMonth }]]);
+    const colors = new Map<string, string>();
+    const phases = new Map<string, ChosenPhase>();
+    const fade = chosenFade(timeline.scenario, driver.id);
+    if (fade === null || month.index < fade) colors.set(driver.id, phase.color);
+    phases.set(driver.id, { phaseId: phase.id, onset: 0, startMonth: s.startMonth, hold: s.hold, fade });
     if (second && secondPhase && s.second) {
       const onset = chosenOnset(timeline.scenario, second.id);
-      if (month.index >= onset) colors.set(second.id, secondPhase.color);
-      phases.set(second.id, { phaseId: secondPhase.id, onset, startMonth: s.second.startMonth });
+      const fade2 = chosenFade(timeline.scenario, second.id);
+      if (month.index >= onset && (fade2 === null || month.index < fade2)) colors.set(second.id, secondPhase.color);
+      phases.set(second.id, { phaseId: secondPhase.id, onset, startMonth: s.second.startMonth, hold: s.second.hold, fade: fade2 });
     }
     return { driver, phase, second, secondPhase, colors, phases };
   }
 
-  /** "El Niño from June + Negative IOD from September · direct links only";
-   *  "since May" for a second driver that began before the first (M15). */
+  /** "El Niño from June for 10 months + Negative IOD from September · direct
+   *  links only"; "since May" for a second driver that began before the
+   *  first (M15); "for N months" only with a hold (M32). */
   function scenarioTitle(s: ScenarioSettings, c: Chosen): string {
-    let t = `${c.phase.label} from ${MONTH_NAMES[s.startMonth - 1]}`;
-    if (c.second && c.secondPhase && s.second) t += ` + ${c.secondPhase.label} ${s.second.startsBefore ? 'since' : 'from'} ${MONTH_NAMES[s.second.startMonth - 1]}`;
+    const lasts = (hold: number | null) => (hold === null ? '' : hold === 1 ? ' for a month' : ` for ${hold} months`);
+    let t = `${c.phase.label} from ${MONTH_NAMES[s.startMonth - 1]}${lasts(s.hold)}`;
+    if (c.second && c.secondPhase && s.second) t += ` + ${c.secondPhase.label} ${s.second.startsBefore ? 'since' : 'from'} ${MONTH_NAMES[s.second.startMonth - 1]}${lasts(s.second.hold)}`;
     if (s.filter !== 'all') t += s.filter === 'established' ? ' · established only' : ' · probable and above';
     if (!s.chain) t += ' · direct links only';
     return t;
@@ -240,7 +261,7 @@ async function main(): Promise<void> {
     const d = driverById(driverId);
     const phase = d.phases.find((p) => p.id === phaseId) ?? d.phases[0];
     const regionId = controls.region;
-    const next: Partial<ControlState> = { driverId: d.id, phaseId: phase.id, startMonth: d.default_start_month, second: null, compare: null, region: null };
+    const next: Partial<ControlState> = { driverId: d.id, phaseId: phase.id, startMonth: d.default_start_month, hold: null, second: null, compare: null, region: null };
     selectedNodeId = regionId;
     monthIndex = 0;
     tl.setIndex(0);
@@ -361,10 +382,11 @@ async function main(): Promise<void> {
     controls.driverId = s.driver;
     controls.phaseId = s.phase;
     controls.startMonth = s.start_month;
-    controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase, startMonth: s.second_start_month ?? s.start_month, startsBefore: !!s.second_starts_before } : null;
+    controls.hold = s.hold_months ?? null;
+    controls.second = s.second_driver && s.second_phase ? { driverId: s.second_driver, phaseId: s.second_phase, startMonth: s.second_start_month ?? s.start_month, startsBefore: !!s.second_starts_before, hold: s.second_hold_months ?? null } : null;
     controls.compare = null;
     controls.region = null;
-    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, second: controls.second, compare: null, region: null });
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, hold: controls.hold, second: controls.second, compare: null, region: null });
     tl.pause();
     syncHash();
     recompute();
@@ -422,6 +444,11 @@ async function main(): Promise<void> {
     } else {
       who = `${driverName}: ${c.phase.label}, event beginning in ${when}. `;
     }
+    // How long each is held (M32), when that is not the whole year.
+    const held: string[] = [];
+    if (s.hold !== null) held.push(`${driverName} is set to last ${s.hold === 1 ? 'a month' : `${s.hold} months`}, ending in ${MONTH_NAMES[((s.startMonth - 1 + s.hold) % 12)]}`);
+    if (c.second && s.second && s.second.hold !== null) held.push(`${shortName(c.second)} is set to last ${s.second.hold === 1 ? 'a month' : `${s.second.hold} months`} from its own start`);
+    if (held.length > 0) who += `${held.join('; ')}; after that its arrows are drawn faded and apply nothing. `;
     return who +
       `Shown: ${MONTH_NAMES[month.calendarMonth - 1]}, month ${month.index} after onset. Showing ${filterText}` +
       `${s.chain ? ', following links through other drivers' : ', direct links only'}. `;

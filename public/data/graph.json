@@ -37,8 +37,12 @@
         "trenberth_1997"
       ],
       "kind": "driver",
-      "onset_hint": "El Niño and La Niña events usually start to develop between May and July.",
+      "onset_hint": "El Niño and La Niña events usually start to develop between May and July and last eight to twelve months, so \"typical\" under \"Event lasts\" fades a June event by the following spring.",
       "default_start_month": 6,
+      "typical_duration_months": [
+        8,
+        12
+      ],
       "phases": [
         {
           "id": "el_nino",
@@ -98,6 +102,10 @@
       "kind": "driver",
       "onset_hint": "Indian Ocean Dipole events usually start to develop between May and July and are over by December.",
       "default_start_month": 6,
+      "typical_duration_months": [
+        4,
+        6
+      ],
       "phases": [
         {
           "id": "positive",
@@ -148,15 +156,19 @@
       "lon": -23,
       "region": "North Atlantic Ocean, between Iceland and the Azores",
       "timescale": "Swings within weeks; a winter tends to lean one way for months",
-      "summary": "A see-saw in air pressure between the low near Iceland and the high near the Azores. When both are stronger than usual (positive phase) the westerly winds across the Atlantic strengthen and winter storms are steered into northern Europe; when both are weaker (negative phase) the westerlies slacken, storms head for the Mediterranean, and cold air spills from the Arctic over Europe and the eastern United States. It matters mostly in winter. Unlike ENSO it is a pattern of the atmosphere alone, so it can flip within a week; the map holds one phase for the whole timeline, which is a simplification of a winter that leans one way on average.\n",
+      "summary": "A see-saw in air pressure between the low near Iceland and the high near the Azores. When both are stronger than usual (positive phase) the westerly winds across the Atlantic strengthen and winter storms are steered into northern Europe; when both are weaker (negative phase) the westerlies slacken, storms head for the Mediterranean, and cold air spills from the Arctic over Europe and the eastern United States. It matters mostly in winter. Unlike ENSO it is a pattern of the atmosphere alone, so it can flip within a week. A \"phase\" on this map is a winter that leans one way on average; \"Event lasts\" sets how many months it is held, and its typical one to three months is one winter's lean.\n",
       "sources": [
         "hurrell_1995",
         "hurrell_2003",
         "ncar_nao_guide"
       ],
       "kind": "driver",
-      "onset_hint": "The North Atlantic Oscillation matters mostly in winter; start in December to see a winter that leans one way.",
+      "onset_hint": "The North Atlantic Oscillation matters mostly in winter; start in December to see a winter that leans one way. A phase here is a winter's average, so its typical length under \"Event lasts\" is one to three months.",
       "default_start_month": 12,
+      "typical_duration_months": [
+        1,
+        3
+      ],
       "phases": [
         {
           "id": "positive",
@@ -207,7 +219,7 @@
       "lon": 160,
       "region": "Southern Ocean, the belt of westerly winds around Antarctica",
       "timescale": "Swings within weeks; a season tends to lean one way for months",
-      "summary": "A see-saw in air pressure between Antarctica and the middle latitudes near 40°S. In the positive phase pressure is low over Antarctica and high in the middle latitudes, and the belt of westerly winds and storms that circles the Southern Ocean tightens toward the pole: stronger, and further south. In the negative phase the belt loosens and spreads toward the equator, and its fronts reach further north into southern Australia, New Zealand, southern South America and South Africa. It matters in every season, but what it does differs by season. Like the North Atlantic Oscillation it is a pattern of the atmosphere alone and can flip within a week; the map holds one phase for a year, which is a simplification of a season that leans one way. Since the 1970s it has leaned positive in summer, largely because of the ozone hole.\n",
+      "summary": "A see-saw in air pressure between Antarctica and the middle latitudes near 40°S. In the positive phase pressure is low over Antarctica and high in the middle latitudes, and the belt of westerly winds and storms that circles the Southern Ocean tightens toward the pole: stronger, and further south. In the negative phase the belt loosens and spreads toward the equator, and its fronts reach further north into southern Australia, New Zealand, southern South America and South Africa. It matters in every season, but what it does differs by season. Like the North Atlantic Oscillation it is a pattern of the atmosphere alone and can flip within a week. A \"phase\" on this map is a season that leans one way on average; \"Event lasts\" sets how many months it is held, and its typical one to three months is one season's lean. Since the 1970s it has leaned positive in summer, largely because of the ozone hole.\n",
       "sources": [
         "thompson_wallace_2000",
         "marshall_2003",
@@ -215,8 +227,12 @@
         "bom_sam"
       ],
       "kind": "driver",
-      "onset_hint": "The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones.",
+      "onset_hint": "The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones. A phase here is a season's average, so its typical length under \"Event lasts\" is one to three months.",
       "default_start_month": 6,
+      "typical_duration_months": [
+        1,
+        3
+      ],
       "phases": [
         {
           "id": "positive",
@@ -277,8 +293,12 @@
         "noaa_ncei_pdo"
       ],
       "kind": "driver",
-      "onset_hint": "The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase; start in November to see its winter effects first.",
+      "onset_hint": "The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase and \"Event lasts\" is best left at the whole year; start in November to see its winter effects first.",
       "default_start_month": 11,
+      "typical_duration_months": [
+        12,
+        12
+      ],
       "phases": [
         {
           "id": "positive",
@@ -340,8 +360,12 @@
         "noaa_psl_amo"
       ],
       "kind": "driver",
-      "onset_hint": "The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase; start in June to see the summer and hurricane-season effects first.",
+      "onset_hint": "The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase and \"Event lasts\" is best left at the whole year; start in June to see the summer and hurricane-season effects first.",
       "default_start_month": 6,
+      "typical_duration_months": [
+        12,
+        12
+      ],
       "phases": [
         {
           "id": "positive",
@@ -392,7 +416,7 @@
       "lon": -6,
       "region": "Equatorial Atlantic Ocean, from the Gulf of Guinea west along the equator",
       "timescale": "Events every few years, peaking June–August and lasting three to five months",
-      "summary": "The Atlantic's smaller cousin of El Niño. In most years the eastern equatorial Atlantic cools sharply in early summer as the trade winds push warm water west; in an Atlantic Niño the trades slacken in spring, the cooling fails and the water off the Gulf of Guinea runs about a degree warm from May to August. An Atlantic Niña is the reverse, an unusually strong cold tongue. The events are weaker and shorter than the Pacific's, and unlike El Niño they peak in the northern summer, right in the West African monsoon season. Since the 1970s a summer Atlantic Niño has tended to be followed by a Pacific La Niña the next winter. The map holds the phase for a year; a real event has usually faded by autumn.\n",
+      "summary": "The Atlantic's smaller cousin of El Niño. In most years the eastern equatorial Atlantic cools sharply in early summer as the trade winds push warm water west; in an Atlantic Niño the trades slacken in spring, the cooling fails and the water off the Gulf of Guinea runs about a degree warm from May to August. An Atlantic Niña is the reverse, an unusually strong cold tongue. The events are weaker and shorter than the Pacific's, and unlike El Niño they peak in the northern summer, right in the West African monsoon season. Since the 1970s a summer Atlantic Niño has tended to be followed by a Pacific La Niña the next winter. A real event has usually faded by autumn: set \"Event lasts\" to its typical three to five months to watch it end, and to see which of its effects the map then never delivers.\n",
       "sources": [
         "zebiak_1993",
         "lubbecke_2018",
@@ -402,6 +426,10 @@
       "kind": "driver",
       "onset_hint": "An Atlantic Niño builds in spring and peaks in June–August, then fades by autumn; start in May to watch the Gulf of Guinea coast's rainy season and the Sahel's summer rains.",
       "default_start_month": 5,
+      "typical_duration_months": [
+        3,
+        5
+      ],
       "phases": [
         {
           "id": "warm",
@@ -463,6 +491,10 @@
       "kind": "driver",
       "onset_hint": "The basin warms a season after an El Niño begins and peaks in February–April; start in February to watch the East Asian summer that follows.",
       "default_start_month": 2,
+      "typical_duration_months": [
+        4,
+        7
+      ],
       "phases": [
         {
           "id": "warm",
@@ -525,6 +557,10 @@
       "kind": "driver",
       "onset_hint": "The Atlantic meridional mode peaks in March–May; start in March to watch the Nordeste's rainy season, then the hurricane season and the Amazon's dry season that follow.",
       "default_start_month": 3,
+      "typical_duration_months": [
+        3,
+        5
+      ],
       "phases": [
         {
           "id": "positive",
@@ -592,6 +628,10 @@
       "kind": "driver",
       "onset_hint": "The Pacific meridional mode peaks in March–May; start in March and switch the chain on to watch the Pacific tip toward El Niño by autumn.",
       "default_start_month": 3,
+      "typical_duration_months": [
+        3,
+        6
+      ],
       "phases": [
         {
           "id": "positive",
@@ -624,7 +664,7 @@
       "lon": 158,
       "region": "Any volcano in the tropics, from Pinatubo and Krakatau to Rabaul and El Chichón; the marker sits in the western Pacific, on the equator",
       "timescale": "Rare, a few times a century; the effects last two to three years",
-      "summary": "A volcano near the equator that blasts sulphur gas into the stratosphere, above the weather. Within weeks the gas turns into a haze of tiny droplets of sulphuric acid that spreads around the whole planet and takes about two years to thin away. The haze reflects some sunlight back to space, so the world runs a few tenths of a degree cooler for a year or two. It also warms the stratosphere over the tropics more than over the poles, and in the first northern winter that tends to strengthen the polar jet and give northern Europe and Siberia a mild winter while the planet as a whole is cool. Less sunlight means less evaporation and less rain, and the African and Indian monsoons of the following summer tend to be weaker. Whether the eruption also nudges the Pacific toward El Niño is genuinely unsettled, and that arrow is dotted. This is the one driver on the map that is an event rather than a swing: it has no opposite phase, and the map holds it on for twelve months as a stand-in for a cloud that fades over two years, so the second cool year is not shown. A big eruption far from the tropics (Iceland, Alaska) spreads its haze over one hemisphere only, behaves differently, and is not on this map.\n",
+      "summary": "A volcano near the equator that blasts sulphur gas into the stratosphere, above the weather. Within weeks the gas turns into a haze of tiny droplets of sulphuric acid that spreads around the whole planet and takes about two years to thin away. The haze reflects some sunlight back to space, so the world runs a few tenths of a degree cooler for a year or two. It also warms the stratosphere over the tropics more than over the poles, and in the first northern winter that tends to strengthen the polar jet and give northern Europe and Siberia a mild winter while the planet as a whole is cool. Less sunlight means less evaporation and less rain, and the African and Indian monsoons of the following summer tend to be weaker. Whether the eruption also nudges the Pacific toward El Niño is genuinely unsettled, and that arrow is dotted. This is the one driver on the map that is an event rather than a swing: it has no opposite phase, and the year shown is the first of the two or three the haze lasts, so its typical length under \"Event lasts\" is the whole year and the second cool year is not shown. A big eruption far from the tropics (Iceland, Alaska) spreads its haze over one hemisphere only, behaves differently, and is not on this map.\n",
       "sources": [
         "robock_2000",
         "timmreck_2012",
@@ -637,12 +677,16 @@
       "kind": "driver",
       "onset_hint": "Any month; Pinatubo erupted in June 1991, and the season of an eruption changes what the first year looks like.",
       "default_start_month": 6,
+      "typical_duration_months": [
+        12,
+        12
+      ],
       "phases": [
         {
           "id": "eruption",
           "label": "Eruption",
           "color": "#6b3e26",
-          "summary": "Sulphur from a large tropical eruption has reached the stratosphere. Expect a cooler year, a milder first winter over northern Eurasia, weaker African and Indian monsoons the next summer, and perhaps a nudge toward El Niño. Pinatubo in June 1991 is the textbook case: about twenty million tonnes of sulphur dioxide, a haze that circled the globe in three weeks, and a world half a degree cooler by the following summer. Note that the map keeps the eruption on for the whole year shown; in reality the haze thins steadily and its effects fade over two to three years.\n",
+          "summary": "Sulphur from a large tropical eruption has reached the stratosphere. Expect a cooler year, a milder first winter over northern Eurasia, weaker African and Indian monsoons the next summer, and perhaps a nudge toward El Niño. Pinatubo in June 1991 is the textbook case: about twenty million tonnes of sulphur dioxide, a haze that circled the globe in three weeks, and a world half a degree cooler by the following summer. The haze thins steadily and its effects fade over two to three years, longer than the year shown, so the eruption stays on for the whole timeline.\n",
           "value": -1
         },
         {
@@ -685,6 +729,10 @@
       "kind": "driver",
       "onset_hint": "The map draws the QBO's winter effects; start in November, when the phase that will shape the coming winter is usually set, and switch the chain on to watch the NAO's own map follow one tier down.",
       "default_start_month": 11,
+      "typical_duration_months": [
+        10,
+        12
+      ],
       "phases": [
         {
           "id": "westerly",
@@ -763,6 +811,10 @@
       "kind": "driver",
       "onset_hint": "The ice is read in October and November; start in October and switch the chain on to see the pushed NAO's own winter map, every arrow of it dotted.",
       "default_start_month": 10,
+      "typical_duration_months": [
+        5,
+        6
+      ],
       "phases": [
         {
           "id": "high",
@@ -841,6 +893,10 @@
       "kind": "driver",
       "onset_hint": "The snow is read in October; start there and switch the chain on to see the pushed NAO's own winter map follow, every arrow dotted.",
       "default_start_month": 10,
+      "typical_duration_months": [
+        5,
+        6
+      ],
       "phases": [
         {
           "id": "high",
@@ -11645,11 +11701,12 @@
     {
       "id": "warm_basin_1998_yangtze",
       "title": "1998: the Yangtze floods",
-      "intro": "The great El Niño of 1997–98 peaked in the Pacific in December and had collapsed by May. What it left behind was a tropical Indian Ocean warmed through the winter, at its warmest in February–April 1998 and still warm into the summer. This story follows that warmth: the year shown begins in February 1998 with the basin in its warm phase and the chain on, so the map can show the basin nudging the Pacific toward the La Niña that followed. The El Niño itself is not set as a second driver, because the map would hold it through a summer in which it had already ended.\n",
+      "intro": "The great El Niño of 1997–98 peaked in the Pacific in December and had collapsed by May. What it left behind was a tropical Indian Ocean warmed through the winter, at its warmest in February–April 1998 and still warm into the summer. This story follows that warmth: the year shown begins in February 1998 with the basin in its warm phase and the chain on, so the map can show the basin nudging the Pacific toward the La Niña that followed. The basin is set to last eight months, about as long as the real warmth did, so it fades in October. The El Niño itself is not set as a second driver: a driver chosen by hand is never pushed, and the point of the story is the push.\n",
       "driver": "indian_ocean_basin",
       "phase": "warm",
       "start_month": 2,
       "start_year": 1998,
+      "hold_months": 8,
       "steps": [
         {
           "month": 0,
@@ -11703,7 +11760,7 @@
         {
           "month": 12,
           "focus": "indian_ocean_basin",
-          "text": "A year on, in February 1999, the map still holds the basin warm. The real warmth had faded by the autumn of 1998, as it usually does; the map's twelve-month hold is a simplification. Two more cautions travel with this driver. The basin mode is mostly the echo of an El Niño, not an independent force, so choosing it alone is a way of looking at the second half of an El Niño story. And the 1998 flood was not only the weather's doing: the study of the flood also points to the lakes and forests that had once held the water. The map shows the tendency; the damage depends on what people have done on the ground.\n",
+          "text": "A year on, in February 1999, the basin's marker has been grey since October: this story sets the event to last eight months, about as long as the real warmth did, and from then on its arrows are drawn faded and apply nothing. Set \"Event lasts\" to the whole year to see what the map would claim if it held the basin warm through the winter. Two more cautions travel with this driver. The basin mode is mostly the echo of an El Niño, not an independent force, so choosing it alone is a way of looking at the second half of an El Niño story. And the 1998 flood was not only the weather's doing: the study of the flood also points to the lakes and forests that had once held the water. The map shows the tendency; the damage depends on what people have done on the ground.\n",
           "sources": [
             "kosaka_2013",
             "zong_chen_2000",

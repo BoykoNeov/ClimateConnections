@@ -124,7 +124,8 @@ any static file server.
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
   **Second driver begins in** picker appears; it defaults to that driver's
-  usual start) and holds it to the end of the year shown; both fire their
+  usual start) and holds it for as long as you set (the whole year shown
+  unless **Second driver lasts** says otherwise); both fire their
   own links at full confidence, with lags counted from their own start.
   Until its month comes the second driver is drawn grey and held out of
   play: no phase, no links, and nothing can push it. The month is read
@@ -156,6 +157,24 @@ any static file server.
   phase that will shape the coming winter is usually set, and October
   for the Barents–Kara ice and the October snow, when each is read. Both
   the default and the note under the control come from the data.
+- **Event lasts** (labelled **First driver lasts** while a second driver
+  is chosen) sets how many months the driver holds its phase: the whole
+  year shown (the default), "typical for this driver" read from the data
+  (about ten months for an El Niño, two for a winter's NAO), or any
+  number from one to twelve. From the month the phase ends the driver's
+  marker turns grey, its arrows are drawn faint and grey and apply
+  nothing, and the timeline marks the tick. The card of a place it had
+  reached says "Faded: the event has ended"; the card of a place whose
+  effect needed longer to arrive than the event lasted says "Never
+  arrives: the event ended first", and adds that in reality the ocean can
+  carry such an effect past the end of an event (the map shows that kind
+  of memory only as a chain through another driver, such as the Indian
+  Ocean basin mode after an El Niño). A driver the ended phase had
+  pushed loses its phase in the same month. The second driver has its
+  own **Second driver lasts** picker, counted from its own start, so an
+  event that began before the year shown can be over before it begins.
+  Picking a driver resets the hold; a story can set one (the 1998
+  Yangtze story holds the basin eight months).
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase

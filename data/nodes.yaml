@@ -54,8 +54,9 @@ nodes:
           heaviest rain piles up over Indonesia and the western Pacific.
           La Niña often follows an El Niño and can persist for two or three
           winters in a row.
-    onset_hint: El Niño and La Niña events usually start to develop between May and July.
+    onset_hint: El Niño and La Niña events usually start to develop between May and July and last eight to twelve months, so "typical" under "Event lasts" fades a June event by the following spring.
     default_start_month: 6
+    typical_duration_months: [8, 12]
     sources: [noaa_climate_gov_enso, trenberth_1997]
 
   - id: iod
@@ -78,6 +79,7 @@ nodes:
       Niño, which makes their separate effects hard to untangle.
     onset_hint: Indian Ocean Dipole events usually start to develop between May and July and are over by December.
     default_start_month: 6
+    typical_duration_months: [4, 6]
     phases:
       - id: positive
         value: 1
@@ -125,11 +127,13 @@ nodes:
       phase) the westerlies slacken, storms head for the Mediterranean, and
       cold air spills from the Arctic over Europe and the eastern United
       States. It matters mostly in winter. Unlike ENSO it is a pattern of
-      the atmosphere alone, so it can flip within a week; the map holds one
-      phase for the whole timeline, which is a simplification of a winter
-      that leans one way on average.
-    onset_hint: The North Atlantic Oscillation matters mostly in winter; start in December to see a winter that leans one way.
+      the atmosphere alone, so it can flip within a week. A "phase" on this
+      map is a winter that leans one way on average; "Event lasts" sets how
+      many months it is held, and its typical one to three months is one
+      winter's lean.
+    onset_hint: The North Atlantic Oscillation matters mostly in winter; start in December to see a winter that leans one way. A phase here is a winter's average, so its typical length under "Event lasts" is one to three months.
     default_start_month: 12
+    typical_duration_months: [1, 3]
     phases:
       - id: positive
         value: 1
@@ -182,11 +186,14 @@ nodes:
       Australia, New Zealand, southern South America and South Africa. It
       matters in every season, but what it does differs by season. Like the
       North Atlantic Oscillation it is a pattern of the atmosphere alone and
-      can flip within a week; the map holds one phase for a year, which is a
-      simplification of a season that leans one way. Since the 1970s it has
-      leaned positive in summer, largely because of the ozone hole.
-    onset_hint: The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones.
+      can flip within a week. A "phase" on this map is a season that leans
+      one way on average; "Event lasts" sets how many months it is held,
+      and its typical one to three months is one season's lean. Since the
+      1970s it has leaned positive in summer, largely because of the ozone
+      hole.
+    onset_hint: The Southern Annular Mode swings within weeks and matters in every season; start in June to see its winter rain effects first, or in November for the summer ones. A phase here is a season's average, so its typical length under "Event lasts" is one to three months.
     default_start_month: 6
+    typical_duration_months: [1, 3]
     phases:
       - id: positive
         value: 1
@@ -245,8 +252,9 @@ nodes:
       cannot show is the PDO's better-known role: making ENSO's effects on
       North America and Australia stronger in some decades and weaker in
       others.
-    onset_hint: The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase; start in November to see its winter effects first.
+    onset_hint: The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase and "Event lasts" is best left at the whole year; start in November to see its winter effects first.
     default_start_month: 11
+    typical_duration_months: [12, 12]
     phases:
       - id: positive
         value: 1
@@ -300,8 +308,9 @@ nodes:
       or pollution haze and volcanic dust changing the sunlight the ocean
       receives, or the atmosphere's own noise soaked up by the sea. The
       map shows one year inside a phase.
-    onset_hint: The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase; start in June to see the summer and hurricane-season effects first.
+    onset_hint: The Atlantic Multidecadal Oscillation holds a phase for decades, so the year shown is one year inside such a phase and "Event lasts" is best left at the whole year; start in June to see the summer and hurricane-season effects first.
     default_start_month: 6
+    typical_duration_months: [12, 12]
     phases:
       - id: positive
         value: 1
@@ -352,10 +361,12 @@ nodes:
       shorter than the Pacific's, and unlike El Niño they peak in the
       northern summer, right in the West African monsoon season. Since the
       1970s a summer Atlantic Niño has tended to be followed by a Pacific
-      La Niña the next winter. The map holds the phase for a year; a real
-      event has usually faded by autumn.
+      La Niña the next winter. A real event has usually faded by autumn:
+      set "Event lasts" to its typical three to five months to watch it
+      end, and to see which of its effects the map then never delivers.
     onset_hint: An Atlantic Niño builds in spring and peaks in June–August, then fades by autumn; start in May to watch the Gulf of Guinea coast's rainy season and the Sahel's summer rains.
     default_start_month: 5
+    typical_duration_months: [3, 5]
     phases:
       - id: warm
         value: 1
@@ -411,6 +422,7 @@ nodes:
       looking at the second half of an El Niño story.
     onset_hint: The basin warms a season after an El Niño begins and peaks in February–April; start in February to watch the East Asian summer that follows.
     default_start_month: 2
+    typical_duration_months: [4, 7]
     phases:
       - id: warm
         value: 1
@@ -473,6 +485,7 @@ nodes:
       thin to draw.
     onset_hint: The Atlantic meridional mode peaks in March–May; start in March to watch the Nordeste's rainy season, then the hurricane season and the Amazon's dry season that follow.
     default_start_month: 3
+    typical_duration_months: [3, 5]
     phases:
       - id: positive
         value: 1
@@ -535,6 +548,7 @@ nodes:
       the Pacific twin of the Atlantic Meridional Mode.
     onset_hint: The Pacific meridional mode peaks in March–May; start in March and switch the chain on to watch the Pacific tip toward El Niño by autumn.
     default_start_month: 3
+    typical_duration_months: [3, 6]
     phases:
       - id: positive
         value: 1
@@ -591,13 +605,15 @@ nodes:
       weaker. Whether the eruption also nudges the Pacific toward El Niño
       is genuinely unsettled, and that arrow is dotted. This is the one
       driver on the map that is an event rather than a swing: it has no
-      opposite phase, and the map holds it on for twelve months as a
-      stand-in for a cloud that fades over two years, so the second cool
-      year is not shown. A big eruption far from the tropics (Iceland,
+      opposite phase, and the year shown is the first of the two or three
+      the haze lasts, so its typical length under "Event lasts" is the
+      whole year and the second cool year is not shown. A big eruption far
+      from the tropics (Iceland,
       Alaska) spreads its haze over one hemisphere only, behaves
       differently, and is not on this map.
     onset_hint: Any month; Pinatubo erupted in June 1991, and the season of an eruption changes what the first year looks like.
     default_start_month: 6
+    typical_duration_months: [12, 12]
     phases:
       - id: eruption
         value: -1
@@ -610,10 +626,10 @@ nodes:
           summer, and perhaps a nudge toward El Niño. Pinatubo in June
           1991 is the textbook case: about twenty million tonnes of
           sulphur dioxide, a haze that circled the globe in three weeks,
-          and a world half a degree cooler by the following summer. Note
-          that the map keeps the eruption on for the whole year shown; in
-          reality the haze thins steadily and its effects fade over two to
-          three years.
+          and a world half a degree cooler by the following summer. The
+          haze thins steadily and its effects fade over two to three
+          years, longer than the year shown, so the eruption stays on for
+          the whole timeline.
       - id: neutral
         value: 0
         label: No eruption
@@ -668,6 +684,7 @@ nodes:
       usually is.
     onset_hint: The map draws the QBO's winter effects; start in November, when the phase that will shape the coming winter is usually set, and switch the chain on to watch the NAO's own map follow one tier down.
     default_start_month: 11
+    typical_duration_months: [10, 12]
     phases:
       - id: westerly
         value: 1
@@ -753,6 +770,7 @@ nodes:
       is not evidence that they add up.
     onset_hint: The ice is read in October and November; start in October and switch the chain on to see the pushed NAO's own winter map, every arrow of it dotted.
     default_start_month: 10
+    typical_duration_months: [5, 6]
     phases:
       - id: high
         value: 1
@@ -829,6 +847,7 @@ nodes:
       add up.
     onset_hint: The snow is read in October; start there and switch the chain on to see the pushed NAO's own winter map follow, every arrow dotted.
     default_start_month: 10
+    typical_duration_months: [5, 6]
     phases:
       - id: high
         value: 1

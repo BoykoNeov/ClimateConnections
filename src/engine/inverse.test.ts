@@ -7,11 +7,11 @@ function graphWith(links: Partial<Link>[]): Graph {
   return {
     nodes: [
       {
-        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: '', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: '', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'warm', label: 'Warm', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'cool', label: 'Cool', color: '#000000', summary: '', value: -1 }],
       },
       {
-        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: '', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: '', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'up', label: 'Up', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'down', label: 'Down', color: '#000000', summary: '', value: -1 }],
       },
       { id: 'b', name: 'Beta place', kind: 'outcome', axis: 'wet_dry', labels: { plus: '', zero: '', minus: '' }, global: false, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [] },

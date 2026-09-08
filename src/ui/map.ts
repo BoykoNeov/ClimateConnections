@@ -169,7 +169,7 @@ export class MapView {
 
   private markerId(node: GraphNode, value: Value, kind: ArrowDatum['kind']): string {
     if (kind === 'ghost') return 'ghost';
-    if (value === 0) return 'neutral';
+    if (kind === 'faded' || value === 0) return 'neutral';
     if (node.kind === 'driver') {
       const phase = phaseForValue(node, value);
       return phase ? `phase-${node.id}-${phase.id}` : 'neutral';
@@ -316,6 +316,8 @@ export class MapView {
 
     // ---- arrows: one per link the engine reports this month, drawn from the
     // driver that fires it (the scenario driver, or a driver it has pushed).
+    // A faded link (M32: the event has ended) is drawn like a pending one
+    // but grey, with a grey arrowhead.
     const arrows: ArrowDatum[] = [];
     for (const [lid, ls] of Object.entries(month.links)) {
       const link = this.linkById.get(lid);
@@ -323,7 +325,7 @@ export class MapView {
       const from = this.nodeById.get(link.from);
       const target = this.nodeById.get(link.to);
       if (!from || !target) continue;
-      const color = ls.status === 'ghost' ? '#c7c9cf' : stateColor(target, link.effect);
+      const color = ls.status === 'ghost' ? '#c7c9cf' : ls.status === 'faded' ? NEUTRAL : stateColor(target, link.effect);
       arrows.push({ link, from, target, kind: ls.status, confidence: ls.confidence, color, marker: this.markerId(target, link.effect, ls.status), spread: 0 });
     }
     const merged = this.drawArrows(arrows, '');
@@ -358,6 +360,9 @@ export class MapView {
           else cls.push('inactive');
           if (st.conflicting) cls.push('conflicting');
         }
+        // Only faded links reach it (M32): drawn as if nothing did, the class
+        // is for the card and for checks.
+        if (st.fadedLinkIds.length > 0 && st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) cls.push('faded');
         if (opts.selectedNodeId === d.id) cls.push('selected');
         if (opts.focusNodeId === d.id) cls.push('focus');
         if (opts.differs?.has(d.id)) cls.push('differs');

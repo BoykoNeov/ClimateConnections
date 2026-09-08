@@ -653,6 +653,17 @@ rules are not changed. Each keeps three-level states and fire-once.
 
 ### M32 — Phase duration
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§4 rule 9 and §10 under M32. Two readings of the text below, each with its
+reason there: "typical (N months)" is the middle of the driver's range
+rounded up (ENSO 10, the IOD 5, the NAO 2), since the text does not say
+which end to read; and `typical_duration_months` is capped at 12 (the PDO,
+AMO and the eruption say [12, 12] and their hints say the real years in
+words), so the field never promises more than the year shown can draw. The
+Barents–Kara ice and the October snow, not listed below, got [5, 6]: the
+autumn reading and the winter it shapes. The 1998 Yangtze story now holds
+the basin eight months, the first story to use `hold_months`.
+
 **Why it does not fit.** A driver holds its phase for the whole horizon.
 Real El Niños fade by the following spring; an Atlantic Niño lasts three
 to five months; a volcanic cloud (M26) thins over two years. Four driver

@@ -37,6 +37,11 @@ export interface DriverNode extends NodeBase {
   onset_hint: string;
   /** 1–12; calendar month the start-month control jumps to when this driver is picked */
   default_start_month: number;
+  /** [min, max] months a real event of this driver typically lasts (M32),
+   *  each 1–12; the "Event lasts" control offers the middle of the range
+   *  as "typical". A driver that really lasts longer than a year (the PDO,
+   *  the AMO) says [12, 12] and explains itself in `onset_hint`. */
+  typical_duration_months: [number, number];
   phases: Phase[];
 }
 
@@ -100,6 +105,12 @@ export interface Story {
    *  is read backwards from `start_month`, so the driver is already in its
    *  phase when the story's year begins. Needs `second_driver`. */
   second_starts_before?: boolean;
+  /** how many months (1–12) the main driver holds its phase (M32); omitted =
+   *  the whole year shown */
+  hold_months?: number;
+  /** the same for the second driver, counted from its own onset. Needs
+   *  `second_driver`. */
+  second_hold_months?: number;
   steps: StoryStep[];
 }
 
@@ -127,6 +138,11 @@ export interface ScenarioDriver {
    *  already in its phase at month 0 and its links count their lag from
    *  that earlier onset. */
   startsBefore?: boolean;
+  /** how many months (1–12) the driver holds its phase from its onset
+   *  (M32, rule 9). From month index `onset + holdMonths` it holds no phase
+   *  and its links are reported `faded` instead of applied or pending.
+   *  Omitted = the whole horizon, the pre-M32 behaviour exactly. */
+  holdMonths?: number;
 }
 
 export interface Scenario {
@@ -135,6 +151,9 @@ export interface Scenario {
   /** 1–12; calendar month of month index 0 */
   startMonth: number;
   horizonMonths: number;
+  /** how many months (1–12) the main driver holds its phase (M32, rule 9);
+   *  omitted = the whole horizon. See `ScenarioDriver.holdMonths`. */
+  holdMonths?: number;
   /** a second driver chosen by hand (M11). It enters its phase at month 0
    *  like the first, or in its own `startMonth` (M12), fires its own links
    *  at the first hop, and is never pushed by a link, not even before it
@@ -149,10 +168,13 @@ export interface Scenario {
   minConfidence?: Confidence;
 }
 
-export type LinkStatus = 'applied' | 'pending' | 'ghost';
+export type LinkStatus = 'applied' | 'pending' | 'ghost' | 'faded';
 
 /** What happened to one link in one month (M10). Only links that are past
- *  their minimum lag from the onset of their source driver's phase appear. */
+ *  their minimum lag from the onset of their source driver's phase appear,
+ *  except after a chosen driver's phase has ended (M32): from then on every
+ *  link of that phase is reported `faded` (or `ghost` if the confidence
+ *  filter leaves it out), whether or not its lag had run. */
 export interface LinkState {
   status: LinkStatus;
   /** the link's confidence after the per-hop downgrade; the line style to draw */
@@ -171,6 +193,10 @@ export interface NodeState {
   viaLinkIds: string[];
   /** links past their minimum lag but out of season this month */
   pendingLinkIds: string[];
+  /** links from a chosen driver whose phase has ended (M32): no longer
+   *  applied, or never arrived because the event ended before their lag
+   *  had run. They apply nothing. */
+  fadedLinkIds: string[];
   inSeason: boolean;
   conflicting: boolean;
 }

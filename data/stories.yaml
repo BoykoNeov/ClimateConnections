@@ -1053,13 +1053,16 @@ stories:
       1998 and still warm into the summer. This story follows that warmth:
       the year shown begins in February 1998 with the basin in its warm
       phase and the chain on, so the map can show the basin nudging the
-      Pacific toward the La Niña that followed. The El Niño itself is not
-      set as a second driver, because the map would hold it through a
-      summer in which it had already ended.
+      Pacific toward the La Niña that followed. The basin is set to last
+      eight months, about as long as the real warmth did, so it fades in
+      October. The El Niño itself is not set as a second driver: a driver
+      chosen by hand is never pushed, and the point of the story is the
+      push.
     driver: indian_ocean_basin
     phase: warm
     start_month: 2
     start_year: 1998
+    hold_months: 8
     steps:
       - month: 0
         focus: indian_ocean_basin
@@ -1127,10 +1130,13 @@ stories:
       - month: 12
         focus: indian_ocean_basin
         text: >
-          A year on, in February 1999, the map still holds the basin warm.
-          The real warmth had faded by the autumn of 1998, as it usually
-          does; the map's twelve-month hold is a simplification. Two more
-          cautions travel with this driver. The basin mode is mostly the
+          A year on, in February 1999, the basin's marker has been grey
+          since October: this story sets the event to last eight months,
+          about as long as the real warmth did, and from then on its
+          arrows are drawn faded and apply nothing. Set "Event lasts" to
+          the whole year to see what the map would claim if it held the
+          basin warm through the winter. Two more cautions travel with
+          this driver. The basin mode is mostly the
           echo of an El Niño, not an independent force, so choosing it
           alone is a way of looking at the second half of an El Niño
           story. And the 1998 flood was not only the weather's doing: the

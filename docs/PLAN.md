@@ -158,6 +158,9 @@ A list of nodes under a top-level `nodes:` key. Each node:
   # drivers only:
   onset_hint: ...              # one sentence under the start-month control (M8)
   default_start_month: 6       # month the start-month control jumps to for this driver (M9)
+  typical_duration_months: [8, 12]   # how long a real event usually lasts, each 1–12 (M32);
+                               #   "Event lasts: typical" offers the middle of the range,
+                               #   rounded up; [12, 12] for a driver that really lasts years
   phases:
     - id: el_nino
       label: El Niño
@@ -187,8 +190,10 @@ A list of nodes under a top-level `nodes:` key. Each node:
 ```
 
 Rules:
-- `kind: driver` nodes must have `phases` and must not have `axis`/`labels`.
-  Phase values are unique within a driver and one phase has value 0.
+- `kind: driver` nodes must have `phases`, `onset_hint`,
+  `default_start_month` and `typical_duration_months` (M32) and must not
+  have `axis`/`labels`. Phase values are unique within a driver and one
+  phase has value 0.
 - `kind: outcome` nodes must have `axis` and `labels` and must not have `phases`.
 - `lat` in [-90, 90], `lon` in [-180, 180].
 - Ids are permanent. If a node needs renaming, change `name`, never `id`.
@@ -357,6 +362,43 @@ Semantics (implement exactly this; do not improvise):
      `onset + lag`. Everything else in rule 8 stands: never pushed, sum
      and clamp, one hop at full confidence. `startsBefore: false` is the
      M12 result exactly.
+9. Phase duration (M32). A chosen driver may carry `holdMonths` (an
+   integer 1–12; `Scenario.holdMonths` for the main driver,
+   `ScenarioDriver.holdMonths` for the second; the engine throws on any
+   other value). Omitted, the driver holds its phase to the end of the
+   horizon: the behaviour of rules 2 and 8 exactly.
+   - From month index `onset + holdMonths` (the *fade*, exported as
+     `chosenFade(scenario, driverId)`, null without a hold) the driver
+     holds no phase (value 0) and its links are not applied. A link
+     already applied stops being applied; a link whose lag had not run by
+     then never applies. In every month at or after the fade, every link
+     of the ended phase is reported in `MonthState.links` with status
+     `faded` (confidence as rated, depth 1) and listed in the target's
+     `fadedLinkIds`, whether or not its lag had run, so the map can draw
+     it and the card can say which of the two happened. A link the
+     confidence filter leaves out stays a `ghost`. A link into a chosen
+     driver is skipped and not reported, as before the fade.
+   - Onsets are unchanged: the fade does not move anything. A driver
+     pushed by the ended phase keeps its onset but, as rule 6 says, holds
+     its phase only in months where the pushing link is applied, so the
+     chain is cut at the same month: the pushed driver has no phase and
+     its own links are not reported at all (not faded, not pending).
+   - A hold of 12 from onset 0 fades the driver at month 12, the last
+     month shown and the same calendar month a year on. A second driver
+     that began before the first (M15) counts its hold from its negative
+     onset, so its fade may be 0 or negative: it then holds no phase in
+     any month shown and its links are faded from month 0.
+   - Nothing new happens after a fade. The driver is not pushed back into
+     a phase by its own fade and stays pinned (never pushed) to the end.
+     Sums, clamps, conflicts, tiers, the season gate and `minConfidence`
+     are unchanged. A fade *into the opposite phase* is not a hold; it
+     is a push, drawn through the chain (M20) or as two chosen drivers.
+   - Decided 2026-09-08 (`docs/PLAN_V3.md` M32): a link with
+     `lag_months[0]` at or beyond the hold does **not** fire. The
+     physical case, an effect carried by the ocean after the atmospheric
+     phase has ended, would be a hidden memory the student cannot see;
+     the honest way to show it is the chain, where the memory is a driver
+     on the map. The card of such a link and the control's hint say so.
 
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
@@ -422,6 +464,9 @@ and lowest-confidence selection.
 
 ### 5.4 Timeline
 - Horizontal scrubber, 0–12, labeled with calendar month names.
+- A small mark (M32) on the tick where a chosen driver's phase ends, with
+  a tooltip naming the driver; none when the hold is the whole year or
+  the fade falls before month 0.
 - Play/pause button; play advances one month per ~1.2 s.
 - Current month shown large in the corner of the map ("Month 4 — October").
 - The season dial in the controls panel (section 5.6, M13) is the
@@ -457,6 +502,32 @@ phase description and the timescale.
 - Start month selector (default: June, because El Niño events typically
   begin to develop in boreal late spring/summer). Its heading reads "Event
   begins in", or "First driver begins in" while a second driver is chosen.
+- "Event lasts" (M32; "First driver lasts" with a second driver), under
+  the start month: "The whole year shown (default)", "Typical for this
+  driver (N months)" read from `typical_duration_months` (the middle of
+  the range, rounded up, at most 12), then 1–12 months. The hint gives
+  the driver's typical range, the month and index the phase ends in
+  ("Fades in December, month 6"), and always the one sentence: an effect
+  that needs longer to arrive than the event lasts never arrives on this
+  map; in reality the ocean can carry an effect past the end of an event.
+  Picking a driver resets the hold to the whole year. The second driver's
+  box gets its own "Second driver lasts" picker and hint, counted from
+  its own onset ("Over before the year shown begins" when the fade falls
+  at or before month 0). From the fade the driver's marker takes the
+  neutral style of a driver out of play (grey, unlabelled unless
+  selected), its arrows are drawn like pending ones but grey with a grey
+  arrowhead, a place only faded links reach is hollow, the pane title
+  says "for 6 months", the print caption says how long and that faded
+  arrows apply nothing, and the cards say "Faded: held El Niño from June
+  for 6 months; no phase since December (month 6)", per link "Faded: the
+  event has ended" with the ending month in the timing line, or "Never
+  arrives: the event ended first" with "this effect needs N months to
+  arrive and the event was set to last M, so on this map it never
+  arrives; in reality the ocean can carry such an effect past the end of
+  the event". A driver whose push came from the ended phase says "No
+  phase: the push toward … has faded". The season dial is unchanged.
+  Compare mode holds per side. A story sets the holds from
+  `hold_months` / `second_hold_months`.
 - Season dial (M13), under the start month: the calendar year as a circle
   of twelve month sectors, January at the top, clockwise. The month on
   screen is filled and follows the timeline; a dark triangle outside the
@@ -1827,6 +1898,80 @@ drivers stays in one place.
   window), M31 (a second language) or the engine set from M32, each with
   its own sign-off.
 
+### M32 — Phase duration (version 3, signed off 2026-09-08)
+- The first engine extension of version 3, taken at the user's "work on
+  M32". Section 4 rule 9 as written above: `Scenario.holdMonths` and
+  `ScenarioDriver.holdMonths` (1–12), `chosenFade`, the `faded` link
+  status and `NodeState.fadedLinkIds`. No hold is the pre-M32 timeline
+  exactly (a regression test runs every shipped story without its hold
+  and asserts no faded link and every chosen driver in phase from its
+  onset through month 12). The 2026-09-08 decision on ocean memory (a lag
+  at or beyond the hold never fires; the chain is the honest way to show
+  memory) is in the rule and in the card and hint text. Engine tests in
+  `src/engine/propagate.test.ts` (eleven: no hold, the fade with an
+  applied link faded, a long lag never arriving, a pending link faded
+  rather than pending in its season, a hold of 12 fading at month 12,
+  the chain cut with the pushed driver's links not reported, a faded
+  chosen driver still never pushed, a ghost staying a ghost, the second
+  driver's hold from its own onset, from a negative onset and over
+  before month 0, holds outside 1–12 refused); `linksInPlay` ignores a
+  link only ever faded (season test); the 1998 scenario with the El Niño
+  held twelve months from June 1997 shows no conflict at the typhoons
+  (acceptance test).
+- Data: every driver carries `typical_duration_months` (the validator
+  errors without it): ENSO [8, 12], the IOD [4, 6], the NAO and SAM
+  [1, 3] with the onset hint saying a phase here is a winter's or a
+  season's average, the PDO, AMO and tropical eruption [12, 12] with
+  hints saying they really last years, the Atlantic Niño [3, 5], the
+  basin mode [4, 7], the AMM [3, 5], the PMM [3, 6], the QBO [10, 12],
+  the Barents–Kara ice and the October snow [5, 6] (the autumn reading
+  and the winter it shapes). Stories may carry `hold_months` and
+  `second_hold_months`; the validator's copy of the engine rule honours
+  them. The four card texts that apologised for the twelve-month hold
+  (NAO, SAM, Atlantic Niño, the eruption's summary and phase) now
+  explain the control instead. The 1998 Yangtze story holds the basin
+  eight months, so it fades in October as the real warmth did; its intro
+  and last step say so and the last step invites the student to set the
+  whole year and see the difference.
+- UI as §5.4 and §5.6 above: the "Event lasts" / "Second driver lasts"
+  pickers and hints (`ControlsView.makeHoldSelect` / `reflectHold`,
+  `typicalHold`, `durationWords`), `TimelineView.setFades`, faded arrows
+  in `MapView.render` (grey stroke, neutral arrowhead, `.link.faded`),
+  the `faded` marker class, the card's faded blocks and driver states,
+  the pane title, the print caption; `ScenarioSettings.hold` and
+  `second.hold`. Departure from `docs/PLAN_V3.md`'s text: "typical (N
+  months)" is the middle of the range rounded up (ENSO 10, the IOD 5,
+  the NAO 2), since the plan did not say which end to read, and the
+  data range is capped at 12 rather than carrying the real years of the
+  PDO and AMO, which the hints say in words.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m32.mjs` (52
+  checks): plain load unchanged (the NAO pushed in January); El Niño from
+  June held six months (the hint, the tick mark and tooltip, the print
+  caption, the marker grey at December and unlabelled unless selected,
+  Indonesia hollow with class faded and its arrow grey with a neutral
+  arrowhead at opacity 0.22, the Nordeste arrow reported though its lag
+  never ran, every arrow faded, the ENSO card, the Indonesia card's
+  "Faded: the event has ended" line, the Nordeste card's "Never arrives"
+  with the ocean sentence, the NAO grey with class faded in January with
+  its own arrows gone and its card saying the push has faded); "typical"
+  reading 10 months and April; 12 months fading at month 12; a driver
+  pick resetting the hold; the NAO's and PDO's typical text; the second
+  driver's own hold from September (December, month 6), since March held
+  two months (over before the year shown, no tick, the card) and held
+  five (August, month 2); compare mode per side with the differing ring
+  and the card's "faded: the event has ended"; the Yangtze story (hold 8,
+  the tick at October, the grey basin and the card at the last step);
+  print. The `#controls select` order is now 0 story, 1 region, 2
+  driver, 3 second driver, 4 second month, 5 second hold, 6 month, 7
+  hold, 8 filter.
+- Not in M32: a fade into the opposite phase (a push; M20 or two chosen
+  drivers); a hold for a pushed driver (rule 6 already ties it to the
+  pushing link); a hold longer than the year shown; ocean memory past
+  the fade (the chain). Next in `docs/PLAN_V3.md`: M33 (any number of
+  chosen drivers) then M34 (a table of real years, which reads
+  `hold_months` from its rows), or the UI items M29–M31, each with its
+  own sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -2021,7 +2166,8 @@ writing mechanism text):
   the Pacific Meridional Mode; M26: a large tropical volcanic eruption;
   M23: the Quasi-Biennial Oscillation; M24: the Barents–Kara autumn sea
   ice; M25: the Eurasian October snow); region-first navigation (done,
-  M28: "By region", every driver that reaches a place);
+  M28: "By region", every driver that reaches a place); phase duration
+  (done, M32: "Event lasts", the first engine extension of version 3);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

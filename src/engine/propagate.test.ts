@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { arrivalMonth, calendarMonth, chosenDrivers, chosenOnset, downgrade, propagate } from './propagate';
+import { arrivalMonth, calendarMonth, chosenDrivers, chosenFade, chosenOnset, downgrade, propagate } from './propagate';
 import type { Graph, Link, Scenario } from '../types';
 
 function graphWith(links: Partial<Link>[]): Graph {
   return {
     nodes: [
       {
-        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'drv', name: 'Driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'warm', label: 'Warm', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'cool', label: 'Cool', color: '#000000', summary: '', value: -1 }],
       },
       {
-        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
+        id: 'd2', name: 'Second driver', kind: 'driver', onset_hint: 'Events usually begin around mid-year.', default_start_month: 6, typical_duration_months: [4, 8], lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [],
         phases: [{ id: 'up', label: 'Up', color: '#000000', summary: '', value: 1 }, { id: 'mid', label: 'Mid', color: '#000000', summary: '', value: 0 }, { id: 'down', label: 'Down', color: '#000000', summary: '', value: -1 }],
       },
       { id: 'a', name: 'A', kind: 'outcome', axis: 'wet_dry', labels: { plus: '', zero: '', minus: '' }, global: false, lat: 0, lon: 0, region: '', timescale: '', summary: '', sources: [] },
@@ -512,5 +512,156 @@ describe('propagate: second driver that begins before the first', () => {
     expect(long.months[0].links.y).toBeUndefined();
     expect(long.months[0].nodes.b.value).toBe(0);
     expect(long.months[1].nodes.b.value).toBe(-1);
+  });
+});
+
+// ---------------------------------------------------------------- M32: phase duration
+// A chosen driver may hold its phase for `holdMonths` (1–12) from its
+// onset. From `onset + holdMonths` it holds no phase and every link of that
+// phase is reported faded: one that had been applied stops, one whose lag
+// had not run never arrives. Nothing else changes; no hold is today's
+// behaviour exactly.
+describe('propagate: phase duration', () => {
+  const held: Scenario = { ...base, holdMonths: 6 };
+
+  it('no hold: the driver holds its phase through the last month and nothing is ever faded', () => {
+    const t = propagate(graphWith([{ lag_months: [0, 0] }, { id: 'late', to: 'b', lag_months: [11, 11] }]), base);
+    expect(chosenFade(base, 'drv')).toBeNull();
+    for (const m of t.months) {
+      expect(m.nodes.drv.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.a.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.a.fadedLinkIds).toEqual([]);
+      for (const ls of Object.values(m.links)) expect(ls.status).not.toBe('faded');
+    }
+    expect(t.months[12].nodes.b.value).toBe(1);
+  });
+
+  it('holds the phase for holdMonths from month 0, then no phase, and an applied link is reported faded', () => {
+    const t = propagate(graphWith([{ lag_months: [0, 0] }]), held);
+    expect(chosenFade(held, 'drv')).toBe(6);
+    for (const m of t.months.slice(0, 6)) {
+      expect(m.nodes.drv.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.a.value, `month ${m.index}`).toBe(1);
+      expect(m.links.l0).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    }
+    for (const m of t.months.slice(6)) {
+      expect(m.nodes.drv.value, `month ${m.index}`).toBe(0);
+      expect(m.nodes.a.value, `month ${m.index}`).toBe(0);
+      expect(m.nodes.a.viaLinkIds).toEqual([]);
+      expect(m.nodes.a.pendingLinkIds).toEqual([]);
+      expect(m.nodes.a.fadedLinkIds).toEqual(['l0']);
+      expect(m.nodes.a.confidence).toBeNull();
+      expect(m.links.l0).toEqual({ status: 'faded', confidence: 'established', depth: 1 });
+    }
+    expect(chosenDrivers(held)).toEqual([{ driverId: 'drv', phaseId: 'warm', holdMonths: 6 }]);
+  });
+
+  it('a link whose lag has not run by the fade never arrives: not reported before, faded from the fade on', () => {
+    const t = propagate(graphWith([{ lag_months: [8, 10] }]), held);
+    for (const m of t.months.slice(0, 6)) expect(m.links.l0, `month ${m.index}`).toBeUndefined();
+    for (const m of t.months.slice(6)) {
+      expect(m.links.l0?.status, `month ${m.index}`).toBe('faded');
+      expect(m.nodes.a.value).toBe(0);
+    }
+    expect(arrivalMonth(t, 'l0', 'a')).toBeNull();
+  });
+
+  it('a link that was pending through the hold is faded after it, not pending', () => {
+    // June start, season January only: pending from month 0, the hold ends at month 3 (September).
+    const t = propagate(graphWith([{ season: [1] }]), { ...base, holdMonths: 3 });
+    for (const m of t.months.slice(0, 3)) expect(m.nodes.a.pendingLinkIds, `month ${m.index}`).toEqual(['l0']);
+    for (const m of t.months.slice(3)) {
+      expect(m.nodes.a.pendingLinkIds, `month ${m.index}`).toEqual([]);
+      expect(m.nodes.a.fadedLinkIds).toEqual(['l0']);
+    }
+    // January (month 7) is in season, but the event is over: still faded.
+    expect(t.months[7].links.l0?.status).toBe('faded');
+    expect(t.months[7].nodes.a.value).toBe(0);
+  });
+
+  it('a hold of 12 fades the driver in the last month shown, the same calendar month a year on', () => {
+    const t = propagate(graphWith([{ lag_months: [0, 0] }]), { ...base, holdMonths: 12 });
+    expect(t.months[11].nodes.drv.value).toBe(1);
+    expect(t.months[11].nodes.a.value).toBe(1);
+    expect(t.months[12].nodes.drv.value).toBe(0);
+    expect(t.months[12].links.l0?.status).toBe('faded');
+  });
+
+  it('cuts the chain at the fade: the pushed driver loses its phase and its links are not reported at all', () => {
+    const t = propagate(graphWith(chain), { ...deep, holdMonths: 5 });
+    // Pushed at month 2, its own link a month later.
+    expect(t.months[2].nodes.d2.value).toBe(1);
+    expect(t.months[3].nodes.c.value).toBe(-1);
+    expect(t.months[4].nodes.c.value).toBe(-1);
+    for (const m of t.months.slice(5)) {
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(0);
+      expect(m.nodes.d2.viaLinkIds).toEqual([]);
+      expect(m.nodes.d2.fadedLinkIds).toEqual(['push']);
+      expect(m.links.push?.status).toBe('faded');
+      expect(m.links.second, `month ${m.index}`).toBeUndefined();
+      expect(m.nodes.c.value).toBe(0);
+      expect(m.nodes.c.fadedLinkIds).toEqual([]);
+    }
+  });
+
+  it('a chosen driver is still never pushed after its phase has ended, and the link is still not reported', () => {
+    const t = propagate(graphWith([
+      { id: 'back', from: 'd2', when: 'up', to: 'drv', effect: -1, lag_months: [0, 0] },
+    ]), { ...base, holdMonths: 2, secondary: { driverId: 'd2', phaseId: 'up' } });
+    for (const m of t.months) {
+      expect(m.nodes.drv.value, `month ${m.index}`).toBe(m.index < 2 ? 1 : 0);
+      expect(m.nodes.drv.viaLinkIds).toEqual([]);
+      expect(m.nodes.drv.fadedLinkIds).toEqual([]);
+      expect(m.links.back).toBeUndefined();
+    }
+  });
+
+  it('a link the confidence filter leaves out stays a ghost after the fade', () => {
+    const t = propagate(graphWith([{ confidence: 'contested' }]), { ...base, holdMonths: 2, minConfidence: 'probable' });
+    expect(t.months[0].links.l0?.status).toBe('ghost');
+    expect(t.months[5].links.l0?.status).toBe('ghost');
+    expect(t.months[5].nodes.a.fadedLinkIds).toEqual([]);
+  });
+
+  it("counts the second driver's hold from its own onset", () => {
+    // September start month from a June scenario: onset 3, hold 2: in phase at months 3 and 4 only.
+    const s: Scenario = { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 9, holdMonths: 2 } };
+    const t = propagate(graphWith([{ id: 'second', from: 'd2', when: 'up', to: 'b', effect: 1, lag_months: [0, 0] }]), s);
+    expect(chosenFade(s, 'd2')).toBe(5);
+    expect(chosenFade(s, 'drv')).toBeNull();
+    for (const m of t.months) {
+      const on = m.index === 3 || m.index === 4;
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(on ? 1 : 0);
+      expect(m.nodes.b.value, `month ${m.index}`).toBe(on ? 1 : 0);
+      expect(m.links.second?.status, `month ${m.index}`).toBe(m.index < 3 ? undefined : on ? 'applied' : 'faded');
+      expect(m.nodes.drv.value).toBe(1);
+    }
+    expect(chosenDrivers(s)[1]).toEqual({ driverId: 'd2', phaseId: 'up', startMonth: 9, holdMonths: 2 });
+  });
+
+  it('a second driver that began before the first fades hold months after its earlier onset, possibly before the year shown', () => {
+    // Onset -3 (March before a June start), hold 5: in phase at months 0 and 1, faded from month 2.
+    const s: Scenario = { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true, holdMonths: 5 } };
+    const t = propagate(graphWith([{ id: 'second', from: 'd2', when: 'up', to: 'b', effect: 1, lag_months: [0, 0] }]), s);
+    expect(chosenFade(s, 'd2')).toBe(2);
+    expect(t.months[0].nodes.d2.value).toBe(1);
+    expect(t.months[1].nodes.b.value).toBe(1);
+    expect(t.months[2].nodes.d2.value).toBe(0);
+    expect(t.months[2].links.second?.status).toBe('faded');
+    // Hold 3 from onset -3: over by month 0, never in phase in the year shown, every link faded from month 0.
+    const over: Scenario = { ...base, secondary: { driverId: 'd2', phaseId: 'up', startMonth: 3, startsBefore: true, holdMonths: 3 } };
+    const t2 = propagate(graphWith([{ id: 'second', from: 'd2', when: 'up', to: 'b', effect: 1, lag_months: [0, 0] }]), over);
+    expect(chosenFade(over, 'd2')).toBe(0);
+    for (const m of t2.months) {
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(0);
+      expect(m.links.second?.status).toBe('faded');
+    }
+  });
+
+  it('refuses a hold outside 1–12', () => {
+    for (const bad of [0, 13, 2.5, -1]) {
+      expect(() => propagate(graphWith([]), { ...base, holdMonths: bad })).toThrow(/holdMonths/);
+      expect(() => propagate(graphWith([]), { ...base, secondary: { driverId: 'd2', phaseId: 'up', holdMonths: bad } })).toThrow(/holdMonths/);
+    }
   });
 });

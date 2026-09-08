@@ -45,4 +45,4 @@ export function differing(a: MonthState, b: MonthState): string[] {
   return Object.entries(compareMonth(a, b)).filter(([, v]) => v !== 'none' && v !== 'same').map(([id]) => id);
 }
 
-const EMPTY: NodeState = { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], inSeason: true, conflicting: false };
+const EMPTY: NodeState = { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], fadedLinkIds: [], inSeason: true, conflicting: false };

@@ -26,25 +26,49 @@ function clamp(n: number): Value {
 }
 
 function emptyState(): NodeState {
-  return { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], inSeason: false, conflicting: false };
+  return { value: 0, confidence: null, viaLinkIds: [], pendingLinkIds: [], fadedLinkIds: [], inSeason: false, conflicting: false };
+}
+
+function checkHold(hold: number | undefined, driverId: string): void {
+  if (hold === undefined) return;
+  if (!Number.isInteger(hold) || hold < 1 || hold > 12) throw new Error(`holdMonths for "${driverId}" must be an integer from 1 to 12, got ${hold}`);
 }
 
 /** The drivers whose phases the scenario fixes by hand: the main driver and,
  *  since M11, an optional second one. The main driver enters its phase at
- *  month 0; the second one at month 0 too, or in its own start month (M12). */
+ *  month 0; the second one at month 0 too, or in its own start month (M12).
+ *  Either may hold its phase for a set number of months (M32). */
 export function chosenDrivers(scenario: Scenario): ScenarioDriver[] {
-  const out: ScenarioDriver[] = [{ driverId: scenario.driverId, phaseId: scenario.phaseId }];
+  checkHold(scenario.holdMonths, scenario.driverId);
+  const main: ScenarioDriver = { driverId: scenario.driverId, phaseId: scenario.phaseId };
+  if (scenario.holdMonths !== undefined) main.holdMonths = scenario.holdMonths;
+  const out: ScenarioDriver[] = [main];
   if (scenario.secondary) {
     if (scenario.secondary.driverId === scenario.driverId) {
       throw new Error(`scenario chooses driver "${scenario.driverId}" twice`);
     }
-    const { driverId, phaseId, startMonth, startsBefore } = scenario.secondary;
+    const { driverId, phaseId, startMonth, startsBefore, holdMonths } = scenario.secondary;
+    checkHold(holdMonths, driverId);
     const d: ScenarioDriver = { driverId, phaseId };
     if (startMonth !== undefined) d.startMonth = startMonth;
     if (startsBefore) d.startsBefore = true;
+    if (holdMonths !== undefined) d.holdMonths = holdMonths;
     out.push(d);
   }
   return out;
+}
+
+/** Month index from which a chosen driver holds no phase any more (M32,
+ *  rule 9): its onset plus its `holdMonths`; null when it holds its phase to
+ *  the end of the horizon (no `holdMonths`). May be 0 or negative for a
+ *  second driver that began before the first (M15) and was over before the
+ *  year shown begins: it then holds no phase in any month shown. */
+export function chosenFade(scenario: Scenario, driverId: string): number | null {
+  const hold = driverId === scenario.driverId ? scenario.holdMonths
+    : scenario.secondary?.driverId === driverId ? scenario.secondary.holdMonths : undefined;
+  if (hold === undefined) return null;
+  checkHold(hold, driverId);
+  return chosenOnset(scenario, driverId) + hold;
 }
 
 /** Month index at which a chosen driver enters its phase: 0 for the main
@@ -111,7 +135,12 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     // Chosen drivers already in their phase this month. A second driver with
     // a later start month holds no phase before it: value 0, no links. One
     // that began before the first (negative onset) is in phase throughout.
-    const inPhase = chosen.filter((c) => index >= chosenOnset(scenario, c.driverId));
+    // A driver whose hold has run out (M32) holds no phase from its fade
+    // month on: value 0, and its links are reported faded below.
+    const inPhase = chosen.filter((c) => {
+      const fade = chosenFade(scenario, c.driverId);
+      return index >= chosenOnset(scenario, c.driverId) && (fade === null || index < fade);
+    });
     for (const c of inPhase) {
       const value = chosenValue.get(c.driverId);
       if (value !== undefined && nodes[c.driverId]) nodes[c.driverId].value = value;
@@ -119,10 +148,33 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
 
     // Drivers whose phase is already fixed this month. A link into one of them
     // is skipped: a chosen driver is never pushed (not by its own effects, not
-    // by the other chosen driver, and not before its own start month), and a
-    // driver set off at a shallower hop is not pushed again (loop guard).
+    // by the other chosen driver, not before its own start month and not
+    // after its phase has ended), and a driver set off at a shallower hop is
+    // not pushed again (loop guard).
     const settled = new Set<string>(chosen.map((c) => c.driverId));
     let frontier: Hop[] = inPhase.map((c) => ({ driverId: c.driverId, phaseId: c.phaseId, confidence: null }));
+
+    // Rule 9 (M32): once a chosen driver's phase has ended, every link of
+    // that phase is reported faded: one that had been applied stops being
+    // applied, one whose lag had not run by then never arrives. Nothing is
+    // applied, nothing is pushed, and the chain through this driver is cut
+    // at the same month because the pushing link is no longer applied. A
+    // link the confidence filter leaves out stays a ghost.
+    for (const c of chosen) {
+      const fade = chosenFade(scenario, c.driverId);
+      if (fade === null || index < fade) continue;
+      for (const link of linksFrom.get(`${c.driverId}|${c.phaseId}`) ?? []) {
+        if (settled.has(link.to)) continue; // loop guard: never reported, as before the fade
+        const target = nodes[link.to];
+        if (!target) continue;
+        if (CONFIDENCE_ORDER[link.confidence] < minLevel) {
+          links[link.id] = { status: 'ghost', confidence: link.confidence, depth: 1 };
+          continue;
+        }
+        target.fadedLinkIds.push(link.id);
+        links[link.id] = { status: 'faded', confidence: link.confidence, depth: 1 };
+      }
+    }
 
     // Sum of effects and sign bookkeeping per target for the conflict flag,
     // accumulated across hops: a first-hop push and a second-hop push on the

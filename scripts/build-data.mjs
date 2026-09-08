@@ -48,6 +48,9 @@ const DriverNode = NodeBase.extend({
   onset_hint: z.string().min(20),
   /** calendar month the start-month control jumps to when this driver is picked */
   default_start_month: Month,
+  /** [min, max] months a real event typically lasts (M32), each 1–12; the
+   *  "Event lasts" control offers the middle of the range as "typical" */
+  typical_duration_months: z.tuple([Month, Month]).refine(([a, b]) => a <= b, 'typical_duration_months[0] must be <= typical_duration_months[1]'),
   phases: z.array(Phase).min(2)
     .refine((ps) => new Set(ps.map((p) => p.value)).size === ps.length, 'two phases share the same value')
     .refine((ps) => ps.some((p) => p.value === 0), 'a driver needs a neutral phase (value 0)'),
@@ -110,11 +113,15 @@ const Story = z.object({
   /** the second driver began before the first (M15): second_start_month is read
    *  backwards from start_month, so the driver is already in its phase at month 0 */
   second_starts_before: z.boolean().optional(),
+  /** how many months (1–12) each chosen driver holds its phase (M32); omitted = the whole year shown */
+  hold_months: Month.optional(),
+  second_hold_months: Month.optional(),
   steps: z.array(StoryStep).min(3),
 }).strict()
   .refine((s) => (s.second_driver === undefined) === (s.second_phase === undefined), 'second_driver and second_phase go together')
   .refine((s) => s.second_start_month === undefined || s.second_driver !== undefined, 'second_start_month needs a second_driver')
-  .refine((s) => s.second_starts_before === undefined || s.second_driver !== undefined, 'second_starts_before needs a second_driver');
+  .refine((s) => s.second_starts_before === undefined || s.second_driver !== undefined, 'second_starts_before needs a second_driver')
+  .refine((s) => s.second_hold_months === undefined || s.second_driver !== undefined, 'second_hold_months needs a second_driver');
 
 const NodesFile = z.object({ nodes: z.array(Node).min(1) }).strict();
 const LinksFile = z.object({ links: z.array(Link).min(1), sources: z.array(Source).min(1) }).strict();
@@ -198,18 +205,24 @@ if (nodesFile && linksFile && storiesFile) {
   // same stories.
   const calendarMonth = (start, index) => ((start - 1 + index) % 12) + 1;
   const links = linksFile.links;
-  const appliedAt = (l, onsetIdx, m, start) =>
-    m >= onsetIdx + l.lag_months[0] && (l.season.length === 0 || l.season.includes(calendarMonth(start, m)));
-  /** The drivers a story fixes by hand: [driverId, phaseId, onset month index]
-   *  for the main one (onset 0) and, if any, the second (M11), which enters
-   *  its phase at month 0 or in its own start month (M12), read within the
-   *  twelve months shown, or backwards from the start (M15: a negative onset,
-   *  already in phase at month 0). */
+  /** A link from a driver that entered its phase at `onsetIdx` is applied at
+   *  month `m` if its lag has run, its season includes the month and (M32)
+   *  the driver's phase has not ended: `fade` is the month index it ends,
+   *  or null for the whole year. */
+  const appliedAt = (l, onsetIdx, m, start, fade = null) =>
+    m >= onsetIdx + l.lag_months[0] && (fade === null || m < fade) && (l.season.length === 0 || l.season.includes(calendarMonth(start, m)));
+  /** The drivers a story fixes by hand: [driverId, phaseId, onset month
+   *  index, fade month index or null] for the main one (onset 0) and, if
+   *  any, the second (M11), which enters its phase at month 0 or in its own
+   *  start month (M12), read within the twelve months shown, or backwards
+   *  from the start (M15: a negative onset, already in phase at month 0).
+   *  The fade (M32) is the onset plus the story's hold for that driver. */
   const chosenOf = (s) => {
-    const out = [[s.driver, s.phase, 0]];
+    const out = [[s.driver, s.phase, 0, s.hold_months === undefined ? null : s.hold_months]];
     if (s.second_driver) {
       const after = ((s.second_start_month ?? s.start_month) - s.start_month + 12) % 12;
-      out.push([s.second_driver, s.second_phase, s.second_starts_before ? after - 12 : after]);
+      const onset = s.second_starts_before ? after - 12 : after;
+      out.push([s.second_driver, s.second_phase, onset, s.second_hold_months === undefined ? null : onset + s.second_hold_months]);
     }
     return out;
   };
@@ -217,13 +230,13 @@ if (nodesFile && linksFile && storiesFile) {
   const pushedAt = (s, m) => {
     const out = [];
     const chosenIds = new Set(chosenOf(s).map(([d]) => d));
-    for (const [cd, cp, co] of chosenOf(s)) {
+    for (const [cd, cp, co, cf] of chosenOf(s)) {
       for (const l of links) {
         if (l.from !== cd || l.when !== cp) continue;
         const d = nodes.get(l.to);
-        if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, co, m, s.start_month)) continue;
+        if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, co, m, s.start_month, cf)) continue;
         let onsetIdx = co;
-        while (onsetIdx < m && !appliedAt(l, co, onsetIdx, s.start_month)) onsetIdx++;
+        while (onsetIdx < m && !appliedAt(l, co, onsetIdx, s.start_month, cf)) onsetIdx++;
         const phase = d.phases.find((p) => p.value === l.effect);
         if (phase) out.push([d.id, phase.id, onsetIdx]);
       }
@@ -231,7 +244,7 @@ if (nodesFile && linksFile && storiesFile) {
     return out;
   };
   const affectedAt = (s, focusId, m) => {
-    if (chosenOf(s).some(([cd, cp, co]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, co, m, s.start_month)))) return true;
+    if (chosenOf(s).some(([cd, cp, co, cf]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, co, m, s.start_month, cf)))) return true;
     return pushedAt(s, m).some(([d, p, onsetIdx]) =>
       links.some((l) => l.from === d && l.when === p && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
   };

@@ -5,7 +5,7 @@
 // month-12 map (June again) shows winter effects as pending, not applied.
 
 import { describe, expect, it } from 'vitest';
-import { chosenOnset, propagate } from './propagate';
+import { chosenFade, chosenOnset, propagate } from './propagate';
 import type { Graph, Scenario, Timeline, Value } from '../types';
 import graphJson from '../../public/data/graph.json';
 
@@ -1586,11 +1586,21 @@ describe('acceptance: the 1998 scenario, a warm basin with the El Niño that beg
   it('the held El Niño conflicts with the warm basin at the typhoons in August, the reason the shipped story omits it', () => {
     expect(tl.months[6].nodes.west_pacific_typhoons.conflicting).toBe(true);
   });
-  it('the shipped story uses the basin alone from February 1998', () => {
+  it('the shipped story uses the basin alone from February 1998, held eight months since M32', () => {
     const s = graph.stories.find((x) => x.id === 'warm_basin_1998_yangtze')!;
     expect(s).toBeDefined();
-    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998]);
+    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year, s.hold_months]).toEqual(['indian_ocean_basin', 'warm', undefined, 2, 1998, 8]);
     expect(s.steps.map((st) => st.month)).toEqual([0, 3, 4, 5, 6, 12]);
+  });
+  it('with M32 the El Niño can be held twelve months from June 1997: over by May 1998, before the Yangtze arrives, and no conflict at the typhoons', () => {
+    const tl = propagate(graph, { driverId: 'indian_ocean_basin', phaseId: 'warm', startMonth: 2, horizonMonths: HORIZON, maxDepth: 3, secondary: { driverId: 'enso', phaseId: 'el_nino', startMonth: 6, startsBefore: true, holdMonths: 12 } });
+    expect(chosenFade(tl.scenario, 'enso')).toBe(4);
+    expect(tl.months[3].nodes.enso.value).toBe(1);
+    expect(tl.months[4].nodes.enso.value).toBe(0);
+    expect(tl.months[4].nodes.yangtze_summer_rainfall.viaLinkIds).toEqual(['warm_basin_yangtze']);
+    expect(tl.months[6].nodes.west_pacific_typhoons.conflicting).toBe(false);
+    expect(tl.months[6].links.el_nino_west_pacific_typhoons?.status).toBe('faded');
+    expect(tl.months[6].nodes.west_pacific_typhoons.fadedLinkIds).toEqual(['el_nino_west_pacific_typhoons']);
   });
 });
 

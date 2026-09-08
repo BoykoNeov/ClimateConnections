@@ -29,6 +29,14 @@ nodes:
       ...                      # "Event begins in" control, saying when events usually start
     default_start_month: 6     # drivers only, 1–12: the month "Event begins in" jumps to
                                # when this driver is picked (Indian Ocean basin February, Atlantic and Pacific meridional modes March, Atlantic Niño May, ENSO, IOD, SAM, AMO and the tropical eruption June, Barents–Kara ice and October snow October, PDO and QBO November, NAO December)
+    typical_duration_months: [8, 12]
+                               # drivers only (M32): how many months a real event usually
+                               # lasts, [min, max], each 1–12, min <= max. "Event lasts:
+                               # typical" offers the middle of the range rounded up (10 for
+                               # ENSO). A driver that really lasts years (PDO, AMO, the
+                               # eruption's haze) says [12, 12] and explains itself in
+                               # onset_hint. The NAO and SAM say [1, 3]: a "phase" there is
+                               # a winter's or a season's average.
     phases:                    # drivers only, at least 2 (an event such as the tropical
       - id: el_nino            #   eruption, M26, has just an active phase and a 0 one)
         label: El Niño
@@ -50,9 +58,10 @@ nodes:
 ```
 
 Rules enforced by the validator:
-- Drivers have `phases`, `onset_hint` and `default_start_month` and no
-  `axis`/`labels`; outcomes have `axis` and `labels` and no `phases`. Every
-  phase has a `value`, unique within the driver, and one phase is 0.
+- Drivers have `phases`, `onset_hint`, `default_start_month` and
+  `typical_duration_months` and no `axis`/`labels`; outcomes have `axis`
+  and `labels` and no `phases`. Every phase has a `value`, unique within
+  the driver, and one phase is 0.
 - Any number of drivers is allowed. The app offers a driver dropdown when
   there is more than one; a scenario is always one driver in one phase.
 - `lat` in [-90, 90], `lon` in [-180, 180].
@@ -122,6 +131,10 @@ stories:
                                         #   its phase; defaults to start_month
     second_starts_before: true          # optional (M15): read that month backwards, so the
                                         #   second driver is already in its phase at month 0
+    hold_months: 8                      # optional (M32), 1–12: how many months the main driver
+                                        #   holds its phase; omitted = the whole year shown
+    second_hold_months: 12              # optional (M32): the same for the second driver,
+                                        #   counted from its own onset; needs second_driver
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -146,11 +159,17 @@ Rules enforced by the validator:
   earlier month (a lag that has already run is felt from month 0). The
   same month, read backwards, means a year earlier. Needs a
   `second_driver`.
+- `hold_months` and `second_hold_months` (M32) end a chosen driver's phase
+  after that many months from its onset: from then it holds no phase and
+  its links are faded, not applied (`docs/PLAN.md` §4 rule 9). Omitted,
+  the driver holds its phase to the end of the year shown, as before.
+  `second_hold_months` needs a `second_driver`.
 - Every `focus` must be a node id. If it is not a chosen driver, it must
   actually be affected at that month: some link from a chosen driver/phase
   to it (or from a driver a chosen driver has pushed) has
-  `lag_months[0] <= month` and is in season for the calendar month.
-  A story can never point at a hollow marker.
+  `lag_months[0] <= month`, is in season for the calendar month, and the
+  chosen driver's phase has not ended (its hold, if any, has not run
+  out). A story can never point at a hollow marker.
 - Step months never go backwards.
 - Every step cites at least one source key that resolves in `links.yaml`.
 - `src/engine/stories.test.ts` re-checks every step through the real engine.
@@ -181,4 +200,9 @@ October for the Barents–Kara ice and the October snow, November for the
 PDO and the QBO, December for the NAO). A link with
 `lag_months: [4, 8]` becomes available at index 4. It is drawn as applied in
 any month at or after index 4 whose calendar month is in `season`, and as
-pending (muted) in months where it is available but out of season.
+pending (muted) in months where it is available but out of season. If the
+driver's phase has been set to end (the "Event lasts" control, or a
+story's `hold_months`, M32), the link is drawn faded (grey, muted) from the
+month the phase ends, and a link whose `lag_months[0]` is at or beyond the
+hold never arrives at all: the card says so, and says that in reality the
+ocean can carry such an effect past the end of the event.

@@ -12,6 +12,8 @@ export class TimelineView {
   /** month index at which a second driver enters its phase (M12), negative
    *  when it began before the first (M15); null = none or month 0 */
   private secondOnset: number | null = null;
+  /** month indices at which a chosen driver's phase ends (M32), with a tooltip each */
+  private fades: { index: number; title: string }[] = [];
   onChange: (index: number) => void = () => {};
 
   constructor(container: HTMLElement, horizon: number, private startMonth: number) {
@@ -86,6 +88,14 @@ export class TimelineView {
     this.renderTicks();
   }
 
+  /** Mark the ticks where a chosen driver's phase ends (M32). Indices
+   *  outside the timeline (a second driver over before it began) are not
+   *  marked; the card and the hint say so instead. */
+  setFades(fades: { index: number; title: string }[]): void {
+    this.fades = fades.filter((f) => f.index >= 0 && f.index <= this.horizon);
+    this.renderTicks();
+  }
+
   private renderTicks(): void {
     this.ticks.innerHTML = '';
     for (let i = 0; i <= this.horizon; i++) {
@@ -98,6 +108,11 @@ export class TimelineView {
         const ago = -this.secondOnset;
         s.className = 'second-before';
         s.title = `The second driver entered its phase ${ago === 1 ? 'a month' : `${ago} months`} before this and is already under way`;
+      }
+      const fades = this.fades.filter((f) => f.index === i);
+      if (fades.length > 0) {
+        s.classList.add('fade');
+        s.title = [s.title, ...fades.map((f) => f.title)].filter(Boolean).join('. ');
       }
       this.ticks.append(s);
     }

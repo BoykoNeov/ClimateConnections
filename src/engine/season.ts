@@ -19,12 +19,14 @@ export interface SeasonMonth {
  * pending in at least one month, in graph order. Ghosts (below the
  * confidence filter) are not in play, and neither are links the scenario
  * never reaches (the wrong phase, a driver that was never pushed, a second
- * driver's links before its own start month if it never comes).
+ * driver's links before its own start month if it never comes, a link that
+ * was only ever reported faded because the event ended before its lag had
+ * run, M32).
  */
 export function linksInPlay(graph: Graph, timeline: Timeline): Link[] {
   const ids = new Set<string>();
   for (const m of timeline.months) {
-    for (const [id, ls] of Object.entries(m.links)) if (ls.status !== 'ghost') ids.add(id);
+    for (const [id, ls] of Object.entries(m.links)) if (ls.status === 'applied' || ls.status === 'pending') ids.add(id);
   }
   return graph.links.filter((l) => ids.has(l.id));
 }
