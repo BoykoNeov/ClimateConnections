@@ -409,6 +409,20 @@ longest in the data.
 
 ### M25 — Thirteenth driver: October Eurasian snow cover
 
+**Shipped 2026-09-08**, straight after M24, so it is the fourteenth driver
+on the map and the last of the data-only milestones. The record of what
+was built is in `docs/PLAN.md` §10 under M25. Departures from the text
+below, each with its reason: the marker is at 56°N 97°E, not 58°N 75°E,
+because the band north of the "Western Russia" label has no room for a
+centred driver label, and the Central Siberia marker (M24) moved north
+to 65°N 98°E to make the space; the story is 2009–10, the cleaner
+record (Cohen et al. 2010 is a case study of it and the map already has
+the winter's sources), with 1976–77 kept on the card as the widest
+October in the record; the low-snow phase draws nothing, as the list
+below implies, and the card says why; the "forecasters were burnt" step
+names 2016–17 and 2019–20 with agency sources, and keeps one press
+article as the record of the 2016 forecast.
+
 The second contested precursor: extensive October snow across Siberia has
 been proposed as a lead indicator of a negative winter Arctic Oscillation
 (here folded into the NAO, as the M9 card already does) and cold eastern

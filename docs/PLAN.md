@@ -1563,7 +1563,8 @@ drivers stays in one place.
   78°N 58°E in the Kara Sea, not 76°N 45°E as the plan proposed, because
   at 76°N 45°E the centred driver label ran two pixels into the Norway
   label. One new outcome node, **Central Siberia and Mongolia winter
-  temperature** (`siberia_winter`, warm_cool, 60°N 95°E, label "Central
+  temperature** (`siberia_winter`, warm_cool, 60°N 95°E, moved to 65°N
+  98°E in M25 to make room for the snow marker, label "Central
   Siberia"), which is where the Mongolia candidate M27 deferred now
   lives. Four links, all from the low phase, all **contested**, lag 1–3
   (so an October reading reaches December), December–February: central
@@ -1641,8 +1642,94 @@ drivers stays in one place.
   2012–13 story stepped to its end, the print caption.
 - Not in M24: any link from the warming trend; Arctic sea ice elsewhere
   (Chukchi, Beaufort), so the eastern US is not reached from this
-  driver; a high-ice link. Next in `docs/PLAN_V3.md`: M25, the October
-  snow, the second half of the matched lesson.
+  driver; a high-ice link.
+
+### M25 — Fourteenth driver: Eurasian October snow cover (version 3, signed off 2026-09-08)
+- Data: `eurasian_october_snow` driver node, label "October snow", three
+  phases `high` (+1, "High snow", slate #475569), `neutral` (0, "Near
+  normal") and `low` (−1, "Low snow", brown #854d0e); an area over
+  Siberia and European Russia (45–140°E, 48–72°N); `default_start_month`
+  10; marker at 56°N 97°E in the Krasnoyarsk region, not 58°N 75°E as the
+  plan proposed, because the band between the Urals and the Yenisei at
+  55–65°N is taken by the "Western Russia" and "Central Siberia" labels
+  and a driver's label sits centred under its circle; the placement was
+  found by fitting the map's projection to a dump of the live layout and
+  searching for clash-free positions (`W:\temp\claude\ClimateConnections\m25\place.py`),
+  which also moved the Central Siberia marker (M24) from 60°N 95°E to
+  65°N 98°E to make room. No new outcome node. Three links, all from the
+  high phase, all **contested**, lag 2–3 as the plan asks (so an October
+  reading reaches December through the stratosphere), December–February:
+  the NAO pushed negative, the eastern United States colder, northern
+  Europe colder. The low-snow phase draws nothing: the case studies and
+  forecasts the argument is about are all on the wide-snow side, and the
+  card says the index is used in both directions by its makers. Nothing
+  pushes the snow. Twenty-four new sources: twenty-two papers resolved on
+  Crossref (abstracts read for all but Furtado 2015 and Henderson 2018,
+  cited on their titles), the NOAA National Centers for Environmental
+  Information note on the winter of 2016–17, and one press article, The
+  Weather Channel of 4 November 2016, kept because it is the record of
+  the forecast made from that October's snow, quoted as it was made; the
+  Rutgers Global Snow Lab record, added in M24, is the source for how
+  wide each October was. One story, "2009–10: the snow came early, and
+  the winter froze" (high snow from October 2009, one driver, chain on),
+  five steps: the October advance, fifteen million km² in three weeks to
+  the widest since 1976, and the real-time forecast; December, the six
+  steps of the mechanism observed in order, with the note that the QBO
+  story and the El Niño claim the same December ("three arrows, one
+  December"); January, northern Europe cold twice over from one October
+  and the study that found no single cause big enough; February, the
+  second cycle, 135 cm of snow in seventeen days on the Mid-Atlantic
+  coast and the lowest winter AO since 1950; October 2010, the record
+  since: the link absent before the 1970s, the misses of 2016–17 (a wide
+  October snow, then the sixth-warmest US winter) and 2019–20 (a wide
+  October snow, then the strongest vortex and most positive AO on
+  record), the chart artefact, ending "a real hypothesis, a famous
+  success, and a decade of misses, all on one dotted arrow". The intro
+  says the map now has four stories about one winter.
+- Honesty notes carried in the data: the driver card gives the claim as
+  a six-step chain and then the doubts one by one (not before the 1970s,
+  weak or absent in models, the snow may be the effect not the cause,
+  the chart artefact, the misses since 2010, the possible QBO dependence
+  and the possible statistical accident); it says only the high phase is
+  drawn and why, that nothing pushes the snow, and that the snow and the
+  Barents–Kara ice are largely one signal seen twice, so picking both is
+  not evidence that two signals add up. The NAO link's caveat repeats
+  that; the eastern US caveat names 2016–17 as "the arrow with the most
+  public record of failure"; the northern Europe caveat names 2019–20.
+- What the engine shows, asserted in tests: from October, the NAO, the
+  eastern United States and northern Europe are touched December–February
+  only, and October and November have nothing available (lag 2, not even
+  pending); with the chain on the two regions carry two arrows from one
+  cause (the snow's own and the pushed NAO's) and are not hatched, and
+  every applied arrow is contested; the low and neutral phases draw
+  nothing; "probable and above" ghosts every arrow; with low Barents–Kara
+  ice chosen as a second driver in the same October the NAO carries both
+  precursors' arrows, agreeing, and nothing on the map is hatched, which
+  is the "not evidence that they add up" lesson made visible.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the snow from October with direct links
+  only (phases, the three links and no new node, the winter months, the
+  empty phases, the filter), with the chain on (two arrows per region,
+  never pushed, both precursors at once) and the 2009–10 story (fields,
+  five steps, the states at each step). Existing expectations updated:
+  fourteen drivers, twenty-nine driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m25.mjs`):
+  76 markers, the new marker and the moved Central Siberia marker placed
+  with no label overlap (every label on), the driver dropdown jumping to
+  October, three phase buttons, October and November with nothing
+  available, December with the chain on (the NAO induced negative,
+  northern Europe and the eastern US applied along two arrows each and
+  not hatched, every arrow dotted), the northern Europe and pushed-NAO
+  cards, "probable and above" ghosting the whole driver, low snow
+  drawing nothing and its card saying so, both precursors at once with
+  the NAO card naming both and nothing hatched, the 2009–10 story
+  stepped to its end, the print caption.
+- Not in M25: any implication that the two precursors add up (the card
+  and the two-driver test say the opposite); a low-snow link; November
+  snow as a separate reading, which one study finds is the month that
+  matters. Next in `docs/PLAN_V3.md`: the data-only drivers are done
+  (M20–M27); what remains is UI (M28–M31), the engine extensions
+  (M32–M37) and the roadmap items (M38–M40), each with its own sign-off.
 
 ---
 
@@ -1794,6 +1881,10 @@ siberia_winter (warm_cool). Its low phase acts on siberia_winter,
 western_russia_winter and east_asia_winter (−, all contested) and pushes
 the NAO negative (contested). Its high phase draws nothing.
 
+The Eurasian October snow (M25) adds no outcome node. Its high phase
+pushes the NAO negative and acts on eastern_north_america_winter and
+northern_europe_winter (−, all contested). Its low phase draws nothing.
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1833,7 +1924,7 @@ writing mechanism text):
   the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
   the Pacific Meridional Mode; M26: a large tropical volcanic eruption;
   M23: the Quasi-Biennial Oscillation; M24: the Barents–Kara autumn sea
-  ice);
+  ice; M25: the Eurasian October snow);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

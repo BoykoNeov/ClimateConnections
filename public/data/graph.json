@@ -788,6 +788,84 @@
       ]
     },
     {
+      "id": "eurasian_october_snow",
+      "name": "Eurasian October snow cover",
+      "label": "October snow",
+      "area": [
+        [
+          45,
+          72
+        ],
+        [
+          140,
+          72
+        ],
+        [
+          140,
+          48
+        ],
+        [
+          45,
+          48
+        ]
+      ],
+      "lat": 56,
+      "lon": 97,
+      "region": "Snow on the ground across Siberia and European Russia in October, from the Urals to Lake Baikal, where the autumn snow line advances fastest",
+      "timescale": "Read in October each year; satellite snow charts go back to 1966",
+      "summary": "Every October the snow line sweeps south across Siberia, and in some years it comes early and wide, in others late and thin. Since the late 1990s one group of researchers has argued that a fast, wide October advance foretells the winter: snow cools the ground, the Siberian high builds early and strong, the high sends more wave energy up into the stratosphere, the polar vortex weakens, and over the following weeks the weakening leaks back to the surface as the negative phase of the Arctic Oscillation, which on this map is folded into the North Atlantic Oscillation: cold in northern Europe and the eastern United States. They built an index of the snow's advance, used it in real winter forecasts from 1999, and had a famous success in 2009–10, the story here. Then the doubts: a reanalysis of the whole twentieth century found the relationship did not exist before the 1970s; climate models mostly cannot reproduce it, or give a weak version; the snow may be an effect of the autumn circulation rather than its cause; the apparent rise in October snow since 1990 is partly an artefact of how the satellite charts were drawn; and after about 2010 the forecasts built on the index missed badly, twice with a wide October snow followed by a record-mild winter. One study asks whether the whole relationship is a statistical accident, and another finds it may depend on the phase of the stratospheric wind over the equator, the QBO, which is on this map too. Every arrow from this marker is contested, and only the high-snow phase draws one: the case studies and the forecasts that made the index famous are all about wide snow and cold winters. Nothing pushes the snow. Wide October snow and low autumn ice in the Barents and Kara seas tend to come together, because open Arctic water feeds moisture to Siberia, so this driver and the sea-ice driver are largely one signal seen twice. If you pick both, the map draws both sets of arrows into the same places; that is not evidence that two signals add up.\n",
+      "sources": [
+        "cohen_entekhabi_1999",
+        "saito_2001",
+        "gong_2003",
+        "cohen_2007_snow",
+        "fletcher_2007",
+        "cohen_fletcher_2007",
+        "cohen_jones_2011",
+        "cohen_2014_snow",
+        "allen_zender_2011",
+        "peings_2013",
+        "furtado_2015",
+        "douville_2017",
+        "peings_2017",
+        "henderson_2018",
+        "brown_derksen_2013",
+        "estilow_2015",
+        "wegmann_2015",
+        "gastineau_2017",
+        "santolaria_otin_2020",
+        "wegmann_2020",
+        "rutgers_snow_lab",
+        "cohen_2010"
+      ],
+      "kind": "driver",
+      "onset_hint": "The snow is read in October; start there and switch the chain on to see the pushed NAO's own winter map follow, every arrow dotted.",
+      "default_start_month": 10,
+      "phases": [
+        {
+          "id": "high",
+          "label": "High snow",
+          "color": "#475569",
+          "summary": "The snow line races south and by the end of October most of Siberia is white, as in 1976, the widest October in the satellite record, and in 2009. The claim drawn here: a negative winter North Atlantic Oscillation, cold in northern Europe and the eastern United States, all contested, with the two winters after 2010 that went the other way on the card.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Near normal",
+          "color": "#999999",
+          "summary": "The October advance is close to its average and none of the tendencies on this map are drawn.\n",
+          "value": 0
+        },
+        {
+          "id": "low",
+          "label": "Low snow",
+          "color": "#854d0e",
+          "summary": "The snow comes late and thin, as in 1988, the thinnest October in the record. The map draws no arrows for this phase. The index is used in both directions by the people who built it, so a slow advance should lean the winter mild; but the case studies and forecasts that the argument is about are all on the wide- snow side, and the map draws only what has been argued over.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -3284,8 +3362,8 @@
           45
         ]
       ],
-      "lat": 60,
-      "lon": 95,
+      "lat": 65,
+      "lon": 98,
       "region": "Central Siberia from the Ob to Lake Baikal, and Mongolia",
       "timescale": "December–February",
       "summary": "The coldest inhabited land on Earth, where the Siberian high, a dome of dense cold air, sits from November to March. In some winters the dome is stronger and spreads further than usual, and the cold reaches from the Yenisei to Mongolia's herds and on into China. Since the 2000s a run of such winters has coincided with low autumn ice in the Barents and Kara seas to the north-west, and whether the one causes the other is the argument this marker carries. December 2012 is the example: more than six degrees below normal from central Siberia to north-eastern China for weeks.\n",
@@ -8493,6 +8571,112 @@
         "blackport_2019",
         "blackport_screen_2021"
       ]
+    },
+    {
+      "id": "high_snow_negative_nao",
+      "from": "eurasian_october_snow",
+      "when": "high",
+      "to": "nao",
+      "effect": -1,
+      "lag_months": [
+        2,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "Snow cools the ground beneath it, so a wide October snow cover builds the Siberian high early and strong. The high sits where the planetary-scale waves of early winter have their source, and it strengthens them, so more wave energy rises into the stratosphere in November and December and breaks against the polar vortex. The vortex weakens and warms, and over the following weeks the weakening works its way down to the surface as the negative phase of the Arctic Oscillation, which on this map is the negative NAO: high pressure over the pole, slack westerlies, cold spilling south. Six steps, each of them observed in 2009–10.\n",
+      "caveat": "Contested, and dotted. The correlation was found in the satellite era, from 1972, and a reanalysis of the whole twentieth century shows it did not exist before the 1970s; it may depend on the phase of the equatorial stratospheric wind, or be a statistical accident. Models give a weak version at best, and some suggest the autumn circulation makes the snow rather than the snow making the winter. Since about 2010 the forecasts that used it have missed badly. The satellite snow record itself charted more October snow after 1990 than other data show. A chosen NAO is never pushed, so pick the snow alone with the chain on to see this arrow; the NAO's own winter map then follows, still dotted. The Barents–Kara ice pushes the NAO the same way, and the two precursors are largely one signal; picking both is not evidence that they add up.\n",
+      "evidence_note": "Early-season Eurasian snow cover is associated with a stronger, more expansive Siberian high and with the dominant mode of winter variability in the following winter (Cohen and Entekhabi 1999); the correlation between autumn snow and winter circulation strengthens downward from the stratosphere, consistent with snow acting through upward-propagating waves (Saito, Cohen and Entekhabi 2001); a model forced with the highest (1976) and lowest (1988) observed Siberian snow produces a downward-propagating negative Arctic Oscillation through the winter (Gong, Entekhabi and Cohen 2003); years with large October snow feature strong upward wave pulses, a weaker vortex and high polar heights (Cohen et al. 2007); a hundred-member ensemble reproduces the stratosphere–troposphere response to a Siberian snow anomaly (Fletcher et al. 2009); prescribing observed snow in a model that lacked it recovers the snow–AO relationship and the recent AO trend (Allen and Zender 2011); a snow-advance index explains a large fraction of the winter AO's variance (Cohen and Jones 2011); in high-snow years surface pressure is higher from 1 November and the lower-stratospheric heat flux is stronger from mid-November, with surface-to-stratosphere wave events nearly twice as frequent (Cohen et al. 2014); the snow–NAO link is strongest in Arctic warming periods, for November snow (Wegmann et al. 2020). Against: the teleconnection is not stationary and did not emerge until the 1970s, with the QBO a possible modulator, so statistical forecasts should not rest on snow alone (Peings et al. 2013); the snow–AO relationship has only emerged since the 1970s, the QBO modulation may be a purely stochastic effect, and empirical prediction from snow or ice alone is limited (Douville, Peings and Saint-Martin 2017); CMIP5 models do not capture a robust link (Furtado et al. 2015); the remote influence of snow is weak in two models, the atmosphere may have driven the snow rather than the reverse, and the teleconnection may be a stochastic artefact (Peings et al. 2017); snow–atmosphere coupling is real locally but the remote link is weak in models and non-stationary in the record (Henderson et al. 2018); causal analysis finds snow's role on the AO unclear (Kretschmer et al. 2016); only November snow, not October, covaries significantly with the winter NAO (Santolaria- Otín et al. 2020); the November snow dipole and Barents–Kara ice are driven by the same Scandinavian pattern (Gastineau, García- Serrano and Frankignoul 2017); the rising October snow trend in the NOAA charts is an internal artefact of the dataset (Brown and Derksen 2013).\n",
+      "sources": [
+        "cohen_entekhabi_1999",
+        "saito_2001",
+        "gong_2003",
+        "cohen_2007_snow",
+        "fletcher_2009",
+        "allen_zender_2011",
+        "cohen_jones_2011",
+        "cohen_2014_snow",
+        "wegmann_2020",
+        "peings_2013",
+        "douville_2017",
+        "furtado_2015",
+        "peings_2017",
+        "henderson_2018",
+        "kretschmer_2016",
+        "santolaria_otin_2020",
+        "gastineau_2017",
+        "brown_derksen_2013"
+      ]
+    },
+    {
+      "id": "high_snow_eastern_us_cold",
+      "from": "eurasian_october_snow",
+      "when": "high",
+      "to": "eastern_north_america_winter",
+      "effect": -1,
+      "lag_months": [
+        2,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "The same path, one step further: the weakened vortex and the negative Arctic Oscillation that follow a snowy Siberian October put a blocking high over Greenland and the pole, and Arctic air is steered south down the eastern side of North America, where the big coastal snowstorms follow. The index's makers found their snow index a better guide to eastern United States winter temperature than the observed winter AO itself.\n",
+      "caveat": "Contested, and the arrow with the most public record of failure. In October 2016 the snow spread across Siberia wider than in all but a handful of Octobers, and the forecasts built on it called for a cold, snowy winter in the eastern United States; the winter was the sixth warmest in the American record and February 2017 the second warmest. The link is drawn for the winters it fitted, 1976–77 and 2009–10 above all. The eastern United States is also reached by the NAO's own arrow on this map, at the established tier; with the chain on this region carries two arrows from one cause.\n",
+      "evidence_note": "A snow index built from summer and autumn anomalies is more highly correlated with eastern United States winter temperatures than the observed winter AO (Cohen and Saito 2003); a statistical forecast model using October snow and pressure shows positive skill over the eastern United States in seven real-time winters and thirty-three hindcasts, where dynamical models had none (Cohen and Fletcher 2007); a model forced with the snow of the winter of 1977–78 reproduces the observed mid-latitude circulation anomalies (Cohen and Entekhabi 2001); in 2009–10 the expansion of cold into the eastern United States followed the second stratospheric warming and Mid-Atlantic snowfalls exceeded 135 cm in seventeen days (Cohen et al. 2010). Against: the snow–AO teleconnection did not exist before the 1970s (Peings et al. 2013; Douville, Peings and Saint- Martin 2017) and may be a stochastic artefact (Peings et al. 2017); the winter of 2016–17 was the sixth warmest on record for the contiguous United States after a wide October snow (NOAA National Centers for Environmental Information 2017; Rutgers Global Snow Lab); the severe winter of 1976–77 has been attributed instead to the Pacific and a persistent El Niño (Namias 1978).\n",
+      "sources": [
+        "cohen_saito_2003",
+        "cohen_fletcher_2007",
+        "cohen_entekhabi_2001",
+        "cohen_2010",
+        "peings_2013",
+        "douville_2017",
+        "peings_2017",
+        "ncei_winter_2017",
+        "weather_channel_2016",
+        "rutgers_snow_lab",
+        "namias_1978"
+      ]
+    },
+    {
+      "id": "high_snow_northern_europe_cold",
+      "from": "eurasian_october_snow",
+      "when": "high",
+      "to": "northern_europe_winter",
+      "effect": -1,
+      "lag_months": [
+        2,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "contested",
+      "mechanism": "Two paths into Europe. Directly, the early, strong Siberian high pushes cold air west across Russia toward Scandinavia and Germany. Through the stratosphere, the weakened vortex and the negative Arctic Oscillation that follow slacken the Atlantic westerlies, so the mild maritime air stops at the coast and northern Europe sits under Arctic or continental air for weeks at a time, as it did in the winter of 2009–10.\n",
+      "caveat": "Contested. The statistical model that used October snow had skill over northern Eurasia in hindcasts, and the winter of 2009–10 fits the path step by step; but the same twentieth-century reanalysis that undercuts the NAO link undercuts this one, and the winter of 2019–20, after a wide October snow, was the mildest on record across much of Europe with the strongest polar vortex and the most positive Arctic Oscillation ever measured. Northern Europe is also reached by the NAO's own arrow at the established tier; with the chain on this region carries two arrows from one cause.\n",
+      "evidence_note": "The snow-based forecast model has positive skill over northern Eurasia in hindcasts and real-time forecasts (Cohen and Fletcher 2007); the cooling effect of snow builds a stronger, more expansive Siberian high with more frequent intrusions west (Cohen and Entekhabi 1999); winter cooling trends across northern Eurasia in the last two decades are argued to follow increasing autumn snow (Cohen et al. 2012); in 2009–10 the cold that reached Europe followed the two stratospheric warmings (Cohen et al. 2010). Against: the teleconnection is non-stationary (Peings et al. 2013; Douville, Peings and Saint-Martin 2017); weak or absent in models (Furtado et al. 2015; Henderson et al. 2018); the increasing snow trend behind the cooling argument is largely a dataset artefact (Brown and Derksen 2013); the winter of 2019–20 featured an exceptionally strong vortex and an unprecedentedly positive Arctic Oscillation with above-normal temperatures across Europe (Lawrence et al. 2020) after an above-normal October snow (Rutgers Global Snow Lab).\n",
+      "sources": [
+        "cohen_fletcher_2007",
+        "cohen_entekhabi_1999",
+        "cohen_2012_snow",
+        "cohen_2010",
+        "peings_2013",
+        "douville_2017",
+        "furtado_2015",
+        "henderson_2018",
+        "brown_derksen_2013",
+        "lawrence_2020",
+        "rutgers_snow_lab"
+      ]
     }
   ],
   "sources": [
@@ -10479,6 +10663,126 @@
       "key": "rutgers_snow_lab",
       "citation": "Rutgers University Global Snow Lab (Robinson, D. A.). Northern Hemisphere snow cover extent: monthly area by region from the NOAA snow cover climate data record, 1967 to date.",
       "url": "https://climate.rutgers.edu/snowcover/"
+    },
+    {
+      "key": "cohen_entekhabi_1999",
+      "citation": "Cohen, J., & Entekhabi, D. (1999). Eurasian snow cover variability and Northern Hemisphere climate predictability. Geophysical Research Letters, 26(3), 345–348.",
+      "url": "https://doi.org/10.1029/1998GL900321"
+    },
+    {
+      "key": "cohen_entekhabi_2001",
+      "citation": "Cohen, J., & Entekhabi, D. (2001). The influence of snow cover on Northern Hemisphere climate variability. Atmosphere-Ocean, 39(1), 35–53.",
+      "url": "https://doi.org/10.1080/07055900.2001.9649665"
+    },
+    {
+      "key": "saito_2001",
+      "citation": "Saito, K., Cohen, J., & Entekhabi, D. (2001). Evolution of atmospheric response to early-season Eurasian snow cover anomalies. Monthly Weather Review, 129(11), 2746–2760.",
+      "url": "https://doi.org/10.1175/1520-0493(2001)129<2746:EOARTE>2.0.CO;2"
+    },
+    {
+      "key": "gong_2003",
+      "citation": "Gong, G., Entekhabi, D., & Cohen, J. (2003). Modeled Northern Hemisphere winter climate response to realistic Siberian snow anomalies. Journal of Climate, 16(23), 3917–3931.",
+      "url": "https://doi.org/10.1175/1520-0442(2003)016<3917:MNHWCR>2.0.CO;2"
+    },
+    {
+      "key": "cohen_saito_2003",
+      "citation": "Cohen, J., & Saito, K. (2003). Eurasian snow cover, more skillful in predicting U.S. winter climate than the NAO/AO? Geophysical Research Letters, 30(23), 2190.",
+      "url": "https://doi.org/10.1029/2003GL018053"
+    },
+    {
+      "key": "cohen_fletcher_2007",
+      "citation": "Cohen, J., & Fletcher, C. (2007). Improved skill of Northern Hemisphere winter surface temperature predictions based on land–atmosphere fall anomalies. Journal of Climate, 20(16), 4118–4132.",
+      "url": "https://doi.org/10.1175/JCLI4241.1"
+    },
+    {
+      "key": "cohen_2007_snow",
+      "citation": "Cohen, J., Barlow, M., Kushner, P. J., & Saito, K. (2007). Stratosphere–troposphere coupling and links with Eurasian land surface variability. Journal of Climate, 20(21), 5335–5343.",
+      "url": "https://doi.org/10.1175/2007JCLI1725.1"
+    },
+    {
+      "key": "fletcher_2007",
+      "citation": "Fletcher, C. G., Kushner, P. J., & Cohen, J. (2007). Stratospheric control of the extratropical circulation response to surface forcing. Geophysical Research Letters, 34, L21802.",
+      "url": "https://doi.org/10.1029/2007GL031626"
+    },
+    {
+      "key": "fletcher_2009",
+      "citation": "Fletcher, C. G., Hardiman, S. C., Kushner, P. J., & Cohen, J. (2009). The dynamical response to snow cover perturbations in a large ensemble of atmospheric GCM integrations. Journal of Climate, 22(5), 1208–1222.",
+      "url": "https://doi.org/10.1175/2008JCLI2505.1"
+    },
+    {
+      "key": "allen_zender_2011",
+      "citation": "Allen, R. J., & Zender, C. S. (2011). Forcing of the Arctic Oscillation by Eurasian snow cover. Journal of Climate, 24(24), 6528–6539.",
+      "url": "https://doi.org/10.1175/2011JCLI4157.1"
+    },
+    {
+      "key": "cohen_jones_2011",
+      "citation": "Cohen, J., & Jones, J. (2011). A new index for more accurate winter predictions. Geophysical Research Letters, 38, L21701.",
+      "url": "https://doi.org/10.1029/2011GL049626"
+    },
+    {
+      "key": "cohen_2012_snow",
+      "citation": "Cohen, J. L., Furtado, J. C., Barlow, M. A., Alexeev, V. A., & Cherry, J. E. (2012). Arctic warming, increasing snow cover and widespread boreal winter cooling. Environmental Research Letters, 7(1), 014007.",
+      "url": "https://doi.org/10.1088/1748-9326/7/1/014007"
+    },
+    {
+      "key": "peings_2013",
+      "citation": "Peings, Y., Brun, E., Mauvais, V., & Douville, H. (2013). How stationary is the relationship between Siberian snow and Arctic Oscillation over the 20th century? Geophysical Research Letters, 40(1), 183–188.",
+      "url": "https://doi.org/10.1029/2012GL054083"
+    },
+    {
+      "key": "brown_derksen_2013",
+      "citation": "Brown, R. D., & Derksen, C. (2013). Is Eurasian October snow cover extent increasing? Environmental Research Letters, 8(2), 024006.",
+      "url": "https://doi.org/10.1088/1748-9326/8/2/024006"
+    },
+    {
+      "key": "cohen_2014_snow",
+      "citation": "Cohen, J., Furtado, J. C., Jones, J., Barlow, M., Whittleston, D., & Entekhabi, D. (2014). Linking Siberian snow cover to precursors of stratospheric variability. Journal of Climate, 27(14), 5422–5432.",
+      "url": "https://doi.org/10.1175/JCLI-D-13-00779.1"
+    },
+    {
+      "key": "furtado_2015",
+      "citation": "Furtado, J. C., Cohen, J. L., Butler, A. H., Riddle, E. E., & Kumar, A. (2015). Eurasian snow cover variability and links to winter climate in the CMIP5 models. Climate Dynamics, 45(9–10), 2591–2605.",
+      "url": "https://doi.org/10.1007/s00382-015-2494-4"
+    },
+    {
+      "key": "estilow_2015",
+      "citation": "Estilow, T. W., Young, A. H., & Robinson, D. A. (2015). A long-term Northern Hemisphere snow cover extent data record for climate studies and monitoring. Earth System Science Data, 7(1), 137–142.",
+      "url": "https://doi.org/10.5194/essd-7-137-2015"
+    },
+    {
+      "key": "douville_2017",
+      "citation": "Douville, H., Peings, Y., & Saint-Martin, D. (2017). Snow-(N)AO relationship revisited over the whole twentieth century. Geophysical Research Letters, 44(1), 569–577.",
+      "url": "https://doi.org/10.1002/2016GL071584"
+    },
+    {
+      "key": "peings_2017",
+      "citation": "Peings, Y., Douville, H., Colin, J., Martin, D. S., & Magnusdottir, G. (2017). Snow–(N)AO teleconnection and its modulation by the Quasi-Biennial Oscillation. Journal of Climate, 30(24), 10211–10235.",
+      "url": "https://doi.org/10.1175/JCLI-D-17-0041.1"
+    },
+    {
+      "key": "henderson_2018",
+      "citation": "Henderson, G. R., Peings, Y., Furtado, J. C., & Kushner, P. J. (2018). Snow–atmosphere coupling in the Northern Hemisphere. Nature Climate Change, 8(11), 954–963.",
+      "url": "https://doi.org/10.1038/s41558-018-0295-6"
+    },
+    {
+      "key": "lawrence_2020",
+      "citation": "Lawrence, Z. D., Perlwitz, J., Butler, A. H., Manney, G. L., Newman, P. A., Lee, S. H., & Nash, E. R. (2020). The remarkably strong Arctic stratospheric polar vortex of winter 2020: Links to record-breaking Arctic Oscillation and ozone loss. Journal of Geophysical Research: Atmospheres, 125(22), e2020JD033271.",
+      "url": "https://doi.org/10.1029/2020JD033271"
+    },
+    {
+      "key": "namias_1978",
+      "citation": "Namias, J. (1978). Multiple causes of the North American abnormal winter 1976–77. Monthly Weather Review, 106(3), 279–295.",
+      "url": "https://doi.org/10.1175/1520-0493(1978)106<0279:MCOTNA>2.0.CO;2"
+    },
+    {
+      "key": "ncei_winter_2017",
+      "citation": "NOAA National Centers for Environmental Information (2017). Assessing the U.S. climate in February 2017: the sixth warmest winter and second warmest February on record for the contiguous United States. News release, 8 March 2017.",
+      "url": "https://www.ncei.noaa.gov/news/national-climate-201702"
+    },
+    {
+      "key": "weather_channel_2016",
+      "citation": "Belles, J. (2016). Siberia is being clobbered with snow already, and that could mean a harsher U.S. winter ahead. The Weather Channel, 4 November 2016 (the forecast made from the October 2016 snow advance, quoted as it was made).",
+      "url": "https://weather.com/news/weather/news/snow-siberia-russia-united-states-cold"
     }
   ],
   "stories": [
@@ -11760,6 +12064,80 @@
             "mccusker_2016",
             "smith_2022",
             "cohen_2020"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "high_snow_2009_10",
+      "title": "2009–10: the snow came early, and the winter froze",
+      "intro": "This map now has four stories about one winter. The NAO story follows what the record-negative winter of 2009–10 did to Europe and America; the QBO story asks whether the wind over the equator set it up; the El Niño was building all the while. This story follows the fourth claimant, an October when the snow line raced south across Siberia, and the group of forecasters who said in the autumn that a hard winter would follow, and were right. It is the snow index's best year. Switch the chain on to watch the pushed North Atlantic Oscillation carry the cold into Europe and the eastern United States, then read the last step, which is about the Octobers since, when the same index was wrong.\n",
+      "driver": "eurasian_october_snow",
+      "phase": "high",
+      "start_month": 10,
+      "start_year": 2009,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "eurasian_october_snow",
+          "text": "October 2009. In the first week of the month snow lay well below normal across Eurasia; over the next three weeks the cover advanced by more than fifteen million square kilometres, and by the end of October it was the widest since 1976, the year that still holds the record. The index this driver is built on measures exactly that, the speed of the advance, and the statistical forecast that used October snow had been run in real time every autumn since 1999. That autumn it called for a cold winter across the eastern United States and northern Eurasia. The map's arrows wait: the path runs through the stratosphere and takes until December.\n",
+          "sources": [
+            "cohen_2010",
+            "cohen_jones_2011",
+            "cohen_fletcher_2007",
+            "gong_2003",
+            "rutgers_snow_lab"
+          ]
+        },
+        {
+          "month": 2,
+          "focus": "nao",
+          "text": "December 2009. The six steps of the proposed mechanism ran in order that autumn: the snow, then a cold, high-pressure Siberia from late October, then a burst of wave energy into the stratosphere, a warming of the polar vortex in mid- November, the disturbance sinking through the lower stratosphere, and in December the first of two deep negative spells of the Arctic Oscillation at the surface. The map pushes the NAO negative along a dotted arrow, and with the chain on its winter map follows. Notice who else claims this December: the easterly QBO's story and the El Niño both push the same marker, and the Met Office's later analysis named their pairing, not the snow. Three arrows, one December.\n",
+          "sources": [
+            "cohen_2010",
+            "cohen_2007_snow",
+            "baldwin_dunkerton_2001",
+            "l_heureux_2010",
+            "fereday_2012"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "northern_europe_winter",
+          "text": "January 2010. Britain, Germany and Poland were locked under continental air; the winter was Britain's coldest since 1978–79 and the negative NAO its most persistent since 1939–40. The map has northern Europe cold twice over: once along the snow's own dotted arrow and once through the pushed NAO, both from the same October, which is why the marker is not hatched. One study of this winter, testing the sea, the ice, the tropics, the vortex, the sun and the snow one at a time in a forecast model, found that none of them explained the size of what happened; the snow's advocates answer that their six steps were all observed, in order, twice.\n",
+          "sources": [
+            "osborn_2011",
+            "cattiaux_2010",
+            "jung_2011",
+            "cohen_2010"
+          ]
+        },
+        {
+          "month": 4,
+          "focus": "eastern_north_america_winter",
+          "text": "February 2010. The second cycle: a fresh tropospheric precursor over Siberia at the end of January, a second stratospheric warming, and in February the deepest surface spell of the winter. Snowfalls along the Mid-Atlantic coast topped 135 centimetres in seventeen days, Washington and Baltimore broke their seasonal records, and North American snow cover for the winter was the most extensive ever charted. The winter Arctic Oscillation finished as the lowest since at least 1950. The forecasters who had read the October snow reckoned the AO explained more of the winter's temperature pattern than the El Niño did, and for this winter the numbers agreed with them.\n",
+          "sources": [
+            "cohen_2010",
+            "l_heureux_2010",
+            "cohen_saito_2003",
+            "seager_2010"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "eurasian_october_snow",
+          "text": "October 2010, and the year shown ends with the snow advancing again; December 2010 was bitter too. Then the record turns. Across the whole twentieth century the snow–winter link cannot be found before the 1970s, and it may rise and fall with the phase of the QBO or be a statistical accident. In October 2016 snow spread across 13.5 million square kilometres of Eurasia, one of the widest Octobers on the charts; the forecasts built on it called for a cold eastern winter, and the United States had its sixth-warmest winter on record and its second-warmest February. In October 2019 the snow was wide again, and the winter that followed had the strongest polar vortex and the most positive Arctic Oscillation ever measured, with record warmth across Europe and Russia. Since about 2010 the forecasters who leaned on the index have been burnt, and the index's own rise since 1990 turns out to be partly an artefact of how the satellite charts were drawn. Read this driver as the plan intends: a real hypothesis, a famous success, and a decade of misses, all on one dotted arrow.\n",
+          "sources": [
+            "blunden_2011",
+            "peings_2013",
+            "douville_2017",
+            "peings_2017",
+            "rutgers_snow_lab",
+            "weather_channel_2016",
+            "ncei_winter_2017",
+            "lawrence_2020",
+            "brown_derksen_2013",
+            "henderson_2018"
           ]
         }
       ]

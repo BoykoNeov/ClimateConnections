@@ -1664,3 +1664,111 @@ stories:
           about a tenth of a winter. The winter of 2012–13 is one winter,
           and the argument is about whether it counts.
         sources: [blunden_2014, blunden_2015, mori_2014, blackport_2019, mccusker_2016, smith_2022, cohen_2020]
+
+  - id: high_snow_2009_10
+    title: "2009–10: the snow came early, and the winter froze"
+    intro: >
+      This map now has four stories about one winter. The NAO story
+      follows what the record-negative winter of 2009–10 did to Europe
+      and America; the QBO story asks whether the wind over the equator
+      set it up; the El Niño was building all the while. This story
+      follows the fourth claimant, an October when the snow line raced
+      south across Siberia, and the group of forecasters who said in the
+      autumn that a hard winter would follow, and were right. It is the
+      snow index's best year. Switch the chain on to watch the pushed
+      North Atlantic Oscillation carry the cold into Europe and the
+      eastern United States, then read the last step, which is about the
+      Octobers since, when the same index was wrong.
+    driver: eurasian_october_snow
+    phase: high
+    start_month: 10
+    start_year: 2009
+    steps:
+      - month: 0
+        focus: eurasian_october_snow
+        text: >
+          October 2009. In the first week of the month snow lay well
+          below normal across Eurasia; over the next three weeks the
+          cover advanced by more than fifteen million square kilometres,
+          and by the end of October it was the widest since 1976, the
+          year that still holds the record. The index this driver is
+          built on measures exactly that, the speed of the advance, and
+          the statistical forecast that used October snow had been run
+          in real time every autumn since 1999. That autumn it called for
+          a cold winter across the eastern United States and northern
+          Eurasia. The map's arrows wait: the path runs through the
+          stratosphere and takes until December.
+        sources: [cohen_2010, cohen_jones_2011, cohen_fletcher_2007, gong_2003, rutgers_snow_lab]
+
+      - month: 2
+        focus: nao
+        text: >
+          December 2009. The six steps of the proposed mechanism ran in
+          order that autumn: the snow, then a cold, high-pressure
+          Siberia from late October, then a burst of wave energy into
+          the stratosphere, a warming of the polar vortex in mid-
+          November, the disturbance sinking through the lower
+          stratosphere, and in December the first of two deep negative
+          spells of the Arctic Oscillation at the surface. The map
+          pushes the NAO negative along a dotted arrow, and with the
+          chain on its winter map follows. Notice who else claims this
+          December: the easterly QBO's story and the El Niño both push
+          the same marker, and the Met Office's later analysis named
+          their pairing, not the snow. Three arrows, one December.
+        sources: [cohen_2010, cohen_2007_snow, baldwin_dunkerton_2001, l_heureux_2010, fereday_2012]
+
+      - month: 3
+        focus: northern_europe_winter
+        text: >
+          January 2010. Britain, Germany and Poland were locked under
+          continental air; the winter was Britain's coldest since
+          1978–79 and the negative NAO its most persistent since 1939–40.
+          The map has northern Europe cold twice over: once along the
+          snow's own dotted arrow and once through the pushed NAO, both
+          from the same October, which is why the marker is not hatched.
+          One study of this winter, testing the sea, the ice, the
+          tropics, the vortex, the sun and the snow one at a time in a
+          forecast model, found that none of them explained the size of
+          what happened; the snow's advocates answer that their six
+          steps were all observed, in order, twice.
+        sources: [osborn_2011, cattiaux_2010, jung_2011, cohen_2010]
+
+      - month: 4
+        focus: eastern_north_america_winter
+        text: >
+          February 2010. The second cycle: a fresh tropospheric
+          precursor over Siberia at the end of January, a second
+          stratospheric warming, and in February the deepest surface
+          spell of the winter. Snowfalls along the Mid-Atlantic coast
+          topped 135 centimetres in seventeen days, Washington and
+          Baltimore broke their seasonal records, and North American
+          snow cover for the winter was the most extensive ever charted.
+          The winter Arctic Oscillation finished as the lowest since at
+          least 1950. The forecasters who had read the October snow
+          reckoned the AO explained more of the winter's temperature
+          pattern than the El Niño did, and for this winter the numbers
+          agreed with them.
+        sources: [cohen_2010, l_heureux_2010, cohen_saito_2003, seager_2010]
+
+      - month: 12
+        focus: eurasian_october_snow
+        text: >
+          October 2010, and the year shown ends with the snow advancing
+          again; December 2010 was bitter too. Then the record turns.
+          Across the whole twentieth century the snow–winter link cannot
+          be found before the 1970s, and it may rise and fall with the
+          phase of the QBO or be a statistical accident. In October 2016
+          snow spread across 13.5 million square kilometres of Eurasia,
+          one of the widest Octobers on the charts; the forecasts built
+          on it called for a cold eastern winter, and the United States
+          had its sixth-warmest winter on record and its second-warmest
+          February. In October 2019 the snow was wide again, and the
+          winter that followed had the strongest polar vortex and the
+          most positive Arctic Oscillation ever measured, with record
+          warmth across Europe and Russia. Since about 2010 the
+          forecasters who leaned on the index have been burnt, and the
+          index's own rise since 1990 turns out to be partly an artefact
+          of how the satellite charts were drawn. Read this driver as
+          the plan intends: a real hypothesis, a famous success, and a
+          decade of misses, all on one dotted arrow.
+        sources: [blunden_2011, peings_2013, douville_2017, peings_2017, rutgers_snow_lab, weather_channel_2016, ncei_winter_2017, lawrence_2020, brown_derksen_2013, henderson_2018]

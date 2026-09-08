@@ -225,8 +225,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'barents_kara_ice', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'qbo', 'sam', 'tropical_eruption'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode, the Atlantic and Pacific meridional modes, a tropical eruption, the QBO and the Barents–Kara sea ice as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'barents_kara_ice', 'enso', 'eurasian_october_snow', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'qbo', 'sam', 'tropical_eruption'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode, the Atlantic and Pacific meridional modes, a tropical eruption, the QBO, the Barents–Kara sea ice and the October snow as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -253,6 +253,7 @@ describe('acceptance: drivers', () => {
     expect(start('tropical_eruption')).toBe(6);
     expect(start('qbo')).toBe(11);
     expect(start('barents_kara_ice')).toBe(10);
+    expect(start('eurasian_october_snow')).toBe(10);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -393,9 +394,9 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort(), d.id).toEqual(d.id === 'tropical_eruption' ? [-1, 0] : [-1, 0, 1]);
     }
   });
-  it('ships twenty-eight driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twenty-nine driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'easterly_qbo_negative_nao', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'eruption_el_nino', 'eruption_positive_nao', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam', 'low_ice_negative_nao',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'easterly_qbo_negative_nao', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'eruption_el_nino', 'eruption_positive_nao', 'high_snow_negative_nao', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam', 'low_ice_negative_nao',
       'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'negative_pmm_la_nina', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'positive_pmm_el_nino', 'warm_basin_la_nina', 'westerly_qbo_positive_nao',
     ]);
     for (const l of d2d) {
@@ -2121,7 +2122,7 @@ describe('acceptance: outcome regions, third batch (M27), data only', () => {
     }
     expect(graph.links.filter((l) => NEW.includes(l.to))).toHaveLength(13);
     expect(graph.nodes.filter((n) => n.kind === 'outcome')).toHaveLength(62);   // 61 + central Siberia (M24)
-    expect(graph.nodes.filter((n) => n.kind === 'driver')).toHaveLength(13);
+    expect(graph.nodes.filter((n) => n.kind === 'driver')).toHaveLength(14);
   });
   it('El Niño from June, direct links: Central Asia wet November–April, the Midwest wet in the summer the event is in and again from the next May, northeastern Canada mild and Tibet snowy through the winter, India hot in the following spring', () => {
     const tl = run('el_nino');
@@ -2493,5 +2494,129 @@ describe('acceptance: the 2012–13 story, low Barents–Kara ice from October',
     expect(tl.months[12].calendarMonth).toBe(10);
     for (const st of Object.values(tl.months[12].nodes)) expect(st.viaLinkIds).toHaveLength(0);
     expect(tl.months[12].nodes.siberia_winter.pendingLinkIds).toEqual(['low_ice_siberia_cold']);
+  });
+});
+
+
+// ---------------------------------------------------------------- M25: fourteenth driver (Eurasian October snow cover)
+// The second contested Arctic precursor, paired with the Barents–Kara ice as
+// one lesson. Only the high-snow phase draws arrows: the NAO pushed negative,
+// northern Europe and the eastern United States colder, every one contested,
+// lag 2–3 so an October reading reaches December. Nothing pushes the snow.
+function runSnow(phaseId: string, startMonth = 10, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'eurasian_october_snow', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+describe('acceptance: Eurasian October snow from October, direct links only', () => {
+  const high = runSnow('high');
+  it('the driver has three phases (high +1, neutral 0, low −1), defaults to October, has an area, three links out (all contested, all from the high phase) and none in; no new outcome node', () => {
+    const d = graph.nodes.find((n) => n.id === 'eurasian_october_snow')!;
+    expect(d.kind).toBe('driver');
+    if (d.kind !== 'driver') return;
+    expect(d.phases.map((p) => [p.id, p.value])).toEqual([['high', 1], ['neutral', 0], ['low', -1]]);
+    expect(d.default_start_month).toBe(10);
+    expect(d.area).toBeDefined();
+    const own = graph.links.filter((l) => l.from === 'eurasian_october_snow');
+    expect(own.map((l) => [l.when, l.to, l.effect, l.confidence, l.lag_months[0]]).sort()).toEqual([
+      ['high', 'eastern_north_america_winter', -1, 'contested', 2], ['high', 'nao', -1, 'contested', 2], ['high', 'northern_europe_winter', -1, 'contested', 2],
+    ]);
+    expect(graph.links.filter((l) => l.to === 'eurasian_october_snow')).toHaveLength(0);
+    expect(graph.nodes.filter((n) => n.kind === 'outcome')).toHaveLength(62);
+  });
+  it('high snow: the NAO pushed negative and northern Europe and the eastern United States cold in December–February (months 2–4), all contested; October and November have nothing available (lag 2), and from March the arrows wait', () => {
+    expect(high.months[0].calendarMonth).toBe(10);
+    for (const id of ['nao', 'northern_europe_winter', 'eastern_north_america_winter']) {
+      expect(monthsWith(high, id, -1), id).toEqual([2, 3, 4]);
+      expect(high.months[0].nodes[id].pendingLinkIds, `${id} October`).toHaveLength(0);
+      expect(high.months[1].nodes[id].pendingLinkIds, `${id} November`).toHaveLength(0);
+      expect(high.months[2].nodes[id].confidence, id).toBe('contested');
+      for (const m of high.months.slice(5)) expect(m.nodes[id].pendingLinkIds, `${id} month ${m.index}`).toHaveLength(1);
+    }
+    expect(Object.keys(high.months[1].links)).toHaveLength(0);
+    expect(high.months[2].links.high_snow_negative_nao).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(high.months[5].links.high_snow_negative_nao).toEqual({ status: 'pending', confidence: 'contested', depth: 1 });
+  });
+  it('the low-snow and neutral phases draw nothing: the map draws only what has been argued over', () => {
+    for (const phase of ['low', 'neutral']) {
+      const tl = runSnow(phase, 10, 3);
+      for (const m of tl.months) {
+        expect(Object.keys(m.links), `${phase} month ${m.index}`).toHaveLength(0);
+        for (const st of Object.values(m.nodes)) { expect(st.viaLinkIds).toHaveLength(0); expect(st.pendingLinkIds).toHaveLength(0); }
+      }
+    }
+  });
+  it('under "probable and above" every arrow from the snow is a ghost and the driver disappears', () => {
+    const tl = propagate(graph, { driverId: 'eurasian_october_snow', phaseId: 'high', startMonth: 10, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'probable' });
+    for (const m of tl.months.slice(2)) {
+      expect(Object.keys(m.links).length, `month ${m.index}`).toBe(3);
+      for (const [id, l] of Object.entries(m.links)) expect(l.status, `${id} at month ${m.index}`).toBe('ghost');
+      expect(m.nodes.nao.value, `NAO month ${m.index}`).toBe(0);
+      for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: high October snow with the chain on, alone and with the Barents–Kara ice', () => {
+  const tl = runSnow('high', 10, 3);
+  it('December–February: northern Europe and the eastern United States carry two arrows from one cause (the snow’s own and the pushed NAO’s) and are not hatched; Greenland mild through the NAO at the floor tier', () => {
+    for (const i of [2, 3, 4]) {
+      const m = tl.months[i];
+      expect(m.links.high_snow_negative_nao, `month ${i}`).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+      expect([...m.nodes.northern_europe_winter.viaLinkIds].sort(), `month ${i}`).toEqual(['high_snow_northern_europe_cold', 'negative_nao_northern_europe']);
+      expect([...m.nodes.eastern_north_america_winter.viaLinkIds].sort(), `month ${i}`).toEqual(['high_snow_eastern_us_cold', 'negative_nao_eastern_north_america']);
+      expect(m.nodes.northern_europe_winter.conflicting, `month ${i}`).toBe(false);
+      expect(m.nodes.northern_europe_winter.value, `month ${i}`).toBe(-1);
+      expect(m.nodes.greenland_winter.value, `month ${i}`).toBe(1);
+      expect(m.nodes.greenland_winter.confidence, `month ${i}`).toBe('contested');
+      for (const [id, l] of Object.entries(m.links)) if (l.status === 'applied') expect(l.confidence, `${id} month ${i}`).toBe('contested');
+    }
+    expect(tl.months[5].nodes.nao.value).toBe(0);
+    expect(tl.months[5].nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
+  });
+  it('the snow is never pushed: no links in, its phase held all year', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.eurasian_october_snow.value, `month ${m.index}`).toBe(1);
+      expect(m.nodes.eurasian_october_snow.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+  it('with low Barents–Kara ice chosen as a second driver in the same October, the NAO carries both precursors’ arrows, agreeing, and nothing on the map is hatched: the map draws both, which is not evidence that they add up', () => {
+    const two = propagate(graph, {
+      driverId: 'eurasian_october_snow', phaseId: 'high', startMonth: 10, horizonMonths: HORIZON, maxDepth: 3,
+      secondary: { driverId: 'barents_kara_ice', phaseId: 'low', startMonth: 10 },
+    });
+    for (const i of [2, 3, 4]) {
+      const m = two.months[i];
+      expect([...m.nodes.nao.viaLinkIds].sort(), `month ${i}`).toEqual(['high_snow_negative_nao', 'low_ice_negative_nao']);
+      expect(m.nodes.nao.value, `month ${i}`).toBe(-1);
+      expect(m.nodes.nao.conflicting, `month ${i}`).toBe(false);
+      expect(m.nodes.siberia_winter.value, `month ${i}`).toBe(-1);
+      for (const [id, st] of Object.entries(m.nodes)) expect(st.conflicting, `${id} month ${i}`).toBe(false);
+      for (const [id, l] of Object.entries(m.links)) if (l.status === 'applied') expect(l.confidence, `${id} month ${i}`).toBe('contested');
+    }
+  });
+});
+
+describe('acceptance: the 2009–10 story, high October snow from October', () => {
+  const s = graph.stories.find((x) => x.id === 'high_snow_2009_10')!;
+  it('ships with high snow from October 2009, no second driver, five steps', () => {
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.start_month, s.start_year]).toEqual(['eurasian_october_snow', 'high', undefined, 10, 2009]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 2, 3, 4, 12]);
+    expect(s.steps.map((st) => st.focus)).toEqual(['eurasian_october_snow', 'nao', 'northern_europe_winter', 'eastern_north_america_winter', 'eurasian_october_snow']);
+    for (const st of s.steps) expect(st.sources.length, `step ${st.month}`).toBeGreaterThan(0);
+  });
+  it('at the story’s steps with the chain on: October quiet, December the NAO pushed along the snow’s arrow, January northern Europe cold twice over, February the eastern United States cold twice over, the next October quiet with the arrows waiting', () => {
+    const tl = propagate(graph, { driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3 });
+    expect(Object.keys(tl.months[0].links)).toHaveLength(0);
+    expect(tl.months[2].calendarMonth).toBe(12);
+    expect(tl.months[2].nodes.nao.viaLinkIds).toEqual(['high_snow_negative_nao']);
+    expect(tl.months[3].nodes.northern_europe_winter.viaLinkIds).toHaveLength(2);
+    expect(tl.months[3].nodes.northern_europe_winter.conflicting).toBe(false);
+    expect(tl.months[4].calendarMonth).toBe(2);
+    expect(tl.months[4].nodes.eastern_north_america_winter.value).toBe(-1);
+    expect(tl.months[4].nodes.eastern_north_america_winter.viaLinkIds).toHaveLength(2);
+    expect(tl.months[12].calendarMonth).toBe(10);
+    for (const st of Object.values(tl.months[12].nodes)) expect(st.viaLinkIds).toHaveLength(0);
+    expect(tl.months[12].nodes.nao.pendingLinkIds).toEqual(['high_snow_negative_nao']);
   });
 });

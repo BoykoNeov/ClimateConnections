@@ -785,6 +785,81 @@ nodes:
           Atlantic Oscillation, all contested. The autumn of 2012, after
           the record-low September, is the story.
     sources: [cohen_2014, vihma_2014, overland_2011, overland_2015, cohen_2020, overland_2021, screen_2017, blackport_screen_2021, kolstad_screen_2019, smith_2022, francis_vavrus_2012, barnes_2013, blackport_screen_2020, liu_2012_snowfall, tang_2013, kug_2015, cohen_2018_us, wegmann_2015, gastineau_2017, santolaria_otin_2020, wegmann_2020, nsidc_2012_minimum]
+  - id: eurasian_october_snow
+    name: Eurasian October snow cover
+    label: October snow
+    kind: driver
+    lat: 56
+    lon: 97
+    area: [[45, 72], [140, 72], [140, 48], [45, 48]]
+    region: Snow on the ground across Siberia and European Russia in October, from the Urals to Lake Baikal, where the autumn snow line advances fastest
+    timescale: Read in October each year; satellite snow charts go back to 1966
+    summary: >
+      Every October the snow line sweeps south across Siberia, and in
+      some years it comes early and wide, in others late and thin. Since
+      the late 1990s one group of researchers has argued that a fast,
+      wide October advance foretells the winter: snow cools the ground,
+      the Siberian high builds early and strong, the high sends more
+      wave energy up into the stratosphere, the polar vortex weakens,
+      and over the following weeks the weakening leaks back to the
+      surface as the negative phase of the Arctic Oscillation, which on
+      this map is folded into the North Atlantic Oscillation: cold in
+      northern Europe and the eastern United States. They built an index
+      of the snow's advance, used it in real winter forecasts from 1999,
+      and had a famous success in 2009–10, the story here. Then the
+      doubts: a reanalysis of the whole twentieth century found the
+      relationship did not exist before the 1970s; climate models mostly
+      cannot reproduce it, or give a weak version; the snow may be an
+      effect of the autumn circulation rather than its cause; the
+      apparent rise in October snow since 1990 is partly an artefact of
+      how the satellite charts were drawn; and after about 2010 the
+      forecasts built on the index missed badly, twice with a wide
+      October snow followed by a record-mild winter. One study asks
+      whether the whole relationship is a statistical accident, and
+      another finds it may depend on the phase of the stratospheric wind
+      over the equator, the QBO, which is on this map too. Every arrow
+      from this marker is contested, and only the high-snow phase draws
+      one: the case studies and the forecasts that made the index famous
+      are all about wide snow and cold winters. Nothing pushes the snow.
+      Wide October snow and low autumn ice in the Barents and Kara seas
+      tend to come together, because open Arctic water feeds moisture to
+      Siberia, so this driver and the sea-ice driver are largely one
+      signal seen twice. If you pick both, the map draws both sets of
+      arrows into the same places; that is not evidence that two signals
+      add up.
+    onset_hint: The snow is read in October; start there and switch the chain on to see the pushed NAO's own winter map follow, every arrow dotted.
+    default_start_month: 10
+    phases:
+      - id: high
+        value: 1
+        label: High snow
+        color: "#475569"
+        summary: >
+          The snow line races south and by the end of October most of
+          Siberia is white, as in 1976, the widest October in the
+          satellite record, and in 2009. The claim drawn here: a negative
+          winter North Atlantic Oscillation, cold in northern Europe and
+          the eastern United States, all contested, with the two winters
+          after 2010 that went the other way on the card.
+      - id: neutral
+        value: 0
+        label: Near normal
+        color: "#999999"
+        summary: >
+          The October advance is close to its average and none of the
+          tendencies on this map are drawn.
+      - id: low
+        value: -1
+        label: Low snow
+        color: "#854d0e"
+        summary: >
+          The snow comes late and thin, as in 1988, the thinnest October
+          in the record. The map draws no arrows for this phase. The index
+          is used in both directions by the people who built it, so a
+          slow advance should lean the winter mild; but the case studies
+          and forecasts that the argument is about are all on the wide-
+          snow side, and the map draws only what has been argued over.
+    sources: [cohen_entekhabi_1999, saito_2001, gong_2003, cohen_2007_snow, fletcher_2007, cohen_fletcher_2007, cohen_jones_2011, cohen_2014_snow, allen_zender_2011, peings_2013, furtado_2015, douville_2017, peings_2017, henderson_2018, brown_derksen_2013, estilow_2015, wegmann_2015, gastineau_2017, santolaria_otin_2020, wegmann_2020, rutgers_snow_lab, cohen_2010]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -2137,8 +2212,8 @@ nodes:
     name: Central Siberia and Mongolia winter temperature
     label: Central Siberia
     kind: outcome
-    lat: 60
-    lon: 95
+    lat: 65
+    lon: 98
     area: [[70, 70], [120, 70], [120, 45], [70, 45]]
     region: Central Siberia from the Ob to Lake Baikal, and Mongolia
     timescale: December–February
