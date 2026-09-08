@@ -22,6 +22,7 @@ export function stepWhen(story: Story, step: StoryStep): string {
 export class StoryView {
   private story: Story | null = null;
   private stepIndex = 0;
+  private resizeTimer = 0;
   onStep: (story: Story, step: StoryStep, stepIndex: number) => void = () => {};
   onExit: () => void = () => {};
   /** "Compare with the record" (M34): open the table's row for the story's year */
@@ -39,6 +40,13 @@ export class StoryView {
       else if (btn.dataset.act === 'exit') this.exit();
       else if (btn.dataset.act === 'year') this.onYear(Number(btn.dataset.year));
     });
+    // A narrower panel wraps the text differently, so the height a story
+    // reserved is no longer the right one: measure it again.
+    window.addEventListener('resize', () => {
+      if (!this.story) return;
+      window.clearTimeout(this.resizeTimer);
+      this.resizeTimer = window.setTimeout(() => this.fixHeight(), 150);
+    });
   }
 
   get active(): Story | null { return this.story; }
@@ -47,6 +55,7 @@ export class StoryView {
     this.story = story;
     this.stepIndex = 0;
     this.apply();
+    this.fixHeight();
   }
 
   next(): void {
@@ -66,8 +75,33 @@ export class StoryView {
     if (!this.story) return;
     this.story = null;
     this.container.hidden = true;
+    this.container.style.minHeight = '';
     this.container.innerHTML = '';
     this.onExit();
+  }
+
+  /** Hold one height for the whole story, the tallest of its steps, so that
+   *  Back and Next stay in the same place from step to step (the panel is a
+   *  column with the buttons at its foot). Steps differ in length — only the
+   *  first carries the intro — and without this the buttons rode up and down
+   *  under the reader's cursor. Every step is laid out in the panel itself,
+   *  at its real width, in one go: nothing is painted in between. */
+  private fixHeight(): void {
+    const story = this.story;
+    if (!story) return;
+    const el = this.container;
+    const shown = el.innerHTML;
+    const live = el.getAttribute('aria-live');
+    el.setAttribute('aria-live', 'off');
+    el.style.minHeight = '';
+    let tallest = 0;
+    for (let i = 0; i < story.steps.length; i++) {
+      el.innerHTML = this.stepHtml(i);
+      tallest = Math.max(tallest, el.offsetHeight);
+    }
+    el.innerHTML = shown;
+    if (live !== null) el.setAttribute('aria-live', live);
+    if (tallest > 0) el.style.minHeight = `${tallest}px`;
   }
 
   private apply(): void {
@@ -77,31 +111,37 @@ export class StoryView {
   }
 
   private render(): void {
+    this.container.hidden = false;
+    this.container.innerHTML = this.stepHtml(this.stepIndex);
+    // Scroll the side panel (not the page) back to the top of the story.
+    if (this.container.parentElement) this.container.parentElement.scrollTop = 0;
+  }
+
+  /** One step's markup. Used for what is on screen and, by `fixHeight`, to
+   *  measure the steps that are not. */
+  private stepHtml(stepIndex: number): string {
     const story = this.story!;
-    const step = story.steps[this.stepIndex];
+    const step = story.steps[stepIndex];
     const n = story.steps.length;
     const sources = step.sources.map((k) => {
       const s = this.sources.get(k);
       if (!s) return `<li>${esc(k)}</li>`;
       return s.url ? `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.citation)}</a></li>` : `<li>${esc(s.citation)}</li>`;
     });
-    this.container.hidden = false;
-    this.container.innerHTML = `
+    return `
       <div class="story-head">
-        <span class="story-kicker">Story · step ${this.stepIndex + 1} of ${n}</span>
+        <span class="story-kicker">Story · step ${stepIndex + 1} of ${n}</span>
         <button type="button" data-act="exit" class="story-exit" aria-label="Leave the story">✕ Leave story</button>
       </div>
       <h3>${esc(story.title)}</h3>
-      ${this.stepIndex === 0 ? `<p class="story-intro">${esc(story.intro.trim())}</p>` : ''}
+      ${stepIndex === 0 ? `<p class="story-intro">${esc(story.intro.trim())}</p>` : ''}
       <p class="story-when">${esc(stepWhen(story, step))}</p>
       <p class="story-text">${esc(step.text.trim())}</p>
       <ul class="sources">${sources.join('')}</ul>
       ${story.start_year !== undefined && this.years.has(story.start_year) ? `<p class="story-year"><button type="button" data-act="year" data-year="${story.start_year}">Compare with the record: every driver recorded for ${story.start_year}</button></p>` : ''}
       <div class="story-nav">
-        <button type="button" data-act="prev" ${this.stepIndex === 0 ? 'disabled' : ''}>◀ Back</button>
-        <button type="button" data-act="next" ${this.stepIndex === n - 1 ? 'disabled' : ''}>${this.stepIndex === n - 1 ? 'The end' : 'Next ▶'}</button>
+        <button type="button" data-act="prev" ${stepIndex === 0 ? 'disabled' : ''}>◀ Back</button>
+        <button type="button" data-act="next" ${stepIndex === n - 1 ? 'disabled' : ''}>${stepIndex === n - 1 ? 'The end' : 'Next ▶'}</button>
       </div>`;
-    // Scroll the side panel (not the page) back to the top of the story.
-    if (this.container.parentElement) this.container.parentElement.scrollTop = 0;
   }
 }

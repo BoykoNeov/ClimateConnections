@@ -1174,6 +1174,11 @@ Do them in order. Each has acceptance criteria; all must pass before moving on.
   2. "A La Niña year in the Southern Hemisphere".
 - A "Stories" dropdown that plays a story: sets the scenario, steps the
   timeline, highlights the focus node, shows the text.
+- The panel holds one height for the whole story, the tallest of its steps
+  (measured on the way in, and again on a resize), with the Back / Next row
+  at its foot: steps differ in length and only the first carries the intro,
+  so without this the buttons rode up and down between steps, away from the
+  reader's cursor. Reporting only, and dropped for print.
 
 ### M7 — Polish
 - Print stylesheet; disclaimer; keyboard support for the scrubber (arrow keys).

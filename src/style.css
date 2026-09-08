@@ -237,7 +237,15 @@ html, body { margin: 0; height: 100%; }
   padding: 12px 16px 14px;
   background: #eef4fa;
   border-bottom: 3px solid var(--accent);
+  /* A story keeps one height, the tallest of its steps (set from
+     story.ts), and the Back/Next row sits at the foot of it, so the
+     buttons do not move as you step through. */
+  display: flex;
+  flex-direction: column;
 }
+/* An author display beats the browser's own [hidden] rule, so say it here:
+   with no story running the panel is gone, not an empty strip. */
+#story[hidden] { display: none; }
 #story h3 { margin: 4px 0 2px; font-size: 16px; }
 .story-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .story-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 600; }
@@ -246,7 +254,7 @@ html, body { margin: 0; height: 100%; }
 .story-intro { font-style: italic; color: var(--muted); margin: 6px 0; }
 .story-when { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); }
 .story-text { margin: 6px 0 8px; font-size: 14px; }
-.story-nav { display: flex; gap: 8px; margin-top: 8px; }
+.story-nav { display: flex; gap: 8px; margin-top: auto; padding-top: 8px; }
 .story-nav button {
   flex: 1; font: inherit; padding: 6px 10px; border: 1px solid var(--ink); border-radius: 6px;
   background: var(--panel); color: var(--ink); cursor: pointer;
@@ -417,7 +425,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
   .sure { background: #fff8e6; }
   .sources a { color: #000; text-decoration: none; }
   .sources a::after { content: " (" attr(href) ")"; font-size: 7.5pt; color: #444; word-break: break-all; }
+  /* On paper there are no buttons to keep still: drop the reserved height. */
   #story, #year { border-bottom: 1px solid #000; padding: 0 0 3mm; margin-bottom: 3mm; background: #ffffff; }
+  #story { display: block; min-height: 0 !important; }
   .story-nav, .story-exit, .story-kicker { display: none; }
   .watch { display: none; }
 
