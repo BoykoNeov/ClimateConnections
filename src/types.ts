@@ -54,6 +54,16 @@ export interface OutcomeNode extends NodeBase {
 
 export type GraphNode = DriverNode | OutcomeNode;
 
+/** One driver whose chosen phase weakens a link (M35, rule 10): while that
+ *  driver is chosen by hand and holds that phase, the link is shown one
+ *  confidence tier lower. Never the link's own `from` driver. */
+export interface Modulation {
+  driver: string;
+  phase: string;
+  /** the studies that found the weakening; at least one */
+  sources: string[];
+}
+
 export interface Link {
   id: string;
   from: string;
@@ -67,6 +77,9 @@ export interface Link {
   caveat: string;
   evidence_note?: string;
   sources: string[];
+  /** drivers whose chosen phase weakens this link by one tier (M35);
+   *  a link with this field always has an `evidence_note` saying so */
+  weakened_by?: Modulation[];
 }
 
 export interface Source {
@@ -223,10 +236,16 @@ export type LinkStatus = 'applied' | 'pending' | 'ghost' | 'faded';
  *  filter leaves it out), whether or not its lag had run. */
 export interface LinkState {
   status: LinkStatus;
-  /** the link's confidence after the per-hop downgrade; the line style to draw */
+  /** the link's confidence after the per-hop downgrade and, M35, the
+   *  modulation; the line style to draw */
   confidence: Confidence;
   /** 1 for the scenario driver's own links, 2 for links of a driver it set off, ... */
   depth: number;
+  /** the link's `weakened_by` entries in force this month (M35, rule 10):
+   *  a chosen driver holding the listed phase. Present only when at least
+   *  one is; the confidence above is then one tier lower than it would
+   *  otherwise be (floored at contested). */
+  weakenedBy?: Modulation[];
 }
 
 export interface NodeState {

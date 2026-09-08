@@ -1,8 +1,8 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, Link, LinkState, MonthState, NodeState, OutcomeNode, Source } from '../types';
+import type { DriverNode, Graph, GraphNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
-import { phaseForValue } from '../engine/propagate';
+import { downgrade, phaseForValue } from '../engine/propagate';
 import { compareNode, type Verdict } from '../engine/compare';
 import { countInfluences, type DriverInfluences, type Influence } from '../engine/inverse';
 import { stateColor } from './map';
@@ -35,18 +35,74 @@ function sourcesHtml(keys: string[], sources: Map<string, Source>): string {
   return `<ul class="sources">${items.join('')}</ul>`;
 }
 
+/** "<driver> is in its <phase> phase", naming both from the data. */
+function modulatorWords(w: Modulation, nodeById: Map<string, GraphNode>): string {
+  const d = nodeById.get(w.driver);
+  const phase = d?.kind === 'driver' ? d.phases.find((p) => p.id === w.phase) : undefined;
+  return `${esc(d ? shortName(d) : w.driver)} is in its ${esc(phase?.label ?? w.phase)} phase`;
+}
+
+/** The modulation lines of "How sure are we?" (M35, rule 10). In force
+ *  this month (`ls.weakenedBy`): which chosen driver weakens the link and
+ *  what that did to the tier, with the studies. Otherwise, for a link that
+ *  can be weakened: when, so the student knows what to add. */
+function modulationHtml(link: Link, ls: LinkState | null, nodeById: Map<string, GraphNode>, sources: Map<string, Source>): string {
+  if (!link.weakened_by || link.weakened_by.length === 0) return '';
+  const inForce = ls?.weakenedBy ?? [];
+  if (inForce.length > 0) {
+    const hops = ls ? ls.depth - 1 : 0;
+    // The tier before the weakening, ignoring the cap at the pushing driver's tier.
+    const atFloor = downgrade(link.confidence, hops) === 'contested';
+    const who = inForce.map((w) => modulatorWords(w, nodeById)).join(' and ');
+    const what = atFloor ? 'this link, already at the lowest tier, keeps its line style but can be expected to show up less reliably still'
+      : hops > 0 ? 'this link is drawn one tier lower still' : 'this link is drawn one tier lower than its rating';
+    const keys = [...new Set(inForce.flatMap((w) => w.sources))];
+    return `<p class="hint weaker"><strong>Weaker this month:</strong> ${who} in this scenario, so ${what}. It is still applied, with the same effect, in the same months.</p>${sourcesHtml(keys, sources)}`;
+  }
+  const when = link.weakened_by.map((w) => modulatorWords(w, nodeById).replace(' is in its ', ' in its ')).join(', or ');
+  const keys = [...new Set(link.weakened_by.flatMap((w) => w.sources))];
+  return `<p class="hint weaker"><strong>Weaker when</strong> ${when}: choose that driver too and this link drops one tier while both are in phase.</p>${sourcesHtml(keys, sources)}`;
+}
+
 /** "How sure are we?" for a link as it acts this month. `ls` carries the
- *  confidence after the per-hop downgrade; when it differs from the link's
- *  own rating the block says so. */
-function sureBlock(link: Link, ls: LinkState | null): string {
+ *  confidence after the per-hop downgrade and, M35, the modulation; when
+ *  it differs from the link's own rating the block says why. */
+function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, GraphNode>, sources: Map<string, Source>): string {
   const shown = ls?.confidence ?? link.confidence;
-  const downgraded = shown !== link.confidence;
+  const byHops = !!ls && ls.depth > 1 && shown !== link.confidence;
   return `<div class="sure"><strong>How sure are we?</strong>
     <span class="badge ${shown}">${shown}</span> ${esc(CONFIDENCE_TEXT[shown])}
-    ${downgraded ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.</p>` : ''}
+    ${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.</p>` : ''}
+    ${modulationHtml(link, ls, nodeById, sources)}
     <p><em>Why it might not happen:</em> ${esc(link.caveat.trim())}</p>
     ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}
   </div>`;
+}
+
+/** What a driver weakens (M35): the links that name one of its phases in
+ *  `weakened_by`, grouped by phase, on the driver's own card. */
+function weakensBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
+  const byPhase = new Map<string, Link[]>();
+  for (const l of graph.links) {
+    for (const w of l.weakened_by ?? []) {
+      if (w.driver !== node.id) continue;
+      byPhase.set(w.phase, [...(byPhase.get(w.phase) ?? []), l]);
+    }
+  }
+  if (byPhase.size === 0) return '';
+  let html = `<h2>Links it weakens</h2>
+    <p class="hint">Not an effect of its own: while this driver is chosen and holds the phase named, each link below is drawn one confidence tier lower (dashed instead of solid) and its card says so. Nothing is added up and the link still applies.</p>`;
+  for (const [phaseId, links] of byPhase) {
+    const phase = node.phases.find((p) => p.id === phaseId);
+    const items = links.map((l) => {
+      const from = ctx.nodeById.get(l.from);
+      const fromPhase = from?.kind === 'driver' ? from.phases.find((p) => p.id === l.when) : undefined;
+      const to = ctx.nodeById.get(l.to);
+      return `<li>${esc(fromPhase?.label ?? l.when)} → ${esc(to ? shortName(to) : l.to)} <span class="badge ${l.confidence}">${l.confidence}</span></li>`;
+    });
+    html += `<h4><span class="swatch" style="background:${phase?.color ?? '#999'}"></span>${esc(phase?.label ?? phaseId)} weakens</h4><ul class="weakens">${items.join('')}</ul>`;
+  }
+  return html;
 }
 
 /** A driver chosen by hand: its phase, and when it enters it (M12: a
@@ -126,7 +182,7 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
     <p class="hint">${esc(timing)}${onsetNote}${fadeNote}</p>
-    ${sureBlock(link, ls)}
+    ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
     ${sourcesHtml(link.sources, ctx.sources)}
   </div>`;
 }
@@ -150,7 +206,7 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
       ${alsoChosen}
       <p>${esc(l.mechanism.trim())}</p>
       <p class="hint">Expected from month ${l.lag_months[0]}${l.lag_months[1] !== l.lag_months[0] ? `–${l.lag_months[1]}` : ''} after ${esc(shortName(from))} enters that phase; season: ${seasonText(l)}.</p>
-      ${sureBlock(l, null)}
+      ${sureBlock(l, null, ctx.nodeById, ctx.sources)}
       ${sourcesHtml(l.sources, ctx.sources)}
     </div>`;
   }
@@ -204,6 +260,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     }
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+    html += weakensBlock(node, graph, ctx);
     html += feedbackBlock(node, graph, ctx);
     return html;
   }
@@ -252,6 +309,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     : `<p class="empty">The table of real years has no index for this driver. The map may still push it into a phase along a chain from a recorded driver; that is a tendency, not a record.</p>`;
   html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
   html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+  html += weakensBlock(node, graph, ctx);
   return html;
 }
 
@@ -395,6 +453,7 @@ function stripHtml(inf: Influence, color: string): string {
  */
 export function renderRegionCard(container: HTMLElement, graph: Graph, node: OutcomeNode, groups: DriverInfluences[]): void {
   const sources = new Map(graph.sources.map((s) => [s.key, s]));
+  const nodeById = new Map<string, GraphNode>(graph.nodes.map((n) => [n.id, n]));
   const total = countInfluences(groups);
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
   html += `<div class="state-line zero" style="background:#f0f2f5">Everything known to reach this place on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, ${total === 1 ? 'one connection' : `${total} connections`}</div>`;
@@ -410,7 +469,7 @@ export function renderRegionCard(container: HTMLElement, graph: Graph, node: Out
           <h4><span class="swatch" style="background:${ph.phase.color}"></span>${esc(ph.phase.label)}: ${esc(tendency)} <span class="badge ${inf.confidence}">${inf.confidence}</span></h4>
           <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}</p>
           <p>${esc(l.mechanism.trim())}</p>
-          ${sureBlock(l, null)}
+          ${sureBlock(l, null, nodeById, sources)}
           ${sourcesHtml(l.sources, sources)}
         </div>`;
       }

@@ -847,3 +847,139 @@ describe('propagate: any number of chosen drivers (M33)', () => {
     }
   });
 });
+
+describe('propagate: links that weaken other links (M35, rule 10)', () => {
+  const S = { driver: 'd2', phase: 'down', sources: ['s'] };
+  const S3 = { driver: 'd3', phase: 'up', sources: ['s'] };
+  const weakened = (over: Partial<Link> = {}): Partial<Link> => ({ id: 'w', to: 'a', effect: 1, confidence: 'established', weakened_by: [S], ...over });
+  const D2_DOWN = { driverId: 'd2', phaseId: 'down' };
+
+  it('one tier lower with the modulator chosen in the listed phase; still applied with the same effect in the same months, pending in the same months, reported with the entry in force', () => {
+    const g = graphWithMany([weakened({ lag_months: [2, 4], season: [8, 9, 10] })]);
+    const t = propagate(g, { ...base, others: [D2_DOWN] });
+    const plain = propagate(g, base);
+    for (const m of t.months) {
+      const p = plain.months[m.index];
+      expect(m.nodes.a.value, `month ${m.index}`).toBe(p.nodes.a.value);
+      expect(m.nodes.a.viaLinkIds).toEqual(p.nodes.a.viaLinkIds);
+      expect(m.nodes.a.pendingLinkIds).toEqual(p.nodes.a.pendingLinkIds);
+      if (p.links.w) expect(m.links.w).toEqual({ ...p.links.w, confidence: 'probable', weakenedBy: [S] });
+      else expect(m.links.w).toBeUndefined();
+    }
+    expect(plain.months[2].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[2].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[5].links.w).toEqual({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[1].links.w).toBeUndefined();
+  });
+
+  it('unchanged with the modulator absent, neutral, in another phase, or another driver in the listed phase', () => {
+    const g = graphWithMany([weakened()]);
+    for (const others of [[], [{ driverId: 'd2', phaseId: 'mid' }], [{ driverId: 'd2', phaseId: 'up' }], [{ driverId: 'd3', phaseId: 'down' }]]) {
+      const t = propagate(g, { ...base, others });
+      expect(t.months[0].links.w, JSON.stringify(others)).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+      expect(t.months[0].nodes.a.confidence).toBe('established');
+    }
+  });
+
+  it('unchanged with the modulator pushed into the listed phase rather than chosen', () => {
+    const g = graphWithMany([weakened(), { id: 'push', to: 'd2', effect: -1 }]);
+    const t = propagate(g, { ...base, maxDepth: 3 });
+    for (const m of t.months) {
+      expect(m.nodes.d2.value, `month ${m.index}`).toBe(-1);
+      expect(m.links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    }
+  });
+
+  it('unchanged before the modulator’s own start month (M12) and from its fade (M32); in force from month 0 when it began before the first (M15)', () => {
+    const g = graphWithMany([weakened()]);
+    const t = propagate(g, { ...base, others: [{ ...D2_DOWN, startMonth: 9, holdMonths: 4 }] }); // onset 3, fade 7
+    for (const m of t.months) {
+      const inForce = m.index >= 3 && m.index < 7;
+      expect(m.links.w, `month ${m.index}`).toEqual(inForce ? { status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] } : { status: 'applied', confidence: 'established', depth: 1 });
+      expect(m.nodes.a.confidence).toBe(inForce ? 'probable' : 'established');
+    }
+    const early = propagate(g, { ...base, others: [{ ...D2_DOWN, startMonth: 3, startsBefore: true, holdMonths: 5 }] }); // onset -3, fade 2
+    expect(early.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(early.months[1].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(early.months[2].links.w).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+  });
+
+  it('floored at contested, and still reported in force there', () => {
+    const g = graphWithMany([weakened({ confidence: 'contested' })]);
+    const t = propagate(g, { ...base, others: [D2_DOWN] });
+    expect(t.months[0].links.w).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [S] });
+    expect(t.months[0].nodes.a.value).toBe(1);
+  });
+
+  it('ghosted under the confidence filter at the weakened tier: applies nothing, pushes nothing', () => {
+    const g = graphWithMany([weakened(), { id: 'wd', to: 'd3', effect: 1, confidence: 'established', weakened_by: [S] }, { id: 'on', from: 'd3', when: 'up', to: 'c', effect: 1 }]);
+    const t = propagate(g, { ...base, maxDepth: 3, minConfidence: 'established', others: [D2_DOWN] });
+    expect(t.months[0].links.w).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[0].links.wd).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[0].nodes.a.value).toBe(0);
+    expect(t.months[0].nodes.d3.value).toBe(0);
+    expect(t.months[0].links.on).toBeUndefined();
+    const plain = propagate(g, { ...base, maxDepth: 3, minConfidence: 'established' });
+    expect(plain.months[0].nodes.a.value).toBe(1);
+    expect(plain.months[0].nodes.d3.value).toBe(1);
+    // (its onward link is a second hop, probable, and so a ghost under this filter anyway: M10)
+    expect(plain.months[0].links.on).toEqual({ status: 'ghost', confidence: 'probable', depth: 2 });
+  });
+
+  it('rule 5 at the node: the weakened tier is the lowest among the applied links; sums and conflicts unchanged', () => {
+    const g = graphWithMany([weakened(), { id: 'other', to: 'a', effect: 1, confidence: 'established' }, { id: 'against', from: 'd2', when: 'down', to: 'a', effect: -1, confidence: 'established' }]);
+    const t = propagate(g, { ...base, others: [D2_DOWN] });
+    expect(t.months[0].nodes.a.confidence).toBe('probable');
+    expect(t.months[0].nodes.a.value).toBe(1);
+    expect(t.months[0].nodes.a.conflicting).toBe(true);
+    expect(t.months[0].nodes.a.viaLinkIds.sort()).toEqual(['against', 'other', 'w']);
+    expect(t.months[0].links.other).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[0].links.against).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+  });
+
+  it('stacks with the per-hop downgrade: a second-hop link loses one tier for the hop and one more for the modulator', () => {
+    const g = graphWithMany([{ id: 'push', to: 'd3', effect: 1 }, { id: 'w', from: 'd3', when: 'up', to: 'b', effect: 1, confidence: 'established', weakened_by: [S] }]);
+    const t = propagate(g, { ...base, maxDepth: 3, others: [D2_DOWN] });
+    expect(t.months[0].nodes.d3.value).toBe(1);
+    expect(t.months[0].links.w).toEqual({ status: 'applied', confidence: 'contested', depth: 2, weakenedBy: [S] });
+    expect(t.months[0].nodes.b.confidence).toBe('contested');
+    const plain = propagate(g, { ...base, maxDepth: 3 });
+    expect(plain.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+  });
+
+  it('one tier only, however many listed drivers hold their phase, all of them reported in the link’s order', () => {
+    const g = graphWithMany([weakened({ weakened_by: [S, S3] })]);
+    const both = propagate(g, { ...base, others: [{ driverId: 'd3', phaseId: 'up' }, D2_DOWN] });
+    expect(both.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S, S3] });
+    const one = propagate(g, { ...base, others: [{ driverId: 'd3', phaseId: 'up' }] });
+    expect(one.months[0].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S3] });
+  });
+
+  it('a faded link (M32) is reported as rated, whoever is chosen', () => {
+    const g = graphWithMany([weakened()]);
+    const t = propagate(g, { ...base, holdMonths: 3, others: [D2_DOWN] });
+    expect(t.months[2].links.w).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [S] });
+    expect(t.months[3].links.w).toEqual({ status: 'faded', confidence: 'established', depth: 1 });
+  });
+
+  it('a modulated link still pushes a driver, whose state and onward links carry the lower tier; onsets unchanged', () => {
+    const g = graphWithMany([{ id: 'w', to: 'd3', effect: 1, confidence: 'established', weakened_by: [S], lag_months: [2, 2] }, { id: 'on', from: 'd3', when: 'up', to: 'c', effect: 1, confidence: 'established', lag_months: [1, 1] }]);
+    const t = propagate(g, { ...base, maxDepth: 3, others: [D2_DOWN] });
+    const plain = propagate(g, { ...base, maxDepth: 3 });
+    expect(t.months[1].nodes.d3.value).toBe(0);
+    expect(t.months[2].nodes.d3.value).toBe(1);
+    expect(t.months[2].nodes.d3.confidence).toBe('probable');
+    expect(plain.months[2].nodes.d3.confidence).toBe('established');
+    expect(t.months[2].links.on).toBeUndefined();
+    expect(t.months[3].links.on).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(plain.months[3].links.on).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+    expect(arrivalMonth(t, 'on', 'c')).toBe(arrivalMonth(plain, 'on', 'c'));
+  });
+
+  it('never reports a link the modulator is not allowed to touch: a link into the chosen modulator is skipped as before', () => {
+    const g = graphWithMany([{ id: 'into', to: 'd2', effect: 1, confidence: 'established', weakened_by: [S] }]);
+    const t = propagate(g, { ...base, maxDepth: 3, others: [D2_DOWN] });
+    expect(t.months[0].links.into).toBeUndefined();
+    expect(t.months[0].nodes.d2.value).toBe(-1);
+  });
+});

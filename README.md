@@ -324,6 +324,18 @@ and each hop lowers the confidence one tier, never above the link that set
 the driver off. Nothing else happens: no randomness, and no loop is ever
 animated. The rules are written out in docs/PLAN.md §4.
 
+A link may also be *weakened* by another driver. Ten of ENSO's winter
+links to North America (the Gulf Coast, California, the Pacific Northwest,
+the Prairies, the Southwest) say that the Pacific Decadal Oscillation in
+its opposite-sign phase makes them less reliable, with the studies that
+found it. While that driver is chosen by hand and holds that phase, the
+link is drawn one confidence tier lower (a solid line turns dashed) and
+its card says why; it still applies, with the same effect, in the same
+months. Only the weakening side exists: three states cannot show
+"stronger", and "stronger when the PDO is warm" is the same fact as
+"weaker when the PDO is cool". A driver pushed into a phase by a link
+never weakens anything; only the drivers you chose do.
+
 Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
 the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;
 even the "events usually begin in" note under the month control and the

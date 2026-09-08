@@ -28,6 +28,7 @@ export function renderLegend(): HTMLElement {
     html += `<div class="legend-row">${line(c)}<span><strong>${c[0].toUpperCase() + c.slice(1)}</strong></span></div>`;
     html += `<p class="legend-note">${CONFIDENCE_TEXT[c]}</p>`;
   }
+  html += `<p class="legend-note weaker">A line can drop one tier while another driver you chose weakens it (the PDO on ENSO's winter links to North America); the card's "How sure are we?" says which driver and why.</p>`;
   for (const [axis, colors] of Object.entries(AXIS_COLORS) as Array<[keyof typeof AXIS_COLORS, { plus: string; minus: string }]>) {
     const [plus, minus] = AXIS_LABELS[axis];
     html += `<div class="legend-row">${dot(colors.plus)}<span>${plus}</span>&nbsp;&nbsp;${dot(colors.minus)}<span>${minus}</span></div>`;

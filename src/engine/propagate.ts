@@ -208,20 +208,30 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
           // driver state the link starts from.
           let confidence = downgrade(link.confidence, depth - 1);
           if (hop.confidence) confidence = lowest(confidence, hop.confidence);
+          // Rule 10 (M35): a chosen driver holding a phase the link names in
+          // `weakened_by` takes it one tier lower still, floored at
+          // contested. Only chosen drivers count (`inPhase`: at or after
+          // their onset, before their fade); a pushed driver never
+          // modulates. One tier however many entries are in force. The link
+          // is still applied, with the same effect, in the same months.
+          const weakenedBy = (link.weakened_by ?? []).filter((w) => inPhase.some((c) => c.driverId === w.driver && c.phaseId === w.phase));
+          if (weakenedBy.length > 0) confidence = downgrade(confidence, 1);
+          const state = (status: LinkState['status']): LinkState =>
+            weakenedBy.length > 0 ? { status, confidence, depth, weakenedBy } : { status, confidence, depth };
           if (CONFIDENCE_ORDER[confidence] < minLevel) {
-            links[link.id] = { status: 'ghost', confidence, depth };
+            links[link.id] = state('ghost');
             continue;
           }
           const inSeason = link.season.length === 0 || link.season.includes(cal);
           if (!inSeason) {
             target.pendingLinkIds.push(link.id);
-            links[link.id] = { status: 'pending', confidence, depth };
+            links[link.id] = state('pending');
             continue;
           }
           target.inSeason = true;
           target.viaLinkIds.push(link.id);
           target.confidence = lowest(target.confidence, confidence);
-          links[link.id] = { status: 'applied', confidence, depth };
+          links[link.id] = state('applied');
           const acc = sums.get(link.to) ?? { sum: 0, pos: false, neg: false };
           acc.sum += link.effect;
           if (link.effect > 0) acc.pos = true; else acc.neg = true;

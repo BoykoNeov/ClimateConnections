@@ -126,7 +126,18 @@ links:
     caveat: >
       The signal is clearest in strong events; moderate ones can pass with
       an unremarkable winter.
+    evidence_note: >
+      The wet, cool Gulf Coast winter is among the most reliable El Niño
+      signals in the United States. The Pacific Decadal Oscillation sets how
+      reliably this shows up: when the PDO is in its negative (cool) phase,
+      El Niño's winter pattern over North America comes through weakly and
+      less consistently than when the PDO is positive, so the link is shown
+      one tier lower when a negative PDO is chosen alongside El Niño.
     sources: [ropelewski_halpert_1986, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: el_nino_california
     from: enso
@@ -146,7 +157,17 @@ links:
       Only strong, eastern-Pacific El Niños show a clear wet signal, mostly
       in southern California and mostly in January–March. Averaged over all
       events the effect is small.
+      The Pacific Decadal Oscillation sets how reliably this shows up: when
+      the PDO is in its negative (cool) phase, El Niño's winter pattern over
+      North America comes through weakly and less consistently than when the
+      PDO is positive, so the link is shown one tier lower when a negative
+      PDO is chosen alongside El Niño. The link is already at the lowest
+      tier, so the line itself does not change; the card says so.
     sources: [jong_2016]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: el_nino_pacific_northwest
     from: enso
@@ -163,7 +184,19 @@ links:
     caveat: >
       Individual cold outbreaks still occur; the tendency is a milder average,
       not an absence of winter.
+    evidence_note: >
+      The mild Northwest winter appears in most El Niño years, most clearly
+      in temperature and mountain snowpack. The Pacific Decadal Oscillation
+      sets how reliably this shows up: when the PDO is in its negative
+      (cool) phase, El Niño's winter pattern over North America comes
+      through weakly and less consistently than when the PDO is positive, so
+      the link is shown one tier lower when a negative PDO is chosen
+      alongside El Niño.
     sources: [halpert_ropelewski_1992, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: el_nino_atlantic_hurricanes
     from: enso
@@ -500,7 +533,19 @@ links:
     caveat: >
       Occasional strong cold fronts still bring rain; the tendency is a drier
       average across the whole winter.
+    evidence_note: >
+      The dry Gulf Coast winter shows up in most La Niña years and is a
+      usual start of drought in Texas and the Southeast. The Pacific Decadal
+      Oscillation sets how reliably this shows up: when the PDO is in its
+      positive (warm) phase, La Niña's winter pattern over North America
+      comes through weakly and less consistently than when the PDO is
+      negative, so the link is shown one tier lower when a positive PDO is
+      chosen alongside La Niña.
     sources: [ropelewski_halpert_1986, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: positive
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: la_nina_california
     from: enso
@@ -519,7 +564,17 @@ links:
     evidence_note: >
       Southern California shows a modest dry lean in La Niña; northern
       California shows almost none.
+      The Pacific Decadal Oscillation sets how reliably this shows up: when
+      the PDO is in its positive (warm) phase, La Niña's winter pattern over
+      North America comes through weakly and less consistently than when the
+      PDO is negative, so the link is shown one tier lower when a positive
+      PDO is chosen alongside La Niña. The link is already at the lowest
+      tier, so the line itself does not change; the card says so.
     sources: [jong_2016]
+    weakened_by:
+      - driver: pdo
+        phase: positive
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: la_nina_pacific_northwest
     from: enso
@@ -536,7 +591,18 @@ links:
     caveat: >
       A warm blob of ocean water offshore can override the cool tendency, as
       happened in some recent La Niña winters.
+    evidence_note: >
+      The cool, wet Northwest winter appears in most La Niña years, most
+      clearly in mountain snowpack. The Pacific Decadal Oscillation sets how
+      reliably this shows up: when the PDO is in its positive (warm) phase,
+      La Niña's winter pattern over North America comes through weakly and
+      less consistently than when the PDO is negative, so the link is shown
+      one tier lower when a positive PDO is chosen alongside La Niña.
     sources: [halpert_ropelewski_1992, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: positive
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: la_nina_atlantic_hurricanes
     from: enso
@@ -1389,7 +1455,16 @@ links:
       Shabbar and Khandekar found the winter warming over western and central
       Canada in almost every El Niño since 1900, and it is among the
       strongest ENSO temperature signals outside the tropics.
+      The Pacific Decadal Oscillation sets how reliably this shows up: when
+      the PDO is in its negative (cool) phase, El Niño's winter pattern over
+      North America comes through weakly and less consistently than when the
+      PDO is positive, so the link is shown one tier lower when a negative
+      PDO is chosen alongside El Niño.
     sources: [shabbar_khandekar_1996, halpert_ropelewski_1992, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: el_nino_hawaii
     from: enso
@@ -1477,7 +1552,19 @@ links:
       The tendency is strongest in strong events; weak and central-Pacific
       El Niños have brought ordinary or even dry winters to Arizona and New
       Mexico.
+    evidence_note: >
+      The wet Southwest winter is clearest in strong eastern-Pacific El
+      Niños and weak or absent in weak and central-Pacific ones. The Pacific
+      Decadal Oscillation sets how reliably this shows up: when the PDO is
+      in its negative (cool) phase, El Niño's winter pattern over North
+      America comes through weakly and less consistently than when the PDO
+      is positive, so the link is shown one tier lower when a negative PDO
+      is chosen alongside El Niño.
     sources: [ropelewski_halpert_1986, redmond_koch_1991, magana_2003]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: el_nino_south_pacific_cyclones
     from: enso
@@ -1644,7 +1731,19 @@ links:
       The cold signal in La Niña is weaker and less consistent than the warm
       signal in El Niño, and some La Niña winters on the Prairies have been
       close to normal.
+    evidence_note: >
+      The cold Prairie winter is the weaker mirror of El Niño's mild one,
+      found in a majority of La Niña years but not all. The Pacific Decadal
+      Oscillation sets how reliably this shows up: when the PDO is in its
+      positive (warm) phase, La Niña's winter pattern over North America
+      comes through weakly and less consistently than when the PDO is
+      negative, so the link is shown one tier lower when a positive PDO is
+      chosen alongside La Niña.
     sources: [shabbar_khandekar_1996, halpert_ropelewski_1992, noaa_cpc_north_america]
+    weakened_by:
+      - driver: pdo
+        phase: positive
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: la_nina_hawaii
     from: enso
@@ -1719,7 +1818,19 @@ links:
       Dry winters have many origins, and a single slow-moving storm can
       rescue a La Niña season; the persistent Southwest drought of the early
       2000s spanned La Niña and neutral years alike.
+    evidence_note: >
+      The dry Southwest winter is among the more reliable La Niña signals
+      and underlies much of the region's drought risk. The Pacific Decadal
+      Oscillation sets how reliably this shows up: when the PDO is in its
+      positive (warm) phase, La Niña's winter pattern over North America
+      comes through weakly and less consistently than when the PDO is
+      negative, so the link is shown one tier lower when a positive PDO is
+      chosen alongside La Niña.
     sources: [ropelewski_halpert_1989, redmond_koch_1991]
+    weakened_by:
+      - driver: pdo
+        phase: positive
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
 
   - id: la_nina_south_pacific_cyclones
     from: enso
@@ -5477,6 +5588,12 @@ sources:
   - key: mccabe_2004
     citation: "McCabe, G. J., Palecki, M. A., & Betancourt, J. L. (2004). Pacific and Atlantic Ocean influences on multidecadal drought frequency in the United States. Proceedings of the National Academy of Sciences, 101(12), 4136–4141."
     url: https://doi.org/10.1073/pnas.0306738101
+  - key: mccabe_dettinger_1999
+    citation: "McCabe, G. J., & Dettinger, M. D. (1999). Decadal variations in the strength of ENSO teleconnections with precipitation in the western United States. International Journal of Climatology, 19(13), 1399–1410."
+    url: https://doi.org/10.1002/(SICI)1097-0088(19991115)19:13<1399::AID-JOC457>3.0.CO;2-A
+  - key: yu_zwiers_2007
+    citation: "Yu, B., & Zwiers, F. W. (2007). The impact of combined ENSO and PDO on the PNA climate: a 1,000-year climate modeling study. Climate Dynamics, 29, 837–851."
+    url: https://doi.org/10.1007/s00382-007-0267-4
   - key: noaa_ncei_pdo
     citation: "NOAA National Centers for Environmental Information. Pacific Decadal Oscillation (PDO): monitoring page and monthly index."
     url: https://www.ncei.noaa.gov/access/monitoring/pdo/

@@ -88,6 +88,13 @@ links:
     evidence_note: >                    # optional: where studies disagree, how often it shows up
       ...
     sources: [rasmusson_carpenter_1983, kumar_1999]   # at least one
+    weakened_by:                        # optional (M35): drivers whose chosen phase weakens
+      - driver: pdo                     #   this link. While that driver is chosen by hand
+        phase: negative                 #   and holds that phase, the link is drawn one
+        sources: [gershunov_barnett_1998]   # confidence tier lower (floored at contested)
+                                        #   and its card says so. At least one source per
+                                        #   entry; the link must then have an evidence_note
+                                        #   saying what weakens it. Never the link's own driver.
 
 sources:
   - key: rasmusson_carpenter_1983
@@ -109,6 +116,16 @@ Rules enforced by the validator:
 - Asymmetry is expected. El Niño and La Niña links are separate entries and
   are never derived from each other. If only one phase is supported by the
   literature, add only that one.
+- `weakened_by` (M35, docs/PLAN.md §4 rule 10): each entry names an
+  existing driver and one of its phases, not the link's own `from`, no
+  `(driver, phase)` pair twice, at least one resolvable source, and the
+  link carries an `evidence_note`. Only chosen drivers modulate (a driver
+  pushed by a link never does); the link still applies with the same
+  effect in the same months, one tier lower however many entries are in
+  force. Only the weakening side is written: "stronger when the PDO is
+  warm" is the same fact as "weaker when the PDO is cool". Shipped: ENSO's
+  five winter links to the Gulf Coast, California, the Pacific Northwest,
+  the Prairies and the Southwest, each weakened by the opposite-sign PDO.
 
 ## `data/stories.yaml`
 

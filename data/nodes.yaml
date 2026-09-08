@@ -248,10 +248,15 @@ nodes:
       positive in 2014. It is not one thing: much of it is El Niño's
       footprint carried into the North Pacific by the atmosphere, plus the
       ocean's memory from one winter to the next, so its own effects are
-      ENSO-like and weaker. The map shows one year inside a phase. What it
-      cannot show is the PDO's better-known role: making ENSO's effects on
-      North America and Australia stronger in some decades and weaker in
-      others.
+      ENSO-like and weaker. The map shows one year inside a phase. The
+      PDO's better-known role is to make ENSO's effects on North America
+      and Australia stronger in some decades and weaker in others: choose
+      it alongside El Niño or La Niña and ENSO's winter links to the Gulf
+      Coast, the Southwest, California, the Pacific Northwest and the
+      Prairies are drawn one confidence tier lower while the PDO is in the
+      opposite phase. The map draws only the weakening; the stronger side
+      cannot be shown with three states, and the Australian case is not
+      yet on the map.
     onset_hint: The Pacific Decadal Oscillation holds a phase for years, so the year shown is one year inside such a phase and "Event lasts" is best left at the whole year; start in November to see its winter effects first.
     default_start_month: 11
     typical_duration_months: [12, 12]
@@ -265,8 +270,9 @@ nodes:
           cool water in the central North Pacific, and a deep Aleutian low
           in winter. Winters tend to be mild in Alaska and the Pacific
           Northwest and wet in the Southwest, and El Niño's own winter
-          pattern over North America tends to come through strongly. The
-          warm phase ran from 1977 to the late 1990s and returned in 2014.
+          pattern over North America tends to come through strongly while
+          La Niña's comes through weakly. The warm phase ran from 1977 to
+          the late 1990s and returned in 2014.
       - id: neutral
         value: 0
         label: Neutral
@@ -283,9 +289,9 @@ nodes:
           Cool water along the North American coast, warm water in the
           central North Pacific, and a weak Aleutian low. Winters tend to be
           cold in Alaska and the Pacific Northwest and dry in the Southwest,
-          and La Niña's winter pattern tends to come through strongly. The
-          cool phase ran from 1947 to 1976 and, less cleanly, from about
-          1999 to 2013.
+          and La Niña's winter pattern tends to come through strongly while
+          El Niño's comes through weakly. The cool phase ran from 1947 to
+          1976 and, less cleanly, from about 1999 to 2013.
     sources: [mantua_1997, mantua_hare_2002, zhang_wallace_battisti_1997, newman_2016, power_1999, noaa_ncei_pdo]
 
   - id: amo

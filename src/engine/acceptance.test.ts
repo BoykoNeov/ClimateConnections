@@ -6,7 +6,8 @@
 
 import { describe, expect, it } from 'vitest';
 import { chosenFade, chosenOnset, propagate } from './propagate';
-import type { Graph, Scenario, Timeline, Value } from '../types';
+import { scenarioForYear, yearRow } from './years';
+import type { Graph, Scenario, ScenarioDriver, Timeline, Value } from '../types';
 import graphJson from '../../public/data/graph.json';
 
 const graph = graphJson as unknown as Graph;
@@ -2628,5 +2629,117 @@ describe('acceptance: the 2009–10 story, high October snow from October', () =
     expect(tl.months[12].calendarMonth).toBe(10);
     for (const st of Object.values(tl.months[12].nodes)) expect(st.viaLinkIds).toHaveLength(0);
     expect(tl.months[12].nodes.nao.pendingLinkIds).toEqual(['high_snow_negative_nao']);
+  });
+});
+
+describe('acceptance: the PDO weakens ENSO’s North American winter links (M35, rule 10)', () => {
+  const PDO_SOURCES = ['gershunov_barnett_1998', 'mccabe_dettinger_1999', 'yu_zwiers_2007'];
+  const NEG = { driver: 'pdo', phase: 'negative', sources: PDO_SOURCES };
+  const POS = { driver: 'pdo', phase: 'positive', sources: PDO_SOURCES };
+  const june = (phaseId: string, others: ScenarioDriver[] = [], extra: Partial<Scenario> = {}): Timeline =>
+    propagate(graph, { driverId: 'enso', phaseId, startMonth: 6, horizonMonths: HORIZON, others, ...extra });
+  const EL_NINO_LINKS = ['el_nino_us_gulf_coast', 'el_nino_california', 'el_nino_pacific_northwest', 'el_nino_canadian_prairies', 'el_nino_us_southwest'];
+  const LA_NINA_LINKS = ['la_nina_us_gulf_coast', 'la_nina_california', 'la_nina_pacific_northwest', 'la_nina_canadian_prairies', 'la_nina_us_southwest'];
+
+  it('ten links carry weakened_by: the five El Niño winter links by the negative PDO, the five La Niña ones by the positive, each with the three studies and an evidence note that says so; no other link has any; none is a driver-to-driver link', () => {
+    const mod = graph.links.filter((l) => l.weakened_by);
+    expect(mod.map((l) => l.id).sort()).toEqual([...EL_NINO_LINKS, ...LA_NINA_LINKS].sort());
+    for (const l of mod) {
+      expect(l.weakened_by, l.id).toEqual([l.when === 'el_nino' ? NEG : POS]);
+      expect(l.evidence_note, l.id).toMatch(/one tier lower/);
+      expect(graph.nodes.find((n) => n.id === l.to)?.kind, l.id).toBe('outcome');
+    }
+    for (const k of PDO_SOURCES) expect(graph.sources.some((s) => s.key === k), k).toBe(true);
+  });
+
+  it('El Niño alone: the Pacific Northwest mild in December–February (months 6–8) at established; with a negative PDO chosen too, the same months at probable with the entry in force, the place hatched by the PDO’s own cold link; with a positive PDO, established and hatched by nothing', () => {
+    const alone = june('el_nino');
+    const neg = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative' }]);
+    const pos = june('el_nino', [{ driverId: 'pdo', phaseId: 'positive' }]);
+    expect(monthsWith(alone, 'pacific_northwest_winter', 1)).toEqual([6, 7, 8]);
+    expect(alone.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(neg.months[7].nodes.pacific_northwest_winter.conflicting).toBe(true);
+    expect(neg.months[7].nodes.pacific_northwest_winter.viaLinkIds.sort()).toEqual(['el_nino_pacific_northwest', 'negative_pdo_pacific_northwest']);
+    expect(pos.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(pos.months[7].nodes.pacific_northwest_winter.conflicting).toBe(false);
+    // Pending months carry the weakening too (rule 3 unchanged: the same months).
+    expect(neg.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'pending', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(alone.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'pending', confidence: 'established', depth: 1 });
+  });
+
+  it('the Gulf Coast, which the PDO does not reach itself: wet in November–March either way, established alone and probable with the negative PDO (rule 5 takes the weakened tier); California, already contested, stays contested with the entry in force', () => {
+    const alone = june('el_nino');
+    const neg = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative' }]);
+    expect(monthsWith(alone, 'us_gulf_coast_winter', 1)).toEqual([5, 6, 7, 8, 9]);
+    expect(monthsWith(neg, 'us_gulf_coast_winter', 1)).toEqual([5, 6, 7, 8, 9]);
+    expect(alone.months[7].nodes.us_gulf_coast_winter.confidence).toBe('established');
+    expect(neg.months[7].nodes.us_gulf_coast_winter.confidence).toBe('probable');
+    expect(neg.months[7].nodes.us_gulf_coast_winter.conflicting).toBe(false);
+    expect(neg.months[7].links.el_nino_california).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] });
+    expect(alone.months[7].links.el_nino_california).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+  });
+
+  it('the PDO from December (M12): the Gulf Coast link arrives in November at established and drops to probable from December, the month the PDO enters its phase; nothing moves', () => {
+    const t = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative', startMonth: 12 }]);
+    expect(chosenOnset(t.scenario, 'pdo')).toBe(6);
+    expect(t.months[5].links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(t.months[6].links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(monthsWith(t, 'us_gulf_coast_winter', 1)).toEqual([5, 6, 7, 8, 9]);
+  });
+
+  it('under "established only" the weakened Northwest link is a ghost, so with the negative PDO the Northwest is left to the PDO’s own probable link, also a ghost: hollow; alone it is mild', () => {
+    const alone = june('el_nino', [], { minConfidence: 'established' });
+    const neg = june('el_nino', [{ driverId: 'pdo', phaseId: 'negative' }], { minConfidence: 'established' });
+    expect(alone.months[7].nodes.pacific_northwest_winter.value).toBe(1);
+    expect(neg.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(neg.months[7].links.negative_pdo_pacific_northwest).toEqual({ status: 'ghost', confidence: 'probable', depth: 1 });
+    expect(neg.months[7].nodes.pacific_northwest_winter.value).toBe(0);
+    expect(neg.months[7].nodes.pacific_northwest_winter.viaLinkIds).toEqual([]);
+    // The Gulf Coast, established alone, is ghosted too under the negative PDO.
+    expect(neg.months[7].links.el_nino_us_gulf_coast).toEqual({ status: 'ghost', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(neg.months[7].nodes.us_gulf_coast_winter.value).toBe(0);
+  });
+
+  it('a pushed PDO never modulates: with the chain on and no PDO chosen, El Niño pushes the PDO positive and its own winter links stay established (the negative phase is never reached; La Niña pushes it negative, and La Niña’s links are weakened by the positive phase)', () => {
+    const chain = june('el_nino', [], { maxDepth: 3 });
+    expect(chain.months.some((m) => m.nodes.pdo.value === 1)).toBe(true);
+    expect(chain.months.every((m) => m.nodes.pdo.value !== -1)).toBe(true);
+    for (const id of EL_NINO_LINKS) for (const m of chain.months) if (m.links[id]) expect(m.links[id].weakenedBy, `${id} month ${m.index}`).toBeUndefined();
+    expect(chain.months[7].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    const chainL = june('la_nina', [], { maxDepth: 3 });
+    expect(chainL.months.some((m) => m.nodes.pdo.value === -1)).toBe(true);
+    for (const id of LA_NINA_LINKS) for (const m of chainL.months) if (m.links[id]) expect(m.links[id].weakenedBy, `${id} month ${m.index}`).toBeUndefined();
+  });
+
+  it('La Niña with a positive PDO: the mirror, the Southwest dry at probable and the Prairies (rated probable) at contested; alone as rated', () => {
+    const alone = june('la_nina');
+    const pos = june('la_nina', [{ driverId: 'pdo', phaseId: 'positive' }]);
+    expect(alone.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    expect(pos.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [POS] });
+    expect(alone.months[7].links.la_nina_canadian_prairies).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(pos.months[7].links.la_nina_canadian_prairies).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [POS] });
+    // Wrong-sign PDO: nothing.
+    const neg = june('la_nina', [{ driverId: 'pdo', phaseId: 'negative' }]);
+    expect(neg.months[7].links.la_nina_us_southwest).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+  });
+
+  it('the real year 2023 (M34): El Niño from May with the PDO negative since 2020, so from the record the Gulf Coast arrives in November at probable and the card can say why', () => {
+    const row = yearRow(graph, 2023)!;
+    const ys = scenarioForYear(graph, row);
+    const t = propagate(graph, { ...ys.scenario, maxDepth: 3 });
+    const nov = t.months.find((m) => m.calendarMonth === 11)!;
+    expect(nov.links.el_nino_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+    expect(nov.nodes.us_gulf_coast_winter.value).toBe(1);
+  });
+
+  it('no shipped story pairs ENSO with the opposite PDO, so every story’s timeline is as before; the 2015 story (El Niño with the positive PDO) has no entry in force', () => {
+    for (const s of graph.stories) {
+      const drivers = [{ driver: s.driver, phase: s.phase }, ...(s.drivers ?? [])];
+      const enso = drivers.find((d) => d.driver === 'enso');
+      const pdo = drivers.find((d) => d.driver === 'pdo');
+      if (!enso || !pdo) continue;
+      expect((enso.phase === 'el_nino' && pdo.phase === 'negative') || (enso.phase === 'la_nina' && pdo.phase === 'positive'), s.id).toBe(false);
+    }
   });
 });

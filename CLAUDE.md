@@ -30,7 +30,9 @@ a set number of months, the first engine extension, and since M33 any
 number of drivers chosen at once behind a "More drivers" section, the
 second, and since M34 a "Real year" picker that sets every recorded
 driver from a hand-curated table of index readings, 1950–2025, the
-first item to read the record) on a
+first item to read the record, and since M35 links that weaken other
+links: a chosen driver in a listed phase draws a link one confidence
+tier lower, the third engine extension) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -80,6 +82,15 @@ one.
   computes no climate fact. A driver absent from a row is "not recorded",
   not neutral. Do not add a year entry without an index source, and do not
   soften the year panel's honesty sentence.
+- Modulation (M35, §4 rule 10) is a link field, `weakened_by`, read only
+  for the drivers the scenario fixes by hand: while such a driver holds
+  the listed phase the link's effective confidence is one tier lower
+  (floored at contested), after the hop downgrade and before the filter
+  and rule 5. Nothing else changes: same effect, same months, same sums;
+  a pushed driver never modulates; only the weakening direction exists
+  (three states cannot show "stronger"). Each entry carries its own
+  sources and the link an `evidence_note` saying so. Do not add a
+  strengthening side, and do not let a pushed driver modulate.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -117,7 +128,10 @@ one.
   `data/years.yaml`, `scripts/years-schema.mjs`, `src/engine/years.ts`,
   the "Real year" picker and panel; extended the same day from seven
   index drivers to all fourteen, the meridional modes to 2024) on
-  2026-09-08.
+  2026-09-08, and links that weaken other links (M35, the third engine
+  extension: `Link.weakened_by`, rule 10, `LinkState.weakenedBy`, the
+  PDO on ENSO's ten North American winter links, the "Weaker this
+  month" card line and "Links it weakens") on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its

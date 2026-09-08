@@ -852,6 +852,16 @@ way rule 16 allows: a hand-curated, committed table, not a data feed.
 
 ### M35 — Links that weaken other links (modulation)
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§6 under M35. As written below, with these readings: the PDO case only,
+on ENSO's ten winter links to the Gulf Coast, California, the Pacific
+Northwest, the Prairies and the Southwest (there is no ENSO link to Alaska
+on the map, so the Southwest stands in for it); each `weakened_by` entry
+carries its own `sources` and the link its `evidence_note`, as the data
+paragraph asks; the AMO and QBO cases remain candidates for their own
+sign-off. The card also says "Weaker when ..." on a link that can be
+weakened but is not, and a driver's card lists what it weakens.
+
 **Why it does not fit.** The PDO changes how strongly ENSO reaches North
 America; the QBO changes how strongly El Niño weakens the polar vortex;
 the AMO changes how strongly El Niño suppresses hurricanes. The engine

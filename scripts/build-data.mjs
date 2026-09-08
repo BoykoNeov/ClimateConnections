@@ -66,6 +66,14 @@ const OutcomeNode = NodeBase.extend({
 
 const Node = z.discriminatedUnion('kind', [DriverNode, OutcomeNode]);
 
+/** One driver whose chosen phase weakens a link by one confidence tier
+ *  (M35, rule 10), with the studies that found the weakening. */
+const Modulation = z.object({
+  driver: Id,
+  phase: Id,
+  sources: z.array(Id).min(1, 'every weakened_by entry needs at least one source'),
+}).strict();
+
 const Link = z.object({
   id: Id,
   from: Id,
@@ -80,7 +88,11 @@ const Link = z.object({
   caveat: z.string().min(20),
   evidence_note: z.string().min(20).optional(),
   sources: z.array(Id).min(1, 'every link needs at least one source'),
-}).strict();
+  /** drivers whose chosen phase weakens this link (M35); the link must then
+   *  carry an evidence_note that says so in plain words */
+  weakened_by: z.array(Modulation).min(1).optional(),
+}).strict()
+  .refine((l) => l.weakened_by === undefined || l.evidence_note !== undefined, 'a link with weakened_by needs an evidence_note saying what weakens it');
 
 const Source = z.object({
   key: Id,
@@ -216,6 +228,23 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     for (const k of l.sources) {
       if (!sources.has(k)) fail(`link "${l.id}": unknown source "${k}"`);
       usedSources.add(k);
+    }
+    // Modulation (M35, rule 10): the weakening driver exists, has that
+    // phase, is not the link's own driver, no pair twice, sources resolve.
+    const pairs = new Set();
+    for (const w of l.weakened_by ?? []) {
+      const m = nodes.get(w.driver);
+      if (!m) fail(`link "${l.id}": weakened_by names unknown driver "${w.driver}"`);
+      else if (m.kind !== 'driver') fail(`link "${l.id}": weakened_by "${w.driver}" is not a driver`);
+      else if (!m.phases.some((p) => p.id === w.phase)) fail(`link "${l.id}": "${w.phase}" is not a phase of "${w.driver}"`);
+      else if (m.id === l.from) fail(`link "${l.id}": a link cannot be weakened by its own driver "${l.from}"`);
+      const key = `${w.driver}|${w.phase}`;
+      if (pairs.has(key)) fail(`link "${l.id}": weakened_by lists ${w.driver}/${w.phase} twice`);
+      pairs.add(key);
+      for (const k of w.sources) {
+        if (!sources.has(k)) fail(`link "${l.id}": weakened_by cites unknown source "${k}"`);
+        usedSources.add(k);
+      }
     }
     for (const field of ['mechanism', 'caveat']) {
       const m = l[field].match(banned);

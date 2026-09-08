@@ -249,6 +249,10 @@ html, body { margin: 0; height: 100%; }
 .link-block h4 .via { font-weight: 500; color: var(--muted); }
 .sure { background: #fff8e6; border-left: 3px solid #e0a800; padding: 6px 10px; margin: 8px 0; font-size: 12.5px; }
 .sure strong { display: block; margin-bottom: 2px; }
+.sure .weaker { color: #7a4b00; margin-top: 6px; }
+.sure .weaker strong { display: inline; }
+.sure .weaker + .sources { margin-top: 2px; }
+ul.weakens { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
 .sources { font-size: 11.5px; color: var(--muted); }
 .sources a { color: var(--accent); }
 .sources li { margin: 3px 0; }

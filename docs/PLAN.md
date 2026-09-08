@@ -419,6 +419,44 @@ Semantics (implement exactly this; do not improvise):
      the honest way to show it is the chain, where the memory is a driver
      on the map. The card of such a link and the control's hint say so.
 
+10. Modulation (M35): links that weaken other links. A link may carry
+    `weakened_by`, a list of `{ driver, phase, sources }` entries naming a
+    driver, one of its phases and the studies that found the weakening.
+    - In a month where one of the listed drivers is a *chosen* driver
+      (rule 8) holding the listed phase (at or after its onset, rule 8, and
+      before its fade, rule 9; a neutral or unlisted phase does not count),
+      the link's effective confidence is one tier lower than it would
+      otherwise be: `downgrade` by one more step, floored at contested,
+      computed after the per-hop downgrade and the cap at the source
+      driver's confidence (rule 6) and before the `minConfidence` ghosting
+      and rule 5. One tier only, however many of the listed drivers hold
+      their phase this month.
+    - Nothing else changes. The link is still applied, with the same
+      effect, in the same months; sums, clamps, conflicts, onsets, the
+      season gate and the fire-once rule are untouched. A modulated link
+      can push a driver as before; the pushed driver's state simply
+      carries the lower confidence (rule 6).
+    - A pushed driver (rule 6) never modulates, whatever phase it holds:
+      its state can depend on the hop being computed. Only the drivers
+      the scenario fixes by hand count.
+    - A faded link (rule 9) is reported as rated, whoever is chosen; it
+      applies nothing anyway.
+    - The entries in force are reported in `MonthState.links[id]` as
+      `weakenedBy` (the link's own entries, in the link's order), present
+      only when at least one is in force, so the card can say why the
+      tier dropped and cite the studies; the map draws the effective
+      tier exactly as it does for a hop (a solid line turns dashed).
+    - Only the weakening direction exists, on purpose: three-level
+      states cannot show "stronger", and "El Niño's effect is stronger
+      when the PDO is warm" is the same fact as "weaker when the PDO is
+      cool", so data authors write the weakening side only.
+    - The validator requires the modulating driver to exist and to have
+      that phase, to differ from the link's own `from`, no `(driver,
+      phase)` pair twice, at least one resolvable source per entry, and an
+      `evidence_note` on the link that says the weakening in plain words.
+    - The story validator's copy of the engine rule ignores modulation:
+      it changes no month in which a link is applied.
+
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
 and lowest-confidence selection.
@@ -498,7 +536,13 @@ every link currently affecting it: the mechanism, and a "How sure are we?"
 block with the confidence badge and legend text, the caveat, the
 evidence note if any, and sources as links. Out-of-season or pending links
 are listed under "Not yet / out of season". For the driver node show the
-phase description and the timescale.
+phase description and the timescale. Since M35 the "How sure are we?"
+block also says when a chosen driver weakens the link (rule 10): "Weaker
+this month: the Pacific Decadal Oscillation is in its Negative PDO phase,
+chosen on the left, so this link is drawn one tier lower than its rating",
+with the studies; a link that can be weakened but is not says "Weaker
+when ..." so the student knows what to add; and a driver's own card lists
+the links its phases weaken under "Links it weakens".
 
 ### 5.6 Controls (top-left)
 - Real year (M34), under Stories: a dropdown of the years in
@@ -2270,6 +2314,93 @@ drivers stays in one place.
   more milestone). Next in `docs/PLAN_V3.md`: the UI items M29–M31, or
   M35 (modulation), each with its own sign-off; M38 (quiz) can now draw
   on the years.
+
+### M35 — Links that weaken other links (version 3, signed off 2026-09-08)
+- The third engine extension of version 3, taken at the user's "M35".
+  Section 4 rule 10 as above, written before the code (rule 14 of
+  `docs/PLAN_V3.md`): `Link.weakened_by`, a list of `{ driver, phase,
+  sources }` (`Modulation` in `src/types.ts`); in `propagate`, after the
+  per-hop downgrade and the cap at the pushing driver's tier, a link whose
+  listed driver is among the chosen drivers in phase this month
+  (`inPhase`: at or after its onset, before its fade) is downgraded one
+  more step, floored at contested, before the `minConfidence` ghosting
+  and rule 5; the entries in force are reported as `LinkState.weakenedBy`
+  (present only when non-empty, so every pre-M35 link state compares
+  equal). Nothing else changes: same effect, same months, same sums,
+  onsets and fire-once; a pushed driver never modulates; a faded link is
+  reported as rated; one tier however many entries are in force. Engine
+  tests in `src/engine/propagate.test.ts` (twelve: one tier down and the
+  same months as without, in the pending months too; unchanged with the
+  modulator absent, neutral, in another phase or another driver; unchanged
+  with the modulator pushed rather than chosen; unchanged before its start
+  month and from its fade, in force from month 0 when it began before the
+  first; the floor; ghosted at the weakened tier, so applying nothing and
+  pushing nothing; rule 5 at the node with sums and conflicts unchanged;
+  stacking with the hop downgrade; one tier for two entries, both reported
+  in order; a faded link as rated; a modulated link still pushing a driver
+  at the lower tier with onsets unchanged; a link into the chosen modulator
+  still skipped). Acceptance tests on the shipped data (nine: the ten
+  links and their entries; the Northwest at established alone, probable
+  and hatched with the negative PDO, established with the positive; the
+  Gulf Coast at probable by rule 5 and California at the floor; the PDO
+  from December weakening from month 6 and moving nothing; "established
+  only" ghosting the weakened links; the chain pushing the PDO into the
+  same-sign phase only, so a pushed PDO never weakens anything; La Niña's
+  mirror; the real year 2023 from the record; no shipped story pairing
+  ENSO with the opposite PDO).
+- Data: `weakened_by: [{ driver: pdo, phase: negative | positive, sources:
+  [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007] }]` on
+  ENSO's ten North American winter links (El Niño and La Niña to the Gulf
+  Coast, California, the Pacific Northwest, the Prairies and the
+  Southwest; the plan's "Alaska" has no ENSO link on the map, the
+  Southwest stands in), the El Niño ones weakened by the negative PDO and
+  the La Niña ones by the positive; each link's `evidence_note` gains, or
+  is, a sentence saying so, and the two contested California links say the
+  line does not change. Two new sources, both resolved on Crossref
+  (McCabe & Dettinger 1999, Int. J. Climatol. 19, 1399–1410; Yu & Zwiers
+  2007, Clim. Dyn. 29, 837–851); Gershunov & Barnett 1998 was already
+  cited. The PDO node's summary now says what the map draws (the
+  weakening) and what it cannot (the stronger side, and Australia); its
+  two phase summaries say whose winter pattern comes through weakly.
+  Validator: the driver exists with that phase, is not the link's own,
+  no pair twice, every source resolves and is counted as cited, and the
+  link has an `evidence_note`. 439 sources.
+- UI as §5.5 above: `sureBlock` takes the node and source maps and adds
+  "Weaker this month: ... chosen on the left, so this link is drawn one
+  tier lower than its rating" (or "one tier lower still" behind a hop, or
+  "already at the lowest tier, keeps its line style" at the floor),
+  "It is still applied, with the same effect, in the same months", and
+  the studies; a link with `weakened_by` not in force says "Weaker when
+  the Pacific Decadal Oscillation in its Negative PDO phase: choose that
+  driver too ..." (in region mode and on the feedback block as well); the
+  hop sentence now appears only behind a hop. The driver card gains
+  "Links it weakens" (`weakensBlock`), grouped by phase with each link's
+  rating. The map draws the effective tier as it did for hops, so a solid
+  line turns dashed when the PDO is added; the legend gains one sentence
+  under the tiers. No new control, no new toggle: modulation is drawn
+  only while the student has chosen both drivers, so a page without the
+  PDO looks as it did (rule 15).
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m35.mjs` (15
+  checks; screenshots `m35-01-northwest-negative-pdo.png`,
+  `m35-02-pdo-card.png`, `m35-03-2023-november.png` under
+  `W:\temp\claude\ClimateConnections\m35`): El
+  Niño from June, January, the Pacific Northwest solid and established on
+  the card with "Weaker when"; the negative PDO as second driver turning
+  the arrow dashed (class probable) and the card saying "Weaker this
+  month" with the three studies, the place hatched; the Gulf Coast at
+  probable; the PDO's own card listing ten links under "Links it weakens";
+  "established only" ghosting the Northwest arrow; the positive PDO
+  restoring the solid line; region mode on the Gulf Coast showing "Weaker
+  when"; the real year 2023 showing the Gulf Coast weakened from the
+  record in November; the legend sentence; print.
+- Not in M35: strengthening; modulation by an outcome; modulation of a
+  driver-to-driver link (the schema allows it; none shipped); the two
+  candidate cases in `docs/PLAN_V3.md` (El Niño → Atlantic hurricanes
+  weakened by the warm AMO, contested; El Niño → NAO negative weakened by
+  the westerly QBO), each for its own sign-off; the Australian case (Power
+  et al. 1999, already a PDO source); removing `Scenario.secondary` and the
+  pre-M33 story fields. Next in `docs/PLAN_V3.md`: the UI items M29–M31,
+  M36 (flavours), M38 (quiz), each with its own sign-off.
 
 ---
 
