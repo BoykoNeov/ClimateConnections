@@ -625,6 +625,89 @@ nodes:
           the volcanic tendencies on this map apply. No eruption of
           Pinatubo's size has happened since 1991.
     sources: [robock_2000, timmreck_2012, mccormick_1995, bluth_1992, newhall_1997, self_1996, parker_1996]
+  - id: qbo
+    name: Quasi-Biennial Oscillation (QBO)
+    label: QBO
+    kind: driver
+    lat: -7
+    lon: -175
+    region: A band of wind 16–50 km up over the whole equator, circling the globe; the marker on an empty stretch of the central Pacific is a placeholder, because the QBO has no region of its own
+    timescale: About 28 months per cycle; each phase lasts roughly a year
+    summary: >
+      A band of wind high above the equator, between about 16 and 50
+      kilometres up, that blows from the west for roughly a year, then
+      from the east for roughly a year, and back again, taking about 28
+      months for a full cycle. It was found in 1960 in balloon soundings
+      from Canton Island and Nairobi, and Singapore's balloons have
+      logged it every month since 1953. Each new phase appears near the
+      top of the stratosphere and sinks about a kilometre a month, so at
+      any moment the wind is westerly at one height and easterly at
+      another; the map's phase is the wind at about 20 to 25 kilometres
+      up, the height that matters for the winter effects drawn here. The
+      QBO reaches the weather through the winter polar vortex, the ring
+      of wind around the Arctic stratosphere. In the easterly phase,
+      waves rising from below disturb the vortex more, it tends to be
+      weaker and warmer, and a weak vortex leaks down to the surface over
+      the following weeks as a negative North Atlantic Oscillation: cold
+      in northern Europe and the eastern United States, mild in
+      Greenland. The westerly phase does the reverse. This is the
+      Holton–Tan effect, real on average and small in any one winter: it
+      shifts the odds of a weak vortex, as an El Niño or a big volcanic
+      year also does, and one study puts its mark on northern winter
+      temperatures at about the size of ENSO's. Its best-known other
+      role, changing how strongly an El Niño reaches Europe, is a
+      link that changes other links, which this map cannot draw yet. The
+      QBO also strengthens the Madden–Julian Oscillation in its easterly
+      winters, a pattern the map does not draw, and a claimed link to
+      the Indian monsoon is not drawn either, because its sign depends on
+      which height and month the wind is read at. Nothing on the map
+      pushes the QBO; it can be forecast years ahead, though its winter
+      effect cannot. In more than sixty years it has broken its rhythm
+      once, in February 2016, when a jet of easterly wind cut through
+      the westerly phase, the exception that shows how regular it
+      usually is.
+    onset_hint: The map draws the QBO's winter effects; start in November, when the phase that will shape the coming winter is usually set, and switch the chain on to watch the NAO's own map follow one tier down.
+    default_start_month: 11
+    phases:
+      - id: westerly
+        value: 1
+        label: Westerly QBO
+        color: "#3730a3"
+        summary: >
+          The wind at 20 to 25 kilometres over the equator blows from the
+          west. The polar vortex tends to be stronger and colder, and the
+          surface pattern that follows from December to February leans
+          toward a positive North Atlantic Oscillation: mild and stormy in
+          northern Europe, cold in Greenland. Forty years ago westerly
+          seasons also brought more Atlantic hurricanes; that
+          relationship has not held since about 1990, and its arrow is
+          dotted.
+      - id: neutral
+        value: 0
+        label: Transition
+        color: "#999999"
+        summary: >
+          The wind at the height that matters is changing sign or too
+          weak to read, which happens for a few months in every cycle as
+          a new phase sinks through. None of the QBO tendencies on this
+          map are drawn. Because the phases descend, the wind is always
+          westerly at one height and easterly at another; the map picks
+          one height and cannot show the rest.
+      - id: easterly
+        value: -1
+        label: Easterly QBO
+        color: "#d97706"
+        summary: >
+          The wind at 20 to 25 kilometres over the equator blows from the
+          east. Waves from below disturb the polar vortex more, sudden
+          warmings of the Arctic stratosphere are more likely, and the
+          surface pattern that follows from December to February leans
+          toward a negative North Atlantic Oscillation: cold in northern
+          Europe and the eastern United States, mild in Greenland, wet in
+          the Mediterranean. The winter of 2009–10 is the story. In the
+          old hurricane rule easterly seasons were quieter; the rule has
+          not worked since about 1990.
+    sources: [reed_1961, naujokat_1986, fu_berlin_qbo, baldwin_2001, anstey_shepherd_2014, anstey_2022, holton_tan_1980, thompson_2002, garfinkel_hartmann_2007, scaife_2014, osprey_2016, newman_2016_qbo, yoo_son_2016, son_2017, camargo_sobel_2010, claud_terray_2007, mukherjee_1985]
   # ---------------------------------------------------------------- outcomes
   - id: indian_summer_monsoon
     name: Indian summer monsoon
@@ -1370,7 +1453,7 @@ nodes:
     name: South Pacific tropical cyclones
     label: S. Pacific cyclones
     kind: outcome
-    lat: -18
+    lat: -21
     lon: -178
     area: [[165, -8], [-140, -8], [-140, -25], [165, -25]]
     region: Fiji, Tonga, Samoa, the Cook Islands, French Polynesia

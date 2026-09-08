@@ -302,6 +302,25 @@ into a winter El Niño and its whole map.
 
 ### M23 — Eleventh driver: the Quasi-Biennial Oscillation
 
+**Shipped 2026-09-08**, after M26 and M27 as §7 suggests, so it is the
+twelfth driver on the map. The record of what was built is in
+`docs/PLAN.md` §10 under M23. Departures from the text below, each with
+its reason: the marker is at 7°S 175°W, not 0°N 160°E, because the
+tropical eruption (M26) took the western Pacific, and south of Kiribati
+is the only empty stretch of the central Pacific left (on the equator
+itself the Kiribati label ran into the circle); the label is "QBO" (the card explains the
+stratosphere), since driver labels sit centred under the circle and the
+short form matches ENSO, IOD and NAO; the transition phase's id is
+`neutral` so the driver reads like every other in the tests; the
+hurricane link ships in both phases (Gray 1984 found both), read in the
+season with lag 0–2 in August–October; the Indian monsoon link is not
+drawn at all, because the two studies read the wind at different
+heights and months and their signs cannot be reconciled with one map
+phase. The story is the real winter of 2009–10 with El Niño as a second
+driver that began before, as the text prefers, and its last two steps
+use the Singapore wind record to show the map's held phases ending
+before the year does.
+
 The stratospheric wind over the equator that swings between westerly and
 easterly about every 28 months. It has clean phases, a phase lasts about a
 year (so the twelve-month hold is for once nearly honest), and it has a

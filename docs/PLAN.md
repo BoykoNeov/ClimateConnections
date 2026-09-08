@@ -1466,7 +1466,96 @@ drivers stays in one place.
   map names only the markers the scenario reaches (§5.2), with a
   "Label every region" checkbox, off by default, to name them all.
 - Not in M27: the five dropped candidates; Mongolia returns with M24.
-  Next in `docs/PLAN_V3.md`: M23, the Quasi-Biennial Oscillation.
+
+### M23 — Twelfth driver: the Quasi-Biennial Oscillation (version 3, signed off 2026-09-08)
+- Data: `qbo` driver node, label "QBO", three phases `westerly` (+1,
+  "Westerly QBO", indigo #3730a3), `neutral` (0, labelled "Transition")
+  and `easterly` (−1, "Easterly QBO", amber #d97706); no area (the wind
+  circles the globe); `default_start_month` 11; marker at 7°S 175°W on
+  an empty stretch of the central Pacific, not at 0°N 160°E as the plan
+  proposed, because the tropical eruption (M26) took that spot and on
+  the equator itself the Kiribati label ran into the circle (the South
+  Pacific cyclones marker moved from 18°S to 21°S, still between Fiji
+  and Tonga, to make room for the QBO's label); the card
+  says the marker is a placeholder and that the map's phase is the wind
+  at about 20–25 km up. No new outcome node. Four links, all from the
+  QBO: the easterly phase pushes the NAO negative and the westerly
+  positive (probable, lag 1–3, December–February, the Holton–Tan effect
+  through the polar vortex; lag 1 so a November phase reaches December),
+  and the westerly phase makes the Atlantic hurricane season busier, the
+  easterly quieter (**contested**, lag 0–2, August–October, read in the
+  season as Gray did in 1984; the caveat says the relationship held from
+  the 1950s to the 1980s and vanished after about 1990, Camargo and
+  Sobel 2010, and that the arrow is kept as a lesson). The Indian monsoon
+  link the plan allowed "if at all" is not drawn: the two studies read
+  the wind at different heights and months (Mukherjee 1985 at 30 hPa in
+  the season, Claud and Terray 2007 at 15 hPa in the preceding winter),
+  and with phases that descend about a kilometre a month their signs
+  cannot be reconciled with the map's single phase; the card says so.
+  Nothing pushes the QBO. Thirty-three new sources, thirty-two resolved
+  on Crossref (abstracts read for all but Giorgetta 1999, dropped, and
+  the 2022 Nature Reviews article, cited on its title) plus the Freie
+  Universität Berlin wind record, which is the source for what the wind
+  did in 2009–10. One story, "2009–10: a winter with the wind from the
+  east" (the easterly QBO from November 2009, El Niño chosen as a second
+  driver that began in June, `second_starts_before`), five steps: the
+  Singapore balloons in November; December's push on the NAO and the Met
+  Office analysis that names the El Niño–easterly QBO pairing; February's
+  cold Europe with the two studies that credit autumn snow or plain
+  chaos rather than the QBO; August 2010, where the map is wrong twice
+  (both held phases had ended and the hurricane rule no longer works)
+  and the marker is hatched with the chain on; November 2010, where the
+  wind had turned westerly and the next December was bitter anyway.
+- Honesty notes carried in the data: the driver card leads with "real on
+  average and small in any one winter", says the QBO shifts the odds of
+  a weak vortex as El Niño and volcanic winters also do, names the
+  Madden–Julian Oscillation only to say the map does not draw it, and
+  says in plain words that the QBO's best-known role, changing how
+  strongly an El Niño reaches Europe, is a link that changes other links
+  and waits for a later version (M35). The NAO links' caveats say the
+  effect was nearly absent in 1978–1997, that models make it weaker than
+  the record, and that a multi-century model run calls the NAO link
+  probable but not certain. The 2015–16 disruption is one sentence on
+  the card.
+- What the engine shows, asserted in tests: from November the NAO is
+  pushed December–February only and the link waits from March; the
+  hurricanes are touched August–October only; with the chain on the
+  NAO's winter map follows one tier down (northern Europe and Greenland
+  probable, eastern North America contested) and the pushed NAO pushes
+  the Atlantic meridional mode for the one month its lag allows
+  (February, a third hop), so the QBO alone never hatches the
+  hurricanes; "established only" ghosts every QBO arrow, since none is
+  established. In the 2009–10 story the NAO carries the QBO's arrow
+  alone in December and both drivers' arrows from January, northern
+  Europe is cold through the pushed NAO at the probable tier, and in
+  August the hurricanes are hatched with the chain on (the QBO and the
+  El Niño say quieter, the meridional mode the El Niño pushed positive
+  in March says busier) and plainly quieter with it off.
+- Schema, engine, UI: unchanged. A driver is data.
+- Tests: acceptance blocks for the QBO from November with direct links
+  only (phases and tiers, the NAO push in both phases, the hurricane
+  months, a June start, the NAO's regions hollow at depth 1, the neutral
+  phase, "established only"), with the chain on (the NAO's map one tier
+  down, the one-month meridional-mode push, never pushed back) and the
+  2009–10 story (fields, five steps, the states at each step with the
+  chain on and off). Existing expectations updated: twelve drivers,
+  twenty-seven driver-to-driver links.
+- Browser check (`W:\temp\claude\ClimateConnections\cdp-m23.mjs`):
+  73 markers, the new marker placed with no label overlap (every label
+  on), the driver dropdown jumping to November, three phase buttons,
+  November with the NAO untouched and the hurricanes waiting, December
+  with the chain on (the NAO induced in its negative colour, northern
+  Europe cold and Greenland mild through it, the QBO's arrow dashed),
+  March with the NAO waiting, August with the hurricanes quieter along a
+  dotted arrow, the westerly phase turning the NAO positive, "established
+  only" ghosting everything, the transition phase drawing nothing, the
+  2009–10 story stepped to its end with the hatched hurricanes, the
+  print caption.
+- Not in M23: the QBO as a modulator of other links (M35); the monsoon
+  link; the QBO's effect on West Pacific typhoons (Chan 1995), a
+  candidate if the hurricane lesson proves useful; the solar cycle. Next
+  in `docs/PLAN_V3.md`: M24 and M25, the two contested Arctic
+  precursors, as one matched lesson.
 
 ---
 
@@ -1608,6 +1697,11 @@ sahel_rainfall and indian_summer_monsoon (−, probable),
 northern_europe_winter and western_russia_winter (+, probable), and
 pushes the NAO positive (probable) and ENSO toward El Niño (contested).
 
+The Quasi-Biennial Oscillation (M23) adds no outcome node; it pushes the
+NAO (easterly → negative, westerly → positive, both probable, the
+Holton–Tan effect) and acts on atlantic_hurricanes (westerly +, easterly
+−, both contested: a link that held until about 1990).
+
 Primary references to start from (the implementer should read these before
 writing mechanism text):
 - NOAA Climate Prediction Center, "ENSO impacts" pages and the classic
@@ -1645,7 +1739,8 @@ writing mechanism text):
   the Pacific Decadal Oscillation; M18: the Atlantic Multidecadal
   Oscillation; M19: the Atlantic Niño; M20: the Indian Ocean Basin Mode,
   the first version 3 driver; M21: the Atlantic Meridional Mode; M22:
-  the Pacific Meridional Mode; M26: a large tropical volcanic eruption);
+  the Pacific Meridional Mode; M26: a large tropical volcanic eruption;
+  M23: the Quasi-Biennial Oscillation);
   spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean

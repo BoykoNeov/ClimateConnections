@@ -655,6 +655,61 @@
       ]
     },
     {
+      "id": "qbo",
+      "name": "Quasi-Biennial Oscillation (QBO)",
+      "label": "QBO",
+      "lat": -7,
+      "lon": -175,
+      "region": "A band of wind 16–50 km up over the whole equator, circling the globe; the marker on an empty stretch of the central Pacific is a placeholder, because the QBO has no region of its own",
+      "timescale": "About 28 months per cycle; each phase lasts roughly a year",
+      "summary": "A band of wind high above the equator, between about 16 and 50 kilometres up, that blows from the west for roughly a year, then from the east for roughly a year, and back again, taking about 28 months for a full cycle. It was found in 1960 in balloon soundings from Canton Island and Nairobi, and Singapore's balloons have logged it every month since 1953. Each new phase appears near the top of the stratosphere and sinks about a kilometre a month, so at any moment the wind is westerly at one height and easterly at another; the map's phase is the wind at about 20 to 25 kilometres up, the height that matters for the winter effects drawn here. The QBO reaches the weather through the winter polar vortex, the ring of wind around the Arctic stratosphere. In the easterly phase, waves rising from below disturb the vortex more, it tends to be weaker and warmer, and a weak vortex leaks down to the surface over the following weeks as a negative North Atlantic Oscillation: cold in northern Europe and the eastern United States, mild in Greenland. The westerly phase does the reverse. This is the Holton–Tan effect, real on average and small in any one winter: it shifts the odds of a weak vortex, as an El Niño or a big volcanic year also does, and one study puts its mark on northern winter temperatures at about the size of ENSO's. Its best-known other role, changing how strongly an El Niño reaches Europe, is a link that changes other links, which this map cannot draw yet. The QBO also strengthens the Madden–Julian Oscillation in its easterly winters, a pattern the map does not draw, and a claimed link to the Indian monsoon is not drawn either, because its sign depends on which height and month the wind is read at. Nothing on the map pushes the QBO; it can be forecast years ahead, though its winter effect cannot. In more than sixty years it has broken its rhythm once, in February 2016, when a jet of easterly wind cut through the westerly phase, the exception that shows how regular it usually is.\n",
+      "sources": [
+        "reed_1961",
+        "naujokat_1986",
+        "fu_berlin_qbo",
+        "baldwin_2001",
+        "anstey_shepherd_2014",
+        "anstey_2022",
+        "holton_tan_1980",
+        "thompson_2002",
+        "garfinkel_hartmann_2007",
+        "scaife_2014",
+        "osprey_2016",
+        "newman_2016_qbo",
+        "yoo_son_2016",
+        "son_2017",
+        "camargo_sobel_2010",
+        "claud_terray_2007",
+        "mukherjee_1985"
+      ],
+      "kind": "driver",
+      "onset_hint": "The map draws the QBO's winter effects; start in November, when the phase that will shape the coming winter is usually set, and switch the chain on to watch the NAO's own map follow one tier down.",
+      "default_start_month": 11,
+      "phases": [
+        {
+          "id": "westerly",
+          "label": "Westerly QBO",
+          "color": "#3730a3",
+          "summary": "The wind at 20 to 25 kilometres over the equator blows from the west. The polar vortex tends to be stronger and colder, and the surface pattern that follows from December to February leans toward a positive North Atlantic Oscillation: mild and stormy in northern Europe, cold in Greenland. Forty years ago westerly seasons also brought more Atlantic hurricanes; that relationship has not held since about 1990, and its arrow is dotted.\n",
+          "value": 1
+        },
+        {
+          "id": "neutral",
+          "label": "Transition",
+          "color": "#999999",
+          "summary": "The wind at the height that matters is changing sign or too weak to read, which happens for a few months in every cycle as a new phase sinks through. None of the QBO tendencies on this map are drawn. Because the phases descend, the wind is always westerly at one height and easterly at another; the map picks one height and cannot show the rest.\n",
+          "value": 0
+        },
+        {
+          "id": "easterly",
+          "label": "Easterly QBO",
+          "color": "#d97706",
+          "summary": "The wind at 20 to 25 kilometres over the equator blows from the east. Waves from below disturb the polar vortex more, sudden warmings of the Arctic stratosphere are more likely, and the surface pattern that follows from December to February leans toward a negative North Atlantic Oscillation: cold in northern Europe and the eastern United States, mild in Greenland, wet in the Mediterranean. The winter of 2009–10 is the story. In the old hurricane rule easterly seasons were quieter; the rule has not worked since about 1990.\n",
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "indian_summer_monsoon",
       "name": "Indian summer monsoon",
       "label": "Indian monsoon",
@@ -2097,7 +2152,7 @@
           -25
         ]
       ],
-      "lat": -18,
+      "lat": -21,
       "lon": -178,
       "region": "Fiji, Tonga, Samoa, the Cook Islands, French Polynesia",
       "timescale": "November–April cyclone season",
@@ -8063,6 +8118,124 @@
         "jiang_2019",
         "shen_2021"
       ]
+    },
+    {
+      "id": "easterly_qbo_negative_nao",
+      "from": "qbo",
+      "when": "easterly",
+      "to": "nao",
+      "effect": -1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "Planetary-scale waves rising from the winter troposphere are steered by the winds they meet in the stratosphere. With easterly wind over the equator the waves cannot cross into the tropics, more of them break against the polar vortex, and the vortex weakens and warms, sometimes suddenly. A weak vortex leaks down through the lower stratosphere over a few weeks and shows at the surface as a negative North Atlantic Oscillation: a weaker Iceland low, a weaker Azores high, and Atlantic westerlies that are slack and pushed south.\n",
+      "caveat": "An average over many winters, not a rule for one. The effect is clearest in early winter, was nearly absent from 1978 to 1997, and models make it weaker than the record does; a multi-century model run calls the QBO's link to the Arctic Oscillation likely real and its link to the NAO probable but not certain, which is why the arrow is dashed. Which height of the wind matters most is still argued. A chosen NAO is never pushed, so pick the QBO alone with the chain on to see this arrow; the NAO's own winter map then follows one tier down.\n",
+      "evidence_note": "In sixteen winters of 50 hPa data the high-latitude stratosphere is significantly lower in pressure, a stronger vortex, in westerly than easterly phases, with the largest planetary wave 40% stronger in November–December of easterly phases (Holton and Tan 1980); a review of three decades of work confirms the vortex is weaker in easterly winters while leaving the mechanism and the best height open (Anstey and Shepherd 2014); the easterly phase favours more extreme cold events in northern Europe and eastern North America, with a signature roughly comparable to ENSO's (Thompson, Baldwin and Wallace 2002); weak-vortex events are followed over about two months by negative Arctic Oscillation patterns at the surface (Baldwin and Dunkerton 2001); seasonal hindcasts started on 1 December reproduce a surface Arctic Oscillation response to the QBO (Marshall and Scaife 2009); the January sea-level-pressure response resembles the positive NAO under westerly winds and comes mainly through the polar vortex (Gray et al. 2018); a multi-century model run finds the QBO–Arctic Oscillation link likely real and the QBO–NAO link probable, though weaker than observed (Andrews et al. 2019); the effect faded in 1978–1997 (Lu et al. 2014); the mechanism is argued between the critical-line and meridional- circulation explanations (Garfinkel et al. 2012; Watson and Gray 2014); most models underestimate the early-winter warming of the vortex in easterly phases (Rao et al. 2020); the QBO and ENSO signals in the Arctic stratosphere were correlated in time in the first half of the record and are hard to separate (Garfinkel and Hartmann 2007).\n",
+      "sources": [
+        "holton_tan_1980",
+        "anstey_shepherd_2014",
+        "baldwin_2001",
+        "thompson_2002",
+        "baldwin_dunkerton_2001",
+        "marshall_scaife_2009",
+        "gray_2018",
+        "andrews_2019",
+        "lu_2014",
+        "garfinkel_2012",
+        "watson_gray_2014",
+        "rao_2020",
+        "garfinkel_hartmann_2007"
+      ]
+    },
+    {
+      "id": "westerly_qbo_positive_nao",
+      "from": "qbo",
+      "when": "westerly",
+      "to": "nao",
+      "effect": 1,
+      "lag_months": [
+        1,
+        3
+      ],
+      "season": [
+        12,
+        1,
+        2
+      ],
+      "confidence": "probable",
+      "mechanism": "With westerly wind over the equator, planetary-scale waves rising from the winter troposphere can spread into the tropics, fewer of them break against the polar vortex, and the vortex stays strong and cold. A strong vortex reaches the surface over the following weeks as a positive North Atlantic Oscillation: a deeper Iceland low, a stronger Azores high, and Atlantic westerlies that are stronger and further north.\n",
+      "caveat": "The same average, with the same doubts, as the easterly side: clearest in early winter, nearly absent from 1978 to 1997, weaker in models than in the record, and probable rather than certain for the NAO itself. Holton and Tan's own late-winter signal did not survive a longer record. A chosen NAO is never pushed, so pick the QBO alone with the chain on to see this arrow.\n",
+      "evidence_note": "The high-latitude stratosphere is significantly lower in pressure, a stronger vortex, in westerly phases in every month composited (Holton and Tan 1980); the vortex is stronger in westerly winters across the reviewed record (Anstey and Shepherd 2014); the January sea-level-pressure response under westerly winds resembles the positive NAO and is insensitive to the exact height of the westerlies between 10 and 70 hPa (Gray et al. 2018); a surface Arctic Oscillation response appears in hindcasts started on 1 December (Marshall and Scaife 2009); a multi-century model run rates the link to the NAO probable but not certain, and finds it stronger when the westerlies fill a deep layer (Andrews et al. 2019); the effect faded in 1978–1997 (Lu et al. 2014); Arctic stratospheric temperatures in late autumn and early winter are colder in westerly phases (Garfinkel and Hartmann 2007); strengthenings of the vortex are followed by the opposite of the cold-event pattern at the surface (Thompson, Baldwin and Wallace 2002).\n",
+      "sources": [
+        "holton_tan_1980",
+        "anstey_shepherd_2014",
+        "gray_2018",
+        "marshall_scaife_2009",
+        "andrews_2019",
+        "lu_2014",
+        "garfinkel_hartmann_2007",
+        "thompson_2002",
+        "baldwin_dunkerton_2001",
+        "baldwin_2001"
+      ]
+    },
+    {
+      "id": "westerly_qbo_atlantic_hurricanes",
+      "from": "qbo",
+      "when": "westerly",
+      "to": "atlantic_hurricanes",
+      "effect": 1,
+      "lag_months": [
+        0,
+        2
+      ],
+      "season": [
+        8,
+        9,
+        10
+      ],
+      "confidence": "contested",
+      "mechanism": "The proposal from the 1980s: in westerly seasons the wind in the lowest stratosphere over the tropical Atlantic is closer to the wind just beneath it, so the tops of growing storms are sheared less and more of them reach hurricane strength. The same seasonal forecasts that first used El Niño also used the QBO.\n",
+      "caveat": "A link that stopped working, kept on the map as a lesson. From the 1950s to the 1980s westerly seasons were clearly busier and the QBO went into the first seasonal hurricane forecasts; after about 1990 the relationship vanished from the record, and the explanations tried, El Niño, volcanoes, the QBO's own decadal changes, the solar cycle, do not account for it. Drawn dotted for that reason, and read the year: the arrow describes the Atlantic of 1950–1990.\n",
+      "evidence_note": "Seasonal hurricane frequency in 1950–1982 was substantially above normal when the 30 hPa equatorial wind blew from the west or was turning westerly during the season (Gray 1984); the 30 hPa wind explains about 30% of the variance in August–October Atlantic storm activity in 1955–1983, resilient to removing El Niño years (Shapiro 1989); the relationship is statistically significant from the 1950s to the 1980s and no longer present in later years, with no satisfying explanation found (Camargo and Sobel 2010); a major review lists a possible effect on Atlantic hurricane strength among the QBO's influences (Baldwin et al. 2001).\n",
+      "sources": [
+        "gray_1984",
+        "shapiro_1989",
+        "camargo_sobel_2010",
+        "baldwin_2001"
+      ]
+    },
+    {
+      "id": "easterly_qbo_atlantic_hurricanes",
+      "from": "qbo",
+      "when": "easterly",
+      "to": "atlantic_hurricanes",
+      "effect": -1,
+      "lag_months": [
+        0,
+        2
+      ],
+      "season": [
+        8,
+        9,
+        10
+      ],
+      "confidence": "contested",
+      "mechanism": "The proposal from the 1980s, in reverse: in easterly seasons the wind in the lowest stratosphere over the tropical Atlantic differs more from the wind just beneath it, the tops of growing storms are sheared more, and fewer reach hurricane strength.\n",
+      "caveat": "The same link that stopped working. Easterly seasons were quieter from the 1950s to the 1980s and not since about 1990; the 2010 season, easterly at the height the map reads until late summer, was one of the busiest on record. Drawn dotted for that reason.\n",
+      "evidence_note": "Hurricane activity in 1950–1982 was below normal when the 30 hPa equatorial wind blew from the east or was turning easterly during the season (Gray 1984); the in-phase relation with the 50 hPa wind and the 30% of variance explained apply to both phases (Shapiro 1989); the relationship is significant from the 1950s to the 1980s and absent in later years (Camargo and Sobel 2010).\n",
+      "sources": [
+        "gray_1984",
+        "shapiro_1989",
+        "camargo_sobel_2010"
+      ]
     }
   ],
   "sources": [
@@ -9609,6 +9782,171 @@
       "key": "you_2020",
       "citation": "You, Q., Wu, T., Shen, L., Pepin, N., Zhang, L., Jiang, Z., Wu, Z., Kang, S., & AghaKouchak, A. (2020). Review of snow cover variation over the Tibetan Plateau and its influence on the broad climate system. Earth-Science Reviews, 201, 103043.",
       "url": "https://doi.org/10.1016/j.earscirev.2019.103043"
+    },
+    {
+      "key": "reed_1961",
+      "citation": "Reed, R. J., Campbell, W. J., Rasmussen, L. A., & Rogers, D. G. (1961). Evidence of a downward-propagating, annual wind reversal in the equatorial stratosphere. Journal of Geophysical Research, 66(3), 813–818.",
+      "url": "https://doi.org/10.1029/JZ066i003p00813"
+    },
+    {
+      "key": "naujokat_1986",
+      "citation": "Naujokat, B. (1986). An update of the observed quasi-biennial oscillation of the stratospheric winds over the tropics. Journal of the Atmospheric Sciences, 43(17), 1873–1877.",
+      "url": "https://doi.org/10.1175/1520-0469(1986)043<1873:AUOTOQ>2.0.CO;2"
+    },
+    {
+      "key": "fu_berlin_qbo",
+      "citation": "Freie Universität Berlin, Institut für Meteorologie. The Quasi-Biennial Oscillation (QBO) data series: monthly mean zonal winds at Canton Island, Gan and Singapore, 1953 to date.",
+      "url": "https://www.geo.fu-berlin.de/en/met/ag/strat/produkte/qbo/index.html"
+    },
+    {
+      "key": "baldwin_2001",
+      "citation": "Baldwin, M. P., Gray, L. J., Dunkerton, T. J., Hamilton, K., Haynes, P. H., Randel, W. J., Holton, J. R., Alexander, M. J., Hirota, I., Horinouchi, T., Jones, D. B. A., Kinnersley, J. S., Marquardt, C., Sato, K., & Takahashi, M. (2001). The quasi-biennial oscillation. Reviews of Geophysics, 39(2), 179–229.",
+      "url": "https://doi.org/10.1029/1999RG000073"
+    },
+    {
+      "key": "anstey_shepherd_2014",
+      "citation": "Anstey, J. A., & Shepherd, T. G. (2014). High-latitude influence of the quasi-biennial oscillation. Quarterly Journal of the Royal Meteorological Society, 140(678), 1–21.",
+      "url": "https://doi.org/10.1002/qj.2132"
+    },
+    {
+      "key": "anstey_2022",
+      "citation": "Anstey, J. A., Osprey, S. M., Alexander, J., Baldwin, M. P., Butchart, N., Gray, L., Kawatani, Y., Newman, P. A., & Richter, J. H. (2022). Impacts, processes and projections of the quasi-biennial oscillation. Nature Reviews Earth & Environment, 3(9), 588–603.",
+      "url": "https://doi.org/10.1038/s43017-022-00323-7"
+    },
+    {
+      "key": "holton_tan_1980",
+      "citation": "Holton, J. R., & Tan, H.-C. (1980). The influence of the equatorial quasi-biennial oscillation on the global circulation at 50 mb. Journal of the Atmospheric Sciences, 37(10), 2200–2208.",
+      "url": "https://doi.org/10.1175/1520-0469(1980)037<2200:TIOTEQ>2.0.CO;2"
+    },
+    {
+      "key": "marshall_scaife_2009",
+      "citation": "Marshall, A. G., & Scaife, A. A. (2009). Impact of the QBO on surface winter climate. Journal of Geophysical Research: Atmospheres, 114, D18110.",
+      "url": "https://doi.org/10.1029/2009JD011737"
+    },
+    {
+      "key": "gray_2018",
+      "citation": "Gray, L. J., Anstey, J. A., Kawatani, Y., Lu, H., Osprey, S., & Schenzinger, V. (2018). Surface impacts of the Quasi Biennial Oscillation. Atmospheric Chemistry and Physics, 18(11), 8227–8247.",
+      "url": "https://doi.org/10.5194/acp-18-8227-2018"
+    },
+    {
+      "key": "garfinkel_2012",
+      "citation": "Garfinkel, C. I., Shaw, T. A., Hartmann, D. L., & Waugh, D. W. (2012). Does the Holton–Tan mechanism explain how the quasi-biennial oscillation modulates the Arctic polar vortex? Journal of the Atmospheric Sciences, 69(5), 1713–1733.",
+      "url": "https://doi.org/10.1175/JAS-D-11-0209.1"
+    },
+    {
+      "key": "watson_gray_2014",
+      "citation": "Watson, P. A. G., & Gray, L. J. (2014). How does the quasi-biennial oscillation affect the stratospheric polar vortex? Journal of the Atmospheric Sciences, 71(1), 391–409.",
+      "url": "https://doi.org/10.1175/JAS-D-13-096.1"
+    },
+    {
+      "key": "lu_2014",
+      "citation": "Lu, H., Bracegirdle, T. J., Phillips, T., Bushell, A., & Gray, L. (2014). Mechanisms for the Holton–Tan relationship and its decadal variation. Journal of Geophysical Research: Atmospheres, 119(6), 2811–2830.",
+      "url": "https://doi.org/10.1002/2013JD021352"
+    },
+    {
+      "key": "andrews_2019",
+      "citation": "Andrews, M. B., Knight, J. R., Scaife, A. A., Lu, Y., Wu, T., Gray, L. J., & Schenzinger, V. (2019). Observed and simulated teleconnections between the stratospheric quasi-biennial oscillation and Northern Hemisphere winter atmospheric circulation. Journal of Geophysical Research: Atmospheres, 124(3), 1219–1232.",
+      "url": "https://doi.org/10.1029/2018JD029368"
+    },
+    {
+      "key": "rao_2020",
+      "citation": "Rao, J., Garfinkel, C. I., & White, I. P. (2020). Impact of the quasi-biennial oscillation on the northern winter stratospheric polar vortex in CMIP5/6 models. Journal of Climate, 33(11), 4787–4813.",
+      "url": "https://doi.org/10.1175/JCLI-D-19-0663.1"
+    },
+    {
+      "key": "garfinkel_hartmann_2007",
+      "citation": "Garfinkel, C. I., & Hartmann, D. L. (2007). Effects of the El Niño–Southern Oscillation and the quasi-biennial oscillation on polar temperatures in the stratosphere. Journal of Geophysical Research: Atmospheres, 112, D19112.",
+      "url": "https://doi.org/10.1029/2007JD008481"
+    },
+    {
+      "key": "thompson_2002",
+      "citation": "Thompson, D. W. J., Baldwin, M. P., & Wallace, J. M. (2002). Stratospheric connection to Northern Hemisphere wintertime weather: Implications for prediction. Journal of Climate, 15(12), 1421–1428.",
+      "url": "https://doi.org/10.1175/1520-0442(2002)015<1421:SCTNHW>2.0.CO;2"
+    },
+    {
+      "key": "baldwin_dunkerton_2001",
+      "citation": "Baldwin, M. P., & Dunkerton, T. J. (2001). Stratospheric harbingers of anomalous weather regimes. Science, 294(5542), 581–584.",
+      "url": "https://doi.org/10.1126/science.1063315"
+    },
+    {
+      "key": "scaife_2014",
+      "citation": "Scaife, A. A., Athanassiadou, M., Andrews, M., Arribas, A., Baldwin, M., Dunstone, N., Knight, J., MacLachlan, C., Manzini, E., Müller, W. A., Pohlmann, H., Smith, D., Stockdale, T., & Williams, A. (2014). Predictability of the quasi-biennial oscillation and its northern winter teleconnection on seasonal to decadal timescales. Geophysical Research Letters, 41(5), 1752–1758.",
+      "url": "https://doi.org/10.1002/2013GL059160"
+    },
+    {
+      "key": "osprey_2016",
+      "citation": "Osprey, S. M., Butchart, N., Knight, J. R., Scaife, A. A., Hamilton, K., Anstey, J. A., Schenzinger, V., & Zhang, C. (2016). An unexpected disruption of the atmospheric quasi-biennial oscillation. Science, 353(6306), 1424–1427.",
+      "url": "https://doi.org/10.1126/science.aah4156"
+    },
+    {
+      "key": "newman_2016_qbo",
+      "citation": "Newman, P. A., Coy, L., Pawson, S., & Lait, L. R. (2016). The anomalous change in the QBO in 2015–2016. Geophysical Research Letters, 43(16), 8791–8797.",
+      "url": "https://doi.org/10.1002/2016GL070373"
+    },
+    {
+      "key": "yoo_son_2016",
+      "citation": "Yoo, C., & Son, S.-W. (2016). Modulation of the boreal wintertime Madden–Julian oscillation by the stratospheric quasi-biennial oscillation. Geophysical Research Letters, 43(3), 1392–1398.",
+      "url": "https://doi.org/10.1002/2016GL067762"
+    },
+    {
+      "key": "son_2017",
+      "citation": "Son, S.-W., Lim, Y., Yoo, C., Hendon, H. H., & Kim, J. (2017). Stratospheric control of the Madden–Julian oscillation. Journal of Climate, 30(6), 1909–1922.",
+      "url": "https://doi.org/10.1175/JCLI-D-16-0620.1"
+    },
+    {
+      "key": "shapiro_1989",
+      "citation": "Shapiro, L. J. (1989). The relationship of the quasi-biennial oscillation to Atlantic tropical storm activity. Monthly Weather Review, 117(7), 1545–1552.",
+      "url": "https://doi.org/10.1175/1520-0493(1989)117<1545:TROTQB>2.0.CO;2"
+    },
+    {
+      "key": "camargo_sobel_2010",
+      "citation": "Camargo, S. J., & Sobel, A. H. (2010). Revisiting the influence of the quasi-biennial oscillation on tropical cyclone activity. Journal of Climate, 23(21), 5810–5825.",
+      "url": "https://doi.org/10.1175/2010JCLI3575.1"
+    },
+    {
+      "key": "claud_terray_2007",
+      "citation": "Claud, C., & Terray, P. (2007). Revisiting the possible links between the quasi-biennial oscillation and the Indian summer monsoon using NCEP R-2 and CMAP fields. Journal of Climate, 20(5), 773–787.",
+      "url": "https://doi.org/10.1175/JCLI4034.1"
+    },
+    {
+      "key": "mukherjee_1985",
+      "citation": "Mukherjee, B. K., Indira, K., Reddy, R. S., & Ramana Murty, B. V. (1985). Quasi-biennial oscillation in stratospheric zonal wind and Indian summer monsoon. Monthly Weather Review, 113(8), 1421–1424.",
+      "url": "https://doi.org/10.1175/1520-0493(1985)113<1421:QBOISZ>2.0.CO;2"
+    },
+    {
+      "key": "cohen_2010",
+      "citation": "Cohen, J., Foster, J., Barlow, M., Saito, K., & Jones, J. (2010). Winter 2009–2010: A case study of an extreme Arctic Oscillation event. Geophysical Research Letters, 37, L17707.",
+      "url": "https://doi.org/10.1029/2010GL044256"
+    },
+    {
+      "key": "fereday_2012",
+      "citation": "Fereday, D. R., Maidens, A., Arribas, A., Scaife, A. A., & Knight, J. R. (2012). Seasonal forecasts of northern hemisphere winter 2009/10. Environmental Research Letters, 7(3), 034031.",
+      "url": "https://doi.org/10.1088/1748-9326/7/3/034031"
+    },
+    {
+      "key": "jung_2011",
+      "citation": "Jung, T., Vitart, F., Ferranti, L., & Morcrette, J.-J. (2011). Origin and predictability of the extreme negative NAO winter of 2009/10. Geophysical Research Letters, 38, L07701.",
+      "url": "https://doi.org/10.1029/2011GL046786"
+    },
+    {
+      "key": "ouzeau_2011",
+      "citation": "Ouzeau, G., Cattiaux, J., Douville, H., Ribes, A., & Saint-Martin, D. (2011). European cold winter 2009–2010: How unusual in the instrumental record and how reproducible in the ARPEGE-Climat model? Geophysical Research Letters, 38, L11706.",
+      "url": "https://doi.org/10.1029/2011GL047667"
+    },
+    {
+      "key": "l_heureux_2010",
+      "citation": "L'Heureux, M., Butler, A., Jha, B., Kumar, A., & Wang, W. (2010). Unusual extremes in the negative phase of the Arctic Oscillation during 2009. Geophysical Research Letters, 37, L10704.",
+      "url": "https://doi.org/10.1029/2010GL043338"
+    },
+    {
+      "key": "lockwood_2010",
+      "citation": "Lockwood, M., Harrison, R. G., Woollings, T., & Solanki, S. K. (2010). Are cold winters in Europe associated with low solar activity? Environmental Research Letters, 5(2), 024001.",
+      "url": "https://doi.org/10.1088/1748-9326/5/2/024001"
+    },
+    {
+      "key": "blunden_2011",
+      "citation": "Blunden, J., Arndt, D. S., & Baringer, M. O. (Eds.) (2011). State of the Climate in 2010. Bulletin of the American Meteorological Society, 92(6), S1–S236.",
+      "url": "https://doi.org/10.1175/1520-0477-92.6.S1"
     }
   ],
   "stories": [
@@ -10740,6 +11078,82 @@
             "zambri_robock_2016",
             "parker_1996",
             "robock_2000"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easterly_qbo_2009_10",
+      "title": "2009–10: a winter with the wind from the east",
+      "intro": "The winter of 2009–10 had the most negative North Atlantic Oscillation in a record going back to the 1820s, and the NAO story on this map follows what it did to Europe and America. This story asks where the pattern came from. Two of the drivers that tilt the odds toward a weak polar vortex were lined up that autumn: the Quasi-Biennial Oscillation was easterly at the height the map reads, and an El Niño had been building since June. The year shown begins in November 2009 with the easterly QBO; the El Niño is set as a second driver that began before it. Switch the chain on, and watch the NAO turn negative in December, the two arrows into it agree in January, and Europe freeze. Then read the last two steps, where the map's held phases and the real year part company.\n",
+      "driver": "qbo",
+      "phase": "easterly",
+      "start_month": 11,
+      "start_year": 2009,
+      "second_driver": "enso",
+      "second_phase": "el_nino",
+      "second_start_month": 6,
+      "second_starts_before": true,
+      "steps": [
+        {
+          "month": 0,
+          "focus": "qbo",
+          "text": "November 2009. Singapore's balloons, which have logged the wind over the equator every month since 1953, show the stratosphere at 25 kilometres blowing from the east since the summer and strengthening, while the westerlies of the old phase linger only at the lowest levels. A moderate El Niño has been growing in the Pacific since June, and the sun is at the bottom of its eleven-year cycle. The map draws the QBO as a marker on an empty stretch of ocean, because a band of wind that circles the globe has no region of its own, and its arrows wait: the winter effect begins in December.\n",
+          "sources": [
+            "fu_berlin_qbo",
+            "naujokat_1986",
+            "fereday_2012",
+            "noaa_cpc_oni",
+            "lockwood_2010"
+          ]
+        },
+        {
+          "month": 1,
+          "focus": "nao",
+          "text": "December. The map pushes the North Atlantic Oscillation negative along a dashed arrow, and with the chain on the NAO's own winter map follows one tier down. In the real December the pressure difference between Iceland and the Azores collapsed and stayed collapsed for three months, and the Arctic Oscillation, the NAO's hemisphere-wide cousin, had already set records that year. From January the El Niño's own arrow into the NAO arrives beside the QBO's, and both point the same way. The Met Office's later analysis of that winter named exactly this combination, a strong El Niño with an easterly QBO, as the pairing that favours a sudden warming of the stratosphere, and warmings of the polar vortex did play a part in the surface weather that followed.\n",
+          "sources": [
+            "holton_tan_1980",
+            "fereday_2012",
+            "osborn_2011",
+            "l_heureux_2010",
+            "thompson_2002",
+            "baldwin_dunkerton_2001"
+          ]
+        },
+        {
+          "month": 3,
+          "focus": "northern_europe_winter",
+          "text": "February 2010. Northern Europe is cold on the map through the pushed NAO, at the probable tier because the map has taken two hops to get here. In reality Britain had its coldest winter since 1978–79, snow lay across Germany and Poland for weeks, and the frequency of the negative NAO was unmatched since the winter of 1939–40. Now read what the map does not claim. One study of this winter traces the pattern to a two-way exchange between the stratosphere and the surface, set off by autumn snow over Eurasia rather than by the QBO. Another, testing the sea, the ice, the tropics, the vortex, the sun and the snow one at a time in a forecast model, finds that none of them explains the size of what happened, and credits the atmosphere's own chaos. The QBO and the El Niño tilted the odds; something else rolled the dice.\n",
+          "sources": [
+            "cattiaux_2010",
+            "ouzeau_2011",
+            "cohen_2010",
+            "jung_2011",
+            "osborn_2011"
+          ]
+        },
+        {
+          "month": 9,
+          "focus": "atlantic_hurricanes",
+          "text": "August 2010, and the map is now wrong twice over, which is the point of this step. The QBO's dotted arrow says a quieter hurricane season, the old rule from the 1980s, and the El Niño's solid arrow agrees; with the chain on, the warm tropical Atlantic that the El Niño pushed into being in the spring says busier, and the marker is hatched. The real 2010 season was near a record: the El Niño had died in the spring and turned into a La Niña by July, and at 25 kilometres the wind over Singapore had swung back to westerly by August. The map holds both drivers in the phase they had in November, because it cannot yet let a phase end, and the QBO's hurricane rule has not worked since about 1990 in any case. Two lessons in one marker.\n",
+          "sources": [
+            "gray_1984",
+            "camargo_sobel_2010",
+            "blunden_2011",
+            "fu_berlin_qbo",
+            "noaa_cpc_oni"
+          ]
+        },
+        {
+          "month": 12,
+          "focus": "qbo",
+          "text": "November 2010, and the year shown ends where a new phase has begun: at the height the map reads, the wind over the equator had been westerly since late summer. By the old rule that should have favoured a strong vortex and a mild, stormy winter in Europe. December 2010 was instead the second bitter, negative-NAO December in a row, with the Arctic Oscillation again the dominant pattern of the Northern Hemisphere. Hold that against February: an easterly QBO followed by the coldest winter in decades, then a westerly one followed by another. The QBO can be forecast years ahead, and it does shift the odds of a weak vortex; but forecasting the QBO, as the people who do it point out, does not guarantee forecasting the winter it leans on.\n",
+          "sources": [
+            "fu_berlin_qbo",
+            "blunden_2011",
+            "osborn_2011",
+            "scaife_2014",
+            "andrews_2019"
           ]
         }
       ]

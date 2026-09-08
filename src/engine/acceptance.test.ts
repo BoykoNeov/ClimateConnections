@@ -225,8 +225,8 @@ describe('acceptance: negative NAO, December start', () => {
 });
 
 describe('acceptance: drivers', () => {
-  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'sam', 'tropical_eruption'];
-  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode, the Atlantic and Pacific meridional modes and a tropical eruption as drivers, each with a neutral phase, an onset hint and a default start month', () => {
+  const DRIVERS = ['amo', 'atlantic_meridional_mode', 'atlantic_nino', 'enso', 'indian_ocean_basin', 'iod', 'nao', 'pacific_meridional_mode', 'pdo', 'qbo', 'sam', 'tropical_eruption'];
+  it('ships ENSO, the IOD, the NAO, the SAM, the PDO, the AMO, the Atlantic Niño, the Indian Ocean basin mode, the Atlantic and Pacific meridional modes, a tropical eruption and the QBO as drivers, each with a neutral phase, an onset hint and a default start month', () => {
     const drivers = graph.nodes.filter((n) => n.kind === 'driver');
     expect(drivers.map((d) => d.id).sort()).toEqual(DRIVERS);
     for (const d of drivers) {
@@ -251,6 +251,7 @@ describe('acceptance: drivers', () => {
     expect(start('atlantic_meridional_mode')).toBe(3);
     expect(start('pacific_meridional_mode')).toBe(3);
     expect(start('tropical_eruption')).toBe(6);
+    expect(start('qbo')).toBe(11);
   });
   it('a neutral phase applies nothing', () => {
     for (const driverId of DRIVERS) {
@@ -391,10 +392,10 @@ describe('acceptance: driver-to-driver data', () => {
       expect(d.phases.map((p) => p.value).sort(), d.id).toEqual(d.id === 'tropical_eruption' ? [-1, 0] : [-1, 0, 1]);
     }
   });
-  it('ships twenty-five driver-to-driver links, each with an evidence note and no self-loop', () => {
+  it('ships twenty-seven driver-to-driver links, each with an evidence note and no self-loop', () => {
     expect(d2d.map((l) => l.id).sort()).toEqual([
-      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'eruption_el_nino', 'eruption_positive_nao', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
-      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'negative_pmm_la_nina', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'positive_pmm_el_nino', 'warm_basin_la_nina',
+      'atlantic_nina_el_nino', 'atlantic_nino_la_nina', 'easterly_qbo_negative_nao', 'el_nino_negative_nao', 'el_nino_negative_sam', 'el_nino_positive_amm', 'el_nino_positive_iod', 'el_nino_positive_pdo', 'el_nino_warm_basin', 'eruption_el_nino', 'eruption_positive_nao', 'la_nina_cool_basin', 'la_nina_negative_amm', 'la_nina_negative_iod', 'la_nina_negative_pdo', 'la_nina_positive_nao', 'la_nina_positive_sam',
+      'negative_amo_positive_nao', 'negative_iod_el_nino_next_year', 'negative_nao_positive_amm', 'negative_pmm_la_nina', 'positive_amo_negative_nao', 'positive_iod_la_nina_next_year', 'positive_nao_negative_amm', 'positive_pmm_el_nino', 'warm_basin_la_nina', 'westerly_qbo_positive_nao',
     ]);
     for (const l of d2d) {
       expect(l.from).not.toBe(l.to);
@@ -2119,7 +2120,7 @@ describe('acceptance: outcome regions, third batch (M27), data only', () => {
     }
     expect(graph.links.filter((l) => NEW.includes(l.to))).toHaveLength(13);
     expect(graph.nodes.filter((n) => n.kind === 'outcome')).toHaveLength(61);
-    expect(graph.nodes.filter((n) => n.kind === 'driver')).toHaveLength(11);
+    expect(graph.nodes.filter((n) => n.kind === 'driver')).toHaveLength(12);
   });
   it('El Niño from June, direct links: Central Asia wet November–April, the Midwest wet in the summer the event is in and again from the next May, northeastern Canada mild and Tibet snowy through the winter, India hot in the following spring', () => {
     const tl = run('el_nino');
@@ -2191,5 +2192,164 @@ describe('acceptance: outcome regions, third batch (M27), data only', () => {
     expect(est.months[6].links.el_nino_central_asia.status).toBe('ghost');
     const nao = propagate(graph, { driverId: 'nao', phaseId: 'positive', startMonth: 12, horizonMonths: HORIZON, minConfidence: 'established' });
     expect(nao.months[1].nodes.hudson_bay_winter.value).toBe(-1);
+  });
+});
+
+
+
+// ---------------------------------------------------------------- M23: twelfth driver (the Quasi-Biennial Oscillation)
+// A band of wind in the equatorial stratosphere with a westerly and an easterly
+// phase. The map draws its pushes on the NAO (the Holton–Tan effect) and one
+// link that stopped working (Atlantic hurricanes). Nothing pushes it.
+function runQbo(phaseId: string, startMonth = 11, maxDepth = 1): Timeline {
+  return propagate(graph, { driverId: 'qbo', phaseId, startMonth, horizonMonths: HORIZON, maxDepth });
+}
+
+describe('acceptance: the QBO from November, direct links only', () => {
+  const east = runQbo('easterly');
+  const west = runQbo('westerly');
+  it('the driver has three phases (westerly +1, neutral 0, easterly −1), defaults to November, no area, four links out and none in', () => {
+    const d = graph.nodes.find((n) => n.id === 'qbo')!;
+    expect(d.kind).toBe('driver');
+    if (d.kind !== 'driver') return;
+    expect(d.phases.map((p) => [p.id, p.value])).toEqual([['westerly', 1], ['neutral', 0], ['easterly', -1]]);
+    expect(d.default_start_month).toBe(11);
+    expect(d.area).toBeUndefined();
+    const own = graph.links.filter((l) => l.from === 'qbo');
+    expect(own.map((l) => [l.when, l.to, l.effect, l.confidence]).sort()).toEqual([
+      ['easterly', 'atlantic_hurricanes', -1, 'contested'], ['easterly', 'nao', -1, 'probable'],
+      ['westerly', 'atlantic_hurricanes', 1, 'contested'], ['westerly', 'nao', 1, 'probable'],
+    ]);
+    expect(graph.links.filter((l) => l.to === 'qbo')).toHaveLength(0);
+    // The Indian monsoon link the plan allowed "if at all" is deliberately not drawn.
+    expect(own.some((l) => l.to === 'indian_summer_monsoon')).toBe(false);
+  });
+  it('easterly: the NAO is pushed negative December–February (months 1–3, lag 1) rated probable; before that it is untouched, afterwards the link waits for the next winter', () => {
+    expect(east.months[0].calendarMonth).toBe(11);
+    expect(monthsWith(east, 'nao', -1)).toEqual([1, 2, 3]);
+    expect(east.months[0].nodes.nao.pendingLinkIds).toHaveLength(0);
+    expect(east.months[1].links.easterly_qbo_negative_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(east.months[1].nodes.nao.confidence).toBe('probable');
+    for (const m of east.months.slice(4)) expect(m.nodes.nao.pendingLinkIds, `month ${m.index}`).toEqual(['easterly_qbo_negative_nao']);
+  });
+  it('westerly: the mirror, the NAO pushed positive December–February', () => {
+    expect(monthsWith(west, 'nao', 1)).toEqual([1, 2, 3]);
+    expect(monthsWith(west, 'nao', -1)).toHaveLength(0);
+    expect(west.months[1].links.westerly_qbo_positive_nao).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+  });
+  it('the hurricane link is read in the season itself: August–October (months 9–11), rated contested, easterly quieter and westerly busier; pending the rest of the year', () => {
+    expect(monthsWith(east, 'atlantic_hurricanes', -1)).toEqual([9, 10, 11]);
+    expect(monthsWith(west, 'atlantic_hurricanes', 1)).toEqual([9, 10, 11]);
+    expect(east.months[9].nodes.atlantic_hurricanes.confidence).toBe('contested');
+    expect(east.months[9].links.easterly_qbo_atlantic_hurricanes).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(east.months[0].nodes.atlantic_hurricanes.pendingLinkIds).toEqual(['easterly_qbo_atlantic_hurricanes']);
+    expect(east.months[12].nodes.atlantic_hurricanes.pendingLinkIds).toEqual(['easterly_qbo_atlantic_hurricanes']);
+  });
+  it('from a June start the hurricane months come first (months 2–4) and the NAO push arrives in December (months 6–8)', () => {
+    const jun = runQbo('easterly', 6);
+    expect(monthsWith(jun, 'atlantic_hurricanes', -1)).toEqual([2, 3, 4]);
+    expect(monthsWith(jun, 'nao', -1)).toEqual([6, 7, 8]);
+  });
+  it('direct links only: the NAO is pushed but its own regions stay hollow', () => {
+    for (const m of east.months) {
+      for (const id of ['northern_europe_winter', 'greenland_winter', 'mediterranean_winter_rainfall']) {
+        expect(m.nodes[id].viaLinkIds, `${id} month ${m.index}`).toHaveLength(0);
+      }
+    }
+  });
+  it('the neutral phase (transition) has no links and touches nothing', () => {
+    const none = runQbo('neutral', 11, 3);
+    for (const m of none.months) {
+      expect(Object.keys(m.links), `month ${m.index}`).toHaveLength(0);
+      for (const st of Object.values(m.nodes)) { expect(st.viaLinkIds).toHaveLength(0); expect(st.pendingLinkIds).toHaveLength(0); }
+    }
+  });
+  it('under "established only" every QBO arrow is a ghost: nothing is pushed and nothing is applied', () => {
+    const est = propagate(graph, { driverId: 'qbo', phaseId: 'easterly', startMonth: 11, horizonMonths: HORIZON, maxDepth: 3, minConfidence: 'established' });
+    for (const m of est.months) {
+      expect(Object.keys(m.links).length, `month ${m.index}`).toBeGreaterThan(0);
+      for (const [id, l] of Object.entries(m.links)) expect(l.status, `${id} at month ${m.index}`).toBe('ghost');
+      expect(m.nodes.nao.value, `NAO month ${m.index}`).toBe(0);
+      for (const st of Object.values(m.nodes)) expect(st.viaLinkIds).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: the easterly QBO from November with the chain on', () => {
+  const tl = runQbo('easterly', 11, 3);
+  it('December–February: the NAO is pushed at depth 1 and its winter map follows one tier down (northern Europe cold and Greenland mild at probable, eastern North America cold at contested)', () => {
+    for (const i of [1, 2, 3]) {
+      const m = tl.months[i];
+      expect(m.links.easterly_qbo_negative_nao, `month ${i}`).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+      expect(m.nodes.northern_europe_winter.value, `month ${i}`).toBe(-1);
+      expect(m.nodes.northern_europe_winter.confidence, `month ${i}`).toBe('probable');
+      expect(m.links.negative_nao_northern_europe, `month ${i}`).toEqual({ status: 'applied', confidence: 'probable', depth: 2 });
+      expect(m.nodes.greenland_winter.value, `month ${i}`).toBe(1);
+      expect(m.nodes.mediterranean_winter_rainfall.value, `month ${i}`).toBe(1);
+      expect(m.nodes.eastern_north_america_winter.confidence, `month ${i}`).toBe('contested');
+      expect(m.nodes.hudson_bay_winter.value, `month ${i}`).toBe(1);
+    }
+    expect(tl.months[1].calendarMonth).toBe(12);
+    expect(tl.months[4].nodes.northern_europe_winter.value).toBe(0);
+    expect(tl.months[0].nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
+  });
+  it('the pushed NAO pushes the Atlantic meridional mode positive for the one month its lag allows (February, a third hop at the floor tier), and the hurricanes are never in conflict', () => {
+    expect(tl.months[3].nodes.atlantic_meridional_mode.value).toBe(1);
+    expect(tl.months[3].links.negative_nao_positive_amm).toEqual({ status: 'applied', confidence: 'contested', depth: 2 });
+    expect(tl.months[2].nodes.atlantic_meridional_mode.value).toBe(0);
+    expect(tl.months[4].nodes.atlantic_meridional_mode.value).toBe(0);
+    for (const m of tl.months) expect(m.nodes.atlantic_hurricanes.conflicting, `month ${m.index}`).toBe(false);
+    expect(monthsWith(tl, 'atlantic_hurricanes', -1)).toEqual([9, 10, 11]);
+  });
+  it('the QBO is never pushed: no links in, its phase held all year', () => {
+    for (const m of tl.months) {
+      expect(m.nodes.qbo.value, `month ${m.index}`).toBe(-1);
+      expect(m.nodes.qbo.viaLinkIds, `month ${m.index}`).toHaveLength(0);
+    }
+  });
+});
+
+describe('acceptance: the 2009–10 story, the easterly QBO from November with El Niño chosen since June', () => {
+  const s = graph.stories.find((x) => x.id === 'easterly_qbo_2009_10')!;
+  it('ships with the QBO easterly from November 2009, El Niño as a second driver that began in June, five steps', () => {
+    expect(s).toBeDefined();
+    expect([s.driver, s.phase, s.second_driver, s.second_phase, s.second_start_month, s.second_starts_before, s.start_month, s.start_year])
+      .toEqual(['qbo', 'easterly', 'enso', 'el_nino', 6, true, 11, 2009]);
+    expect(s.steps.map((st) => st.month)).toEqual([0, 1, 3, 9, 12]);
+    expect(s.steps.map((st) => st.focus)).toEqual(['qbo', 'nao', 'northern_europe_winter', 'atlantic_hurricanes', 'qbo']);
+  });
+  it('at the story’s steps: the NAO pushed by the QBO alone in December and by both drivers from January, northern Europe cold in February through the pushed NAO, the hurricanes hatched in August (the QBO and El Niño say quieter, the El Niño’s warm Atlantic says busier), the QBO held to the end', () => {
+    const tl = propagate(graph, {
+      driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3,
+      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month, startsBefore: true },
+    });
+    expect(tl.months[0].nodes.enso.value).toBe(1);
+    expect(tl.months[0].nodes.nao.value).toBe(0);
+    expect(tl.months[1].nodes.nao.value).toBe(-1);
+    expect(tl.months[1].nodes.nao.viaLinkIds).toEqual(['easterly_qbo_negative_nao']);
+    expect(tl.months[1].nodes.nao.pendingLinkIds).toEqual(['el_nino_negative_nao']);
+    expect([...tl.months[2].nodes.nao.viaLinkIds].sort()).toEqual(['easterly_qbo_negative_nao', 'el_nino_negative_nao']);
+    expect(tl.months[2].nodes.nao.conflicting).toBe(false);
+    expect(tl.months[3].calendarMonth).toBe(2);
+    expect(tl.months[3].nodes.northern_europe_winter.value).toBe(-1);
+    expect(tl.months[3].nodes.northern_europe_winter.confidence).toBe('probable');
+    expect(tl.months[3].nodes.northern_europe_winter.viaLinkIds).toEqual(['negative_nao_northern_europe']);
+    // March: the QBO's winter is over but El Niño's own push (January–March) still holds the NAO.
+    expect(tl.months[4].nodes.nao.viaLinkIds).toEqual(['el_nino_negative_nao']);
+    expect(tl.months[9].calendarMonth).toBe(8);
+    const h = tl.months[9].nodes.atlantic_hurricanes;
+    expect(h.value).toBe(-1);
+    expect(h.conflicting).toBe(true);
+    expect([...h.viaLinkIds].sort()).toEqual(['easterly_qbo_atlantic_hurricanes', 'el_nino_atlantic_hurricanes', 'positive_amm_atlantic_hurricanes']);
+    expect(tl.months[9].nodes.atlantic_meridional_mode.viaLinkIds).toEqual(['el_nino_positive_amm']);
+    for (const m of tl.months) expect(m.nodes.qbo.value, `month ${m.index}`).toBe(-1);
+    // Chain off: nobody argues, the two chosen drivers both say quieter.
+    const direct = propagate(graph, {
+      driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 1,
+      secondary: { driverId: s.second_driver!, phaseId: s.second_phase!, startMonth: s.second_start_month, startsBefore: true },
+    });
+    expect(direct.months[9].nodes.atlantic_hurricanes.value).toBe(-1);
+    expect(direct.months[9].nodes.atlantic_hurricanes.conflicting).toBe(false);
+    expect(direct.months[3].nodes.northern_europe_winter.viaLinkIds).toHaveLength(0);
   });
 });

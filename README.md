@@ -5,16 +5,17 @@ weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole,
 the North Atlantic Oscillation, the Southern Annular Mode, the Pacific
 Decadal Oscillation, the Atlantic Multidecadal Oscillation, the Atlantic
 Niño, the Indian Ocean Basin Mode, the Atlantic Meridional Mode, the
-Pacific Meridional Mode or a large tropical volcanic eruption) and a phase
-(El Niño or La Niña, a positive or negative dipole, NAO, SAM, PDO, AMO, AMM
-or PMM, an Atlantic Niño or Niña, a warm or cool Indian Ocean, an eruption
-or none), press play, and watch the
+Pacific Meridional Mode, a large tropical volcanic eruption or the
+Quasi-Biennial Oscillation) and a phase (El Niño or La Niña, a positive or
+negative dipole, NAO, SAM, PDO, AMO, AMM or PMM, an Atlantic Niño or Niña,
+a warm or cool Indian Ocean, an eruption or none, a westerly or easterly
+QBO), press play, and watch the
 known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds eleven drivers, 61 outcome regions, 197 cited links
-(twenty-five of them between the drivers) and fifteen guided stories. A scenario is
+The map currently holds twelve drivers, 61 outcome regions, 201 cited links
+(twenty-seven of them between the drivers) and sixteen guided stories. A scenario is
 one driver in one phase, optionally with a second driver in a phase of its
 own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -91,12 +92,19 @@ any static file server.
   event rather than a swing: a haze of sulphuric acid in the stratosphere
   that cools the world for a year or two, gives northern Eurasia a mild
   first winter, weakens the next summer's monsoons and perhaps nudges the
-  Pacific toward El Niño; it has no opposite phase). The other drivers'
-  markers turn grey; their cards say they are not part of the scenario.
+  Pacific toward El Niño; it has no opposite phase) or the Quasi-Biennial
+  Oscillation (a band of wind 16–50 km up over the equator that blows from
+  the west for about a year and then from the east; its easterly phase
+  weakens the winter polar vortex and leans the NAO negative, its westerly
+  phase the reverse; the marker on an empty stretch of the central Pacific
+  is a placeholder, since a wind that circles the globe has no region).
+  The other drivers' markers turn grey; their cards say they are not part
+  of the scenario.
 - **Phase buttons** pick the phase of that driver: El Niño, neutral or La
   Niña; positive, neutral or negative dipole; positive, neutral or negative
   NAO, SAM, PDO, AMO, AMM or PMM; Atlantic Niño, neutral or Atlantic Niña;
-  warm, neutral or cool basin; eruption or no eruption.
+  warm, neutral or cool basin; eruption or no eruption; westerly,
+  transition or easterly QBO.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
@@ -127,10 +135,11 @@ any static file server.
   summer, March for the Atlantic and Pacific meridional modes, which
   peak in March–May, ahead of the Nordeste's rains and the hurricane
   season for the one and of the Pacific's autumn tip toward El Niño for
-  the other, and June for the tropical eruption, when Pinatubo erupted
+  the other, June for the tropical eruption, when Pinatubo erupted
   in 1991 (an eruption can happen in any month, and the month changes
-  what the first year looks like). Both the default and the note under
-  the control come from the data.
+  what the first year looks like), and November for the QBO, when the
+  phase that will shape the coming winter is usually set. Both the
+  default and the note under the control come from the data.
 - **Season dial** (under the start month) shows the calendar year as a
   circle. The month on screen is filled and follows the timeline; a dark
   triangle marks where the year shown begins, and a dot in the phase
@@ -261,7 +270,7 @@ Pacific as a curve.
 
    ```yaml
    - id: el_nino_example_region       # unique, permanent
-     from: enso                        # a driver id (enso, iod, nao, sam, pdo, amo, atlantic_nino, indian_ocean_basin, atlantic_meridional_mode, pacific_meridional_mode or tropical_eruption)
+     from: enso                        # a driver id (enso, iod, nao, sam, pdo, amo, atlantic_nino, indian_ocean_basin, atlantic_meridional_mode, pacific_meridional_mode, tropical_eruption or qbo)
      when: el_nino                     # a phase id of that driver
      to: example_region                # a node id: an outcome, or another driver
      effect: -1                        # +1 or -1 on the target's axis; for a driver

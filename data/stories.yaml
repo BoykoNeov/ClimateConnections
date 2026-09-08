@@ -1448,3 +1448,115 @@ stories:
           settled out by 1994. The map holds the eruption on for twelve
           months as a stand-in for a cloud that fades over two years.
         sources: [trenberth_dai_2007, iles_hegerl_2014, zambri_robock_2016, parker_1996, robock_2000]
+
+  - id: easterly_qbo_2009_10
+    title: "2009–10: a winter with the wind from the east"
+    intro: >
+      The winter of 2009–10 had the most negative North Atlantic
+      Oscillation in a record going back to the 1820s, and the NAO story
+      on this map follows what it did to Europe and America. This story
+      asks where the pattern came from. Two of the drivers that tilt the
+      odds toward a weak polar vortex were lined up that autumn: the
+      Quasi-Biennial Oscillation was easterly at the height the map
+      reads, and an El Niño had been building since June. The year shown
+      begins in November 2009 with the easterly QBO; the El Niño is set
+      as a second driver that began before it. Switch the chain on, and
+      watch the NAO turn negative in December, the two arrows into it
+      agree in January, and Europe freeze. Then read the last two steps,
+      where the map's held phases and the real year part company.
+    driver: qbo
+    phase: easterly
+    second_driver: enso
+    second_phase: el_nino
+    second_start_month: 6
+    second_starts_before: true
+    start_month: 11
+    start_year: 2009
+    steps:
+      - month: 0
+        focus: qbo
+        text: >
+          November 2009. Singapore's balloons, which have logged the wind
+          over the equator every month since 1953, show the stratosphere
+          at 25 kilometres blowing from the east since the summer and
+          strengthening, while the westerlies of the old phase linger
+          only at the lowest levels. A moderate El Niño has been growing
+          in the Pacific since June, and the sun is at the bottom of its
+          eleven-year cycle. The map draws the QBO as a marker on an
+          empty stretch of ocean, because a band of wind that circles
+          the globe has no region of its own, and its arrows wait: the
+          winter effect begins in December.
+        sources: [fu_berlin_qbo, naujokat_1986, fereday_2012, noaa_cpc_oni, lockwood_2010]
+
+      - month: 1
+        focus: nao
+        text: >
+          December. The map pushes the North Atlantic Oscillation
+          negative along a dashed arrow, and with the chain on the NAO's
+          own winter map follows one tier down. In the real December the
+          pressure difference between Iceland and the Azores collapsed
+          and stayed collapsed for three months, and the Arctic
+          Oscillation, the NAO's hemisphere-wide cousin, had already set
+          records that year. From January the El Niño's own arrow into
+          the NAO arrives beside the QBO's, and both point the same way.
+          The Met Office's later analysis of that winter named exactly
+          this combination, a strong El Niño with an easterly QBO, as
+          the pairing that favours a sudden warming of the stratosphere,
+          and warmings of the polar vortex did play a part in the
+          surface weather that followed.
+        sources: [holton_tan_1980, fereday_2012, osborn_2011, l_heureux_2010, thompson_2002, baldwin_dunkerton_2001]
+
+      - month: 3
+        focus: northern_europe_winter
+        text: >
+          February 2010. Northern Europe is cold on the map through the
+          pushed NAO, at the probable tier because the map has taken two
+          hops to get here. In reality Britain had its coldest winter
+          since 1978–79, snow lay across Germany and Poland for weeks,
+          and the frequency of the negative NAO was unmatched since the
+          winter of 1939–40. Now read what the map does not claim. One
+          study of this winter traces the pattern to a two-way exchange
+          between the stratosphere and the surface, set off by autumn
+          snow over Eurasia rather than by the QBO. Another, testing the
+          sea, the ice, the tropics, the vortex, the sun and the snow one
+          at a time in a forecast model, finds that none of them explains
+          the size of what happened, and credits the atmosphere's own
+          chaos. The QBO and the El Niño tilted the odds; something else
+          rolled the dice.
+        sources: [cattiaux_2010, ouzeau_2011, cohen_2010, jung_2011, osborn_2011]
+
+      - month: 9
+        focus: atlantic_hurricanes
+        text: >
+          August 2010, and the map is now wrong twice over, which is the
+          point of this step. The QBO's dotted arrow says a quieter
+          hurricane season, the old rule from the 1980s, and the El
+          Niño's solid arrow agrees; with the chain on, the warm tropical
+          Atlantic that the El Niño pushed into being in the spring says
+          busier, and the marker is hatched. The real 2010
+          season was near a record: the El Niño had died in the spring
+          and turned into a La Niña by July, and at 25 kilometres the
+          wind over Singapore had swung back to westerly by August. The
+          map holds both drivers in the phase they had in November,
+          because it cannot yet let a phase end, and the QBO's hurricane
+          rule has not worked since about 1990 in any case. Two lessons in
+          one marker.
+        sources: [gray_1984, camargo_sobel_2010, blunden_2011, fu_berlin_qbo, noaa_cpc_oni]
+
+      - month: 12
+        focus: qbo
+        text: >
+          November 2010, and the year shown ends where a new phase has
+          begun: at the height the map reads, the wind over the equator
+          had been westerly since late summer. By the old rule that
+          should have favoured a strong vortex and a mild, stormy winter
+          in Europe. December 2010 was instead the second bitter,
+          negative-NAO December in a row, with the Arctic Oscillation
+          again the dominant pattern of the Northern Hemisphere. Hold
+          that against February: an easterly QBO followed by the coldest
+          winter in decades, then a westerly one followed by another. The
+          QBO can be forecast years ahead, and it does shift the odds of
+          a weak vortex; but forecasting the QBO, as the people who do
+          it point out, does not guarantee forecasting the winter it
+          leans on.
+        sources: [fu_berlin_qbo, blunden_2011, osborn_2011, scaife_2014, andrews_2019]
