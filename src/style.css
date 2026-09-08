@@ -254,7 +254,11 @@ html, body { margin: 0; height: 100%; }
 .story-intro { font-style: italic; color: var(--muted); margin: 6px 0; }
 .story-when { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); }
 .story-text { margin: 6px 0 8px; font-size: 14px; }
-.story-nav { display: flex; gap: 8px; margin-top: auto; padding-top: 8px; }
+.story-nav { display: flex; gap: 8px; margin-top: 8px; }
+/* In the story panel only, the nav row is pushed to the foot of the height
+   the story reserved (the year panel below shares the class and keeps the
+   plain margin). */
+#story .story-nav { margin-top: auto; padding-top: 8px; }
 .story-nav button {
   flex: 1; font: inherit; padding: 6px 10px; border: 1px solid var(--ink); border-radius: 6px;
   background: var(--panel); color: var(--ink); cursor: pointer;
