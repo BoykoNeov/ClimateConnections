@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+# The site is static: the data build writes public/data/graph.json, Vite
+# writes dist/, and Pages serves it. Nothing is fetched at run time except
+# that one file, and vite.config.ts uses base './', so the same dist/ works
+# at a project-page subpath, on any other host, or from a local server.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push wins.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Same gate as a milestone: the data validator, the tests, then the
+      # type check and the site build (npm run build runs build:data + tsc).
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

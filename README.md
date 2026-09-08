@@ -1,5 +1,8 @@
 # Climate Connections
 
+**Open it here: <https://boykoneov.github.io/ClimateConnections/>** — nothing
+to download, nothing to install; it runs in any modern browser.
+
 An interactive teaching map of how the big climate oscillations affect
 weather around the world. Pick a driver (ENSO, the Indian Ocean Dipole,
 the North Atlantic Oscillation, the Southern Annular Mode, the Pacific
@@ -76,11 +79,27 @@ can be compared side by side on one timeline.
   preparation, prices and policy; every such card says so, and the map
   shows only the push from the weather.
 
-## Run it
+## Open it
 
-Requires Node 20 or newer.
+<https://boykoneov.github.io/ClimateConnections/>
+
+That is the whole instruction: a link, in any modern browser, on a laptop or
+a tablet. No account, no installation, no Node, no terminal. The page is a
+static site — everything is computed in your browser and nothing is sent
+anywhere. It works on a school network and prints to one page.
+
+The site is rebuilt and published automatically from `main` by
+`.github/workflows/pages.yml` every time the data or the code changes, so
+the link always shows the current map.
+
+## Build it yourself (for developers)
+
+Only needed if you want to change the data or the code. Requires Node 20 or
+newer and [Git](https://git-scm.com/).
 
 ```
+git clone https://github.com/BoykoNeov/ClimateConnections.git
+cd ClimateConnections
 npm install
 npm run build:data   # validate data/*.yaml and write public/data/graph.json
 npm run dev          # start the dev server; open the printed URL
@@ -95,7 +114,9 @@ npm run preview      # serve dist/ locally
 ```
 
 `dist/` is a plain static site. Copy it to any web host or open it through
-any static file server.
+any static file server. It cannot be opened straight off the disk: the page
+fetches `data/graph.json`, which browsers refuse for a `file://` page, so
+serve it (`npm run preview`) rather than double-clicking `dist/index.html`.
 
 ## Use it
 
