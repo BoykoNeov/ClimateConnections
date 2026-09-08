@@ -84,6 +84,10 @@ export interface ControlState extends ScenarioSettings {
   /** name every marker; off, only the markers the scenario reaches this
    *  month (or the selected one) carry their name */
   showAllLabels: boolean;
+  /** impacts on people (M37, rule 12): run the impact hop on both sides
+   *  and draw the squares. Off by default; a way of looking, like the
+   *  areas layer, so switching it ends no story and leaves no year. */
+  showImpacts: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -407,6 +411,7 @@ export class ControlsView {
   private scenarioBox: HTMLDivElement;
   private filterSelect: HTMLSelectElement;
   private chainBox: HTMLInputElement;
+  private impactsBox: HTMLInputElement;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
   private compareBox: HTMLInputElement;
   private sideBox: HTMLDivElement;
@@ -706,6 +711,20 @@ export class ControlsView {
     hint5.className = 'hint';
     hint5.textContent = 'Off: only the places this scenario reaches in the month shown keep their name, plus the one you have clicked; the rest stay as circles you can still click.';
     container.append(hint5);
+    // Impacts on people (M37): the fifth checkbox, after the labels box so
+    // the browser scripts' indices still hold. Off by default.
+    const impactsLabel = document.createElement('label');
+    impactsLabel.className = 'check';
+    this.impactsBox = document.createElement('input');
+    this.impactsBox.type = 'checkbox';
+    this.impactsBox.checked = state.showImpacts;
+    this.impactsBox.addEventListener('change', () => this.update({ showImpacts: this.impactsBox.checked }));
+    impactsLabel.append(this.impactsBox, document.createTextNode(' Impacts on people'));
+    container.append(impactsLabel);
+    const hint6 = document.createElement('p');
+    hint6.className = 'hint';
+    hint6.textContent = 'Squares beside some places: harvests, disease seasons, fires, rivers and catches that tend to follow from the weather shown, drawn one confidence tier lower and one step further from the driver. How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.';
+    container.append(hint6);
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';
@@ -915,5 +934,6 @@ export class ControlsView {
     this.reflectHold(this.holdSelect, this.holdHint, driver, s.hold, s.startMonth, 0);
     this.filterSelect.value = s.filter;
     this.chainBox.checked = s.chain;
+    this.impactsBox.checked = this.state.showImpacts;
   }
 }

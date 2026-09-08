@@ -2,9 +2,15 @@
 // contract in docs/PLAN.md §4. Keep in sync with scripts/build-data.mjs.
 
 export type Confidence = 'established' | 'probable' | 'contested';
-export type Axis = 'wet_dry' | 'warm_cool' | 'active_quiet' | 'high_low';
+/** the axes of an outcome, plus `more_less`, the axis of every impact node (M37) */
+export type Axis = 'wet_dry' | 'warm_cool' | 'active_quiet' | 'high_low' | 'more_less';
+export type OutcomeAxis = Exclude<Axis, 'more_less'>;
 export type Effect = 1 | -1;
 export type Value = -1 | 0 | 1;
+
+/** What an impact on people is about (M37, rule 12); a fixed list. */
+export const SECTORS = ['agriculture', 'health', 'water', 'energy', 'fisheries', 'fire', 'economy'] as const;
+export type Sector = (typeof SECTORS)[number];
 
 export interface Phase {
   id: string;
@@ -53,12 +59,26 @@ export interface DriverNode extends NodeBase {
 
 export interface OutcomeNode extends NodeBase {
   kind: 'outcome';
-  axis: Axis;
+  axis: OutcomeAxis;
   labels: { plus: string; zero: string; minus: string };
   global: boolean;
 }
 
-export type GraphNode = DriverNode | OutcomeNode;
+/** Something that happens to people because of the weather an outcome
+ *  describes (M37, rule 12): a harvest, a disease season, fires, a river's
+ *  flow, a catch. Reached only from an outcome through an impact link, one
+ *  extra hop after the driver hops, and never the start of a link. */
+export interface ImpactNode extends NodeBase {
+  kind: 'impact';
+  axis: 'more_less';
+  sector: Sector;
+  /** what more / near normal / less mean for this impact, in plain words */
+  labels: { plus: string; zero: string; minus: string };
+  /** never set: an impact is not a region */
+  area?: undefined;
+}
+
+export type GraphNode = DriverNode | OutcomeNode | ImpactNode;
 
 /** One driver whose chosen phase weakens a link (M35, rule 10): while that
  *  driver is chosen by hand and holds that phase, the link is shown one
@@ -72,8 +92,12 @@ export interface Modulation {
 
 export interface Link {
   id: string;
+  /** a driver, or (M37, rule 12) an outcome for an impact link */
   from: string;
+  /** a phase id of the driver, or `plus` / `minus` on an impact link: the
+   *  state of the outcome the link follows from */
   when: string;
+  /** an outcome or a driver; an impact only on a link from an outcome */
   to: string;
   effect: Effect;
   lag_months: [number, number];
@@ -128,6 +152,9 @@ export interface Story {
    *  milestone and writes them into this list, so the app reads only
    *  this. */
   drivers?: StoryDriver[];
+  /** the story points at an impact on people (M37): the impacts layer is
+   *  turned on when it starts, and only such a story may focus an impact */
+  impacts?: boolean;
   steps: StoryStep[];
 }
 
@@ -236,6 +263,11 @@ export interface Scenario {
   /** links whose effective confidence is below this tier apply nothing and
    *  are reported as ghosts (the confidence filter). Default: contested, i.e. all. */
   minConfidence?: Confidence;
+  /** run the impact hop (M37, rule 12): after the driver hops, every
+   *  outcome holding a state fires its impact links, one tier down and one
+   *  hop further. Off (the default), no impact link is reported and every
+   *  impact node keeps the empty state; nothing else changes either way. */
+  impacts?: boolean;
 }
 
 export type LinkStatus = 'applied' | 'pending' | 'ghost' | 'faded';
@@ -250,7 +282,9 @@ export interface LinkState {
   /** the link's confidence after the per-hop downgrade and, M35, the
    *  modulation; the line style to draw */
   confidence: Confidence;
-  /** 1 for the scenario driver's own links, 2 for links of a driver it set off, ... */
+  /** 1 for the scenario driver's own links, 2 for links of a driver it set
+   *  off, ...; for an impact link (M37) one more than the depth of the
+   *  outcome it follows from, so at least 2 */
   depth: number;
   /** the link's `weakened_by` entries in force this month (M35, rule 10):
    *  a chosen driver holding the listed phase. Present only when at least

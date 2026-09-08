@@ -975,6 +975,28 @@ phase.
 
 ### M37 — Impacts on people (outcome → outcome links)
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§6 under M37. As written below, with these readings: the hop runs only
+when the scenario asks for it (`Scenario.impacts`, set by the layer),
+rather than always computed and merely not drawn, so that every reader
+of the timeline (the season dial's count, compare mode's rings, the
+links in play) is unchanged with the layer off; the layer toggle sits
+with the other map layers in the controls' "Map" section (the fifth
+checkbox) and the legend carries the square and its note; an impact link
+is available from the outcome's first month in the state plus the lag
+and is reported only while the outcome holds that state, never `faded`;
+the depth is one more than the smallest depth of the links applied into
+the outcome. Ten impacts and thirteen links: the plan's list, with
+Cayan's hydropower read as Sierra snowpack and streamflow (sector water),
+the Peru fishery feeding a fishmeal node, Argentina's soybean widened to
+the Pampas harvests with a link per state, Australia's wheat reached
+from both the east and the south-east, California's runoff from both
+states of its winter, and the Niger's flow at probable (the Sahelian
+paradox in the caveat). The 1997–98 story's monsoon step points at the
+monsoon itself: with the chain on, El Niño's drying and the wet push of
+the dipole it sets off tie, so no harvest square is drawn, which is what
+1997 did.
+
 **Why it does not fit.** The validator requires every link to start at a
 driver. "Weak monsoon → poor rice harvest", "dry Indonesia → peat fires
 and haze", "wet East Africa → Rift Valley fever" are outcome-to-outcome

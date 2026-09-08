@@ -70,7 +70,19 @@ const OutcomeNode = NodeBase.extend({
   global: z.boolean().optional().default(false),
 }).strict();
 
-const Node = z.discriminatedUnion('kind', [DriverNode, OutcomeNode]);
+/** An impact on people (M37, docs/PLAN.md §4 rule 12): reached from an
+ *  outcome only, one hop further, with a sector from a fixed list. Not a
+ *  region, so no area. */
+const SECTORS = ['agriculture', 'health', 'water', 'energy', 'fisheries', 'fire', 'economy'];
+const ImpactNode = NodeBase.omit({ area: true }).extend({
+  kind: z.literal('impact'),
+  axis: z.literal('more_less'),
+  sector: z.enum(SECTORS),
+  /** what more / near normal / less mean for this impact, in plain words */
+  labels: z.object({ plus: z.string().min(1), zero: z.string().min(1), minus: z.string().min(1) }).strict(),
+}).strict();
+
+const Node = z.discriminatedUnion('kind', [DriverNode, OutcomeNode, ImpactNode]);
 
 /** One driver whose chosen phase weakens a link by one confidence tier
  *  (M35, rule 10), with the studies that found the weakening. */
@@ -149,6 +161,9 @@ const Story = z.object({
   hold_months: Month.optional(),
   /** the other drivers chosen by hand for the whole story (M11, any number since M33) */
   drivers: z.array(StoryDriver).optional(),
+  /** the story points at an impact on people (M37): the impacts layer is
+   *  turned on when it starts; only such a story may focus an impact node */
+  impacts: z.boolean().optional(),
   /** the pre-M33 spelling of a one-element `drivers` list, accepted for one
    *  milestone and written into `drivers` below: a second driver chosen by
    *  hand (M11; both or neither), its own start month (M12), read backwards
@@ -250,9 +265,21 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     const from = nodes.get(l.from);
     const to = nodes.get(l.to);
     if (!from) fail(`link "${l.id}": unknown from node "${l.from}"`);
-    else if (from.kind !== 'driver') fail(`link "${l.id}": from node "${l.from}" is not a driver`);
+    else if (from.kind === 'impact') fail(`link "${l.id}": an impact cannot have outgoing links ("${l.from}")`);
+    else if (from.kind === 'outcome') {
+      // An impact link (M37, rule 12): from an outcome, into an impact,
+      // `when` naming the outcome's state; never weakened, never excepted.
+      if (!['plus', 'minus'].includes(l.when)) fail(`link "${l.id}": a link from the outcome "${l.from}" needs when: plus or minus, got "${l.when}"`);
+      if (to && to.kind !== 'impact') fail(`link "${l.id}": a link from an outcome can only point at an impact, not at "${l.to}" (${to.kind})`);
+      if (l.weakened_by !== undefined) fail(`link "${l.id}": an impact link cannot have weakened_by`);
+      if (l.except !== undefined) fail(`link "${l.id}": an impact link cannot have except`);
+      // Its season must overlap the season of some link into its outcome,
+      // or the impact could never be drawn.
+      if (l.season.length > 0 && !linksFile.links.some((u) => u.to === l.from && (u.season.length === 0 || u.season.some((m) => l.season.includes(m))))) fail(`link "${l.id}": its season shares no month with any link into "${l.from}", so it could never be drawn`);
+    }
     else if (!from.phases.some((p) => p.id === l.when)) fail(`link "${l.id}": "${l.when}" is not a phase of "${l.from}"`);
     if (!to) fail(`link "${l.id}": unknown to node "${l.to}"`);
+    else if (to.kind === 'impact' && from && from.kind === 'driver') fail(`link "${l.id}": a driver cannot point at an impact; impacts follow from outcomes (rule 12)`);
     else if (to.kind === 'driver') {
       // Driver-to-driver (M10): the effect must name a phase of the target
       // that is not a variant (rule 11: a push lands on the parent).
@@ -301,6 +328,10 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     const key = `${l.from}|${l.when}|${l.to}`;
     if (dup.has(key)) fail(`links.yaml: two links from ${l.from}/${l.when} to ${l.to} (${l.id})`);
     dup.add(key);
+  }
+  // Rule 12: every impact has at least one link into it, from an outcome.
+  for (const n of nodesFile.nodes) {
+    if (n.kind === 'impact' && !linksFile.links.some((l) => l.to === n.id)) fail(`nodes.yaml: impact "${n.id}" has no link into it`);
   }
   // Rule 11: a target reached by a driver in a variant phase and in the
   // parent phase must be excepted on the parent link, so it is never
@@ -365,6 +396,29 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     return pushedAt(s, m).some(([d, p, onsetIdx]) =>
       links.some((l) => firesFor(l, d, p) && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
   };
+  /** Rule 12 (M37): an outcome is affected with a given sign at month m
+   *  (some link into it with that effect applied; the copy has no
+   *  sum-and-clamp, so an opposite link is not subtracted). */
+  const affectedWithSign = (s, outcomeId, effect, m) => {
+    const hit = (l, onsetIdx, fade) => l.to === outcomeId && l.effect === effect && appliedAt(l, onsetIdx, m, s.start_month, fade);
+    if (chosenOf(s).some(([cd, cp, co, cf]) => links.some((l) => firesFor(l, cd, cp) && hit(l, co, cf)))) return true;
+    return pushedAt(s, m).some(([d, p, onsetIdx]) => links.some((l) => firesFor(l, d, p) && hit(l, onsetIdx, null)));
+  };
+  /** Rule 12: an impact is affected at month m when some impact link into
+   *  it follows from an outcome holding the named state that month, the
+   *  lag from the outcome's first month in that state has run, and the
+   *  month is in the link's season. */
+  const impactAffectedAt = (s, focusId, m) =>
+    links.some((l) => {
+      if (l.to !== focusId) return false;
+      const from = nodes.get(l.from);
+      if (!from || from.kind !== 'outcome') return false;
+      const effect = l.when === 'plus' ? 1 : -1;
+      if (!affectedWithSign(s, l.from, effect, m)) return false;
+      let onsetIdx = 0;
+      while (onsetIdx < m && !affectedWithSign(s, l.from, effect, onsetIdx)) onsetIdx++;
+      return m >= onsetIdx + l.lag_months[0] && (l.season.length === 0 || l.season.includes(calendarMonth(s.start_month, m)));
+    });
   /** Rule 11: a place that a parent link excepted for a chosen variant would
    *  have reached this month, so a story can point at what did not happen. */
   const exceptedAt = (s, focusId, m) =>
@@ -402,7 +456,12 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
       lastMonth = step.month;
       const focus = nodes.get(step.focus);
       if (!focus) { fail(`${where}: unknown focus node "${step.focus}"`); return; }
-      if (!chosenIds.has(focus.id) && !affectedAt(s, step.focus, step.month) && !exceptedAt(s, step.focus, step.month)) {
+      if (focus.kind === 'impact') {
+        // Rule 12: only a story that turns the impacts layer on may point
+        // at an impact, and it must be reached that month.
+        if (!s.impacts) fail(`${where}: "${step.focus}" is an impact on people, so the story needs impacts: true`);
+        else if (!impactAffectedAt(s, step.focus, step.month)) fail(`${where}: the impact "${step.focus}" is not reached at month ${step.month} (calendar month ${calendarMonth(s.start_month, step.month)}); the square would be hollow`);
+      } else if (!chosenIds.has(focus.id) && !affectedAt(s, step.focus, step.month) && !exceptedAt(s, step.focus, step.month)) {
         const cal = calendarMonth(s.start_month, step.month);
         const by = chosenOf(s).map(([d, p]) => `${d}/${p}`).join(' or ');
         fail(`${where}: "${step.focus}" is not affected by ${by} at month ${step.month} (calendar month ${cal}), directly or through a pushed driver; the marker would be ${focus.kind === 'driver' ? 'grey' : 'hollow'}`);
@@ -433,7 +492,8 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     };
     mkdirSync(join(root, 'public/data'), { recursive: true });
     writeFileSync(join(root, 'public/data/graph.json'), JSON.stringify(graph, null, 2) + '\n');
-    console.log(`graph.json: ${graph.nodes.length} nodes, ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories, ${graph.years.length} years`);
+    const impacts = graph.nodes.filter((n) => n.kind === 'impact').length;
+    console.log(`graph.json: ${graph.nodes.length} nodes (${impacts} impacts on people), ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories, ${graph.years.length} years`);
   }
 }
 

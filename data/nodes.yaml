@@ -2281,3 +2281,221 @@ nodes:
       carries. December 2012 is the example: more than six degrees below
       normal from central Siberia to north-eastern China for weeks.
     sources: [mori_2014, zhang_2018, jma_2012_cold_wave]
+
+  # ---- Impacts on people (M37, docs/PLAN.md §4 rule 12). Not regions:
+  # each square sits a few degrees from the outcome it follows from, and is
+  # drawn only while the "Impacts on people" layer is on. An impact is
+  # reached from an outcome only, one hop further than the weather, one
+  # confidence tier lower, and nothing flows out of it.
+  - id: india_foodgrain_output
+    name: India's food-grain harvest
+    label: India harvest
+    kind: impact
+    sector: agriculture
+    lat: 17
+    lon: 84
+    region: India, the summer (kharif) crop
+    timescale: The harvest that follows the monsoon, September–November
+    axis: more_less
+    labels:
+      plus: Harvest tends to be larger than usual
+      zero: Harvest near normal
+      minus: Harvest tends to be smaller than usual
+    summary: >
+      Rice, pulses and oilseeds sown with the monsoon depend on its rain.
+      A monsoon that comes in well short of normal has, in most years since
+      the 1960s, meant a smaller summer harvest across India; irrigation
+      and better seed have softened the link but not removed it.
+    sources: [kumar_2004, prasanna_2014]
+
+  - id: indonesia_peat_fires
+    name: Peat and forest fires and haze in Indonesia
+    label: Indonesia fires
+    kind: impact
+    sector: fire
+    lat: -3
+    lon: 105
+    region: Sumatra and Borneo, with haze over Singapore and Malaysia
+    timescale: The dry season, July–November
+    axis: more_less
+    labels:
+      plus: Fires and smoke haze tend to be far worse than usual
+      zero: Fire season near normal
+      minus: Fires tend to be fewer than usual
+    summary: >
+      Fires lit to clear land burn out of control when the drained
+      peatlands dry out. The worst haze years of the last sixty, 1982,
+      1997, 2006 and 2015, were all dry El Niño years; the smoke closes
+      airports and schools and reaches the lungs of tens of millions.
+    sources: [field_2009, field_2016, page_2002]
+
+  - id: east_africa_rift_valley_fever
+    name: Rift Valley fever risk in East Africa
+    label: Rift Valley fever
+    kind: impact
+    sector: health
+    lat: -3
+    lon: 41
+    region: Kenya, Somalia, Tanzania
+    timescale: One to three months after heavy short rains
+    axis: more_less
+    labels:
+      plus: Outbreak risk tends to rise, in animals and people
+      zero: Risk near normal
+      minus: Risk tends to be lower than usual
+    summary: >
+      Rift Valley fever is carried by mosquitoes whose eggs hatch when
+      the flat grasslands flood. The big East African outbreaks of 1997–98
+      and 2006–07 both followed short rains far heavier than usual, and
+      satellite rain and greenness maps now give a few months' warning.
+    sources: [anyamba_2009, linthicum_1999]
+
+  - id: peru_coast_malaria_dengue
+    name: Malaria and dengue on the coast of Peru and Ecuador
+    label: Peru coast disease
+    kind: impact
+    sector: health
+    lat: -7
+    lon: -78
+    region: Northern Peru and southern Ecuador
+    timescale: The months after the summer rains, January–April
+    axis: more_less
+    labels:
+      plus: Case numbers tend to rise, sometimes into an epidemic
+      zero: Case numbers near normal
+      minus: Case numbers tend to be lower than usual
+    summary: >
+      Standing water after the rare coastal rains, and warmth, let the
+      mosquitoes that carry malaria and dengue multiply where they are
+      normally scarce. The malaria epidemics of 1983 and 1998 in northern
+      Peru followed the two great El Niño floods.
+    sources: [gagnon_2002, gagnon_2001]
+
+  - id: zimbabwe_maize_yield
+    name: Maize harvest in Zimbabwe and its neighbours
+    label: Zimbabwe maize
+    kind: impact
+    sector: agriculture
+    lat: -18
+    lon: 31
+    region: Zimbabwe, and the maize belt of southern Africa
+    timescale: The harvest in April–May after the summer rains
+    axis: more_less
+    labels:
+      plus: Maize harvest tends to be larger than usual
+      zero: Harvest near normal
+      minus: Maize harvest tends to be smaller than usual
+    summary: >
+      Maize is the staple of southern Africa and is grown almost entirely
+      on the summer rains. A famous 1994 study found that the sea
+      temperature of the tropical Pacific alone explained more than half
+      of the year-to-year swing in Zimbabwe's maize harvest.
+    sources: [cane_1994, phillips_1998]
+
+  - id: pampas_grain_yields
+    name: Grain and soybean harvests on the Pampas
+    label: Pampas harvest
+    kind: impact
+    sector: agriculture
+    lat: -35
+    lon: -62
+    region: Central-eastern Argentina
+    timescale: The harvest in the autumn (March–May) after the spring rains
+    axis: more_less
+    labels:
+      plus: Harvests tend to be larger than usual
+      zero: Harvests near normal
+      minus: Harvests tend to be smaller than usual
+    summary: >
+      Argentina's maize, sorghum and soybean crops are sown in spring and
+      depend on the spring and early summer rain. Wet El Niño springs
+      have tended to bring larger soybean harvests; dry La Niña springs
+      smaller maize and sorghum harvests.
+    sources: [podesta_1999]
+
+  - id: australia_wheat_yield
+    name: Australia's wheat harvest
+    label: Australia wheat
+    kind: impact
+    sector: agriculture
+    lat: -31
+    lon: 145
+    region: The wheat belt of eastern and southern Australia
+    timescale: The harvest in November–December after the winter growing season
+    axis: more_less
+    labels:
+      plus: Wheat harvest tends to be larger than usual
+      zero: Harvest near normal
+      minus: Wheat harvest tends to be smaller than usual
+    summary: >
+      Australian wheat is grown on winter and spring rain, and the
+      Southern Oscillation was recognised as a driver of the national
+      harvest as early as 1985. A dry winter in the east or the south-east
+      cuts the harvest; the worst years, 1982, 1994, 2002 and 2006, were
+      El Niño or positive-dipole years.
+    sources: [nicholls_1985, potgieter_2002]
+
+  - id: peru_fishmeal_output
+    name: Peru's anchoveta catch and fishmeal output
+    label: Fishmeal
+    kind: impact
+    sector: fisheries
+    lat: -9
+    lon: -79
+    region: The fishing ports of Peru, Chimbote to Callao
+    timescale: Months to a year
+    axis: more_less
+    labels:
+      plus: Catch and fishmeal output tend to be larger than usual
+      zero: Catch near normal
+      minus: Catch and fishmeal output tend to collapse
+    summary: >
+      The anchoveta fishery off Peru is the largest single-species fishery
+      in the world and feeds a fishmeal industry that supplies fish and
+      livestock farms worldwide. When the upwelling shuts down the fish
+      scatter and go deep, the catch falls by half or more, and the ports
+      and processing plants stand idle.
+    sources: [niquen_bouchon_2004, barber_chavez_1983]
+
+  - id: california_streamflow
+    name: Sierra Nevada snowpack and California streamflow
+    label: California runoff
+    kind: impact
+    sector: water
+    lat: 39.5
+    lon: -121.5
+    region: The Sierra Nevada and the Central Valley rivers
+    timescale: The winter's snow and rain, and the spring melt that follows
+    axis: more_less
+    labels:
+      plus: Snowpack and river flow tend to be higher than usual
+      zero: Near normal
+      minus: Snowpack and river flow tend to be lower than usual
+    summary: >
+      Most of California's water arrives as winter rain and mountain snow
+      and is stored in reservoirs for the dry summer. A wet winter means a
+      deep snowpack, full reservoirs and flood control on the rivers; a
+      dry one means drought orders the following summer.
+    sources: [cayan_1999]
+
+  - id: niger_river_flow
+    name: Flow of the Niger River
+    label: Niger flow
+    kind: impact
+    sector: water
+    lat: 9.5
+    lon: 5.5
+    region: The Niger from Mali to Nigeria
+    timescale: The flood season, August–October
+    axis: more_less
+    labels:
+      plus: River flow tends to be higher than usual
+      zero: Flow near normal
+      minus: River flow tends to be lower than usual
+    summary: >
+      The Niger's annual flood irrigates the inland delta in Mali, fills
+      the Kainji reservoir in Nigeria and carries the fishing and farming
+      calendar of the whole Sahel. The great Sahel droughts of the 1970s
+      and 1980s cut the river's flow by more than the rain fell, and the
+      flow has only partly recovered.
+    sources: [mahe_paturel_2009, descroix_2009]

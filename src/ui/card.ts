@@ -1,6 +1,6 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Phase, Source } from '../types';
+import type { DriverNode, Graph, GraphNode, ImpactNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Phase, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
 import { downgrade, phaseForValue } from '../engine/propagate';
 import { compareNode, type Verdict } from '../engine/compare';
@@ -64,15 +64,24 @@ function modulationHtml(link: Link, ls: LinkState | null, nodeById: Map<string, 
   return `<p class="hint weaker"><strong>Weaker when</strong> ${when}: choose that driver too and this link drops one tier while both are in phase.</p>${sourcesHtml(keys, sources)}`;
 }
 
+/** The fixed sentence on every impact's card (M37, rule 12): in the UI, not
+ *  in the data, so no impact can be written without it. */
+export const IMPACT_NOTE = 'How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.';
+
 /** "How sure are we?" for a link as it acts this month. `ls` carries the
  *  confidence after the per-hop downgrade and, M35, the modulation; when
- *  it differs from the link's own rating the block says why. */
+ *  it differs from the link's own rating the block says why. An impact
+ *  link (M37) is always shown below its rating, one hop beyond the weather. */
 function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, GraphNode>, sources: Map<string, Source>): string {
   const shown = ls?.confidence ?? link.confidence;
   const byHops = !!ls && ls.depth > 1 && shown !== link.confidence;
+  const fromOutcome = nodeById.get(link.from)?.kind === 'outcome';
+  const why = fromOutcome
+    ? 'It is shown one tier lower because it is one step further from the driver than the weather it follows from, and never higher than that weather’s own tier.'
+    : 'It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.';
   return `<div class="sure"><strong>How sure are we?</strong>
     <span class="badge ${shown}">${shown}</span> ${esc(CONFIDENCE_TEXT[shown])}
-    ${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.</p>` : ''}
+    ${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. ${why}</p>` : ''}
     ${modulationHtml(link, ls, nodeById, sources)}
     <p><em>Why it might not happen:</em> ${esc(link.caveat.trim())}</p>
     ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}
@@ -144,6 +153,8 @@ interface Ctx {
   chosen: Map<string, ChosenPhase>;
   /** the real year on show (M34): the chosen drivers come from the record, not the controls */
   year?: number;
+  /** the impacts layer is on (M37): an outcome's card lists the impacts that follow from it */
+  impacts?: boolean;
 }
 
 /** "you chose" or, in year mode, "set from the record for 1997". */
@@ -172,9 +183,26 @@ function kindNote(link: Link, from: GraphNode | undefined, ctx: Ctx): string {
   return '';
 }
 
+/** A link block for an impact link (M37, rule 12): what it follows from
+ *  (the outcome and its state), the mechanism, the timing counted from the
+ *  month the outcome first held that state, and "How sure are we?". */
+function impactLinkBlock(link: Link, from: OutcomeNode, ctx: Ctx, status: 'applied' | 'pending', ls: LinkState | null): string {
+  const state = link.when === 'plus' ? from.labels.plus : from.labels.minus;
+  const heading = status === 'pending' ? 'Expected, but out of season right now' : 'What pushes it';
+  const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after ${esc(shortName(from))} first shows "${esc(state.toLowerCase())}"; season: ${seasonText(link)}. Drawn only while that place holds this state.`;
+  return `<div class="link-block impact-link">
+    <h4>${heading} <span class="via">from ${esc(shortName(from))}: ${esc(state.toLowerCase())}</span> <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
+    <p>${esc(link.mechanism.trim())}</p>
+    <p class="hint">${timing}</p>
+    ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
+    ${sourcesHtml(link.sources, ctx.sources)}
+  </div>`;
+}
+
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null): string {
-  const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   const from = ctx.nodeById.get(link.from);
+  if (from?.kind === 'outcome' && status !== 'faded') return impactLinkBlock(link, from, ctx, status, ls);
+  const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   // Say where the link comes from when that is not obvious: "through" a
   // pushed driver, or "from" one of two chosen drivers.
   const fromLabel = !from || !ls ? '' : ls.depth > 1 ? `through ${esc(shortName(from))}` : ctx.chosen.size > 1 ? `from ${esc(shortName(from))}` : '';
@@ -468,11 +496,58 @@ function compareBlock(node: GraphNode, cmp: CardCompare): string {
   </div>`;
 }
 
+/** The impacts on people that follow from an outcome (M37), on its card:
+ *  with the layer on, each with its tendency, tier and whether it is drawn
+ *  this month; with the layer off, one line saying how many and where to
+ *  turn them on. Empty when none follow. */
+function impactsFromBlock(node: OutcomeNode, graph: Graph, ctx: Ctx, month: MonthState): string {
+  const out = graph.links.filter((l) => l.from === node.id);
+  if (out.length === 0) return '';
+  if (!ctx.impacts) {
+    return `<p class="hint impacts-off">${out.length === 1 ? 'One impact on people follows' : `${countWord(out.length)} impacts on people follow`} from this place; turn on "Impacts on people" under Map, on the left, to see ${out.length === 1 ? 'it' : 'them'}.</p>`;
+  }
+  const items = out.map((l) => {
+    const to = ctx.nodeById.get(l.to);
+    const ls = month.links[l.id];
+    const state = l.when === 'plus' ? node.labels.plus : node.labels.minus;
+    const now = ls?.status === 'applied' ? 'drawn this month' : ls?.status === 'pending' ? 'out of season this month' : ls?.status === 'ghost' ? 'below the confidence filter' : `not now: it follows "${esc(state.toLowerCase())}"`;
+    return `<li${ls?.status === 'applied' ? '' : ' class="off"'}>${esc(to ? shortName(to) : l.to)}: ${esc(tendencyWords(l, to))} <span class="badge ${l.confidence}">${l.confidence}</span> <span class="hint">${now}</span></li>`;
+  });
+  return `<h2>Impacts on people that follow</h2>
+    <p class="hint">Squares on the map. Each is drawn one tier lower than its rating, and only while this place holds the state it follows from. ${esc(IMPACT_NOTE)}</p>
+    <ul class="impacts">${items.join('')}</ul>`;
+}
+
+/** The card of an impact on people (M37, rule 12): the sector, the fixed
+ *  sentence, the state in plain words and one block per impact link. */
+function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
+  const st = month.nodes[node.id];
+  const label = st.value > 0 ? node.labels.plus : st.value < 0 ? node.labels.minus : node.labels.zero;
+  const cls = st.value > 0 ? 'plus' : st.value < 0 ? 'minus' : 'zero';
+  const bg = st.value === 0 ? '#f0f2f5' : stateColor(node, st.value);
+  let html = `<p class="sector">Sector: ${esc(node.sector)}</p>`;
+  html += `<p class="impact-note">${esc(IMPACT_NOTE)}</p>`;
+  html += `<div class="state-line ${cls}" style="background:${bg}">${esc(label)}${st.conflicting ? ' (conflicting influences)' : ''}</div>`;
+  if (st.conflicting) {
+    html += `<p class="hint">Two or more links push this the opposite way this month. The map adds them up; here they ${st.value === 0 ? 'cancel out, so the square is hatched' : 'do not fully cancel'}.</p>`;
+  }
+  if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) {
+    const from = [...new Set([...ctx.linkById.values()].filter((l) => l.to === node.id).map((l) => ctx.nodeById.get(l.from)).filter((n): n is GraphNode => !!n).map(shortName))];
+    html += `<p class="empty">No push from the weather at this point in the timeline: ${from.length > 0 ? `${esc(from.join(' and '))} ${from.length > 1 ? 'do' : 'does'} not hold the state this follows from` : 'nothing reaches it'}.</p>`;
+  }
+  html += `<p>${esc(node.summary.trim())}</p>`;
+  for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
+  for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
+  html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+  return html;
+}
+
 /** `chosen` maps each driver chosen by hand to its phase and onset (one, or two since M11).
  *  `compare` (M14) adds the other scenario's month for a side-by-side block on top.
  *  `year` (M34) says the chosen drivers come from the table of real years, so
- *  the wording says "from the record" instead of "you chose". */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number): void {
+ *  the wording says "from the record" instead of "you chose".
+ *  `impacts` (M37) says the impacts layer is on. */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
@@ -482,6 +557,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     nodeById: new Map(graph.nodes.map((n) => [n.id, n])),
     linkById: new Map(graph.links.map((l) => [l.id, l])),
     chosen,
+    impacts,
   };
   if (year !== undefined) ctx.year = year;
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
@@ -489,6 +565,10 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
 
   if (node.kind === 'driver') {
     container.innerHTML = html + driverCard(node, graph, ctx, month);
+    return;
+  }
+  if (node.kind === 'impact') {
+    container.innerHTML = html + impactCard(node, ctx, month);
     return;
   }
 
@@ -514,6 +594,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
   for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
   for (const x of excepted) html += exceptedBlock(x, ctx);
+  html += impactsFromBlock(node, graph, ctx, month);
   container.innerHTML = html;
 }
 

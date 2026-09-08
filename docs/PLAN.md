@@ -209,6 +209,16 @@ Rules:
   Shipped: ENSO's `el_nino_central` ("El Niño, central Pacific"), a
   variant of `el_nino`.
 - `kind: outcome` nodes must have `axis` and `labels` and must not have `phases`.
+- `kind: impact` nodes (M37, §4 rule 12) are the third kind: something that
+  happens to people because of the weather an outcome describes (a
+  harvest, a disease season, fires, a river's flow, a catch). They have
+  `axis: more_less`, a required `sector` from the fixed list
+  `agriculture | health | water | energy | fisheries | fire | economy`,
+  `labels` like an outcome (what more / near normal / less mean for this
+  impact, in plain words), no `phases` and no `area` (an impact is not a
+  region; its marker sits a few degrees from its outcome). Every impact
+  node has at least one link into it, from an outcome, and never a link
+  out of it.
 - `lat` in [-90, 90], `lon` in [-180, 180].
 - Ids are permanent. If a node needs renaming, change `name`, never `id`.
 
@@ -260,6 +270,24 @@ Rules:
   in a variant phase reaches the same target as a link in the parent
   phase, the parent link must list that variant in `except`, so a target
   is never reached twice by one driver in one phase.
+- Impact links (M37, §4 rule 12). A link may start at an `outcome` node
+  instead of a driver; its `to` must then be an `impact` node and its
+  `when` is `plus` or `minus`, naming the state of the outcome (on the
+  outcome's own axis) that the link follows from. Every other field is
+  as above: `effect` on the impact's `more_less` axis, `lag_months`
+  (counted from the first month the outcome holds that state), `season`,
+  `confidence`, `mechanism`, `caveat`, `evidence_note`, sources. A link
+  from a driver never points at an impact; a link never starts at an
+  impact; `weakened_by` and `except` are not allowed on an impact link.
+  The `season` of an impact link, when it is not empty, must share at
+  least one month with the season of some link into its outcome,
+  otherwise the impact could never be drawn. Only one link per (from,
+  when, to) triple, as for every link, so an impact may follow from both
+  states of its outcome through two links (a wet winter and a dry one).
+  Curatorial rule, written into `docs/DATA_FORMAT.md`: an impact link is
+  never rated `established` unless its source is a multi-decade study of
+  the impact itself (yields, case counts, burned area, streamflow), not
+  of the weather.
 
 ### 3.3 Confidence meaning (show this text in the legend)
 - **established** — found in most events and in most studies; textbook material.
@@ -515,6 +543,66 @@ Semantics (implement exactly this; do not improvise):
     and the card says a stronger event tends to give the same map more
     reliably.
 
+12. The impact hop (M37): impacts on people. A third node kind, `impact`
+    (§3.1), can be reached only from an outcome, through an impact link
+    (§3.2: `from` an outcome, `when: plus | minus`, `to` an impact). The
+    hop runs only when the scenario says so: `Scenario.impacts` (optional
+    boolean, default false). With it off nothing in this rule happens, no
+    impact link is ever reported, every impact node keeps the empty state,
+    and the timeline is the one rules 1–11 give, byte for byte. With it
+    on, in every month, after the last driver hop (rule 6) and the faded
+    report (rule 9) are done:
+    - Which impacts fire. For every outcome that holds a state this month
+      (value +1 or −1 after sum and clamp, with at least one applied link
+      in `viaLinkIds`; an outcome at 0, conflicting or not, holds no
+      state), the outcome's *onset in that state* is the first month index
+      it held it, fixed for the rest of the scenario (the fire-once rule
+      of rule 6, keyed on outcome and state, `plus` or `minus`). Every
+      impact link whose `from` is that outcome and whose `when` names
+      that state is a candidate. It is available from `onset +
+      lag_months[0]`, applied in a month where it is available and the
+      season gate (rule 3) passes, and reported `pending` where it is
+      available but out of season. In a month where the outcome does not
+      hold the state (its season has passed, its driver has faded, the
+      pushes cancel) the impact link is not reported at all, as a pushed
+      driver's links are not (rule 6), and never `faded`: only a chosen
+      driver's own links fade.
+    - Depth and tier. The outcome's depth is the smallest `depth` among
+      the links applied into it this month (1 when a chosen driver reaches
+      it directly). An impact link is reported with `depth` one more than
+      that, and its confidence is rule 6's formula for a hop at that depth:
+      `downgrade(confidence, depth − 1)`, so at least one tier below its
+      rating, and never above the outcome's own confidence (rule 5's
+      lowest). An established impact of an established first-hop outcome
+      is therefore drawn probable; an impact of a contested outcome is
+      contested. `minConfidence` then ghosts as for any link (status
+      `ghost`, nothing applied). `maxDepth` does not bound the impact hop:
+      it counts driver hops, and the impact hop is the one extra hop after
+      them, whatever the depth.
+    - At the impact node rules 4 and 5 apply unchanged: the effects of the
+      applied impact links add up and clamp, `conflicting` is set when
+      they disagree, the node's confidence is the lowest among them,
+      `viaLinkIds`, `pendingLinkIds` and `inSeason` are filled as for an
+      outcome; `fadedLinkIds` stays empty. Several links into one impact
+      (two dry regions into one wheat yield) add up the same way; two
+      links from one outcome, one per state, never fire in the same month.
+    - Nothing flows back. An impact node has no outgoing links (the
+      validator refuses them), so there is no loop, no second impact hop
+      and no push from an impact into anything. Every driver and outcome
+      state, every link status of rules 1–11 and every onset are identical
+      with the hop on and off (a regression test runs every shipped story
+      and every real year both ways). Modulation (rule 10) and `except`
+      (rule 11) do not apply to impact links; the validator refuses both
+      fields on them.
+    - What the rule cannot say, on purpose: nothing about size, money or
+      lives (rule 13 of `docs/PLAN_V3.md`: three states only), nothing
+      about impacts of impacts, and nothing about whether the push from
+      the weather reaches people at all. The card of every impact node
+      carries one fixed sentence, in the UI and not in the data: "How much
+      of this reaches people depends on preparation, prices and policy;
+      the map shows only the push from the weather." The layer that turns
+      the hop on is off by default (rule 15 of `docs/PLAN_V3.md`).
+
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
 and lowest-confidence selection.
@@ -550,6 +638,15 @@ and lowest-confidence selection.
   region" checkbox (off by default) names them all; it is the fourth
   checkbox in the controls, after the chain box, so the browser scripts'
   indices still hold.
+- Impact (M37, §4 rule 12): a small square a few degrees from its outcome,
+  drawn only while the "Impacts on people" layer is on; hollow until
+  reached, filled by state on its own two-colour scheme (more: deep
+  pink; less: teal), hatched and dashed like an outcome when pushes
+  cancel or conflict, labelled under the same rule as an outcome. Its
+  arrow leaves the outcome's marker, not a driver's, in the tier the
+  engine reports (at least one below the link's rating). With the layer
+  off the square, its arrow and its label are not drawn at all, and the
+  page is the one M36 shipped. Region mode never draws impacts.
 
 ### 5.3 Arrows
 - One arrow per active link, from driver to target, drawn as a great-circle
@@ -610,7 +707,20 @@ both kinds of El Niño" or "Only for this kind", and a place reached by
 an excepted link says "Not expected in this kind" with the parent link's
 evidence note and sources. A driver pushed into a phase along the chain
 is always shown in the parent phase, and the variant's card says the map
-cannot tell which kind a pushed event would be.
+cannot tell which kind a pushed event would be. Since M37 (rule 12) the
+card of an impact node leads with its sector ("Sector: agriculture") and
+one fixed sentence, in the UI and not in the data: "How much of this
+reaches people depends on preparation, prices and policy; the map shows
+only the push from the weather." Then its state in plain words, and one
+block per impact link acting on it: "What pushes it, from <the outcome>",
+the outcome's state it follows from, the mechanism, the timing counted
+from the month the outcome first held that state, and "How sure are we?"
+saying the link is shown one tier below its rating because it is one
+step further from the driver than the weather it follows from, and never
+above that weather's own tier. An outcome's card lists, while the layer
+is on, "Impacts on people that follow" from it (each with its tendency,
+tier and whether it is drawn this month), and while the layer is off one
+line saying how many follow and where to turn them on.
 
 ### 5.6 Controls (top-left)
 - Phase buttons (M36): the buttons show the phases that are not variants;
@@ -728,7 +838,20 @@ cannot tell which kind a pushed event would be.
   timeline to the first month index with that calendar month, pauses play
   and leaves a running story alone, like the scrubber. Hidden in print.
 - Confidence filter: all / probable and above / established only (section 3.4).
-- Legend: confidence line styles and the state color scheme.
+- "Impacts on people" (M37, rule 12): the fifth checkbox in the controls,
+  under "Label every region" in the Map section so the browser scripts'
+  indices still hold, **off by default** (rule 15 of `docs/PLAN_V3.md`).
+  On, it sets `Scenario.impacts` for both sides and the squares, their
+  arrows and their cards appear; its hint says what a square is, that it
+  is drawn one tier lower and one hop further than the weather it follows
+  from, and repeats the fixed sentence about preparation, prices and
+  policy. Off, the engine runs rules 1–11 only and the page is unchanged.
+  It is a way of looking, like the areas layer: switching it does not end
+  a story or leave a real year. A story that points at an impact carries
+  `impacts: true` and turns the layer on when it starts.
+- Legend: confidence line styles and the state color scheme, and (M37) a
+  square for an impact on people with its two colours and the note that
+  it shows only with the layer on.
 - A permanent one-line disclaimer under the title: "Shows historical
   tendencies from published research. Not a forecast, not a simulation."
 
@@ -2601,6 +2724,131 @@ drivers stays in one place.
   variant, refused on the card; removing `Scenario.secondary` and the
   pre-M33 story fields. Next in `docs/PLAN_V3.md`: the UI items M29–M31,
   M37 (impacts), M38 (quiz), each with its own sign-off.
+
+### M37 — Impacts on people (version 3, signed off 2026-09-08)
+- The fifth engine extension of version 3 and the last of the engine set,
+  taken at the user's "m37". Section 4 rule 12 as above, written before
+  the code (rule 14 of `docs/PLAN_V3.md`), with §3.1 (the `impact` node
+  kind: `axis: more_less`, a `sector` from a fixed list, `labels`, no
+  `area`, at least one link in and never one out) and §3.2 (the impact
+  link: `from` an outcome, `when: plus | minus`, `to` an impact; never
+  from a driver, never `weakened_by` or `except`; its season must overlap
+  a link into its outcome; the curatorial rule on `established`). The
+  hop runs only with `Scenario.impacts` (decided here rather than "always
+  computed, not drawn", so the dial's count, compare mode's rings and the
+  links in play are untouched with the layer off): after the driver hops
+  and the faded report, every outcome holding a state fires its impact
+  links for that state, from its first month in the state plus the lag
+  (the fire-once rule keyed on outcome and state), in season, at rule 6's
+  tier for a hop one deeper than the smallest depth applied into the
+  outcome and never above the outcome's own tier; an outcome without the
+  state reports nothing, never `faded`; sum, clamp and conflict at the
+  impact as at an outcome; `maxDepth` does not bound it. `stateName` and
+  `impactLinksOf` in `src/engine/propagate.ts`. Engine tests in
+  `src/engine/impacts.test.ts` (52: the helpers; off by default the
+  timeline identical to the hop on and to a graph without the impacts;
+  on: the square reached the month its outcome holds the state at one
+  tier down and depth 2, a link for the other state never firing, two
+  links into one impact conflicting and cancelling to a hatch, the lag
+  counted from the outcome's first month in the state and again at once
+  when the state returns at month 12, an outcome out of its state
+  reporting nothing (not faded), the season gate pending, a second-hop
+  outcome giving depth 3 and two tiers down, a contested outcome capping
+  an established link, `maxDepth` 1 still reaching the first-hop square,
+  the confidence filter ghosting at the effective tier, a hold on the
+  driver leaving no outcome with a state and so no impact link, a
+  neutral scenario reaching nothing, the links in play including the
+  impact links only with the hop on; on the shipped data: ten impacts
+  with sectors, labels, sources and no area, thirteen links from outcomes
+  only with evidence notes, five established, every impact link drawn in
+  some single-driver scenario from the driver's usual start month, the
+  story; El Niño from June with the chain on: the monsoon a tie against
+  the dipole El Niño sets off so no harvest square, the harvest June to
+  September and June again with direct links only, Indonesia's fires
+  July to November and pending in December, Rift Valley fever November
+  and December at contested, malaria and dengue January to April,
+  Zimbabwe's maize December to March, the Pampas October to January,
+  Australia's wheat through both links at depths 2 and 3, fishmeal from
+  September, California's runoff December to March at contested, the
+  Niger August and September; La Niña: the Pampas and the runoff down and
+  no other square; regression: every shipped story and every real year
+  identical with the hop on and off). `stories.test.ts` sets the flag from
+  the story and requires an impact step to carry it and be reached. 902
+  tests.
+- Data: ten impact nodes (`india_foodgrain_output` agriculture,
+  `indonesia_peat_fires` fire, `east_africa_rift_valley_fever` health,
+  `peru_coast_malaria_dengue` health, `zimbabwe_maize_yield`,
+  `pampas_grain_yields` and `australia_wheat_yield` agriculture,
+  `peru_fishmeal_output` fisheries, `california_streamflow` and
+  `niger_river_flow` water), each a few degrees from its outcome; thirteen
+  links (`weak_monsoon_india_foodgrain` established, Krishna Kumar and
+  others 2004, Prasanna 2014; `dry_indonesia_peat_fires` established,
+  Field and others 2009 and 2016, Page and others 2002;
+  `wet_short_rains_rift_valley_fever` probable, Anyamba and others 2009,
+  Linthicum and others 1999; `wet_peru_coast_malaria_dengue` probable,
+  Gagnon and others 2002 and 2001; `dry_southern_africa_maize` probable,
+  Cane, Eshel and Buckland 1994, Phillips, Cane and Rosenzweig 1998;
+  `wet_` and `dry_southeast_south_america_grain` probable, Podestá and
+  others 1999; `dry_east_australia_wheat` and
+  `dry_southeast_australia_wheat` probable, Nicholls 1985, Potgieter,
+  Hammer and Butler 2002; `fishery_collapse_fishmeal` established, Ñiquen
+  and Bouchon 2004; `wet_` and `dry_california_streamflow` established,
+  Cayan, Redmond and Riddle 1999; `dry_sahel_niger_flow` probable, Mahé
+  and Paturel 2009, Descroix and others 2009), every one with a caveat
+  and an evidence note; seventeen new sources, every DOI resolved on
+  Crossref. The story `el_nino_1997_98_impacts`, "1997–98: from the
+  weather to the harvest and the haze", `impacts: true`, nine steps from
+  May 1997: the fires in August, the monsoon tie in September (the map
+  draws no harvest square with the chain on, and 1997's monsoon was near
+  normal), Rift Valley fever in November, fishmeal and the Pampas in
+  January, the coast's malaria and Zimbabwe's maize (less bad than
+  feared) in February, California's runoff in March. Validator: the
+  `ImpactNode` schema; a link from an outcome needs `when: plus | minus`,
+  an impact target and no `weakened_by` or `except`, and its season must
+  share a month with a link into the outcome; a driver never points at an
+  impact; an impact never has a link out; every impact has a link in;
+  `impacts` on a story, and a step on an impact needs it and must be
+  reached by the hop's copy of the rule (no sum-and-clamp, so a tie
+  passes the build and fails the engine test, which is why the monsoon
+  step points at the monsoon). 86 nodes, 226 links, 482 sources, 20
+  stories.
+- UI as §5.2, §5.5 and §5.6 above: `AXIS_COLORS.more_less` (deep pink
+  for more, teal for less), the marker a `rect.mark` beside a
+  `circle.mark`, `drawNodes` taking the node list so the squares are
+  removed with the layer and never drawn in region mode, arrows into an
+  impact classed `to-impact`; the fifth checkbox "Impacts on people" in
+  the Map section with its hint, `ControlState.showImpacts`, shared by
+  both sides and set on the scenario in `scenarioFor`; the legend's square
+  row and note; on the card `IMPACT_NOTE` (the fixed sentence, in the UI),
+  `impactCard` (sector, sentence, state, "What pushes it from <the
+  outcome>: <its state>", timing from the outcome's first month in the
+  state, "How sure are we?" saying one step further and never above the
+  weather's tier), `impactsFromBlock` on an outcome's card (the list with
+  the layer on, one line with it off); a story with `impacts: true` turns
+  the layer on and leaves it on; the selection is dropped when the layer
+  goes off with an impact open; the print caption's sentence on squares
+  in scenario and year mode alike.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m37.mjs` (22
+  checks; screenshots `m37-01-fires-card.png` … `m37-05-year-1997.png`
+  under `W:\temp\claude\ClimateConnections\m37`): five checkboxes with
+  the fifth off and no square on load; the Indonesia card's one line with
+  the layer off; ten squares with it on; July's fires square pink,
+  labelled, its arrow from Indonesia at probable; the monsoon tie and the
+  hollow harvest with the chain on, the teal harvest with it off; the
+  fires card and the Indonesia card's list; December's fever, maize and
+  runoff (contested); the layer off again with the dial count as on
+  load and the card dropped; the 1997–98 impacts story turning the layer
+  on, its fires step, its monsoon step, its last step, and the layer
+  staying on after it; compare mode with squares on both maps and the
+  runoff pink against teal, ringed; region mode without squares; the
+  legend; the print caption; the real year 1997 keeping the squares.
+- Not in M37: impacts of impacts, any money or mortality figure, a
+  strengthening or weakening side on impact links, impacts in region
+  mode (the map and card there read links from drivers only), the years
+  table saying anything about impacts, nodes in the `energy` and
+  `economy` sectors (in the list, none written yet). Next in
+  `docs/PLAN_V3.md`: the UI items M29–M31 and the roadmap items M38–M40,
+  each with its own sign-off.
 
 ---
 

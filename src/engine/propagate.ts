@@ -128,6 +128,19 @@ export function linksOfPhase(graph: Graph, driverId: string, phaseId: string): L
   return graph.links.filter((l) => linkFiresFor(l, driver, phaseId));
 }
 
+/** The state name an impact link follows from (rule 12): `plus` for +1,
+ *  `minus` for −1, null at 0 (no state). */
+export function stateName(value: Value): 'plus' | 'minus' | null {
+  return value > 0 ? 'plus' : value < 0 ? 'minus' : null;
+}
+
+/** The impact links (rule 12) that follow from an outcome holding a state:
+ *  every link whose `from` is the outcome and whose `when` names the
+ *  state, in graph order. */
+export function impactLinksOf(graph: Graph, outcomeId: string, when: 'plus' | 'minus'): Link[] {
+  return graph.links.filter((l) => l.from === outcomeId && l.when === when);
+}
+
 /** Links that belong to a chosen driver + phase (the first hop). */
 export function activeLinks(graph: Graph, scenario: Scenario): Link[] {
   const chosen = chosenDrivers(scenario);
@@ -303,6 +316,58 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
         next.push({ driverId: id, phaseId: phase.id, confidence: st.confidence });
       }
       frontier = next;
+    }
+
+    // Rule 12 (M37): the impact hop, only when the scenario asks for it.
+    // After the driver hops, every outcome holding a state this month
+    // (value ±1 with at least one applied link) fires its impact links for
+    // that state: available from the outcome's onset in the state (its
+    // first month in it, fixed for the rest of the scenario) plus the lag,
+    // applied when in season, pending when not, at rule 6's tier for a hop
+    // one deeper than the outcome and never above the outcome's own
+    // confidence. An outcome without a state this month reports nothing.
+    // Impacts have no outgoing links, so nothing here flows back.
+    if (scenario.impacts) {
+      const impactSums = new Map<string, { sum: number; pos: boolean; neg: boolean }>();
+      for (const src of graph.nodes) {
+        if (src.kind !== 'outcome') continue;
+        const st = nodes[src.id];
+        const when = stateName(st.value);
+        if (!when || st.viaLinkIds.length === 0) continue;
+        const key = `${src.id}|${when}`;
+        if (!onset.has(key)) onset.set(key, index);
+        const start = onset.get(key)!;
+        const depth = 1 + Math.min(...st.viaLinkIds.map((id) => links[id]?.depth ?? 1));
+        for (const link of impactLinksOf(graph, src.id, when)) {
+          const target = nodes[link.to];
+          if (!target) continue;
+          if (index < start + link.lag_months[0]) continue; // not yet available
+          let confidence = downgrade(link.confidence, depth - 1);
+          if (st.confidence) confidence = lowest(confidence, st.confidence);
+          if (CONFIDENCE_ORDER[confidence] < minLevel) {
+            links[link.id] = { status: 'ghost', confidence, depth };
+            continue;
+          }
+          const inSeason = link.season.length === 0 || link.season.includes(cal);
+          if (!inSeason) {
+            target.pendingLinkIds.push(link.id);
+            links[link.id] = { status: 'pending', confidence, depth };
+            continue;
+          }
+          target.inSeason = true;
+          target.viaLinkIds.push(link.id);
+          target.confidence = lowest(target.confidence, confidence);
+          links[link.id] = { status: 'applied', confidence, depth };
+          const acc = impactSums.get(link.to) ?? { sum: 0, pos: false, neg: false };
+          acc.sum += link.effect;
+          if (link.effect > 0) acc.pos = true; else acc.neg = true;
+          impactSums.set(link.to, acc);
+        }
+      }
+      for (const [id, acc] of impactSums) {
+        nodes[id].value = clamp(acc.sum);
+        nodes[id].conflicting = acc.pos && acc.neg;
+      }
     }
 
     months.push({ index, calendarMonth: cal, nodes, links });

@@ -1897,3 +1897,122 @@ stories:
           shows every driver the table has for 2009; the record calls the
           event El Niño, because its index cannot tell the two kinds apart.
         sources: [kim_2011_fast_transition, noaa_oni_index]
+
+  # ---- M37: a story with the "Impacts on people" layer on. Every step on
+  # a square is a tendency the map draws; the text says where 1997–98 did
+  # and did not follow it.
+  - id: el_nino_1997_98_impacts
+    title: "1997–98: from the weather to the harvest and the haze"
+    intro: >
+      The same El Niño as "The 1997–98 El Niño", one step further: what the
+      dry seasons, the floods and the empty sea meant for harvests, fires,
+      disease and water. This story turns on the "Impacts on people"
+      layer; the squares it points at are drawn one confidence tier lower
+      than the weather they follow from, and how much of any of it reached
+      people depended on what was done about it.
+    driver: enso
+    phase: el_nino
+    start_month: 5
+    start_year: 1997
+    impacts: true
+    steps:
+      - month: 0
+        focus: enso
+        text: >
+          May 1997: the warming that became the strongest El Niño of the
+          century is under way. Turn your eye to the squares that appear
+          near some of the places as the year goes on. Each is something
+          that tends to happen to people because of the weather the circle
+          beside it shows, drawn one tier less surely, because it is one
+          step further from the ocean.
+        sources: [mcphaden_1999]
+
+      - month: 3
+        focus: indonesia_peat_fires
+        text: >
+          August 1997. The rains have failed across Indonesia since June,
+          and the drained peat swamps of Sumatra and Borneo are tinder.
+          Fires lit to clear land ran out of control and burned for months;
+          the haze closed airports from Kuala Lumpur to Singapore and put
+          tens of millions under smoke. The 1997 fires released carbon
+          equal to a sizeable share of the world's fossil-fuel emissions
+          that year.
+        sources: [page_2002, field_2009]
+
+      - month: 4
+        focus: indian_summer_monsoon
+        text: >
+          September 1997. No square is drawn beside India, and the monsoon
+          marker is hatched: El Niño pushes the monsoon dry, but the
+          positive Indian Ocean Dipole that El Niño set off in June pushes
+          it wet, and the map calls that a tie. So the harvest square,
+          which needs a weak monsoon, stays empty. That is close to what
+          happened: the 1997 monsoon came in near normal, the warm western
+          Indian Ocean is one of the explanations offered, and the harvest
+          held. Turn "Follow links through other drivers" off to see the
+          tendency on its own: a weak monsoon, and a smaller harvest.
+        sources: [kumar_1999, kumar_2004]
+
+      - month: 6
+        focus: east_africa_rift_valley_fever
+        text: >
+          November 1997. The short rains of East Africa were the heaviest
+          in decades, and the flooded grasslands of Kenya and Somalia
+          hatched the mosquitoes that carry Rift Valley fever. The outbreak
+          that followed killed hundreds of people and vast numbers of
+          livestock; it was the case that showed satellite rain and
+          greenness maps could give a few months' warning.
+        sources: [linthicum_1999, anyamba_2009]
+
+      - month: 8
+        focus: peru_fishmeal_output
+        text: >
+          January 1998. Off Peru the upwelling has been shut off since the
+          autumn and the anchoveta have scattered and gone deep. The catch
+          collapsed, the season was closed, and the fishmeal plants along
+          the coast stood idle; landings in 1998 were a fraction of a
+          normal year's.
+        sources: [niquen_bouchon_2004, barber_chavez_1983]
+
+      - month: 8
+        focus: pampas_grain_yields
+        text: >
+          January 1998. A wet spring on the Pampas, as the map expects in
+          an El Niño, and the soybean harvest that autumn was one of the
+          largest Argentina had grown. Studies of the harvest records find
+          the soybean gain in wet El Niño springs and the maize loss in dry
+          La Niña ones, with the loss the firmer of the two.
+        sources: [podesta_1999]
+
+      - month: 9
+        focus: peru_coast_malaria_dengue
+        text: >
+          February 1998. Torrential rain on the normally dry coast of
+          northern Peru left standing water for weeks, and the malaria
+          epidemic that followed in Piura and Tumbes was the largest since
+          the 1983 El Niño. The two epidemics, fifteen years apart, are the
+          clearest case in South America of an El Niño flood turning into
+          a disease season.
+        sources: [gagnon_2002]
+
+      - month: 9
+        focus: zimbabwe_maize_yield
+        text: >
+          February 1998. Southern Africa braced for the drought that a
+          strong El Niño usually brings, and forecasts of a failed maize
+          harvest went out across the region. The rains then came in
+          closer to normal than feared in much of Zimbabwe, and the harvest
+          held up better than the forecasts. The square is the tendency;
+          the season was one of its exceptions.
+        sources: [cane_1994, phillips_1998]
+
+      - month: 10
+        focus: california_streamflow
+        text: >
+          March 1998. California's wet winter, the one that made the
+          contested El Niño link famous, left a deep Sierra snowpack and
+          rivers running high; the reservoirs filled and the spring melt
+          kept them full. Here the chain is short and sure: once the
+          storms have come, the water follows. Whether they come at all is
+          the uncertain step, and the map draws that one dotted.
+        sources: [cayan_1999, jong_2016]

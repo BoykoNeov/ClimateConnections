@@ -16,8 +16,10 @@ known consequences arrive across a Pacific-centered world map over twelve
 months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
-The map currently holds fourteen drivers, 62 outcome regions, 208 cited links
-(twenty-nine of them between the drivers), eighteen guided stories and a
+The map currently holds fourteen drivers, 62 outcome regions, ten impacts
+on people (harvests, disease seasons, fires, rivers, a catch), 226 cited
+links (twenty-nine of them between the drivers, thirteen from a region to
+an impact), twenty guided stories and a
 table of real years, 1950–2025, read from the index datasets. A scenario is
 one driver in one phase, optionally with any number of other drivers each
 in a phase of its own; a driver can also push another driver into a phase, and the map then
@@ -50,6 +52,13 @@ can be compared side by side on one timeline.
   cite, not because they are the only effects that exist.
 - Not a source of precise boundaries. The "affected areas" layer is a set of
   rough, illustrative outlines, and the control that turns it on says so.
+- Not a statement about what happens to people. The "Impacts on people"
+  layer (off by default) draws harvests, disease seasons, fires, rivers
+  and a catch that tend to follow from the weather beside them, one
+  confidence tier less surely than that weather and with no size, money
+  or lives attached. How much of any of it reaches people depends on
+  preparation, prices and policy; every such card says so, and the map
+  shows only the push from the weather.
 
 ## Run it
 
@@ -272,6 +281,21 @@ any static file server.
   Off, only the places the scenario reaches in the month shown keep their
   names, plus the one you have clicked; the rest stay as unlabelled
   circles you can still click.
+- **Impacts on people** (off by default) adds a square beside some of the
+  places: India's food-grain harvest, Indonesia's peat fires and haze,
+  Rift Valley fever in East Africa, malaria and dengue on the coast of
+  Peru, Zimbabwe's maize, the harvests of the Pampas, Australia's wheat,
+  Peru's fishmeal, California's snowpack and runoff, the flow of the
+  Niger. A square is reached from the place beside it, one step further
+  than the weather and one confidence tier lower, and only while that
+  place holds the state it follows from (a dry Indonesia, a wet coast of
+  Peru); the arrow leaves the place, not a driver. Its card leads with the
+  sector and the sentence "How much of this reaches people depends on
+  preparation, prices and policy; the map shows only the push from the
+  weather." With the box off nothing about the page changes. The story
+  "1997–98: from the weather to the harvest and the haze" turns the layer
+  on and walks through what that El Niño meant for people, including the
+  places where it did not follow the map.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and
@@ -299,7 +323,7 @@ and whichever card is open. The interactive controls are dropped.
 ## How it works
 
 ```
-data/nodes.yaml      the phenomena on the map (drivers and outcomes)
+data/nodes.yaml      the phenomena on the map (drivers, outcomes and impacts on people)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
 data/years.yaml      the table of real years: which phase each driver held, 1950–2025, from the index datasets
@@ -354,6 +378,18 @@ those, plus links of its own; a driver pushed into a phase by a link
 always lands on the classic kind, because the map cannot tell which kind
 it would be. A page where no kind is chosen runs exactly as before.
 
+A link may also run from a place to an *impact on people*, a third kind
+of node with a sector (agriculture, health, water, energy, fisheries,
+fire, economy) and a more / less axis. When the "Impacts on people" layer
+is on, the engine runs one extra hop after the driver hops: every place
+that holds a state that month fires the impact links for that state, from
+the first month it held it plus the lag, in season, one confidence tier
+below the link's rating and never above the place's own tier. An impact
+has no links out of it, so nothing flows back, and with the layer off the
+hop does not run at all and the timeline is exactly what it was. An
+impact link is rated established only on a multi-decade study of the
+impact itself, never of the weather.
+
 Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
 the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;
 even the "events usually begin in" note under the month control and the
@@ -378,7 +414,11 @@ Pacific as a curve.
 1. If the region is new, add a node to `data/nodes.yaml`: a permanent `id`,
    a `name`, a `kind` of `outcome`, an `axis` (`wet_dry`, `warm_cool`,
    `active_quiet` or `high_low`), marker `lat` and `lon`, and optionally a
-   short `label` and a rough `area` polygon as `[lon, lat]` corners.
+   short `label` and a rough `area` polygon as `[lon, lat]` corners. An
+   impact on people is a node of `kind: impact` with a `sector` and
+   `axis: more_less`, reached by a link `from` an outcome with `when:
+   plus` or `minus`; see `docs/DATA_FORMAT.md` for the rules, including
+   the one on when such a link may be rated established.
 2. Add the link to `data/links.yaml`:
 
    ```yaml

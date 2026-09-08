@@ -35,7 +35,10 @@ links: a chosen driver in a listed phase draws a link one confidence
 tier lower, the third engine extension, and since M36 kinds of a phase:
 El Niño in a classic and a central-Pacific kind, the second firing the
 classic links except the ones listed and links of its own, the fourth
-engine extension) on a
+engine extension, and since M37 impacts on people: a third node kind
+reached from an outcome one hop further and one tier lower, behind an
+"Impacts on people" layer that is off by default, the fifth engine
+extension) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -106,6 +109,24 @@ one.
   (strength is not a variant, and the card says so), do not let a push
   land on a variant, and do not add a variant without a link of its own
   or an `except` that names it.
+- Impacts on people (M37, §4 rule 12) are a third node kind, `impact`
+  (`axis: more_less`, a `sector` from the fixed list, `labels`, no
+  `area`), reached only through an impact link (`from` an outcome,
+  `when: plus | minus`, `to` an impact; never from a driver, never out of
+  an impact, never `weakened_by` or `except`). The hop runs only with
+  `Scenario.impacts` set (the "Impacts on people" checkbox, off by
+  default): after the driver hops, every outcome holding a state fires
+  its impact links for that state, from its first month in the state plus
+  the lag, in season, at rule 6's tier for one hop deeper and never above
+  the outcome's own tier; an outcome without the state reports nothing
+  (never `faded`). Nothing flows back, and every driver, outcome and link
+  of rules 1–11 is identical with the hop on or off. The fixed sentence
+  on every impact's card ("How much of this reaches people depends on
+  preparation, prices and policy; the map shows only the push from the
+  weather") lives in `src/ui/card.ts`, not in the data. An impact link is
+  never rated established unless its source is a multi-decade study of
+  the impact itself. Do not add size, money or lives, impacts of impacts,
+  a link out of an impact, or a default that turns the layer on.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -151,7 +172,11 @@ one.
   `Link.except`, rule 11, `linksOfPhase`, ENSO's `el_nino_central` with
   five links of its own and six classic links excepting it, the "Which
   kind of El Niño?" row, the "What is different in this kind" card, the
-  2009–10 story) on 2026-09-08.
+  2009–10 story) on 2026-09-08, and impacts on people (M37, the fifth
+  engine extension: the `impact` node kind, impact links from outcomes,
+  rule 12, `Scenario.impacts`, ten impacts and thirteen links, the
+  "Impacts on people" checkbox, the impact card, the 1997–98 impacts
+  story) on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its

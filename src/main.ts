@@ -1,5 +1,5 @@
 import './style.css';
-import type { Confidence, DriverNode, Graph, Link, MonthState, OutcomeNode, Scenario, Timeline } from '../src/types';
+import type { Confidence, DriverNode, Graph, GraphNode, Link, MonthState, OutcomeNode, Scenario, Timeline } from '../src/types';
 import { MONTH_NAMES } from './types';
 import { chosenFade, chosenOnset, phaseForValue, propagate } from './engine/propagate';
 import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
@@ -60,7 +60,7 @@ function listWords(parts: string[]): string {
   return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
 }
 
-function shortName(d: DriverNode | OutcomeNode): string {
+function shortName(d: GraphNode): string {
   return d.name.replace(/\s*\(.*\)$/, '');
 }
 
@@ -93,7 +93,7 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, chain: true, others: [], compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, chain: true, others: [], compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -144,6 +144,8 @@ async function main(): Promise<void> {
       maxDepth: s.chain ? MAX_DEPTH : 1, minConfidence: FILTER_MIN[s.filter],
     };
     if (s.hold !== null) scenario.holdMonths = s.hold;
+    // The impacts layer (M37) is shared by both sides: it runs the impact hop.
+    if (controls.showImpacts) scenario.impacts = true;
     if (s.others.length > 0) {
       scenario.others = s.others.map((o) => {
         const d: NonNullable<Scenario['others']>[number] = { driverId: o.driverId, phaseId: o.phaseId, startMonth: o.startMonth, startsBefore: o.startsBefore };
@@ -297,6 +299,7 @@ async function main(): Promise<void> {
       applyControls({ ...controls, region: node.id });
       return;
     }
+    if (node.kind !== 'driver') return; // impacts are not drawn in region mode
     const groups = influencesOn(graph, controls.region!);
     const reaching = groups.find((g) => g.driver.id === node.id);
     watch(node.id, reaching ? reaching.phases[0].phase.id : node.phases[0].id);
@@ -347,7 +350,7 @@ async function main(): Promise<void> {
       const c = chosenFor(s, p.timeline, month);
       chosenBySide.set(side, c);
       titles.set(side, scenarioTitle(s, c));
-      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, differs });
+      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showImpacts: controls.showImpacts, differs });
       if (compare) setHead(p.head, side, titles.get(side)!, month);
     }
 
@@ -361,7 +364,7 @@ async function main(): Promise<void> {
     } else {
       monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     }
-    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) : printCaption(months, chosenBySide);
+    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) + (controls.showImpacts ? ` ${IMPACTS_CAPTION.trim()}` : '') : printCaption(months, chosenBySide);
     if (differs) ctl.compareNote.textContent = differs.size === 0 ? 'The two maps agree this month.' : differs.size === 1 ? 'One marker differs this month (dark ring).' : `${differs.size} markers differ this month (dark rings).`;
 
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -370,7 +373,10 @@ async function main(): Promise<void> {
       a: { month: months.get('a')!, title: titles.get('a')!, chosen: chosenBySide.get('a')!.phases },
       b: { month: months.get('b')!, title: titles.get('b')!, chosen: chosenBySide.get('b')!.phases },
     } : undefined;
-    renderCard(cardEl, graph, node, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year);
+    // An impact's card (M37) is only reachable with the layer on; if the layer
+    // went off while one was selected, the selection is dropped.
+    if (node?.kind === 'impact' && !controls.showImpacts) selectedNodeId = null;
+    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts);
 
     const s = sideSettings(controls, edited);
     const c = chosenBySide.get(edited)!;
@@ -441,7 +447,9 @@ async function main(): Promise<void> {
     controls.others = (s.drivers ?? []).map((d) => ({ driverId: d.driver, phaseId: d.phase, startMonth: d.start_month ?? s.start_month, startsBefore: !!d.starts_before, hold: d.hold_months ?? null }));
     controls.compare = null;
     controls.region = null;
-    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, hold: controls.hold, others: controls.others, compare: null, region: null });
+    // A story on impacts (M37) turns the layer on; any other leaves it as it is.
+    if (s.impacts) controls.showImpacts = true;
+    ctl.setState({ driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, hold: controls.hold, others: controls.others, compare: null, region: null, showImpacts: controls.showImpacts });
     tl.pause();
     syncHash();
     recompute();
@@ -578,10 +586,13 @@ async function main(): Promise<void> {
       `Showing ${filterText}${s.chain ? ', following links through other drivers' : ', direct links only'}. Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
+  /** The impacts layer (M37) in a printed caption: what a square is and the fixed sentence. */
+  const IMPACTS_CAPTION = 'Squares are impacts on people (harvests, disease seasons, fires, rivers, catches) that tend to follow from the weather beside them, drawn one confidence tier lower; how much of this reaches people depends on preparation, prices and policy, and the map shows only the push from the weather. ';
+
   function printCaption(months: Map<Side, MonthState>, chosen: Map<Side, Chosen>): string {
     const parts = shown().map((side) => scenarioSentence(sideSettings(controls, side), chosen.get(side)!, months.get(side)!));
     const body = controls.compare ? `Two scenarios compared. A: ${parts[0]}B: ${parts[1]}` : parts[0];
-    return `${body}Printed from Climate Connections, ${location.origin}${location.pathname}`;
+    return `${body}${controls.showImpacts ? IMPACTS_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
   recompute();

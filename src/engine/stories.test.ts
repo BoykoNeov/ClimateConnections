@@ -26,6 +26,8 @@ function scenarioDriver(d: StoryDriver, story: Story, holds: boolean): ScenarioD
 function storyScenario(story: Story, holds = true): Scenario {
   const s: Scenario = { driverId: story.driver, phaseId: story.phase, startMonth: story.start_month, horizonMonths: 12, maxDepth: 3 };
   if (holds && story.hold_months !== undefined) s.holdMonths = story.hold_months;
+  // A story on impacts (M37) turns the layer on, as the app does.
+  if (story.impacts) s.impacts = true;
   if (story.drivers && story.drivers.length > 0) s.others = story.drivers.map((d) => scenarioDriver(d, story, holds));
   return s;
 }
@@ -123,6 +125,14 @@ describe('stories', () => {
           expect(node).toBeDefined();
           if (chosen.has(node!.id)) return;
           const st = timeline.months[step.month].nodes[step.focus];
+          // Rule 12 (M37): a step on an impact needs the layer on and the
+          // square reached that month; it is never excused by rule 11.
+          if (node!.kind === 'impact') {
+            expect(story.impacts, `${story.id} points at the impact ${step.focus} without impacts: true`).toBe(true);
+            expect(st.viaLinkIds.length, `${step.focus} not reached`).toBeGreaterThan(0);
+            if (!st.conflicting) expect(st.value).not.toBe(0);
+            return;
+          }
           if (st.viaLinkIds.length === 0) {
             // Rule 11 (M36): a step may point at a place that the parent
             // phase would have reached this month through a link excepted

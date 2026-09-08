@@ -5374,6 +5374,312 @@ links:
       replaces the classic El Niño link for this kind.
     sources: [kim_webster_curry_2011, chen_tam_2010, wang_wang_2013]
 
+  # ---- Impact links (M37, docs/PLAN.md §4 rule 12): from an outcome's
+  # state (when: plus | minus) into an impact on people. Drawn one tier
+  # below their rating and one hop further than the weather they follow
+  # from, only while that outcome holds the state, and only with the
+  # "Impacts on people" layer on. Never rated established unless the source
+  # is a multi-decade study of the impact itself (docs/DATA_FORMAT.md).
+  - id: weak_monsoon_india_foodgrain
+    from: indian_summer_monsoon
+    when: minus
+    to: india_foodgrain_output
+    effect: -1
+    lag_months: [0, 2]
+    season: [6, 7, 8, 9]
+    confidence: established
+    mechanism: >
+      The summer crop is sown when the monsoon arrives and ripens on its
+      rain. A monsoon well below normal delays sowing, dries the rain-fed
+      fields and cuts the harvest that follows in the autumn.
+    caveat: >
+      Irrigation, which now covers about half of India's cropland, and
+      better seed have weakened the link since the 1990s, and the timing of
+      the rain within the season matters as much as its total.
+    evidence_note: >
+      Studies of India's food-grain output since the 1960s find the
+      monsoon total explaining a large share of the year-to-year change,
+      with drought years (1972, 1979, 1987, 2002, 2009) all showing a fall
+      in the summer harvest; the effect is uneven, a bad monsoon costing
+      more than a good one gains.
+    sources: [kumar_2004, prasanna_2014]
+
+  - id: dry_indonesia_peat_fires
+    from: indonesia_rainfall
+    when: minus
+    to: indonesia_peat_fires
+    effect: 1
+    lag_months: [1, 3]
+    season: [7, 8, 9, 10, 11]
+    confidence: established
+    mechanism: >
+      A long dry season dries out the drained peat swamps of Sumatra and
+      Borneo, and fires set to clear land spread underground and burn for
+      months, sending smoke across the region.
+    caveat: >
+      The fires need people to light them and drained peat to burn in:
+      the same drought in the 1960s brought far fewer fires, and fire bans
+      and peat re-wetting since 2015 may have reduced the link again.
+    evidence_note: >
+      Fire and haze records since 1960 show the burned area rising steeply
+      once the dry season passes a threshold, which happens almost only in
+      El Niño or positive-dipole years; 1982, 1997, 2006 and 2015 were the
+      worst, and 1997 alone released carbon equal to a large share of that
+      year's fossil-fuel emissions.
+    sources: [field_2009, field_2016, page_2002]
+
+  - id: wet_short_rains_rift_valley_fever
+    from: east_africa_short_rains
+    when: plus
+    to: east_africa_rift_valley_fever
+    effect: 1
+    lag_months: [1, 3]
+    season: [11, 12]
+    confidence: probable
+    mechanism: >
+      Heavy short rains flood the shallow grassland depressions where the
+      mosquitoes lay their eggs; the eggs hatch in their millions and the
+      virus passes to cattle, sheep and then to people.
+    caveat: >
+      An outbreak also needs a herd with little immunity, so the years
+      just after a big outbreak are often spared however wet they are,
+      and vaccination and movement bans can head one off.
+    evidence_note: >
+      The 1997–98 and 2006–07 outbreaks in Kenya, Somalia and Tanzania
+      both followed extreme short rains and were predicted from satellite
+      rain and vegetation maps a few months ahead; many wet seasons
+      between them brought no outbreak.
+    sources: [anyamba_2009, linthicum_1999]
+
+  - id: wet_peru_coast_malaria_dengue
+    from: peru_coast_rainfall
+    when: plus
+    to: peru_coast_malaria_dengue
+    effect: 1
+    lag_months: [1, 3]
+    season: [1, 2, 3, 4]
+    confidence: probable
+    mechanism: >
+      Rain on a normally dry coast leaves pools and puddles for weeks,
+      and warm nights speed up the mosquito's life cycle, so malaria and
+      dengue spread where they are usually held in check.
+    caveat: >
+      Spraying, drainage and bed nets can hold the mosquitoes down, and
+      dengue needs the virus to be circulating in the first place; the
+      link is clearest in the strongest events.
+    evidence_note: >
+      Northern Peru's malaria epidemics of 1983 and 1998 followed the two
+      great El Niño floods; a study of South American malaria and dengue
+      records finds the link firm on the Peruvian and Ecuadorian coast and
+      weak or absent elsewhere on the continent.
+    sources: [gagnon_2002, gagnon_2001]
+
+  - id: dry_southern_africa_maize
+    from: southern_africa_summer
+    when: minus
+    to: zimbabwe_maize_yield
+    effect: -1
+    lag_months: [0, 2]
+    season: [12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      Maize grown on the summer rains needs steady rain through January
+      and February, when it flowers; a dry spell then cuts the harvest
+      whatever the season's total.
+    caveat: >
+      A season forecast dry can turn out near normal, as 1997–98 largely
+      did across Zimbabwe, and irrigated farms and drought-tolerant seed
+      escape part of the loss.
+    evidence_note: >
+      The 1994 study found the tropical Pacific sea temperature explaining
+      about sixty percent of the year-to-year change in Zimbabwe's maize
+      harvest from 1970 to 1993; crop-model studies since agree, with the
+      timing of the dry spells mattering as much as the total.
+    sources: [cane_1994, phillips_1998]
+
+  - id: wet_southeast_south_america_grain
+    from: southeast_south_america
+    when: plus
+    to: pampas_grain_yields
+    effect: 1
+    lag_months: [0, 2]
+    season: [10, 11, 12, 1]
+    confidence: probable
+    mechanism: >
+      Wet springs fill the soil as maize and soybean are sown and flower,
+      and the larger harvests come in the following autumn.
+    caveat: >
+      Too much rain floods the low-lying fields and delays sowing, so the
+      wettest springs are not always the best; prices and the area planted
+      move the harvest as much as the weather does.
+    evidence_note: >
+      Records for central-eastern Argentina from the 1970s to the 1990s
+      show soybean harvests higher than usual in El Niño years, while
+      maize showed little gain; the wet-year effect is smaller and less
+      even than the dry-year loss.
+    sources: [podesta_1999]
+
+  - id: dry_southeast_south_america_grain
+    from: southeast_south_america
+    when: minus
+    to: pampas_grain_yields
+    effect: -1
+    lag_months: [0, 2]
+    season: [10, 11, 12, 1]
+    confidence: probable
+    mechanism: >
+      A dry spring and early summer leaves maize and sorghum short of
+      water as they flower, and the harvests that follow are smaller.
+    caveat: >
+      Stored soil moisture from a wet previous year can carry a crop
+      through a dry spring, and farmers who see the forecast can switch
+      to crops that need less water.
+    evidence_note: >
+      The same records show maize and sorghum harvests lower than usual
+      in La Niña years, the clearest of the crop signals found; the 2008–09
+      La Niña drought was among the worst harvests in decades.
+    sources: [podesta_1999]
+
+  - id: dry_east_australia_wheat
+    from: east_australia_rainfall
+    when: minus
+    to: australia_wheat_yield
+    effect: -1
+    lag_months: [0, 2]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Wheat in Queensland and New South Wales grows through the winter on
+      the rain that falls from June to October; a dry winter and spring
+      leaves the crop to ripen on an empty soil.
+    caveat: >
+      Rain stored in the soil from a wet summer can carry a crop, and the
+      timing of a few spring rains matters more than the season's total;
+      the wheat belt is large and a dry east can be offset by a wet west.
+    evidence_note: >
+      The link between the Southern Oscillation and Australia's wheat
+      harvest was shown in 1985 and has held since, strongest in the north
+      and east of the wheat belt; 1982, 1994, 2002 and 2006 were all poor
+      harvests in El Niño years.
+    sources: [nicholls_1985, potgieter_2002]
+
+  - id: dry_southeast_australia_wheat
+    from: southeast_australia_rainfall
+    when: minus
+    to: australia_wheat_yield
+    effect: -1
+    lag_months: [0, 2]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Victoria and South Australia grow wheat on the winter and spring
+      rain that the westerlies bring; a dry winter here cuts the southern
+      half of the national harvest.
+    caveat: >
+      The south-east is also the part of the wheat belt where the dipole
+      and the Southern Annular Mode matter as much as ENSO, so a dry
+      winter can come and go for reasons the harvest studies did not
+      separate.
+    evidence_note: >
+      Harvest maps since the 1970s show the ENSO signal weakening toward
+      the south and west of the wheat belt and the Indian Ocean signal
+      taking over; the drought harvests of 2002 and 2006 were dipole years
+      as much as El Niño years.
+    sources: [nicholls_1985, potgieter_2002]
+
+  - id: fishery_collapse_fishmeal
+    from: peru_fishery
+    when: minus
+    to: peru_fishmeal_output
+    effect: -1
+    lag_months: [0, 3]
+    season: []
+    confidence: established
+    mechanism: >
+      With the upwelling shut off the anchoveta scatter, go deep and stop
+      growing; the fleet cannot find them, the government closes the
+      season to protect the stock, and the fishmeal plants have nothing to
+      process.
+    caveat: >
+      The catch also depends on how heavily the stock was fished before
+      the event and on the closed seasons the regulator sets, so two
+      El Niños of the same size can give different catches.
+    evidence_note: >
+      Landings since the 1960s show the anchoveta catch falling by half or
+      more in every strong El Niño (1972–73, 1982–83, 1997–98), with the
+      1972 collapse made permanent by overfishing; fishmeal output follows
+      the catch within months.
+    sources: [niquen_bouchon_2004, barber_chavez_1983]
+
+  - id: wet_california_streamflow
+    from: california_winter
+    when: plus
+    to: california_streamflow
+    effect: 1
+    lag_months: [0, 2]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      Winter storms leave rain in the valleys and snow in the Sierra
+      Nevada; the rivers run high through the winter and the melt fills
+      the reservoirs in spring, beyond the months this map draws.
+    caveat: >
+      Whether a wet winter comes at all is the uncertain step (the link
+      from El Niño to California is contested); once it has come, the
+      runoff follows. Warm storms rain on the snow and send the water
+      down early, when the reservoirs must spill it.
+    evidence_note: >
+      Streamflow records of the western United States since the 1940s
+      show the wettest and highest-flow winters clustered in El Niño
+      years in California and the Southwest, and the driest in La Niña
+      years, with the Pacific Northwest the other way round.
+    sources: [cayan_1999]
+
+  - id: dry_california_streamflow
+    from: california_winter
+    when: minus
+    to: california_streamflow
+    effect: -1
+    lag_months: [0, 2]
+    season: [12, 1, 2, 3]
+    confidence: established
+    mechanism: >
+      A dry winter leaves a thin snowpack and low rivers, and the
+      reservoirs start the dry summer already drawn down.
+    caveat: >
+      One dry winter is absorbed by the reservoirs; it takes two or three
+      in a row, as in 2012–15, before the cuts reach farms and towns.
+    evidence_note: >
+      The same streamflow records show low-flow winters clustered in La
+      Niña years in California, though the driest year on record, 1977,
+      was neither.
+    sources: [cayan_1999]
+
+  - id: dry_sahel_niger_flow
+    from: sahel_rainfall
+    when: minus
+    to: niger_river_flow
+    effect: -1
+    lag_months: [1, 3]
+    season: [8, 9]
+    confidence: probable
+    mechanism: >
+      The Niger's flood is fed by the summer rains over its headwaters in
+      Guinea and Mali and its middle reaches in the Sahel; a poor rainy
+      season means a low flood a month or two later.
+    caveat: >
+      In the drier Sahel itself the bare, crusted soil now sheds more of
+      the rain that falls, so small local rivers have carried more water
+      even in dry years; the link holds for the big rivers fed from the
+      wetter south.
+    evidence_note: >
+      Flow records for the Niger and the Senegal since the early 1900s
+      show the great droughts of the 1970s and 1980s cutting the rivers'
+      flow by more than the rain fell (a 20–30 percent fall in rain gave a
+      40–60 percent fall in flow); the "Sahelian paradox" of rising runoff
+      is a feature of the small, degraded catchments, not of the big rivers.
+    sources: [mahe_paturel_2009, descroix_2009]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -6792,3 +7098,55 @@ sources:
   - key: berg_avila_2011
     citation: "Berg, R. J., & Avila, L. A. (2011). Atlantic hurricane season of 2009. Monthly Weather Review, 139(4), 1049–1069."
     url: https://doi.org/10.1175/2010MWR3476.1
+  # ---- M37: impacts on people; every DOI resolved on Crossref 2026-09-08
+  - key: kumar_2004
+    citation: "Krishna Kumar, K., Rupa Kumar, K., Ashrit, R. G., Deshpande, N. R., & Hansen, J. W. (2004). Climate impacts on Indian agriculture. International Journal of Climatology, 24(11), 1375–1393."
+    url: https://doi.org/10.1002/joc.1081
+  - key: prasanna_2014
+    citation: "Prasanna, V. (2014). Impact of monsoon rainfall on the total foodgrain yield over India. Journal of Earth System Science, 123(5), 1129–1145."
+    url: https://doi.org/10.1007/s12040-014-0444-x
+  - key: field_2016
+    citation: "Field, R. D., van der Werf, G. R., Fanin, T., Fetzer, E. J., Fuller, R., Jethva, H., Levy, R., Livesey, N. J., Luo, M., Torres, O., & Worden, H. M. (2016). Indonesian fire activity and smoke pollution in 2015 show persistent nonlinear sensitivity to El Niño-induced drought. Proceedings of the National Academy of Sciences, 113(33), 9204–9209."
+    url: https://doi.org/10.1073/pnas.1524888113
+  - key: page_2002
+    citation: "Page, S. E., Siegert, F., Rieley, J. O., Boehm, H.-D. V., Jaya, A., & Limin, S. (2002). The amount of carbon released from peat and forest fires in Indonesia during 1997. Nature, 420(6911), 61–65."
+    url: https://doi.org/10.1038/nature01131
+  - key: anyamba_2009
+    citation: "Anyamba, A., Chretien, J.-P., Small, J., Tucker, C. J., Formenty, P. B., Richardson, J. H., Britch, S. C., Schnabel, D. C., Erickson, R. L., & Linthicum, K. J. (2009). Prediction of a Rift Valley fever outbreak. Proceedings of the National Academy of Sciences, 106(3), 955–959."
+    url: https://doi.org/10.1073/pnas.0806490106
+  - key: linthicum_1999
+    citation: "Linthicum, K. J., Anyamba, A., Tucker, C. J., Kelley, P. W., Myers, M. F., & Peters, C. J. (1999). Climate and satellite indicators to forecast Rift Valley fever epidemics in Kenya. Science, 285(5426), 397–400."
+    url: https://doi.org/10.1126/science.285.5426.397
+  - key: gagnon_2002
+    citation: "Gagnon, A. S., Smoyer-Tomic, K. E., & Bush, A. B. G. (2002). The El Niño Southern Oscillation and malaria epidemics in South America. International Journal of Biometeorology, 46(2), 81–89."
+    url: https://doi.org/10.1007/s00484-001-0119-6
+  - key: gagnon_2001
+    citation: "Gagnon, A. S., Bush, A. B. G., & Smoyer-Tomic, K. E. (2001). Dengue epidemics and the El Niño Southern Oscillation. Climate Research, 19, 35–43."
+    url: https://doi.org/10.3354/cr019035
+  - key: cane_1994
+    citation: "Cane, M. A., Eshel, G., & Buckland, R. W. (1994). Forecasting Zimbabwean maize yield using eastern equatorial Pacific sea surface temperature. Nature, 370(6486), 204–205."
+    url: https://doi.org/10.1038/370204a0
+  - key: phillips_1998
+    citation: "Phillips, J. G., Cane, M. A., & Rosenzweig, C. (1998). ENSO, seasonal rainfall patterns and simulated maize yield variability in Zimbabwe. Agricultural and Forest Meteorology, 90(1–2), 39–50."
+    url: https://doi.org/10.1016/S0168-1923(97)00095-6
+  - key: podesta_1999
+    citation: "Podestá, G. P., Messina, C. D., Grondona, M. O., & Magrin, G. O. (1999). Associations between grain crop yields in central-eastern Argentina and El Niño–Southern Oscillation. Journal of Applied Meteorology, 38(10), 1488–1498."
+    url: https://doi.org/10.1175/1520-0450(1999)038%3C1488:ABGCYI%3E2.0.CO;2
+  - key: nicholls_1985
+    citation: "Nicholls, N. (1985). Impact of the Southern Oscillation on Australian crops. Journal of Climatology, 5(5), 553–560."
+    url: https://doi.org/10.1002/joc.3370050508
+  - key: potgieter_2002
+    citation: "Potgieter, A. B., Hammer, G. L., & Butler, D. (2002). Spatial and temporal patterns in Australian wheat yield and their relationship with ENSO. Australian Journal of Agricultural Research, 53(1), 77–89."
+    url: https://doi.org/10.1071/AR01002
+  - key: niquen_bouchon_2004
+    citation: "Ñiquen, M., & Bouchon, M. (2004). Impact of El Niño events on pelagic fisheries in Peruvian waters. Deep Sea Research Part II: Topical Studies in Oceanography, 51(6–9), 563–574."
+    url: https://doi.org/10.1016/j.dsr2.2004.03.001
+  - key: cayan_1999
+    citation: "Cayan, D. R., Redmond, K. T., & Riddle, L. G. (1999). ENSO and hydrologic extremes in the western United States. Journal of Climate, 12(9), 2881–2893."
+    url: https://doi.org/10.1175/1520-0442(1999)012%3C2881:EAHEIT%3E2.0.CO;2
+  - key: mahe_paturel_2009
+    citation: "Mahé, G., & Paturel, J.-E. (2009). 1896–2006 Sahelian annual rainfall variability and runoff increase of Sahelian rivers. Comptes Rendus Geoscience, 341(7), 538–546."
+    url: https://doi.org/10.1016/j.crte.2009.05.002
+  - key: descroix_2009
+    citation: "Descroix, L., Mahé, G., Lebel, T., Favreau, G., Galle, S., Gautier, E., Olivry, J.-C., Albergel, J., Amogu, O., Cappelaere, B., Dessouassi, R., Diedhiou, A., Le Breton, E., Mamadou, I., & Sighomnou, D. (2009). Spatio-temporal variability of hydrological regimes around the boundaries between Sahelian and Sudanian areas of West Africa: A synthesis. Journal of Hydrology, 375(1–2), 90–102."
+    url: https://doi.org/10.1016/j.jhydrol.2008.12.012

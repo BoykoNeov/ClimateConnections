@@ -63,6 +63,22 @@ nodes:
       zero: Monsoon near normal
       minus: Monsoon tends to be weaker than usual
     global: false              # optional; true for planet-wide outcomes
+
+  - id: indonesia_peat_fires   # an impact on people (M37, docs/PLAN.md §4 rule 12)
+    kind: impact
+    sector: fire               # agriculture | health | water | energy | fisheries | fire | economy
+    lat: -3                    # a few degrees from the outcome it follows from; no area
+    lon: 105
+    region: Sumatra and Borneo, with haze over Singapore and Malaysia
+    timescale: The dry season, July–November
+    axis: more_less            # always more_less
+    labels:
+      plus: Fires and smoke haze tend to be far worse than usual
+      zero: Fire season near normal
+      minus: Fires tend to be fewer than usual
+    summary: >
+      ...
+    sources: [field_2009]
 ```
 
 Rules enforced by the validator:
@@ -71,6 +87,14 @@ Rules enforced by the validator:
   and `labels` and no `phases`. Every phase has a `value`, unique within
   the driver among the phases that are not variants, and one such phase
   is 0.
+- An impact (M37) has `axis: more_less`, a `sector` from the list above
+  and `labels`, no `phases` and no `area`; it is reached from an outcome
+  only (see the impact links below), it has at least one link into it,
+  and never a link out of it. The map draws it as a square beside its
+  outcome, only while the "Impacts on people" layer is on, and its card
+  always carries the sentence "How much of this reaches people depends on
+  preparation, prices and policy; the map shows only the push from the
+  weather", which lives in the UI, not here.
 - A phase with `variant_of` (M36) names another phase of the same driver
   that is not itself a variant, and has the same `value`. The phase
   buttons show the parent, and a second row of kinds under it while it
@@ -115,6 +139,22 @@ links:
                                         #   entry; the link must then have an evidence_note
                                         #   saying what weakens it. Never the link's own driver.
 
+  - id: dry_indonesia_peat_fires        # an impact link (M37, docs/PLAN.md §4 rule 12)
+    from: indonesia_rainfall            # an OUTCOME node id
+    when: minus                         # plus | minus: the state of that outcome it follows from
+    to: indonesia_peat_fires            # an impact node id
+    effect: 1                           # +1 | -1 on the impact's more_less axis
+    lag_months: [1, 3]                  # counted from the first month the outcome holds the state
+    season: [7, 8, 9, 10, 11]           # must share a month with some link into the outcome
+    confidence: established             # see the curatorial rule below
+    mechanism: >
+      ...
+    caveat: >
+      ...
+    evidence_note: >
+      ...
+    sources: [field_2009, field_2016]   # no weakened_by, no except on an impact link
+
 sources:
   - key: rasmusson_carpenter_1983
     citation: "Rasmusson, E. M., & Carpenter, T. H. (1983). ... Monthly Weather Review, 111(3), 517–528."
@@ -155,6 +195,24 @@ Rules enforced by the validator:
   parent. `weakened_by` on a parent's link is in force for its kinds too;
   `except` never applies to modulation. Shipped: `el_nino_central` with
   five links of its own and six classic El Niño links excepting it.
+- Impact links (M37, docs/PLAN.md §4 rule 12): a link may start at an
+  outcome; its `to` must then be an impact and its `when` is `plus` or
+  `minus`, the outcome's state it follows from. A link from a driver never
+  points at an impact, a link never starts at an impact, and an impact
+  link carries neither `weakened_by` nor `except`. Its `season`, when
+  given, must share a month with some link into its outcome, or it could
+  never be drawn. The engine fires it one extra hop after the driver hops,
+  only in months where the outcome holds the state, from the outcome's
+  first month in that state plus the lag, one tier below its rating and
+  never above the outcome's own tier; nothing flows back. **Curatorial
+  rule:** an impact link is never rated `established` unless its source
+  is a multi-decade study of the impact itself (yields, case counts,
+  burned area, streamflow, landings), not of the weather; a weather study
+  that mentions harvests in passing rates `probable` at most. Shipped:
+  thirteen links into ten impacts (India's harvest, Indonesia's fires,
+  Rift Valley fever, malaria and dengue on the coast of Peru, Zimbabwe's
+  maize, the Pampas harvests, Australia's wheat, Peru's fishmeal,
+  California's runoff, the Niger's flow), five of them established.
 
 ## `data/stories.yaml`
 
@@ -182,6 +240,8 @@ stories:
                                         #     driver is already in its phase at month 0
         hold_months: 12                 #   optional (M32): how long it holds its phase, from
                                         #     its own onset
+    impacts: true                       # optional (M37): the story turns the "Impacts on people"
+                                        #   layer on; only such a story may point a step at an impact
     steps:                              # at least three
       - month: 2                        # month index 0–12, never decreasing
         focus: indonesia_rainfall       # node to highlight and open in the card
@@ -227,6 +287,15 @@ Rules enforced by the validator:
   excepted parent link would have reached that month, so the text can
   say the classic effect did not come (the 2009–10 story on the coast of
   Peru); the card there says "Not expected in this kind".
+- A step may focus an impact on people (M37) only in a story with
+  `impacts: true`, and the impact must be reached that month: some impact
+  link into it follows from an outcome that is affected with the named
+  state, the lag from the outcome's first month in that state has run and
+  the month is in the link's season. The validator's copy of the rule has
+  no sum-and-clamp, so a tie on the outcome (El Niño's drying of the
+  monsoon against the wet push of the dipole it sets off) passes the
+  build and fails the engine test; point such a step at the outcome and
+  say why the square is empty, as the 1997–98 impacts story does.
 - Step months never go backwards.
 - Every step cites at least one source key that resolves in `links.yaml`.
 - `src/engine/stories.test.ts` re-checks every step through the real engine.

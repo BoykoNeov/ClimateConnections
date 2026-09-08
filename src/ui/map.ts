@@ -17,6 +17,8 @@ export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   warm_cool: { plus: '#d6604d', minus: '#4393c3' },
   active_quiet: { plus: '#e08214', minus: '#5c5c5c' },
   high_low: { plus: '#762a83', minus: '#1b7837' },
+  /** impacts on people (M37): more / less, on a square marker */
+  more_less: { plus: '#c2185b', minus: '#00897b' },
 };
 const NEUTRAL = '#9a9a9a';
 /** marker colour for a driver that is not part of the current scenario */
@@ -50,6 +52,10 @@ export interface RenderOptions {
   /** compare mode (M14): nodes the other scenario treats differently this
    *  month; each gets a dark outer ring */
   differs?: Set<string>;
+  /** draw the impacts on people (M37, rule 12): the squares near their
+   *  outcomes and the arrows into them. Off, they are not drawn at all
+   *  (the engine reports none either, so the month has no impact links). */
+  showImpacts?: boolean;
 }
 
 /**
@@ -343,12 +349,12 @@ export class MapView {
       }
     });
 
-    // ---- nodes
-    this.drawNodes({
+    // ---- nodes (impacts, M37, only with their layer on)
+    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'impact' || !!opts.showImpacts), {
       cls: (d) => {
         const st = month.nodes[d.id];
         const cls = ['node', d.kind];
-        if (d.kind === 'outcome') {
+        if (d.kind !== 'driver') {
           if (st.value === 0 && st.viaLinkIds.length === 0) cls.push('hollow');
           if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length > 0) cls.push('pending');
           if (st.conflicting) cls.push('conflicting');
@@ -420,8 +426,8 @@ export class MapView {
     }
     this.drawArrows(arrows, ' region');
 
-    // ---- nodes
-    this.drawNodes({
+    // ---- nodes (never the impacts, M37: region mode reads links from drivers only)
+    this.drawNodes(this.graph.nodes.filter((n) => n.kind !== 'impact'), {
       cls: (d) => {
         const cls = ['node', d.kind];
         let labelled = r.showAllLabels;
@@ -444,15 +450,19 @@ export class MapView {
     sel.exit().remove();
     const enter = sel.enter().append('path');
     return enter.merge(sel)
-      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : ''}${extraClass}`)
+      .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${extraClass}`)
       .attr('stroke', (d) => d.color)
       .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker})`)
       .attr('d', (d) => this.arcPath(d.from, d.target, d.spread));
   }
 
-  /** Join every node onto the marker layer with the given styling. */
-  private drawNodes(style: { cls: (d: GraphNode) => string; fill: (d: GraphNode) => string; stroke: (d: GraphNode) => string; strokeOpacity: (d: GraphNode) => number }): void {
-    const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(this.graph.nodes, (d) => d.id);
+  /** Join the given nodes onto the marker layer with the given styling; a
+   *  node left out of the list (an impact with its layer off, M37) is
+   *  removed from the map. Drivers and outcomes are circles, impacts
+   *  squares; the shape carries the class `mark`. */
+  private drawNodes(list: GraphNode[], style: { cls: (d: GraphNode) => string; fill: (d: GraphNode) => string; stroke: (d: GraphNode) => string; strokeOpacity: (d: GraphNode) => number }): void {
+    const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(list, (d) => d.id);
+    nodes.exit().remove();
     const nEnter = nodes.enter().append('g')
       .attr('tabindex', 0)
       .attr('role', 'button')
@@ -461,7 +471,11 @@ export class MapView {
       .on('keydown', (e: KeyboardEvent, d) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); this.onNodeClick(d.id); }
       });
-    nEnter.append('circle');
+    nEnter.each(function (d) {
+      const g = select(this);
+      if (d.kind === 'impact') g.append('rect').attr('class', 'mark').attr('x', -6).attr('y', -6).attr('width', 12).attr('height', 12).attr('rx', 1.5);
+      else g.append('circle').attr('class', 'mark');
+    });
     nEnter.append('text').attr('dy', '0.35em');
     // Outer ring shown only on nodes the other scenario treats differently (M14).
     nEnter.append('circle').attr('class', 'diff').attr('r', (d) => (d.kind === 'driver' ? 17 : 12));
@@ -472,7 +486,7 @@ export class MapView {
         const p = this.projection([d.lon, d.lat]);
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
       });
-    nMerged.select('circle')
+    nMerged.select('.mark')
       .attr('fill', style.fill)
       .attr('stroke', style.stroke)
       .attr('stroke-opacity', style.strokeOpacity);

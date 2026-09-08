@@ -162,18 +162,21 @@ html, body { margin: 0; height: 100%; }
 .link.ghost { stroke: var(--ghost) !important; opacity: 0.45; }
 
 .node { cursor: pointer; }
-.node circle { stroke-width: 1.6; }
+.node circle, .node rect { stroke-width: 1.6; }
 .node.outcome circle { r: 7; }
 .node.driver circle { r: 12; stroke: #ffffff; stroke-width: 2; }
-.node.hollow circle { fill: #ffffff; }
-.node.pending circle { fill-opacity: 0.25; }
-.node.selected circle { stroke: var(--ink); stroke-width: 3; }
-.node.focus circle { animation: focus-pulse 1.3s ease-in-out infinite; }
+/* an impact on people (M37): a square beside its outcome, drawn only with the layer on */
+.node.impact rect { stroke-width: 1.6; }
+.node.hollow circle, .node.hollow rect { fill: #ffffff; }
+.node.pending circle, .node.pending rect { fill-opacity: 0.25; }
+.node.selected circle, .node.selected rect { stroke: var(--ink); stroke-width: 3; }
+.node.focus circle, .node.focus rect { animation: focus-pulse 1.3s ease-in-out infinite; }
 @keyframes focus-pulse {
   0%, 100% { stroke-width: 3; stroke-opacity: 1; }
   50% { stroke-width: 9; stroke-opacity: 0.45; }
 }
-.node.conflicting circle { stroke-dasharray: 2 2; }
+.node.conflicting circle, .node.conflicting rect { stroke-dasharray: 2 2; }
+.link.to-impact { stroke-linecap: butt; }
 .node.driver.induced circle { stroke: #1f2328; stroke-dasharray: 5 3; }
 .node.driver.pending circle { fill-opacity: 0.3; stroke: #1f2328; stroke-dasharray: 5 3; stroke-opacity: 0.5; }
 .node.driver.pending text { fill: var(--muted); font-weight: 500; }
@@ -265,6 +268,13 @@ ul.kinds li.dropped { color: var(--muted); }
 .link-block.excepted { border-left-color: #c8ccd2; }
 .link-block.excepted h4 { color: var(--muted); }
 .kind-note { color: #7a4b00; }
+/* Impacts on people (M37): the sector line and the fixed sentence at the top of an impact's card,
+   and the list of impacts that follow from a place on an outcome's card */
+.sector { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.impact-note { font-style: italic; border-left: 3px solid #c2185b; padding-left: 8px; margin: 6px 0 10px; }
+ul.impacts { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
+ul.impacts li.off { color: var(--muted); }
+.legend-row.impacts svg { flex: none; }
 .sources { font-size: 11.5px; color: var(--muted); }
 .sources a { color: var(--accent); }
 .sources li { margin: 3px 0; }
@@ -357,7 +367,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
   .graticule { stroke: #d0d4da; stroke-opacity: 1; }
   .node text { font-size: 11px; }
   .node.driver text { font-size: 13px; }
-  .node.focus circle { animation: none; stroke-width: 3; }
+  .node.focus circle, .node.focus rect { animation: none; stroke-width: 3; }
 
   #print-caption { grid-area: caption; display: block; margin: 2mm 0 3mm; font-size: 9pt; color: #000; }
 
