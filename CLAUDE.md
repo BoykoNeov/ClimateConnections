@@ -32,7 +32,10 @@ second, and since M34 a "Real year" picker that sets every recorded
 driver from a hand-curated table of index readings, 1950–2025, the
 first item to read the record, and since M35 links that weaken other
 links: a chosen driver in a listed phase draws a link one confidence
-tier lower, the third engine extension) on a
+tier lower, the third engine extension, and since M36 kinds of a phase:
+El Niño in a classic and a central-Pacific kind, the second firing the
+classic links except the ones listed and links of its own, the fourth
+engine extension) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -91,6 +94,18 @@ one.
   (three states cannot show "stronger"). Each entry carries its own
   sources and the link an `evidence_note` saying so. Do not add a
   strengthening side, and do not let a pushed driver modulate.
+- Phase variants (M36, §4 rule 11) are data: `Phase.variant_of` (same
+  value as the parent, which is never a variant) and `Link.except`
+  (variants of the link's own `when`, with an `evidence_note`). A driver
+  in a variant fires its parent's links except those, plus its own;
+  `linksOfPhase` in `src/engine/propagate.ts` is the one place that
+  reads this. A push always lands on the parent (`phaseForValue` ignores
+  variants); `weakened_by` matches through variants; `except` never
+  applies to modulation. Nothing else changes, and a scenario in a phase
+  without variants runs exactly as before. Do not add a "strong" kind
+  (strength is not a variant, and the card says so), do not let a push
+  land on a variant, and do not add a variant without a link of its own
+  or an `except` that names it.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -131,7 +146,12 @@ one.
   2026-09-08, and links that weaken other links (M35, the third engine
   extension: `Link.weakened_by`, rule 10, `LinkState.weakenedBy`, the
   PDO on ENSO's ten North American winter links, the "Weaker this
-  month" card line and "Links it weakens") on 2026-09-08.
+  month" card line and "Links it weakens") on 2026-09-08, and El Niño
+  flavours (M36, the fourth engine extension: `Phase.variant_of`,
+  `Link.except`, rule 11, `linksOfPhase`, ENSO's `el_nino_central` with
+  five links of its own and six classic links excepting it, the "Which
+  kind of El Niño?" row, the "What is different in this kind" card, the
+  2009–10 story) on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its

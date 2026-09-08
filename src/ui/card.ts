@@ -1,6 +1,6 @@
 // Right panel: details for the selected node in the current month.
 
-import type { DriverNode, Graph, GraphNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Source } from '../types';
+import type { DriverNode, Graph, GraphNode, Link, LinkState, Modulation, MonthState, NodeState, OutcomeNode, Phase, Source } from '../types';
 import { CONFIDENCE_TEXT, MONTH_NAMES } from '../types';
 import { downgrade, phaseForValue } from '../engine/propagate';
 import { compareNode, type Verdict } from '../engine/compare';
@@ -151,6 +151,27 @@ function whoChose(ctx: Ctx): string {
   return ctx.year === undefined ? 'you chose' : `set from the record for ${ctx.year}`;
 }
 
+/** "the tendency" a link pushes its target toward, in the target's own words. */
+function tendencyWords(link: Link, to: GraphNode | undefined): string {
+  if (!to) return link.effect > 0 ? 'higher' : 'lower';
+  if (to.kind === 'driver') return `toward ${phaseForValue(to, link.effect)?.label ?? 'a phase'}`;
+  return link.effect > 0 ? to.labels.plus : to.labels.minus;
+}
+
+/** The kind note of a link block (M36, rule 11): "Only for this kind" on a
+ *  link of a variant phase; "Holds for both kinds" on a parent's link
+ *  fired by a chosen driver holding a variant. Empty otherwise. */
+function kindNote(link: Link, from: GraphNode | undefined, ctx: Ctx): string {
+  if (!from || from.kind !== 'driver') return '';
+  const when = from.phases.find((p) => p.id === link.when);
+  if (!when) return '';
+  if (when.variant_of) return ` <span class="kind-note">Only for this kind: ${esc(when.label)}.</span>`;
+  const chosen = ctx.chosen.get(from.id);
+  const held = chosen ? from.phases.find((p) => p.id === chosen.phaseId) : undefined;
+  if (held?.variant_of === when.id) return ` <span class="kind-note">Holds for both kinds of ${esc(when.label)}.</span>`;
+  return '';
+}
+
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null): string {
   const timing = `Expected from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset; season: ${seasonText(link)}.`;
   const from = ctx.nodeById.get(link.from);
@@ -181,10 +202,82 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
   return `<div class="link-block${status === 'faded' ? ' faded' : ''}">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
-    <p class="hint">${esc(timing)}${onsetNote}${fadeNote}</p>
+    <p class="hint">${esc(timing)}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>
     ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
     ${sourcesHtml(link.sources, ctx.sources)}
   </div>`;
+}
+
+/** The parent-phase links into a place that a chosen driver holding a
+ *  variant does not fire (M36, rule 11): [link, the driver, the variant
+ *  it holds, the parent phase]. Only while the driver is in its phase. */
+function exceptedInto(nodeId: string, ctx: Ctx, month: MonthState): { link: Link; driver: DriverNode; held: Phase; parent: Phase }[] {
+  const out: { link: Link; driver: DriverNode; held: Phase; parent: Phase }[] = [];
+  for (const [driverId, info] of ctx.chosen) {
+    if (month.index < info.onset || (info.fade !== null && month.index >= info.fade)) continue;
+    const driver = ctx.nodeById.get(driverId);
+    if (!driver || driver.kind !== 'driver') continue;
+    const held = driver.phases.find((p) => p.id === info.phaseId);
+    const parent = held?.variant_of ? driver.phases.find((p) => p.id === held.variant_of) : undefined;
+    if (!held || !parent) continue;
+    for (const link of ctx.linkById.values()) {
+      if (link.from === driverId && link.when === parent.id && link.to === nodeId && (link.except ?? []).includes(held.id)) out.push({ link, driver, held, parent });
+    }
+  }
+  return out;
+}
+
+/** "Not expected in this kind": a classic link that does not hold for the
+ *  chosen variant, with when it would have been felt, the parent link's
+ *  evidence note and sources. */
+function exceptedBlock(x: { link: Link; driver: DriverNode; held: Phase; parent: Phase }, ctx: Ctx): string {
+  const { link, driver, held, parent } = x;
+  const to = ctx.nodeById.get(link.to);
+  const timing = `A classic ${esc(parent.label)} would be felt here from month ${link.lag_months[0]}${link.lag_months[1] !== link.lag_months[0] ? `–${link.lag_months[1]}` : ''} after onset, season: ${seasonText(link)}.`;
+  return `<div class="link-block excepted">
+    <h4>Not expected in this kind <span class="via">from ${esc(shortName(driver))}</span> <span class="badge ${link.confidence}">${link.confidence}</span></h4>
+    <p>${esc(parent.label)} usually brings "${esc(tendencyWords(link, to))}" here (a link rated ${link.confidence}), but that link is not drawn for ${esc(held.label)}, the kind ${ctx.year === undefined ? 'chosen on the left' : `set for ${ctx.year}`}. Nothing is being predicted here: the map says the classic effect is not expected in this kind.</p>
+    <p class="hint">${timing}</p>
+    ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}
+    ${sourcesHtml(link.sources, ctx.sources)}
+  </div>`;
+}
+
+/** The fixed sentence on strength (rule 13): not a climate fact, a property of the map. */
+const STRENGTH_NOTE = 'Strength is not a kind: a stronger event tends to give the same map more reliably, and this map draws direction only, never size.';
+
+/** "What is different in this kind" (M36, rule 11) on the card of a driver
+ *  chosen in a variant phase: the variant's own links, the parent's links
+ *  that do not hold for it, and what the map cannot tell. */
+function variantBlock(node: DriverNode, phase: Phase, graph: Graph, ctx: Ctx): string {
+  const parent = node.phases.find((p) => p.id === phase.variant_of);
+  if (!parent) return '';
+  const own = graph.links.filter((l) => l.from === node.id && l.when === phase.id);
+  const dropped = graph.links.filter((l) => l.from === node.id && l.when === parent.id && (l.except ?? []).includes(phase.id));
+  const item = (l: Link, note: string, cls = '') => {
+    const to = ctx.nodeById.get(l.to);
+    return `<li${cls ? ` class="${cls}"` : ''}>${esc(to ? shortName(to) : l.to)}: ${esc(tendencyWords(l, to))} <span class="badge ${l.confidence}">${l.confidence}</span>${note}</li>`;
+  };
+  const replaces = new Set(dropped.map((l) => l.to));
+  let html = `<h2>What is different in this kind</h2>`;
+  if (own.length > 0) {
+    html += `<p class="hint">Links of its own, drawn only for ${esc(phase.label)}:</p><ul class="kinds">${own.map((l) => item(l, replaces.has(l.to) ? ` <span class="hint">(replaces the ${esc(parent.label)} link)</span>` : '')).join('')}</ul>`;
+  }
+  const notReplaced = dropped.filter((l) => !own.some((o) => o.to === l.to));
+  if (notReplaced.length > 0) {
+    html += `<p class="hint">Not expected in this kind, so not drawn: the ${esc(parent.label)} links to</p><ul class="kinds">${notReplaced.map((l) => item(l, '', 'dropped')).join('')}</ul>`;
+  }
+  const inherited = graph.links.filter((l) => l.from === node.id && l.when === parent.id && !(l.except ?? []).includes(phase.id)).length;
+  html += `<p class="hint">Every other ${esc(parent.label)} link (${inherited === 1 ? 'one' : countWord(inherited)} of them) is drawn for this kind too, as far as the evidence goes; each of their cards says "Holds for both kinds". ${STRENGTH_NOTE} A driver pushed into ${esc(parent.label)} along a chain is always drawn as the classic kind: the map cannot tell which kind it would be.</p>`;
+  return html;
+}
+
+/** On the card of a driver chosen in a phase that has variants: where the
+ *  other kinds are. */
+function kindsHint(node: DriverNode, phase: Phase): string {
+  const kinds = node.phases.filter((p) => p.variant_of === phase.id);
+  if (kinds.length === 0) return '';
+  return `<p class="hint">This is the classic kind. ${kinds.length === 1 ? 'Another kind' : 'Other kinds'}, ${esc(kinds.map((k) => k.label).join(', '))}, can be picked under "Which kind of ${esc(phase.label)}?" on the left; its card starts with what is different. ${STRENGTH_NOTE}</p>`;
 }
 
 /** Links from other drivers into this driver: never drawn when it is a
@@ -258,7 +351,11 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     } else if (lasts || info.record) {
       html += `<p class="hint">${lasts.trim()}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
     }
-    html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
+    html += `<p>${esc(phase?.summary.trim() ?? '')}</p>`;
+    // A kind of a phase (M36): what is different, before anything else.
+    if (phase?.variant_of) html += variantBlock(node, phase, graph, ctx);
+    else if (phase) html += kindsHint(node, phase);
+    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     html += weakensBlock(node, graph, ctx);
     html += feedbackBlock(node, graph, ctx);
@@ -272,7 +369,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     if (phase) {
       html += `<div class="state-line" style="background:${phase.color};color:#fff">Current phase: ${esc(phase.label)} · pushed there by ${esc(pushers.join(' and '))}</div>`;
       html += `<p>${esc(phase.summary.trim())}</p>`;
-      html += `<p class="hint">Its own links now fire from this marker, one confidence tier lower than on its own card.</p>`;
+      html += `<p class="hint">Its own links now fire from this marker, one confidence tier lower than on its own card.${node.phases.some((p) => p.variant_of === phase.id) ? ` A driver pushed along a chain is always drawn in the classic kind of ${esc(phase.label)}: the map cannot tell which kind it would be.` : ''}</p>`;
     } else {
       html += `<div class="state-line zero" style="background:#f0f2f5">No phase: conflicting pushes from ${esc(pushers.join(' and '))} cancel out</div>`;
     }
@@ -318,19 +415,22 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
 export interface CardCompare {
   /** the side the rest of the card is about (the one being edited) */
   side: 'A' | 'B';
-  a: { month: MonthState; title: string };
-  b: { month: MonthState; title: string };
+  a: { month: MonthState; title: string; chosen?: Map<string, ChosenPhase> };
+  b: { month: MonthState; title: string; chosen?: Map<string, ChosenPhase> };
 }
 
-/** One node's state in one month, in plain words, for the comparison block. */
-function stateWords(node: GraphNode, st: NodeState): { text: string; color: string } {
+/** One node's state in one month, in plain words, for the comparison block.
+ *  `chosen` names the phase a driver chosen by hand holds on that side, so
+ *  a kind of a phase (M36) is named rather than its parent. */
+function stateWords(node: GraphNode, st: NodeState, chosen?: Map<string, ChosenPhase>): { text: string; color: string } {
   if (node.kind === 'driver') {
     if (st.value === 0 && st.viaLinkIds.length === 0) {
       if (st.pendingLinkIds.length > 0) return { text: 'expected to be pushed, out of season', color: '#f0f2f5' };
       if (st.fadedLinkIds.length > 0) return { text: 'no phase: the push has faded', color: '#f0f2f5' };
       return { text: st.conflicting ? 'no phase: pushes cancel out' : 'not in play', color: '#f0f2f5' };
     }
-    const phase = phaseForValue(node, st.value);
+    const held = chosen?.get(node.id) ? node.phases.find((p) => p.id === chosen.get(node.id)!.phaseId) : undefined;
+    const phase = held && held.value === st.value ? held : phaseForValue(node, st.value);
     return { text: phase?.label ?? 'a phase', color: phase?.color ?? '#f0f2f5' };
   }
   if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) return { text: st.fadedLinkIds.length > 0 ? 'faded: the event has ended' : 'no known effect', color: '#f0f2f5' };
@@ -355,14 +455,14 @@ function compareBlock(node: GraphNode, cmp: CardCompare): string {
   const b = cmp.b.month.nodes[node.id];
   if (!a || !b) return '';
   const verdict = compareNode(a, b);
-  const cell = (side: 'A' | 'B', title: string, st: NodeState) => {
-    const w = stateWords(node, st);
+  const cell = (side: 'A' | 'B', title: string, st: NodeState, chosen?: Map<string, ChosenPhase>) => {
+    const w = stateWords(node, st, chosen);
     const light = w.color === '#f0f2f5';
     return `<div class="cmp-cell${side === cmp.side ? ' editing' : ''}"><div class="cmp-title"><span class="side-tag">${side}</span> ${esc(title)}</div>
       <div class="state-line ${light ? 'zero' : 'plus'}" style="background:${w.color}${light ? ';color:inherit' : ''}">${esc(w.text)}</div></div>`;
   };
   return `<div class="compare-block">
-    <div class="cmp-grid">${cell('A', cmp.a.title, a)}${cell('B', cmp.b.title, b)}</div>
+    <div class="cmp-grid">${cell('A', cmp.a.title, a, cmp.a.chosen)}${cell('B', cmp.b.title, b, cmp.b.chosen)}</div>
     <p class="cmp-verdict ${verdict}">${VERDICT_TEXT[verdict]}</p>
     <p class="hint">Details below are for scenario ${cmp.side}, the one you are editing. Switch sides in the left panel or click the other map's title to read the other.</p>
   </div>`;
@@ -400,15 +500,20 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   if (st.conflicting) {
     html += `<p class="hint">Two or more links push this place opposite ways this month. The map adds them up; here they ${st.value === 0 ? 'cancel out, so the marker is hatched' : 'do not fully cancel'}. Read each link’s "How sure are we?" to judge which is likelier to win.</p>`;
   }
+  // Classic links a chosen kind of a phase does not fire here (M36, rule 11).
+  const excepted = exceptedInto(node.id, ctx, month);
   if (st.viaLinkIds.length === 0 && st.pendingLinkIds.length === 0) {
     html += st.fadedLinkIds.length > 0
       ? `<p class="empty">Nothing acts here now: the only known ${st.fadedLinkIds.length === 1 ? 'effect' : 'effects'} came from an event that has ended (below).</p>`
-      : `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
+      : excepted.length > 0
+        ? `<p class="empty">Nothing acts here: the classic ${esc(excepted[0].parent.label)} link is not expected in ${esc(excepted[0].held.label)} (below).</p>`
+        : `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
   }
   html += `<p>${esc(node.summary.trim())}</p>`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
   for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
+  for (const x of excepted) html += exceptedBlock(x, ctx);
   container.innerHTML = html;
 }
 
@@ -462,15 +567,28 @@ export function renderRegionCard(container: HTMLElement, graph: Graph, node: Out
   for (const g of groups) {
     html += `<h2>${esc(shortName(g.driver))}</h2>`;
     for (const ph of g.phases) {
+      const parent = ph.phase.variant_of ? g.driver.phases.find((p) => p.id === ph.phase.variant_of) : undefined;
       for (const inf of ph.links) {
         const l = inf.link;
         const tendency = l.effect > 0 ? node.labels.plus : node.labels.minus;
+        // A kind of a phase (M36): its own link, and whether it replaces the classic one.
+        const kind = parent ? ` <span class="kind-note">Only for this kind${ph.except.some((x) => x.to === l.to) ? `; it replaces the ${esc(parent.label)} link above` : `, on top of every ${esc(parent.label)} link above`}.</span>` : '';
         html += `<div class="link-block region-link">
           <h4><span class="swatch" style="background:${ph.phase.color}"></span>${esc(ph.phase.label)}: ${esc(tendency)} <span class="badge ${inf.confidence}">${inf.confidence}</span></h4>
-          <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}</p>
+          <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}${kind}</p>
           <p>${esc(l.mechanism.trim())}</p>
           ${sureBlock(l, null, nodeById, sources)}
           ${sourcesHtml(l.sources, sources)}
+        </div>`;
+      }
+      // The classic links this kind does not fire here (M36, rule 11).
+      for (const l of ph.except) {
+        if (!parent) continue;
+        const tendency = l.effect > 0 ? node.labels.plus : node.labels.minus;
+        html += `<div class="link-block region-link excepted">
+          <h4><span class="swatch" style="background:${ph.phase.color}"></span>${esc(ph.phase.label)}: not expected <span class="badge ${l.confidence}">${l.confidence}</span></h4>
+          <p class="hint">The ${esc(parent.label)} link above (${esc(tendency.toLowerCase())}) is not drawn for this kind${ph.links.some((o) => o.link.to === l.to) ? '; the link of its own above replaces it' : ''}.</p>
+          ${l.evidence_note ? `<p><em>What the evidence says:</em> ${esc(l.evidence_note.trim())}</p>` : ''}
         </div>`;
       }
       html += `<p class="watch"><button type="button" class="watch-btn" data-driver="${esc(g.driver.id)}" data-phase="${esc(ph.phase.id)}"><span class="swatch" style="background:${ph.phase.color}"></span>Watch ${esc(ph.phase.label)} arrive</button></p>`;

@@ -35,7 +35,30 @@ nodes:
           Pacific is warmer than usual, the trade winds weaken, and the
           heaviest rain moves east from Indonesia toward the central Pacific.
           Events usually begin to develop around May–July, peak in
-          November–January, and fade by the following spring.
+          November–January, and fade by the following spring. This is the
+          classic kind, with the warming reaching the coast of South
+          America; "central Pacific" is the other kind, and real events lie
+          on a continuum between the two.
+      - id: el_nino_central
+        variant_of: el_nino
+        value: 1
+        label: El Niño, central Pacific
+        color: "#d94801"
+        summary: >
+          What is different: the warmest water sits near the dateline, not
+          against South America. The coast of Peru stays cool and dry and
+          its fishery is spared; the sinking air that answers the Pacific
+          warming settles squarely over India, where it hurts the monsoon
+          most; the Atlantic hurricane season is not reliably suppressed;
+          typhoons form further west and reach East Asia more often; and
+          the North American winter pattern shifts, with a warm Northwest
+          and a cold Southeast. Every other El Niño link on this map is
+          drawn for this kind too, as far as the evidence goes. Also called
+          El Niño Modoki, a dateline El Niño or a warm-pool El Niño; 2002–03,
+          2004–05 and 2009–10 were of this kind, and it has been more
+          common since the 1990s. Real events lie on a continuum between
+          the two kinds rather than in two boxes, and the map cannot tell
+          which kind an El Niño set off along a chain would be.
       - id: neutral
         value: 0
         label: Neutral
@@ -57,7 +80,7 @@ nodes:
     onset_hint: El Niño and La Niña events usually start to develop between May and July and last eight to twelve months, so "typical" under "Event lasts" fades a June event by the following spring.
     default_start_month: 6
     typical_duration_months: [8, 12]
-    sources: [noaa_climate_gov_enso, trenberth_1997]
+    sources: [noaa_climate_gov_enso, trenberth_1997, ashok_2007, kao_yu_2009, kug_2009, capotondi_2015]
 
   - id: iod
     name: Indian Ocean Dipole (IOD)

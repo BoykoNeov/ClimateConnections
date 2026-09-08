@@ -45,6 +45,14 @@ nodes:
         summary: >             # axis. A link into this driver with effect +1 pushes it
           ...                  # into the phase with value 1 (M10). Values are unique
                                # within a driver and one phase has value 0.
+      - id: el_nino_central    # a kind of a phase (M36, docs/PLAN.md §4 rule 11)
+        variant_of: el_nino    #   the parent phase, on the same driver, never itself a
+        label: El Niño, central Pacific   # variant; the same value as the parent (the
+        color: "#d94801"       #   uniqueness rule is relaxed exactly for variants)
+        value: 1               # A driver in this phase fires the parent's links, except
+        summary: >             #   those that list it under `except`, plus the links whose
+          What is different: … #   `when` names it. A push into the driver never lands on a
+                               #   variant. Start the summary with what is different.
 
   - id: indian_summer_monsoon
     kind: outcome
@@ -61,7 +69,13 @@ Rules enforced by the validator:
 - Drivers have `phases`, `onset_hint`, `default_start_month` and
   `typical_duration_months` and no `axis`/`labels`; outcomes have `axis`
   and `labels` and no `phases`. Every phase has a `value`, unique within
-  the driver, and one phase is 0.
+  the driver among the phases that are not variants, and one such phase
+  is 0.
+- A phase with `variant_of` (M36) names another phase of the same driver
+  that is not itself a variant, and has the same `value`. The phase
+  buttons show the parent, and a second row of kinds under it while it
+  is chosen; the card of a kind starts with what is different. Strength
+  is not a kind: do not add a "strong El Niño" variant.
 - Any number of drivers is allowed. The app offers a driver dropdown when
   there is more than one; a scenario is always one driver in one phase.
 - `lat` in [-90, 90], `lon` in [-180, 180].
@@ -88,6 +102,11 @@ links:
     evidence_note: >                    # optional: where studies disagree, how often it shows up
       ...
     sources: [rasmusson_carpenter_1983, kumar_1999]   # at least one
+    except: [el_nino_central]           # optional (M36): kinds of `when` this link is NOT
+                                        #   drawn for. Each must be a variant of `when`; the
+                                        #   link then needs an evidence_note saying why. A
+                                        #   link whose `when` is itself a variant cannot
+                                        #   carry except.
     weakened_by:                        # optional (M35): drivers whose chosen phase weakens
       - driver: pdo                     #   this link. While that driver is chosen by hand
         phase: negative                 #   and holds that phase, the link is drawn one
@@ -126,6 +145,16 @@ Rules enforced by the validator:
   warm" is the same fact as "weaker when the PDO is cool". Shipped: ENSO's
   five winter links to the Gulf Coast, California, the Pacific Northwest,
   the Prairies and the Southwest, each weakened by the opposite-sign PDO.
+- `except` (M36, docs/PLAN.md §4 rule 11): a driver holding a kind of a
+  phase fires the parent's links except those listing that kind, plus
+  the links whose `when` names the kind itself. A link of a kind to a
+  place the parent's link also reaches requires the parent's link to
+  except the kind (the kind's link replaces it; two links from the same
+  driver to one place would add up). A driver target's `effect` must
+  match a phase that is not a variant, since a push always lands on the
+  parent. `weakened_by` on a parent's link is in force for its kinds too;
+  `except` never applies to modulation. Shipped: `el_nino_central` with
+  five links of its own and six classic El Niño links excepting it.
 
 ## `data/stories.yaml`
 
@@ -193,7 +222,11 @@ Rules enforced by the validator:
   to it (or from a driver a chosen driver has pushed) has
   `lag_months[0] <= month`, is in season for the calendar month, and the
   chosen driver's phase has not ended (its hold, if any, has not run
-  out). A story can never point at a hollow marker.
+  out). A story can never point at a hollow marker, with one exception
+  (M36): a story in a kind of a phase may point at a place that only an
+  excepted parent link would have reached that month, so the text can
+  say the classic effect did not come (the 2009–10 story on the coast of
+  Peru); the card there says "Not expected in this kind".
 - Step months never go backwards.
 - Every step cites at least one source key that resolves in `links.yaml`.
 - `src/engine/stories.test.ts` re-checks every step through the real engine.

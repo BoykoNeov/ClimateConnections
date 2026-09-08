@@ -199,6 +199,15 @@ Rules:
   `default_start_month` and `typical_duration_months` (M32) and must not
   have `axis`/`labels`. Phase values are unique within a driver and one
   phase has value 0.
+- Phase variants (M36, §4 rule 11). A phase may carry `variant_of: <phase
+  id>` naming another phase of the same driver, its *parent*; it must
+  then have the same `value` as its parent, and the uniqueness rule above
+  is relaxed exactly for variants (values are unique among the phases
+  that are not variants). A parent is never itself a variant. A variant is
+  a phase in every other respect: its own `label`, `color` and `summary`
+  (which starts with what is different), listed after its parent.
+  Shipped: ENSO's `el_nino_central` ("El Niño, central Pacific"), a
+  variant of `el_nino`.
 - `kind: outcome` nodes must have `axis` and `labels` and must not have `phases`.
 - `lat` in [-90, 90], `lon` in [-180, 180].
 - Ids are permanent. If a node needs renaming, change `name`, never `id`.
@@ -243,6 +252,14 @@ Rules:
 - Asymmetry is expected: El Niño and La Niña effects are separate links. Do
   not derive one from the other automatically. If the literature only
   supports one phase, only add that one.
+- `except` (M36, §4 rule 11): an optional list of phase ids, each a
+  variant of the link's own `when` phase, for which the link does *not*
+  hold. A link whose `when` is itself a variant cannot have `except`. A
+  link with `except` needs an `evidence_note` saying in plain words why
+  the effect is not expected in that kind. If a link from the same driver
+  in a variant phase reaches the same target as a link in the parent
+  phase, the parent link must list that variant in `except`, so a target
+  is never reached twice by one driver in one phase.
 
 ### 3.3 Confidence meaning (show this text in the legend)
 - **established** — found in most events and in most studies; textbook material.
@@ -457,6 +474,47 @@ Semantics (implement exactly this; do not improvise):
     - The story validator's copy of the engine rule ignores modulation:
       it changes no month in which a link is applied.
 
+11. Phase variants (M36): El Niño flavours. A phase may be a *variant* of
+    another phase of the same driver (`variant_of`, §3.1), with the same
+    `value`; the phase it names is its *parent*. A variant is a phase: a
+    scenario, a story or a year row may choose it, it has its own colour
+    and summary, and everything in rules 1–10 applies to a driver holding
+    it. Only two things are new:
+    - Which links fire. A driver holding a phase P *matches* a phase name
+      Q when P is Q or P's parent is Q. The links in force for a driver
+      holding P are every link whose `when` is P, plus every link whose
+      `when` is P's parent and whose `except` (§3.2) does not list P. An
+      inherited link is reported under its own id exactly as it would be
+      for the parent (same lag counted from the same onset, same season,
+      same tier, `depth` 1 for a chosen driver); nothing in `LinkState`
+      marks it inherited, the card reads that from the graph. A link
+      excepted for P is not reported at all, as a link of another phase
+      is not. This holds wherever the engine looks a phase's links up:
+      the hops, the faded report of rule 9, `activeLinks` and
+      `linksInPlay`. A `weakened_by` entry (rule 10) naming phase Q is in
+      force when the chosen driver's phase matches Q; `except` never
+      applies to modulation.
+    - Where a push lands. A link into the driver (rule 6) pushes it into
+      the phase with that `value` that is *not* a variant: the parent,
+      never the variant (`phaseForValue` ignores variants). The map
+      cannot know which kind a pushed event would be; the card of a
+      variant says so.
+    Nothing else changes: sums, clamps, conflicts, onsets, holds, the
+    season gate, the fire-once rule, the loop guard and `minConfidence`
+    are untouched, and a scenario in a parent phase gives the same
+    timeline as before the variant existed (a regression test runs every
+    shipped story and the real years). Region mode (M28, `influencesOn`)
+    lists under a variant only the links whose `when` is the variant, and
+    separately the parent's links that except it, so a place is not
+    listed twice under one driver; a variant with neither is left out.
+    The story validator's copy of the rule uses the same matching, and a
+    story step may also focus a place that a parent link excepted for the
+    chosen variant would have reached that month, so a story can say "the
+    coast stayed dry". Strength (a strong versus a weak event) is
+    deliberately not a variant: the map draws direction only (rule 13),
+    and the card says a stronger event tends to give the same map more
+    reliably.
+
 Unit tests must cover: lag gating, season gating including year wrap
 (e.g. season `[12, 1, 2]` starting in October), clamping, the conflicting flag,
 and lowest-confidence selection.
@@ -542,9 +600,28 @@ this month: the Pacific Decadal Oscillation is in its Negative PDO phase,
 chosen on the left, so this link is drawn one tier lower than its rating",
 with the studies; a link that can be weakened but is not says "Weaker
 when ..." so the student knows what to add; and a driver's own card lists
-the links its phases weaken under "Links it weakens".
+the links its phases weaken under "Links it weakens". Since M36 (rule
+11) the card of a driver chosen in a variant phase starts with what is
+different: under "What is different in this kind" it lists the variant's
+own links (place, tendency, tier) and the parent's links that do not
+hold for it, then one fixed sentence that strength is not a kind and the
+map draws direction only; each link block on a place says "Holds for
+both kinds of El Niño" or "Only for this kind", and a place reached by
+an excepted link says "Not expected in this kind" with the parent link's
+evidence note and sources. A driver pushed into a phase along the chain
+is always shown in the parent phase, and the variant's card says the map
+cannot tell which kind a pushed event would be.
 
 ### 5.6 Controls (top-left)
+- Phase buttons (M36): the buttons show the phases that are not variants;
+  when the chosen phase, or its parent, has variants a second row opens
+  beneath, "Which kind of El Niño?", with "Classic" (the parent) and one
+  button per variant (its label with the parent's label trimmed off the
+  front: "central Pacific"); the parent's button stays pressed while a
+  variant is chosen, and the row closes when another phase is picked. The
+  default is the parent, so the page opens as before. The same row sits
+  under every other chosen driver's phase buttons. Titles, captions, the
+  dial and the timeline name the variant by its full label.
 - Real year (M34), under Stories: a dropdown of the years in
   `data/years.yaml` (1950–2025). Picking one runs `scenarioForYear`
   (`src/engine/years.ts`) on the row and sets the scenario from it: month
@@ -2401,6 +2478,129 @@ drivers stays in one place.
   et al. 1999, already a PDO source); removing `Scenario.secondary` and the
   pre-M33 story fields. Next in `docs/PLAN_V3.md`: the UI items M29–M31,
   M36 (flavours), M38 (quiz), each with its own sign-off.
+
+### M36 — El Niño flavours (version 3, signed off 2026-09-08)
+- The fourth engine extension of version 3, taken at the user's "M36 (El
+  Niño flavours) - work on it". Section 4 rule 11 as above, written before
+  the code (rule 14 of `docs/PLAN_V3.md`): `Phase.variant_of` (the same
+  `value` as its parent, which is never a variant itself) and
+  `Link.except` (variants of the link's own `when`). A driver holding a
+  phase *matches* a named phase when it is that phase or a variant of it.
+  The links in force for a phase are the links whose `when` names it,
+  plus, for a variant, its parent's links that do not list it in
+  `except`; `linksOfPhase` in `src/engine/propagate.ts` is the one place
+  that reads this, used by `activeLinks`, the faded loop and every hop,
+  memoised per driver and phase. A push (rule 6) lands on the parent:
+  `phaseForValue` ignores variants. `weakened_by` (rule 10) matches
+  through variants; `except` never applies to modulation. Nothing else
+  changes: same lag, season, tier, depth, sums, holds, onsets and
+  fire-once; a scenario in a phase without variants runs exactly as
+  before. Region mode (`src/engine/inverse.ts`) lists under a variant its
+  own links and, as `except`, the parent links it does not fire; a
+  variant with neither is not listed. Engine tests in
+  `src/engine/variants.test.ts` (twelve: the helpers; the inherited link
+  applied exactly as for the parent; the excepted link never reported and
+  the variant's own link never reported for the parent; a push landing on
+  the parent so the variant's links never fire at a hop; a `weakened_by`
+  entry naming the parent in force for the variant; a hold fading the
+  inherited and own links and never the excepted one; the variant as
+  another chosen driver with its own start month and read backwards; the
+  confidence filter ghosting the own link at its own tier; regression
+  against a graph with the variants stripped; the variant beside its
+  parent refused as the same driver twice; region mode). Acceptance tests
+  on the shipped data (eight: one variant, ENSO only, same value, own
+  colour; the five own links and six excepted classic links with their
+  evidence notes, four replacements and one new place, the coast and the
+  fishery dropped without a replacement; the tiers and signs; the central
+  kind from August month by month, the classic kind for contrast; the
+  negative PDO weakening the kind's Gulf Coast link and the inherited
+  Northwest link alike; a positive PMM pushing ENSO into the classic kind
+  only; regression: every shipped classic story and every real year the
+  same with the variants stripped; the 2009–10 story). The stories test
+  allows a step on a place only an excepted parent link would have
+  reached, and the M35 test now counts eleven weakened links.
+- Data: ENSO gains the phase `el_nino_central` ("El Niño, central
+  Pacific", `variant_of: el_nino`, value 1, colour `#d94801`) whose
+  summary starts "What is different:" and ends with the continuum
+  sentence and the chain caveat; the classic phase's summary says it is
+  the classic kind. Five links of its own (`el_nino_central_indian_monsoon`
+  established, Kumar and others 2006; `el_nino_central_us_gulf_coast`
+  probable, weakened by the negative PDO like its classic twin;
+  `el_nino_central_west_pacific_typhoons` probable, Kim, Webster and
+  Curry 2011, Chen and Tam 2010; `el_nino_central_atlantic_hurricanes`
+  contested, the sign the other way from the classic link, Kim, Webster
+  and Curry 2009 against Lee, Wang and Enfield 2010 and Larson and others
+  2012; `el_nino_central_eastern_north_america` contested, cold, Yu 2012,
+  Yu and Zou 2013, Zou and others 2014, a place no classic El Niño link
+  reaches). Six classic links carry `except: [el_nino_central]` with an
+  evidence note saying why: the monsoon, the Gulf Coast, the hurricanes
+  and the typhoons replaced by the links above; the coast of Peru and the
+  fishery dropped without a replacement (Kao and Yu 2009; Takahashi and
+  others 2011; Dewitte and others 2012; Espinoza-Morriberón and others
+  2017). Three classic links (East Australia, the Pacific Northwest, the
+  Southwest) keep firing for both kinds and their evidence notes say what
+  the studies add or dispute. Twenty-six new sources, every DOI resolved
+  on Crossref (Ashok and others 2007; Kao and Yu 2009; Kug, Jin and An
+  2009; Capotondi and others 2015 on the ENSO node; the rest on the
+  links). A new story `el_nino_central_2009_10`, "2009–10: an El Niño in
+  the wrong place": the central kind from August 2009 (the record's ONI
+  onset; the plan said July) held eight months, the negative NAO from
+  December for three, seven steps ending on the coast of Peru in
+  February, which the story is allowed to point at because a classic link
+  would have reached it, and on ENSO faded in April. The 2009 row of
+  `data/years.yaml` keeps `el_nino`, since the index cannot tell the
+  kinds apart, and its note says the event was central-Pacific (Lee and
+  McPhaden 2010). Validator: a variant's parent exists on the same
+  driver, is not a variant and has the same value; unique values and the
+  neutral phase are checked among non-variants; `except` needs an
+  `evidence_note`, names variants of the link's own `when` only, never
+  twice, never on a variant's link; a variant link to a place a parent
+  link reaches requires the parent to except it; a driver target needs a
+  non-variant phase for the effect; the story check reads rule 11 and
+  allows an excepted place. 213 links, 465 sources, 19 stories.
+- UI as §5.5–5.6 above: `PhasePicker` in `src/ui/controls.ts` draws the
+  non-variant phases as before and, only while the chosen phase has
+  variants, a second row "Which kind of El Niño?" with "Classic" and the
+  variant's label trimmed of its parent's ("central Pacific"), on the
+  first driver and on every other-driver row; La Niña hides the row; the
+  default is the parent, so the page opens as before. The card of a
+  variant phase starts with "What is different in this kind": its own
+  links with "(replaces the El Niño link)" where one does, the classic
+  links "Not expected in this kind, so not drawn", how many classic
+  links are drawn for it too, the strength sentence and the chain
+  sentence; the classic card says another kind can be picked and repeats
+  the strength sentence. A link block says "Only for this kind" or
+  "Holds for both kinds of El Niño"; an outcome the kind does not reach
+  through an excepted classic link shows "Not expected in this kind"
+  with the classic link's rating and evidence, and its empty state names
+  the reason; region mode says the same under each place. The map
+  colours the marker and the dial in the kind's own colour and draws its
+  links as any others; the pane title, the year panel and the print
+  caption name the kind; the real year picker presses "Classic" and locks
+  the row like every other control; the legend gains one sentence.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m36.mjs` (18
+  checks; screenshots `m36-01-enso-card.png` … `m36-06-compare.png`
+  under `W:\temp\claude\ClimateConnections\m36`): the kinds row
+  appearing under El Niño with Classic pressed and hiding under La Niña;
+  "central Pacific" picked from August turning the ENSO marker orange;
+  the ENSO card's "What is different in this kind" with five own and two
+  dropped links; India reached through the kind's own link with "Only
+  for this kind", Indonesia through the inherited one with "Holds for
+  both kinds"; the coast of Peru hollow in February with "Not expected in
+  this kind"; the negative PDO drawing the kind's Gulf Coast link at
+  contested with "Weaker this month"; region mode on the coast of Peru
+  and the monsoon; the 2009–10 story with its Peru step, "Compare with
+  the record" and the faded marker at the end; the real year 2009 with
+  Classic pressed and the controls locked; compare mode naming the kind
+  in the pane title; the legend sentence; the print caption.
+- Not in M36: `la_nina_central` (the literature does not separate a
+  central-Pacific La Niña's map cleanly enough for a link of its own);
+  an East Australia link of its own (the map cannot draw "drier still",
+  and the north-west of Australia has no node); the years table calling
+  kinds (the index cannot); variants for any other driver; strength as a
+  variant, refused on the card; removing `Scenario.secondary` and the
+  pre-M33 story fields. Next in `docs/PLAN_V3.md`: the UI items M29–M31,
+  M37 (impacts), M38 (quiz), each with its own sign-off.
 
 ---
 

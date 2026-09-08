@@ -911,6 +911,19 @@ weakening side only.
 
 ### M36 — El Niño flavours
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§6 under M36. As written below, with these readings: `el_nino_central`
+only, no `la_nina_central` (the literature does not give a central-Pacific
+La Niña a map of its own); five links of its own (the monsoon, the Gulf
+Coast, the typhoons, the Atlantic hurricanes at contested with the sign
+reversed, and a cold eastern North America at contested), six classic
+links excepted (the four replaced, plus the coast of Peru and the fishery
+with no replacement), East Australia left as an inherited link with a note
+rather than a link of its own; the story from August 2009, the record's
+onset, not July; the 2009 row of the years table keeps `el_nino`, since
+the index cannot tell the kinds apart. The sub-choice is a second row of
+buttons, "Which kind of El Niño?", under the phase buttons.
+
 **Why it does not fit.** A central-Pacific ("Modoki") El Niño and a
 classic eastern-Pacific one have different maps: India drier under the
 central kind, a different North American pattern, different typhoon
@@ -1087,7 +1100,7 @@ Data only (no src/ change):   M20 → M21 → M22 → M26 → M27 → M23 → M2
 UI only:                      M28, M29, M30 (any order, any time)
 Engine, in dependency order:  M32 (duration) → M33 (N drivers) → M34 (years)
                               M35 (modulation) after M23 if the QBO case is wanted
-                              M36 (flavours) independent
+                              M36 (flavours) independent (shipped 2026-09-08)
                               M37 (impacts) last of the engine set
 Roadmap:                      M38 (quiz) after M34 if years are to be quizzed
                               M39 (globe), M40 (importer), M31 (language) when wanted

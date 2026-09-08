@@ -120,7 +120,17 @@ any static file server.
   NAO, SAM, PDO, AMO, AMM or PMM; Atlantic Niño, neutral or Atlantic Niña;
   warm, neutral or cool basin; eruption or no eruption; westerly,
   transition or easterly QBO; high, near-normal or low ice; high,
-  near-normal or low snow.
+  near-normal or low snow. While El Niño is chosen a second row asks
+  **Which kind of El Niño?**: **Classic**, the default, with the warmest
+  water against South America, or **central Pacific**, with the warmest
+  water near the dateline (also called El Niño Modoki; 2002–03, 2004–05
+  and 2009–10 were of this kind). The central kind fires every classic
+  link except the ones its card lists as not expected (the coast of Peru
+  stays dry, the fishery is spared), and has links of its own: India
+  drier, the Atlantic hurricane season not suppressed (whether it is
+  busier is contested), typhoons further west, the Gulf Coast wet, a
+  cold eastern North America (contested). Its card starts with what is
+  different. Strength is not a kind: the map draws direction, never size.
 - **Second driver (optional)** adds one more driver in a phase of your own
   choosing, for years when two patterns coincided (La Niña with a negative
   dipole in 2010, say). Each driver enters its phase in its own month (a
@@ -335,6 +345,14 @@ months. Only the weakening side exists: three states cannot show
 "stronger", and "stronger when the PDO is warm" is the same fact as
 "weaker when the PDO is cool". A driver pushed into a phase by a link
 never weakens anything; only the drivers you chose do.
+
+A phase may come in *kinds*. El Niño has two on this map, classic and
+central Pacific: the second is a phase with the same value as the first
+and a parent it points to, and a link may say which kinds of its phase
+it is not drawn for. A driver in a kind fires its parent's links except
+those, plus links of its own; a driver pushed into a phase by a link
+always lands on the classic kind, because the map cannot tell which kind
+it would be. A page where no kind is chosen runs exactly as before.
 
 Climate facts live only in `data/`. Nothing in `src/` knows what El Niño,
 the Indian Ocean Dipole or the North Atlantic Oscillation does to anyone;

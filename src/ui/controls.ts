@@ -2,7 +2,7 @@
 // picker, phase buttons, the other chosen drivers (M11; a list since M33),
 // start month, a slot for the season dial (M13), confidence filter, legend.
 
-import type { DriverNode, OutcomeNode, Story } from '../types';
+import type { DriverNode, OutcomeNode, Phase, Story } from '../types';
 import { MONTH_NAMES } from '../types';
 import { renderLegend } from './legend';
 
@@ -114,8 +114,106 @@ export function editedSide(s: ControlState): Side {
 export function oppositePhaseId(driver: DriverNode, phaseId: string): string {
   const cur = driver.phases.find((p) => p.id === phaseId);
   const want = cur ? -cur.value : 0;
-  const opp = want !== 0 ? driver.phases.find((p) => p.value === want) : driver.phases.find((p) => p.value !== 0);
-  return (opp ?? driver.phases.find((p) => p.id !== phaseId) ?? driver.phases[0]).id;
+  // Never a variant (M36): the opposite of a kind of El Niño is La Niña.
+  const main = driver.phases.filter((p) => !p.variant_of);
+  const opp = want !== 0 ? main.find((p) => p.value === want) : main.find((p) => p.value !== 0);
+  return (opp ?? main.find((p) => p.id !== phaseId) ?? driver.phases[0]).id;
+}
+
+/** The label of a variant phase with its parent's label trimmed off the
+ *  front ("El Niño, central Pacific" under "El Niño" reads "central
+ *  Pacific"); the whole label when it does not start that way. */
+export function kindLabel(parent: Phase, variant: Phase): string {
+  const prefix = `${parent.label}, `;
+  return variant.label.startsWith(prefix) ? variant.label.slice(prefix.length) : variant.label;
+}
+
+/** The phase buttons of one chosen driver (M36, rule 11): one button per
+ *  phase that is not a variant, and beneath them, only while the chosen
+ *  phase or its parent has variants, a second row "Which kind of El
+ *  Niño?" with "Classic" (the parent) and one button per variant. The
+ *  parent's button stays pressed while a variant is chosen. */
+class PhasePicker {
+  /** the row of main phases; the element the page has always had */
+  readonly box: HTMLDivElement;
+  /** the row of kinds under it; hidden unless the chosen phase has variants */
+  readonly kinds: HTMLDivElement;
+  private heading: HTMLParagraphElement;
+  private row: HTMLDivElement;
+  private buttons = new Map<string, HTMLButtonElement>();
+  private kindButtons = new Map<string, HTMLButtonElement>();
+  /** driver whose main buttons are in the box ('' = none) */
+  private renderedId: string | null = null;
+  /** parent phase whose kinds are in the row */
+  private kindsFor: string | null = null;
+
+  constructor(private onPick: (phaseId: string) => void) {
+    this.box = document.createElement('div');
+    this.box.className = 'phase-buttons';
+    this.kinds = document.createElement('div');
+    this.kinds.className = 'phase-kinds';
+    this.kinds.hidden = true;
+    this.heading = document.createElement('p');
+    this.heading.className = 'hint kinds-heading';
+    this.kinds.append(this.heading);
+    this.row = document.createElement('div');
+    this.row.className = 'phase-buttons kinds-row';
+    this.row.setAttribute('role', 'group');
+    this.kinds.append(this.row);
+  }
+
+  /** Rebuild the main buttons (only when the driver changed); empty when none. */
+  private renderMain(driver: DriverNode | null): void {
+    if (this.renderedId === (driver?.id ?? '')) return;
+    this.renderedId = driver?.id ?? '';
+    this.box.innerHTML = '';
+    this.buttons.clear();
+    if (!driver) return;
+    for (const p of driver.phases) {
+      if (p.variant_of) continue;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn';
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
+      b.addEventListener('click', () => this.onPick(p.id));
+      this.box.append(b);
+      this.buttons.set(p.id, b);
+    }
+  }
+
+  /** Rebuild the kinds row for a parent phase (only when it changed). */
+  private renderKinds(driver: DriverNode, parent: Phase): void {
+    const key = `${driver.id}|${parent.id}`;
+    if (this.kindsFor === key) return;
+    this.kindsFor = key;
+    this.row.innerHTML = '';
+    this.kindButtons.clear();
+    this.heading.textContent = `Which kind of ${parent.label}?`;
+    const kinds: [Phase, string][] = [[parent, 'Classic'], ...driver.phases.filter((p) => p.variant_of === parent.id).map((p): [Phase, string] => [p, kindLabel(parent, p)])];
+    for (const [p, label] of kinds) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'phase-btn kind-btn';
+      b.dataset.kind = p.id;
+      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${label}</span>`;
+      b.addEventListener('click', () => this.onPick(p.id));
+      this.row.append(b);
+      this.kindButtons.set(p.id, b);
+    }
+  }
+
+  /** Reflect the driver and its chosen phase (null driver = no buttons). */
+  render(driver: DriverNode | null, phaseId: string | null): void {
+    this.renderMain(driver);
+    const phase = driver?.phases.find((p) => p.id === phaseId);
+    const parent = driver && phase ? (phase.variant_of ? driver.phases.find((p) => p.id === phase.variant_of) ?? phase : phase) : null;
+    for (const [id, b] of this.buttons) b.setAttribute('aria-pressed', String(id === parent?.id));
+    const hasKinds = !!driver && !!parent && driver.phases.some((p) => p.variant_of === parent.id);
+    this.kinds.hidden = !hasKinds;
+    if (!driver || !parent || !hasKinds) { this.kindsFor = null; this.row.innerHTML = ''; this.kindButtons.clear(); return; }
+    this.renderKinds(driver, parent);
+    for (const [id, b] of this.kindButtons) b.setAttribute('aria-pressed', String(id === phaseId));
+  }
 }
 
 /** What one row of the other-driver list needs to draw itself. */
@@ -139,10 +237,7 @@ class OtherRow {
   readonly el: HTMLDivElement;
   private heading: HTMLHeadingElement;
   private select: HTMLSelectElement;
-  private phaseBox: HTMLDivElement;
-  private phaseButtons = new Map<string, HTMLButtonElement>();
-  /** driver whose phase buttons are in the box ('' = none) */
-  private renderedId: string | null = null;
+  private phases: PhasePicker;
   /** ids the picker's options currently leave out, as a key */
   private optionsFor: string | null = null;
   private monthBox: HTMLDivElement;
@@ -169,9 +264,8 @@ class OtherRow {
       this.owner.setOther(this.index, { driverId: d.id, phaseId: d.phases[0].id, startMonth: d.default_start_month, startsBefore: false, hold: null });
     });
     this.el.append(this.select);
-    this.phaseBox = document.createElement('div');
-    this.phaseBox.className = 'phase-buttons';
-    this.el.append(this.phaseBox);
+    this.phases = new PhasePicker((phaseId) => this.owner.patchOther(this.index, { phaseId }));
+    this.el.append(this.phases.box, this.phases.kinds);
     if (index === 0) {
       const hint = document.createElement('p');
       hint.className = 'hint';
@@ -249,24 +343,6 @@ class OtherRow {
     }
   }
 
-  /** Rebuild the phase buttons (only when the driver changed); empty when none. */
-  private renderPhases(driver: DriverNode | null): void {
-    if (this.renderedId === (driver?.id ?? '')) return;
-    this.renderedId = driver?.id ?? '';
-    this.phaseBox.innerHTML = '';
-    this.phaseButtons.clear();
-    if (!driver) return;
-    for (const p of driver.phases) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'phase-btn';
-      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.owner.patchOther(this.index, { phaseId: p.id }));
-      this.phaseBox.append(b);
-      this.phaseButtons.set(p.id, b);
-    }
-  }
-
   reflect(v: RowView): void {
     const word = ordinalWord(v.place);
     this.heading.textContent = `${word} driver${v.place === 2 ? ' (optional)' : ''}`;
@@ -274,8 +350,7 @@ class OtherRow {
     this.renderOptions(v.taken);
     const driver = v.own ? this.owner.driverById(v.own.driverId) : null;
     this.select.value = driver?.id ?? '';
-    this.renderPhases(driver);
-    for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === v.own?.phaseId));
+    this.phases.render(driver, v.own?.phaseId ?? null);
     this.monthBox.hidden = !driver;
     if (!driver || !v.own) return;
     this.monthHeading.textContent = `${word} driver begins in`;
@@ -301,8 +376,7 @@ class OtherRow {
 }
 
 export class ControlsView {
-  private phaseButtons = new Map<string, HTMLButtonElement>();
-  private phaseBox: HTMLDivElement;
+  private phases: PhasePicker;
   private driverSelect: HTMLSelectElement | null = null;
   private driverHeading: HTMLHeadingElement;
   /** the other chosen drivers (M11; a list since M33), only with more than
@@ -320,6 +394,8 @@ export class ControlsView {
   private holdHint: HTMLParagraphElement;
   /** empty box under the start-month control for the season dial (M13) */
   readonly dialHost: HTMLDivElement;
+  /** driver whose name and onset hint are shown ('' = none yet) */
+  private shownDriverId: string | null = null;
   private monthHeading: HTMLHeadingElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
@@ -337,8 +413,6 @@ export class ControlsView {
   private sideButtons = new Map<Side, HTMLButtonElement>();
   /** live line under the side buttons: how many markers differ this month (set by the page) */
   readonly compareNote: HTMLParagraphElement;
-  /** driver whose phase buttons are currently in the DOM */
-  private renderedDriverId: string | null = null;
   onChange: (s: ControlState) => void = () => {};
   /** a story was picked from the dropdown (null = "none") */
   onStory: (storyId: string | null) => void = () => {};
@@ -497,9 +571,8 @@ export class ControlsView {
       container.append(sel);
       this.driverSelect = sel;
     }
-    this.phaseBox = document.createElement('div');
-    this.phaseBox.className = 'phase-buttons';
-    container.append(this.phaseBox);
+    this.phases = new PhasePicker((phaseId) => this.updateScenario({ phaseId }));
+    container.append(this.phases.box, this.phases.kinds);
 
     // The other chosen drivers (M11; any number since M33), each with a
     // start month of its own (M12). Offered only when there is more than one
@@ -803,21 +876,12 @@ export class ControlsView {
     this.addButton.hidden = ids.length >= this.drivers.length;
   }
 
-  /** Rebuild the phase buttons for the current driver (only when it changed). */
-  private renderPhases(driver: DriverNode): void {
-    if (this.renderedDriverId === driver.id) return;
-    this.renderedDriverId = driver.id;
-    this.phaseBox.innerHTML = '';
-    this.phaseButtons.clear();
-    for (const p of driver.phases) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'phase-btn';
-      b.innerHTML = `<span class="swatch" style="background:${p.color}"></span><span>${p.label}</span>`;
-      b.addEventListener('click', () => this.updateScenario({ phaseId: p.id }));
-      this.phaseBox.append(b);
-      this.phaseButtons.set(p.id, b);
-    }
+  /** The phase buttons, name and onset hint for the current driver (the
+   *  buttons are rebuilt only when it changed). */
+  private renderPhases(driver: DriverNode, phaseId: string): void {
+    this.phases.render(driver, phaseId);
+    if (this.shownDriverId === driver.id) return;
+    this.shownDriverId = driver.id;
     if (!this.driverSelect) this.driverHeading.textContent = driver.name.replace(/\s*\(.*\)$/, '');
     this.onsetHint.textContent = driver.onset_hint;
   }
@@ -840,9 +904,8 @@ export class ControlsView {
 
     const s = this.edited();
     const driver = this.driverById(s.driverId);
-    this.renderPhases(driver);
+    this.renderPhases(driver, s.phaseId);
     if (this.driverSelect) this.driverSelect.value = driver.id;
-    for (const [id, b] of this.phaseButtons) b.setAttribute('aria-pressed', String(id === s.phaseId));
     if (this.otherHost) {
       this.reflectOthers(s);
       this.monthHeading.textContent = s.others.length > 0 ? 'First driver begins in' : 'Event begins in';

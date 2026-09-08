@@ -1,7 +1,7 @@
 import './style.css';
 import type { Confidence, DriverNode, Graph, Link, MonthState, OutcomeNode, Scenario, Timeline } from '../src/types';
 import { MONTH_NAMES } from './types';
-import { chosenFade, chosenOnset, propagate } from './engine/propagate';
+import { chosenFade, chosenOnset, phaseForValue, propagate } from './engine/propagate';
 import { indexForCalendarMonth, linksInPlay, seasonProfile, type SeasonMonth } from './engine/season';
 import { differing } from './engine/compare';
 import { influencesOn, regionNodes } from './engine/inverse';
@@ -243,7 +243,7 @@ async function main(): Promise<void> {
       const from = graph.nodes.find((n) => n.id === l.from);
       const fromName = from ? from.name.replace(/\s*\(.*\)$/, '') : l.from;
       const tendency = node.kind === 'driver'
-        ? `toward ${node.phases.find((p) => p.value === l.effect)?.label ?? 'a phase'}`
+        ? `toward ${phaseForValue(node, l.effect)?.label ?? 'a phase'}`
         : l.effect > 0 ? node.labels.plus : node.labels.minus;
       return { id: l.id, months: l.season, color: stateColor(node, l.effect), title: `From ${fromName}: ${tendency}. Season: ${seasonWords(l.season)}. Expected from month ${l.lag_months[0]} after onset.` };
     });
@@ -367,8 +367,8 @@ async function main(): Promise<void> {
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
     const cardCompare: CardCompare | undefined = compare ? {
       side: edited.toUpperCase() as 'A' | 'B',
-      a: { month: months.get('a')!, title: titles.get('a')! },
-      b: { month: months.get('b')!, title: titles.get('b')! },
+      a: { month: months.get('a')!, title: titles.get('a')!, chosen: chosenBySide.get('a')!.phases },
+      b: { month: months.get('b')!, title: titles.get('b')!, chosen: chosenBySide.get('b')!.phases },
     } : undefined;
     renderCard(cardEl, graph, node, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year);
 

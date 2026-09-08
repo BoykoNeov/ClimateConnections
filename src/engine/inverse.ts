@@ -17,10 +17,15 @@ export interface Influence {
   months: boolean[];
 }
 
-/** One phase of a driver and the links it fires into the place. */
+/** One phase of a driver and the links it fires into the place. For a
+ *  variant phase (M36, rule 11) `links` are the variant's own links only
+ *  (the parent's links it inherits are listed under the parent, not
+ *  twice), and `except` the parent's links into the place that do not
+ *  hold for it. */
 export interface PhaseInfluences {
   phase: Phase;
   links: Influence[];
+  except: Link[];
 }
 
 /** One driver that reaches the place, with its phases that do, in the
@@ -56,7 +61,10 @@ export function influencesOn(graph: Graph, nodeId: string): DriverInfluences[] {
       const links = incoming
         .filter((l) => l.from === n.id && l.when === phase.id && nodeById.get(l.from)?.kind === 'driver')
         .map((link) => ({ link, confidence: link.confidence, months: seasonStrip(link) }));
-      if (links.length > 0) phases.push({ phase, links });
+      // A variant (rule 11): the parent's links into the place that do not hold for it.
+      const except = phase.variant_of === undefined ? []
+        : incoming.filter((l) => l.from === n.id && l.when === phase.variant_of && (l.except ?? []).includes(phase.id));
+      if (links.length > 0 || except.length > 0) phases.push({ phase, links, except });
     }
     if (phases.length > 0) out.push({ driver: n, phases });
   }

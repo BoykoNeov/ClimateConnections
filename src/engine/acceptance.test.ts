@@ -5,7 +5,7 @@
 // month-12 map (June again) shows winter effects as pending, not applied.
 
 import { describe, expect, it } from 'vitest';
-import { chosenFade, chosenOnset, propagate } from './propagate';
+import { chosenFade, chosenOnset, phaseForValue, propagate } from './propagate';
 import { scenarioForYear, yearRow } from './years';
 import type { Graph, Scenario, ScenarioDriver, Timeline, Value } from '../types';
 import graphJson from '../../public/data/graph.json';
@@ -389,10 +389,11 @@ describe('acceptance: driver-to-driver data', () => {
   const drivers = graph.nodes.filter((n) => n.kind === 'driver');
   const driverIds = new Set(drivers.map((d) => d.id));
   const d2d = graph.links.filter((l) => driverIds.has(l.to));
-  it('every driver has phases valued +1, 0 and -1, except the tropical eruption (M26), an event with no opposite phase: -1 and 0 only', () => {
+  it('every driver has phases valued +1, 0 and -1 among its phases that are not variants, except the tropical eruption (M26), an event with no opposite phase: -1 and 0 only; only ENSO has a variant (M36)', () => {
     for (const d of drivers) {
       if (d.kind !== 'driver') continue;
-      expect(d.phases.map((p) => p.value).sort(), d.id).toEqual(d.id === 'tropical_eruption' ? [-1, 0] : [-1, 0, 1]);
+      expect(d.phases.filter((p) => !p.variant_of).map((p) => p.value).sort(), d.id).toEqual(d.id === 'tropical_eruption' ? [-1, 0] : [-1, 0, 1]);
+      expect(d.phases.filter((p) => p.variant_of).map((p) => `${p.id}<${p.variant_of}`), d.id).toEqual(d.id === 'enso' ? ['el_nino_central<el_nino'] : []);
     }
   });
   it('ships twenty-nine driver-to-driver links, each with an evidence note and no self-loop', () => {
@@ -2641,11 +2642,11 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
   const EL_NINO_LINKS = ['el_nino_us_gulf_coast', 'el_nino_california', 'el_nino_pacific_northwest', 'el_nino_canadian_prairies', 'el_nino_us_southwest'];
   const LA_NINA_LINKS = ['la_nina_us_gulf_coast', 'la_nina_california', 'la_nina_pacific_northwest', 'la_nina_canadian_prairies', 'la_nina_us_southwest'];
 
-  it('ten links carry weakened_by: the five El Niño winter links by the negative PDO, the five La Niña ones by the positive, each with the three studies and an evidence note that says so; no other link has any; none is a driver-to-driver link', () => {
+  it('eleven links carry weakened_by: the five El Niño winter links by the negative PDO, the five La Niña ones by the positive, and since M36 the central-Pacific kind’s own Gulf Coast link by the negative PDO, each with the three studies and an evidence note that says so; no other link has any; none is a driver-to-driver link', () => {
     const mod = graph.links.filter((l) => l.weakened_by);
-    expect(mod.map((l) => l.id).sort()).toEqual([...EL_NINO_LINKS, ...LA_NINA_LINKS].sort());
+    expect(mod.map((l) => l.id).sort()).toEqual([...EL_NINO_LINKS, ...LA_NINA_LINKS, 'el_nino_central_us_gulf_coast'].sort());
     for (const l of mod) {
-      expect(l.weakened_by, l.id).toEqual([l.when === 'el_nino' ? NEG : POS]);
+      expect(l.weakened_by, l.id).toEqual([l.when.startsWith('el_nino') ? NEG : POS]);
       expect(l.evidence_note, l.id).toMatch(/one tier lower/);
       expect(graph.nodes.find((n) => n.id === l.to)?.kind, l.id).toBe('outcome');
     }
@@ -2741,5 +2742,147 @@ describe('acceptance: the PDO weakens ENSO’s North American winter links (M35,
       if (!enso || !pdo) continue;
       expect((enso.phase === 'el_nino' && pdo.phase === 'negative') || (enso.phase === 'la_nina' && pdo.phase === 'positive'), s.id).toBe(false);
     }
+  });
+});
+
+describe('acceptance: El Niño flavours (M36, rule 11)', () => {
+  const NEG = { driver: 'pdo', phase: 'negative', sources: ['gershunov_barnett_1998', 'mccabe_dettinger_1999', 'yu_zwiers_2007'] };
+  const enso = graph.nodes.find((n) => n.id === 'enso')!;
+  const OWN = ['el_nino_central_atlantic_hurricanes', 'el_nino_central_eastern_north_america', 'el_nino_central_indian_monsoon', 'el_nino_central_us_gulf_coast', 'el_nino_central_west_pacific_typhoons'];
+  const EXCEPTED = ['el_nino_atlantic_hurricanes', 'el_nino_indian_monsoon', 'el_nino_peru_coast', 'el_nino_peru_fishery', 'el_nino_us_gulf_coast', 'el_nino_west_pacific_typhoons'];
+  /** The central kind from August (the 2009–10 story's start), direct links only. */
+  const central = (extra: Partial<Scenario> = {}): Timeline => propagate(graph, { driverId: 'enso', phaseId: 'el_nino_central', startMonth: 8, horizonMonths: HORIZON, ...extra });
+
+  it('ENSO has one variant, "El Niño, central Pacific", a kind of El Niño with the same value and its own colour; no other driver has any', () => {
+    if (enso.kind !== 'driver') throw new Error('enso is not a driver');
+    const kind = enso.phases.find((p) => p.id === 'el_nino_central')!;
+    const parent = enso.phases.find((p) => p.id === 'el_nino')!;
+    expect(kind.variant_of).toBe('el_nino');
+    expect(kind.value).toBe(parent.value);
+    expect(kind.color).not.toBe(parent.color);
+    expect(kind.label).toBe('El Niño, central Pacific');
+    expect(kind.summary.startsWith('What is different')).toBe(true);
+    expect(enso.phases.map((p) => p.id)).toEqual(['el_nino', 'el_nino_central', 'neutral', 'la_nina']);
+    for (const d of graph.nodes) if (d.kind === 'driver' && d.id !== 'enso') expect(d.phases.every((p) => !p.variant_of), d.id).toBe(true);
+  });
+
+  it('five links of its own, each with an evidence note; six classic links except it, each with an evidence note that says so; every replaced target is excepted and no other link has except', () => {
+    const own = graph.links.filter((l) => l.when === 'el_nino_central');
+    expect(own.map((l) => l.id).sort()).toEqual(OWN);
+    for (const l of own) {
+      expect(l.from).toBe('enso');
+      expect(l.except).toBeUndefined();
+      expect(l.evidence_note, l.id).toBeDefined();
+    }
+    const excepted = graph.links.filter((l) => l.except);
+    expect(excepted.map((l) => l.id).sort()).toEqual(EXCEPTED);
+    for (const l of excepted) {
+      expect(l.when).toBe('el_nino');
+      expect(l.except).toEqual(['el_nino_central']);
+      expect(l.evidence_note, l.id).toMatch(/central-Pacific|classic kind/);
+    }
+    // Four own links replace a classic link to the same place; the fifth reaches a place no classic link does.
+    const classicTargets = new Set(graph.links.filter((l) => l.when === 'el_nino').map((l) => l.to));
+    for (const l of own) {
+      if (classicTargets.has(l.to)) expect(excepted.some((x) => x.to === l.to), `${l.id} replaces a classic link`).toBe(true);
+    }
+    expect(own.filter((l) => !classicTargets.has(l.to)).map((l) => l.to)).toEqual(['eastern_north_america_winter']);
+    expect(excepted.filter((x) => !own.some((l) => l.to === x.to)).map((x) => x.to).sort()).toEqual(['peru_coast_rainfall', 'peru_fishery']);
+    expect(graph.links.filter((l) => l.when === 'el_nino').length - excepted.length).toBeGreaterThan(20);
+  });
+
+  it('tiers: the monsoon established, the typhoons and the Gulf Coast probable, the hurricanes and eastern North America contested; the hurricane link runs the other way from the classic one', () => {
+    const tier = (id: string) => graph.links.find((l) => l.id === id)!;
+    expect(tier('el_nino_central_indian_monsoon').confidence).toBe('established');
+    expect(tier('el_nino_central_west_pacific_typhoons').confidence).toBe('probable');
+    expect(tier('el_nino_central_us_gulf_coast').confidence).toBe('probable');
+    expect(tier('el_nino_central_atlantic_hurricanes').confidence).toBe('contested');
+    expect(tier('el_nino_central_eastern_north_america').confidence).toBe('contested');
+    expect(tier('el_nino_central_atlantic_hurricanes').effect).toBe(1);
+    expect(tier('el_nino_atlantic_hurricanes').effect).toBe(-1);
+    expect(tier('el_nino_central_indian_monsoon').effect).toBe(-1);
+    expect(tier('el_nino_central_eastern_north_america').effect).toBe(-1);
+  });
+
+  it('the central kind from August: India dry from month 0 through its own link, Indonesia dry through the inherited one; the coast of Peru and the fishery never touched and no link to them reported; the Atlantic busier at contested; the Gulf Coast wet at probable from December; eastern North America cold at contested from January; typhoons active at probable', () => {
+    const t = central();
+    expect(t.months[0].nodes.indian_summer_monsoon.value).toBe(-1);
+    expect(t.months[0].nodes.indian_summer_monsoon.viaLinkIds).toEqual(['el_nino_central_indian_monsoon']);
+    expect(t.months[0].links.el_nino_indian_monsoon).toBeUndefined();
+    expect(t.months[0].nodes.indonesia_rainfall.viaLinkIds).toEqual(['el_nino_indonesia']);
+    expect(t.months[0].links.el_nino_indonesia).toEqual({ status: 'applied', confidence: 'established', depth: 1 });
+    for (const m of t.months) {
+      expect(m.nodes.peru_coast_rainfall.value, `month ${m.index}`).toBe(0);
+      expect(m.nodes.peru_fishery.value).toBe(0);
+      expect(m.links.el_nino_peru_coast).toBeUndefined();
+      expect(m.links.el_nino_peru_fishery).toBeUndefined();
+      expect(m.links.el_nino_atlantic_hurricanes).toBeUndefined();
+      expect(m.links.el_nino_us_gulf_coast).toBeUndefined();
+      expect(m.links.el_nino_west_pacific_typhoons).toBeUndefined();
+    }
+    expect(monthsWith(t, 'atlantic_hurricanes', 1)).toEqual([0, 1, 2, 3, 10, 11, 12]); // June–August again at the window's end: no hold here
+    expect(t.months[2].links.el_nino_central_atlantic_hurricanes).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(monthsWith(t, 'us_gulf_coast_winter', 1)).toEqual([4, 5, 6, 7]);
+    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    expect(monthsWith(t, 'eastern_north_america_winter', -1)).toEqual([5, 6, 7]);
+    expect(t.months[5].links.el_nino_central_eastern_north_america).toEqual({ status: 'applied', confidence: 'contested', depth: 1 });
+    expect(monthsWith(t, 'west_pacific_typhoons', 1)).toEqual([0, 1, 2, 3, 11, 12]);
+    expect(t.months[1].links.el_nino_central_west_pacific_typhoons).toEqual({ status: 'applied', confidence: 'probable', depth: 1 });
+    // The classic kind from August, for contrast: the coast wet in December–April, the Atlantic quiet.
+    const c = propagate(graph, { driverId: 'enso', phaseId: 'el_nino', startMonth: 8, horizonMonths: HORIZON });
+    expect(monthsWith(c, 'peru_coast_rainfall', 1)).toEqual([4, 5, 6, 7, 8]);
+    expect(monthsWith(c, 'atlantic_hurricanes', -1)).toEqual([0, 1, 2, 3, 10, 11, 12]);
+    expect(c.months[0].links.el_nino_central_indian_monsoon).toBeUndefined();
+  });
+
+  it('the negative PDO weakens the central kind’s Gulf Coast link (contested) and the inherited Northwest link (probable) alike', () => {
+    const t = central({ others: [{ driverId: 'pdo', phaseId: 'negative' }] });
+    expect(t.months[5].links.el_nino_central_us_gulf_coast).toEqual({ status: 'applied', confidence: 'contested', depth: 1, weakenedBy: [NEG] });
+    expect(t.months[5].links.el_nino_pacific_northwest).toEqual({ status: 'applied', confidence: 'probable', depth: 1, weakenedBy: [NEG] });
+  });
+
+  it('the chain never lands on the kind: a positive PMM from March pushes ENSO into the classic El Niño, whose links fire and whose kind-only links do not', () => {
+    const t = propagate(graph, { driverId: 'pacific_meridional_mode', phaseId: 'positive', startMonth: 3, horizonMonths: HORIZON, maxDepth: 3 });
+    const pushed = t.months.filter((m) => m.nodes.enso.value === 1);
+    expect(pushed.length).toBeGreaterThan(0);
+    expect(enso.kind === 'driver' && phaseForValue(enso, 1)?.id).toBe('el_nino');
+    for (const m of t.months) for (const id of OWN) expect(m.links[id], `${id} month ${m.index}`).toBeUndefined();
+    expect(t.months.some((m) => m.links.el_nino_indian_monsoon?.status === 'applied' || m.links.el_nino_peru_coast?.status === 'applied')).toBe(true);
+  });
+
+  it('regression: with the kind, its links and every except removed from the graph, every shipped story in a classic phase and every real year give the same timeline, month for month', () => {
+    const plain: Graph = {
+      ...graph,
+      nodes: graph.nodes.map((n) => (n.kind === 'driver' ? { ...n, phases: n.phases.filter((p) => !p.variant_of) } : n)),
+      links: graph.links.filter((l) => l.when !== 'el_nino_central').map(({ except: _x, ...l }) => l),
+    };
+    for (const s of graph.stories) {
+      if (s.phase === 'el_nino_central') continue;
+      const scenario: Scenario = { driverId: s.driver, phaseId: s.phase, startMonth: s.start_month, horizonMonths: HORIZON, maxDepth: 3 };
+      if (s.hold_months !== undefined) scenario.holdMonths = s.hold_months;
+      if (s.drivers && s.drivers.length > 0) scenario.others = s.drivers.map((d) => ({ driverId: d.driver, phaseId: d.phase, startMonth: d.start_month ?? s.start_month, startsBefore: !!d.starts_before, ...(d.hold_months !== undefined ? { holdMonths: d.hold_months } : {}) }));
+      expect(propagate(graph, scenario).months, s.id).toEqual(propagate(plain, scenario).months);
+    }
+    for (const row of graph.years ?? []) {
+      const ys = scenarioForYear(graph, row);
+      expect(propagate(graph, { ...ys.scenario, maxDepth: 3 }).months, String(row.year)).toEqual(propagate(plain, { ...ys.scenario, maxDepth: 3 }).months);
+    }
+  });
+
+  it('the 2009–10 story: the central kind from August 2009 for eight months with the negative NAO from December for three; the coast of Peru is pointed at through the classic link it does not fire; the record for 2009 still says El Niño', () => {
+    const s = graph.stories.find((x) => x.id === 'el_nino_central_2009_10')!;
+    expect(s.phase).toBe('el_nino_central');
+    expect([s.start_month, s.start_year, s.hold_months]).toEqual([8, 2009, 8]);
+    expect(s.drivers).toEqual([{ driver: 'nao', phase: 'negative', start_month: 12, hold_months: 3 }]);
+    const t = propagate(graph, { driverId: 'enso', phaseId: 'el_nino_central', startMonth: 8, horizonMonths: HORIZON, maxDepth: 3, holdMonths: 8, others: [{ driverId: 'nao', phaseId: 'negative', startMonth: 12, holdMonths: 3 }] });
+    expect(t.months[5].nodes.eastern_north_america_winter.viaLinkIds.sort()).toEqual(['el_nino_central_eastern_north_america', 'negative_nao_eastern_north_america']);
+    expect(t.months[5].nodes.eastern_north_america_winter.conflicting).toBe(false);
+    expect(t.months[6].nodes.peru_coast_rainfall.viaLinkIds).toEqual([]);
+    expect(t.months[8].nodes.enso.value).toBe(0);
+    expect(t.months[8].links.el_nino_central_indian_monsoon?.status).toBe('faded');
+    expect(s.steps.map((x) => [x.month, x.focus])).toEqual([[0, 'enso'], [0, 'indian_summer_monsoon'], [2, 'atlantic_hurricanes'], [4, 'nao'], [5, 'eastern_north_america_winter'], [6, 'peru_coast_rainfall'], [8, 'enso']]);
+    const row = yearRow(graph, 2009)!;
+    expect(row.drivers.find((d) => d.driver === 'enso')?.phase).toBe('el_nino');
+    expect(row.note).toMatch(/central-Pacific kind/);
   });
 });

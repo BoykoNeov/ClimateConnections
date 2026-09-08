@@ -98,15 +98,47 @@ export function chosenOnset(scenario: Scenario, driverId: string): number {
   return s.startsBefore ? after - 12 : after;
 }
 
+/** The parent of a variant phase (M36, rule 11), or null for a phase that
+ *  is not a variant (or an unknown phase). */
+export function parentPhaseId(driver: DriverNode, phaseId: string): string | null {
+  return driver.phases.find((p) => p.id === phaseId)?.variant_of ?? null;
+}
+
+/** Whether a driver holding phase `held` matches the phase name `named`
+ *  (rule 11): the same phase, or a variant of it. */
+export function phaseMatches(driver: DriverNode, held: string, named: string): boolean {
+  return held === named || parentPhaseId(driver, held) === named;
+}
+
+/** Whether a link fires for a driver holding `phaseId` (rule 11): its
+ *  `when` is that phase, or its parent and the link does not `except` the
+ *  phase. `driver` is the link's own driver. */
+export function linkFiresFor(link: Link, driver: DriverNode, phaseId: string): boolean {
+  if (link.from !== driver.id) return false;
+  if (link.when === phaseId) return true;
+  return link.when === parentPhaseId(driver, phaseId) && !(link.except ?? []).includes(phaseId);
+}
+
+/** The links in force for a driver holding a phase (rule 11): the phase's
+ *  own links plus, for a variant, the parent's links that do not except
+ *  it, in graph order. Empty for an unknown driver. */
+export function linksOfPhase(graph: Graph, driverId: string, phaseId: string): Link[] {
+  const driver = graph.nodes.find((n) => n.id === driverId);
+  if (!driver || driver.kind !== 'driver') return [];
+  return graph.links.filter((l) => linkFiresFor(l, driver, phaseId));
+}
+
 /** Links that belong to a chosen driver + phase (the first hop). */
 export function activeLinks(graph: Graph, scenario: Scenario): Link[] {
   const chosen = chosenDrivers(scenario);
-  return graph.links.filter((l) => chosen.some((c) => l.from === c.driverId && l.when === c.phaseId));
+  const ids = new Set(chosen.flatMap((c) => linksOfPhase(graph, c.driverId, c.phaseId).map((l) => l.id)));
+  return graph.links.filter((l) => ids.has(l.id));
 }
 
-/** The phase a driver holds when pushed to `value`, or null if it has none. */
+/** The phase a driver holds when pushed to `value`, or null if it has none.
+ *  Never a variant (rule 11): a push lands on the parent. */
 export function phaseForValue(driver: DriverNode, value: Value) {
-  return driver.phases.find((p) => p.value === value) ?? null;
+  return driver.phases.find((p) => p.value === value && !p.variant_of) ?? null;
 }
 
 interface Hop { driverId: string; phaseId: string; confidence: Confidence | null }
@@ -115,11 +147,25 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
   const maxDepth = scenario.maxDepth ?? 1;
   const minLevel = CONFIDENCE_ORDER[scenario.minConfidence ?? 'contested'];
   const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
-  const linksFrom = new Map<string, Link[]>();
-  for (const l of graph.links) {
-    const key = `${l.from}|${l.when}`;
-    linksFrom.set(key, [...(linksFrom.get(key) ?? []), l]);
-  }
+  // The links in force for a driver holding a phase (rule 11: a variant
+  // fires its own links and the parent's that do not except it), computed
+  // once per driver + phase the scenario reaches.
+  const linksMemo = new Map<string, Link[]>();
+  const linksFor = (driverId: string, phaseId: string): Link[] => {
+    const key = `${driverId}|${phaseId}`;
+    let out = linksMemo.get(key);
+    if (!out) {
+      out = linksOfPhase(graph, driverId, phaseId);
+      linksMemo.set(key, out);
+    }
+    return out;
+  };
+  /** Whether a chosen driver in phase this month holds the phase a
+   *  `weakened_by` entry names (rule 10), a variant counting as its parent (rule 11). */
+  const holds = (driverId: string, phaseId: string, named: string): boolean => {
+    const d = nodeById.get(driverId);
+    return d?.kind === 'driver' ? phaseMatches(d, phaseId, named) : phaseId === named;
+  };
   // The chosen drivers (one; two since M11; any number since M33) and the
   // value of their phases.
   const chosen = chosenDrivers(scenario);
@@ -176,7 +222,7 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
     for (const c of chosen) {
       const fade = chosenFade(scenario, c.driverId);
       if (fade === null || index < fade) continue;
-      for (const link of linksFrom.get(`${c.driverId}|${c.phaseId}`) ?? []) {
+      for (const link of linksFor(c.driverId, c.phaseId)) {
         if (settled.has(link.to)) continue; // loop guard: never reported, as before the fade
         const target = nodes[link.to];
         if (!target) continue;
@@ -199,7 +245,7 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
 
       for (const hop of frontier) {
         const start = onset.get(`${hop.driverId}|${hop.phaseId}`) ?? 0;
-        for (const link of linksFrom.get(`${hop.driverId}|${hop.phaseId}`) ?? []) {
+        for (const link of linksFor(hop.driverId, hop.phaseId)) {
           if (index < start + link.lag_months[0]) continue; // not yet available
           if (settled.has(link.to)) continue; // loop guard
           const target = nodes[link.to];
@@ -214,7 +260,7 @@ export function propagate(graph: Graph, scenario: Scenario): Timeline {
           // their onset, before their fade); a pushed driver never
           // modulates. One tier however many entries are in force. The link
           // is still applied, with the same effect, in the same months.
-          const weakenedBy = (link.weakened_by ?? []).filter((w) => inPhase.some((c) => c.driverId === w.driver && c.phaseId === w.phase));
+          const weakenedBy = (link.weakened_by ?? []).filter((w) => inPhase.some((c) => c.driverId === w.driver && holds(c.driverId, c.phaseId, w.phase)));
           if (weakenedBy.length > 0) confidence = downgrade(confidence, 1);
           const state = (status: LinkState['status']): LinkState =>
             weakenedBy.length > 0 ? { status, confidence, depth, weakenedBy } : { status, confidence, depth };

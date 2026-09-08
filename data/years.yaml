@@ -2821,8 +2821,11 @@ years:
       in June, the phase of the 2009–10 story, and the Barents–Kara ice was
       low that autumn; the October snow extent was only a little above normal,
       because the story reads the speed of the snow's advance, which this
-      table does not.
-    sources: [noaa_oni_index, cpc_nao_index, osborn_2011, cohen_2010, cattiaux_2010, psl_qbo30_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
+      table does not. The El Niño was of the central-Pacific kind, the
+      strongest such warming in the satellite record; the index this table
+      reads cannot tell the kinds apart, so the row says El Niño and the
+      story "2009–10: an El Niño in the wrong place" shows the central kind.
+    sources: [noaa_oni_index, cpc_nao_index, osborn_2011, cohen_2010, cattiaux_2010, psl_qbo30_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index, lee_mcphaden_2010]
     drivers:
       - driver: enso
         phase: el_nino

@@ -28,6 +28,9 @@ const Phase = z.object({
   /** where the phase sits on the driver's own axis; a link into the driver
    *  with effect +1 / -1 pushes it into the phase with that value (M10) */
   value: Value,
+  /** the phase this one is a variant of (M36, rule 11): another phase of
+   *  the same driver with the same value; checked below the schema */
+  variant_of: Id.optional(),
 });
 
 const NodeBase = z.object({
@@ -53,8 +56,11 @@ const DriverNode = NodeBase.extend({
    *  "Event lasts" control offers the middle of the range as "typical" */
   typical_duration_months: z.tuple([Month, Month]).refine(([a, b]) => a <= b, 'typical_duration_months[0] must be <= typical_duration_months[1]'),
   phases: z.array(Phase).min(2)
-    .refine((ps) => new Set(ps.map((p) => p.value)).size === ps.length, 'two phases share the same value')
-    .refine((ps) => ps.some((p) => p.value === 0), 'a driver needs a neutral phase (value 0)'),
+    // Values are unique among the phases that are not variants (rule 11); a
+    // variant shares its parent's value, checked below the schema.
+    .refine((ps) => { const main = ps.filter((p) => p.variant_of === undefined); return new Set(main.map((p) => p.value)).size === main.length; }, 'two phases share the same value')
+    .refine((ps) => ps.some((p) => p.value === 0 && p.variant_of === undefined), 'a driver needs a neutral phase (value 0)')
+    .refine((ps) => new Set(ps.map((p) => p.id)).size === ps.length, 'two phases share the same id'),
 }).strict();
 
 const OutcomeNode = NodeBase.extend({
@@ -91,8 +97,13 @@ const Link = z.object({
   /** drivers whose chosen phase weakens this link (M35); the link must then
    *  carry an evidence_note that says so in plain words */
   weakened_by: z.array(Modulation).min(1).optional(),
+  /** variants of the `when` phase for which the link does not hold (M36,
+   *  rule 11); the link must then carry an evidence_note saying why */
+  except: z.array(Id).min(1).optional(),
 }).strict()
-  .refine((l) => l.weakened_by === undefined || l.evidence_note !== undefined, 'a link with weakened_by needs an evidence_note saying what weakens it');
+  .refine((l) => l.weakened_by === undefined || l.evidence_note !== undefined, 'a link with weakened_by needs an evidence_note saying what weakens it')
+  .refine((l) => l.except === undefined || l.evidence_note !== undefined, 'a link with except needs an evidence_note saying why the effect is not expected in that kind')
+  .refine((l) => l.except === undefined || new Set(l.except).size === l.except.length, 'except lists a phase twice');
 
 const Source = z.object({
   key: Id,
@@ -206,7 +217,29 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
       if (!sources.has(k)) fail(`nodes.yaml: node "${n.id}" cites unknown source "${k}"`);
       usedSources.add(k);
     }
+    // Phase variants (M36, rule 11): the parent is another phase of the same
+    // driver, not itself a variant, with the same value.
+    if (n.kind !== 'driver') continue;
+    for (const p of n.phases) {
+      if (p.variant_of === undefined) continue;
+      const parent = n.phases.find((q) => q.id === p.variant_of);
+      if (!parent) fail(`node "${n.id}": phase "${p.id}" is a variant of unknown phase "${p.variant_of}"`);
+      else if (parent.id === p.id) fail(`node "${n.id}": phase "${p.id}" cannot be a variant of itself`);
+      else if (parent.variant_of !== undefined) fail(`node "${n.id}": phase "${p.id}" is a variant of "${parent.id}", which is itself a variant`);
+      else if (parent.value !== p.value) fail(`node "${n.id}": variant "${p.id}" has value ${p.value} but its parent "${parent.id}" has ${parent.value}`);
+    }
   }
+  /** Whether a link fires for a driver holding `phaseId` (rule 11): its own
+   *  phase, or the parent of a variant that the link does not except. */
+  const firesFor = (l, driverId, phaseId) => {
+    if (l.from !== driverId) return false;
+    if (l.when === phaseId) return true;
+    const d = nodes.get(driverId);
+    const parent = d?.kind === 'driver' ? d.phases.find((p) => p.id === phaseId)?.variant_of : undefined;
+    return parent !== undefined && l.when === parent && !(l.except ?? []).includes(phaseId);
+  };
+  /** The phase a driver is pushed into for an effect: never a variant (rule 11). */
+  const pushedPhase = (d, effect) => d.phases.find((p) => p.value === effect && p.variant_of === undefined);
 
   const linkIds = new Set();
   // Flags absolute language unless it is negated ("not always", "does not guarantee").
@@ -221,9 +254,21 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     else if (!from.phases.some((p) => p.id === l.when)) fail(`link "${l.id}": "${l.when}" is not a phase of "${l.from}"`);
     if (!to) fail(`link "${l.id}": unknown to node "${l.to}"`);
     else if (to.kind === 'driver') {
-      // Driver-to-driver (M10): the effect must name a phase of the target.
+      // Driver-to-driver (M10): the effect must name a phase of the target
+      // that is not a variant (rule 11: a push lands on the parent).
       if (to.id === l.from) fail(`link "${l.id}": a driver cannot push itself`);
-      else if (!to.phases.some((p) => p.value === l.effect)) fail(`link "${l.id}": driver "${l.to}" has no phase with value ${l.effect}`);
+      else if (!pushedPhase(to, l.effect)) fail(`link "${l.id}": driver "${l.to}" has no phase with value ${l.effect} that is not a variant`);
+    }
+    // Phase variants (M36, rule 11): `except` names variants of the link's
+    // own phase, and a link of a variant phase cannot except anything.
+    if (from && from.kind === 'driver') {
+      const when = from.phases.find((p) => p.id === l.when);
+      if (l.except !== undefined && when?.variant_of !== undefined) fail(`link "${l.id}": a link of the variant phase "${l.when}" cannot have except`);
+      for (const x of l.except ?? []) {
+        const v = from.phases.find((p) => p.id === x);
+        if (!v) fail(`link "${l.id}": except names unknown phase "${x}" of "${l.from}"`);
+        else if (v.variant_of !== l.when) fail(`link "${l.id}": except names "${x}", which is not a variant of "${l.when}"`);
+      }
     }
     for (const k of l.sources) {
       if (!sources.has(k)) fail(`link "${l.id}": unknown source "${k}"`);
@@ -256,6 +301,16 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     const key = `${l.from}|${l.when}|${l.to}`;
     if (dup.has(key)) fail(`links.yaml: two links from ${l.from}/${l.when} to ${l.to} (${l.id})`);
     dup.add(key);
+  }
+  // Rule 11: a target reached by a driver in a variant phase and in the
+  // parent phase must be excepted on the parent link, so it is never
+  // reached twice by one driver in one phase.
+  for (const l of linksFile.links) {
+    const from = nodes.get(l.from);
+    const when = from?.kind === 'driver' ? from.phases.find((p) => p.id === l.when) : undefined;
+    if (!when || when.variant_of === undefined) continue;
+    const parentLink = linksFile.links.find((m) => m.from === l.from && m.when === when.variant_of && m.to === l.to);
+    if (parentLink && !(parentLink.except ?? []).includes(l.when)) fail(`link "${l.id}": "${parentLink.id}" reaches the same target in the parent phase "${when.variant_of}" and must list "${l.when}" in except`);
   }
   // ---- stories: scenario must exist, every step must point at a node that
   // is genuinely affected in that month (same rule as the engine: past the
@@ -294,22 +349,30 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
     const chosenIds = new Set(chosenOf(s).map(([d]) => d));
     for (const [cd, cp, co, cf] of chosenOf(s)) {
       for (const l of links) {
-        if (l.from !== cd || l.when !== cp) continue;
+        if (!firesFor(l, cd, cp)) continue;
         const d = nodes.get(l.to);
         if (!d || d.kind !== 'driver' || chosenIds.has(d.id) || !appliedAt(l, co, m, s.start_month, cf)) continue;
         let onsetIdx = co;
         while (onsetIdx < m && !appliedAt(l, co, onsetIdx, s.start_month, cf)) onsetIdx++;
-        const phase = d.phases.find((p) => p.value === l.effect);
+        const phase = pushedPhase(d, l.effect);
         if (phase) out.push([d.id, phase.id, onsetIdx]);
       }
     }
     return out;
   };
   const affectedAt = (s, focusId, m) => {
-    if (chosenOf(s).some(([cd, cp, co, cf]) => links.some((l) => l.from === cd && l.when === cp && l.to === focusId && appliedAt(l, co, m, s.start_month, cf)))) return true;
+    if (chosenOf(s).some(([cd, cp, co, cf]) => links.some((l) => firesFor(l, cd, cp) && l.to === focusId && appliedAt(l, co, m, s.start_month, cf)))) return true;
     return pushedAt(s, m).some(([d, p, onsetIdx]) =>
-      links.some((l) => l.from === d && l.when === p && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
+      links.some((l) => firesFor(l, d, p) && l.to === focusId && appliedAt(l, onsetIdx, m, s.start_month)));
   };
+  /** Rule 11: a place that a parent link excepted for a chosen variant would
+   *  have reached this month, so a story can point at what did not happen. */
+  const exceptedAt = (s, focusId, m) =>
+    chosenOf(s).some(([cd, cp, co, cf]) => {
+      const d = nodes.get(cd);
+      const parent = d?.kind === 'driver' ? d.phases.find((p) => p.id === cp)?.variant_of : undefined;
+      return parent !== undefined && links.some((l) => l.from === cd && l.when === parent && (l.except ?? []).includes(cp) && l.to === focusId && appliedAt(l, co, m, s.start_month, cf));
+    });
   const storyIds = new Set();
   for (const s of storiesFile.stories) {
     if (storyIds.has(s.id)) fail(`stories.yaml: duplicate story id "${s.id}"`);
@@ -339,7 +402,7 @@ if (nodesFile && linksFile && storiesFile && yearsFile) {
       lastMonth = step.month;
       const focus = nodes.get(step.focus);
       if (!focus) { fail(`${where}: unknown focus node "${step.focus}"`); return; }
-      if (!chosenIds.has(focus.id) && !affectedAt(s, step.focus, step.month)) {
+      if (!chosenIds.has(focus.id) && !affectedAt(s, step.focus, step.month) && !exceptedAt(s, step.focus, step.month)) {
         const cal = calendarMonth(s.start_month, step.month);
         const by = chosenOf(s).map(([d, p]) => `${d}/${p}`).join(' or ');
         fail(`${where}: "${step.focus}" is not affected by ${by} at month ${step.month} (calendar month ${cal}), directly or through a pushed driver; the marker would be ${focus.kind === 'driver' ? 'grey' : 'hollow'}`);

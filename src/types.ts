@@ -14,6 +14,12 @@ export interface Phase {
   /** where this phase sits on the driver's own axis: +1, 0 (neutral) or -1.
    *  A link into a driver with effect +1 pushes it toward its +1 phase (M10). */
   value: Value;
+  /** the phase this one is a variant of (M36, rule 11): another phase of
+   *  the same driver with the same value, its parent. A driver holding a
+   *  variant fires the variant's own links plus the parent's links that do
+   *  not `except` it; a push into the driver lands on the parent, never on
+   *  a variant. A parent is never itself a variant. */
+  variant_of?: string;
 }
 
 interface NodeBase {
@@ -80,6 +86,11 @@ export interface Link {
   /** drivers whose chosen phase weakens this link by one tier (M35);
    *  a link with this field always has an `evidence_note` saying so */
   weakened_by?: Modulation[];
+  /** variants of the `when` phase for which this link does not hold (M36,
+   *  rule 11): a driver holding one of them does not fire it. Only on a
+   *  link whose `when` is a parent phase; such a link always has an
+   *  `evidence_note` saying why. */
+  except?: string[];
 }
 
 export interface Source {

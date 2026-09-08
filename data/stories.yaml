@@ -1786,3 +1786,114 @@ stories:
           the plan intends: a real hypothesis, a famous success, and a
           decade of misses, all on one dotted arrow.
         sources: [blunden_2011, peings_2013, douville_2017, peings_2017, rutgers_snow_lab, weather_channel_2016, ncei_winter_2017, lawrence_2020, brown_derksen_2013, henderson_2018]
+
+  - id: el_nino_central_2009_10
+    title: "2009–10: an El Niño in the wrong place"
+    intro: >
+      The El Niño of 2009–10 was strong by the usual index, but its warm
+      water sat near the dateline and never reached the coast of South
+      America: the strongest central-Pacific El Niño in the satellite
+      record. This story runs the map in that kind, "El Niño, central
+      Pacific", from August 2009, with the record negative North Atlantic
+      Oscillation added as a second driver from December. Watch India's
+      monsoon fail, the Atlantic stay quiet where a contested link says
+      busier, the eastern United States freeze under two drivers at once,
+      and the coast of Peru get no arrow at all, on purpose.
+    driver: enso
+    phase: el_nino_central
+    start_month: 8
+    start_year: 2009
+    hold_months: 8
+    drivers:
+      - driver: nao
+        phase: negative
+        start_month: 12
+        hold_months: 3
+    steps:
+      - month: 0
+        focus: enso
+        text: >
+          August 2009. The Pacific had swung from a La Niña in the spring to
+          an El Niño by the summer, and the usual index crossed its
+          threshold in the July–September season. But the warmest water sat
+          near the dateline, with cooler water on both sides of it, and the
+          eastern Pacific off Peru never warmed the way it had in 1997.
+          Satellite records since 1982 show the central Pacific warming
+          almost twice as strongly in events of this kind, and 2009–10 was
+          the strongest of them. The map draws the event in its
+          central-Pacific kind: the marker is orange rather than red, and
+          five arrows differ from a classic El Niño's.
+        sources: [lee_mcphaden_2010, kim_2011_fast_transition, noaa_oni_index]
+      - month: 0
+        focus: indian_summer_monsoon
+        text: >
+          India's monsoon had already failed. June brought less than half
+          its usual rain, and the season ended 22 per cent short, the worst
+          since 1972. Kumar and his colleagues had shown three years
+          earlier that it is the El Niños with their warmest water in the
+          central Pacific that most reliably dry India, because the
+          sinking air that answers the warming settles squarely over the
+          subcontinent. 2009 fitted their rule, as 2002 and 2004 had. This
+          arrow is the central kind's own link, drawn solid; the classic
+          El Niño's monsoon link is not drawn for this kind.
+        sources: [kumar_2006, francis_gadgil_2010]
+      - month: 2
+        focus: atlantic_hurricanes
+        text: >
+          A dotted arrow, and a lesson in reading one. A classic El Niño
+          reliably quietens the Atlantic hurricane season by tearing storms
+          apart with wind shear, and that link is not drawn for the central
+          kind. In its place is a contested link the other way: one study
+          found central-Pacific warming brings a busier season, two others
+          found no such thing. The 2009 season had nine named storms, the
+          fewest since 1997. So the dotted arrow was wrong this year, and
+          the season was quiet anyway, which is exactly what "contested"
+          means on this map.
+        sources: [berg_avila_2011, kim_webster_curry_2009, lee_wang_enfield_2010]
+      - month: 4
+        focus: nao
+        text: >
+          December 2009. The North Atlantic Oscillation fell to the most
+          negative winter value in a record going back to the 1820s, and
+          this story adds it as a second driver from this month, held for
+          three months. What the map cannot show is why: the easterly
+          stratospheric wind and the early Siberian snow of that autumn
+          each have a story of their own here. From this month the two
+          drivers act together on the eastern United States.
+        sources: [osborn_2011, cattiaux_2010]
+      - month: 5
+        focus: eastern_north_america_winter
+        text: >
+          January 2010. Two arrows reach the eastern United States and
+          agree: the negative NAO's cold, and the central kind's own
+          contested link, a cold Southeast where a classic El Niño would
+          have left the north mild. The winter was bitter and snowy from
+          Florida to Washington, and Seager and his colleagues traced the
+          snow to exactly this pairing, an El Niño and a strongly negative
+          NAO. The map cannot say which driver did more; the studies say
+          the NAO did.
+        sources: [seager_2010, yu_2012]
+      - month: 6
+        focus: peru_coast_rainfall
+        text: >
+          February 2010, the height of the coastal rainy season in a
+          classic El Niño, when the map would draw a solid arrow to the
+          coast of Peru and Ecuador. It draws none: the classic link is
+          not expected in the central-Pacific kind, because the coastal
+          downpours need warm water against the coast and this event's
+          warmth stayed near the dateline. The card here says so and cites
+          why. Nothing on the coast is being predicted; the point is that
+          the same index reading can mean two very different maps.
+        sources: [takahashi_2011, capotondi_2015, lee_mcphaden_2010]
+      - month: 8
+        focus: enso
+        text: >
+          April 2010. The event is over: the index dropped below its
+          threshold after the February–April season, so the story holds
+          the El Niño for eight months and the marker turns grey here.
+          The Pacific then swung into a strong La Niña within months, one
+          of the fastest turnarounds on record, and that La Niña has a
+          story of its own on this map. "Compare with the record" below
+          shows every driver the table has for 2009; the record calls the
+          event El Niño, because its index cannot tell the two kinds apart.
+        sources: [kim_2011_fast_transition, noaa_oni_index]

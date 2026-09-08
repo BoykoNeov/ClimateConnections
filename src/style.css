@@ -66,6 +66,12 @@ html, body { margin: 0; height: 100%; }
 /* before / after the first driver (M15): two buttons in one row under the month picker */
 .second-order { flex-direction: row; margin-top: 6px; }
 .second-order .order-btn { flex: 1; justify-content: center; padding: 5px 6px; font-size: 12px; }
+/* Which kind of El Niño? (M36): the variants of the chosen phase in one row under the phase buttons */
+.phase-kinds { margin: 6px 0 0 14px; padding-left: 8px; border-left: 2px solid var(--line); }
+.phase-kinds .kinds-heading { margin: 0 0 4px; }
+.kinds-row { flex-direction: row; flex-wrap: wrap; }
+.kinds-row .kind-btn { flex: 1 1 40%; padding: 5px 8px; font-size: 12px; }
+.kinds-row .kind-btn .swatch { width: 11px; height: 11px; }
 #controls select { width: 100%; padding: 6px; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
 .hint { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
 .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -253,6 +259,12 @@ html, body { margin: 0; height: 100%; }
 .sure .weaker strong { display: inline; }
 .sure .weaker + .sources { margin-top: 2px; }
 ul.weakens { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
+/* What is different in this kind (M36): the variant's own links and the classic ones it drops */
+ul.kinds { margin: 2px 0 8px; padding-left: 18px; font-size: 12.5px; }
+ul.kinds li.dropped { color: var(--muted); }
+.link-block.excepted { border-left-color: #c8ccd2; }
+.link-block.excepted h4 { color: var(--muted); }
+.kind-note { color: #7a4b00; }
 .sources { font-size: 11.5px; color: var(--muted); }
 .sources a { color: var(--accent); }
 .sources li { margin: 3px 0; }

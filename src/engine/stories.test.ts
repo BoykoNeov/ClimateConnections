@@ -46,7 +46,7 @@ describe('any number of chosen drivers (M33) and the shipped stories', () => {
     }
     expect(graph.stories.filter((s) => s.drivers && s.drivers.length > 0).map((s) => s.id)).toEqual([
       'la_nina_negative_iod_2010_11', 'negative_iod_then_la_nina_2016', 'negative_sam_2019_black_summer', 'positive_pdo_2014_15',
-      'positive_amo_1995', 'atlantic_nino_1984', 'pinatubo_1991', 'easterly_qbo_2009_10',
+      'positive_amo_1995', 'atlantic_nino_1984', 'pinatubo_1991', 'easterly_qbo_2009_10', 'el_nino_central_2009_10',
     ]);
   });
   for (const story of graph.stories) {
@@ -103,8 +103,8 @@ describe('phase duration (M32) and the shipped stories', () => {
     // Before the fade the story's chain stands: the typhoons under both arrows in August.
     expect([...tl.months[6].nodes.west_pacific_typhoons.viaLinkIds].sort()).toEqual(['la_nina_west_pacific_typhoons', 'warm_basin_west_pacific_typhoons']);
   });
-  it('only that story sets a hold so far', () => {
-    expect(graph.stories.filter((s) => s.hold_months !== undefined || (s.drivers ?? []).some((d) => d.hold_months !== undefined)).map((s) => s.id)).toEqual(['warm_basin_1998_yangtze']);
+  it('that story and, since M36, the central-Pacific El Niño story set a hold', () => {
+    expect(graph.stories.filter((s) => s.hold_months !== undefined || (s.drivers ?? []).some((d) => d.hold_months !== undefined)).map((s) => s.id)).toEqual(['warm_basin_1998_yangtze', 'el_nino_central_2009_10']);
   });
 });
 
@@ -123,6 +123,20 @@ describe('stories', () => {
           expect(node).toBeDefined();
           if (chosen.has(node!.id)) return;
           const st = timeline.months[step.month].nodes[step.focus];
+          if (st.viaLinkIds.length === 0) {
+            // Rule 11 (M36): a step may point at a place that the parent
+            // phase would have reached this month through a link excepted
+            // for the chosen variant, so a story can say what did not
+            // happen. Check that with the engine: the same story in the
+            // parent phase reaches the place through such a link.
+            const driver = graph.nodes.find((n) => n.id === story.driver);
+            const parent = driver?.kind === 'driver' ? driver.phases.find((p) => p.id === story.phase)?.variant_of : undefined;
+            expect(parent, `${step.focus} is not affected and ${story.phase} is not a variant`).toBeDefined();
+            const asParent = propagate(graph, { ...storyScenario(story), phaseId: parent! });
+            const via = asParent.months[step.month].nodes[step.focus].viaLinkIds.map((id) => graph.links.find((l) => l.id === id)!);
+            expect(via.some((l) => l.from === story.driver && l.when === parent && (l.except ?? []).includes(story.phase)), `${step.focus}: no excepted link would have reached it`).toBe(true);
+            return;
+          }
           // Applied by at least one link; a conflicting node (pushes cancel
           // to 0) still counts, because its marker is drawn, not hollow.
           expect(st.viaLinkIds.length).toBeGreaterThan(0);

@@ -32,9 +32,11 @@ links:
     evidence_note: >
       The relationship weakened noticeably from around 1980 to the early
       2000s and its strength depends on where in the Pacific the warming is
-      centred; central-Pacific events tend to hurt the monsoon more than
-      eastern-Pacific ones.
-    sources: [rasmusson_carpenter_1983, kumar_1999]
+      centred. Central-Pacific events are the ones that most reliably fail
+      the monsoon (Kumar and others 2006), so this link is drawn for the
+      classic kind and the central-Pacific kind has a link of its own.
+    sources: [rasmusson_carpenter_1983, kumar_1999, kumar_2006]
+    except: [el_nino_central]
 
   - id: el_nino_indonesia
     from: enso
@@ -74,8 +76,14 @@ links:
       Indian Ocean Dipole often matters as much for the southeast.
     evidence_note: >
       The Bureau of Meteorology notes that El Niño reliably lowers the odds
-      of a wet winter–spring but is not a guarantee of drought.
-    sources: [bom_enso_australia, ropelewski_halpert_1987]
+      of a wet winter–spring but is not a guarantee of drought. Both kinds
+      of El Niño dry the east: eastern Australia is most sensitive to
+      warming at the eastern edge of the Pacific warm pool (Wang and Hendon
+      2007), so the central-Pacific kind, if anything, brings the drought
+      more reliably, as the modest 2002 event did while the huge 1997 one
+      did not. Its own extra signature, drier northwestern Australia in
+      autumn (Taschetto and England 2009), has no place on this map.
+    sources: [bom_enso_australia, ropelewski_halpert_1987, wang_hendon_2007, taschetto_england_2009]
 
   - id: el_nino_peru_coast
     from: enso
@@ -92,7 +100,14 @@ links:
     caveat: >
       The heaviest floods come only with strong events that warm the far
       eastern Pacific; weaker or central-Pacific events may bring little rain.
-    sources: [ropelewski_halpert_1987, lagos_2008]
+    evidence_note: >
+      Holds for the classic kind only. The coastal rains need the warming to
+      reach the far eastern Pacific; in a central-Pacific El Niño the warm
+      water stays near the dateline, the coast stays cool and the rains do
+      not come, so this link is not drawn for that kind (Kao and Yu 2009;
+      Takahashi and others 2011; Capotondi and others 2015).
+    sources: [ropelewski_halpert_1987, lagos_2008, kao_yu_2009, takahashi_2011, capotondi_2015]
+    except: [el_nino_central]
 
   - id: el_nino_peru_fishery
     from: enso
@@ -109,7 +124,14 @@ links:
     caveat: >
       Overfishing can amplify or mask the effect, and the stock has recovered
       at different speeds after different events.
-    sources: [barber_chavez_1983]
+    evidence_note: >
+      Holds for the classic kind only. The collapse needs the thick layer of
+      warm, nutrient-poor water to arrive at the coast, which the strong
+      eastern-Pacific events bring and central-Pacific events do not, so
+      this link is not drawn for that kind (Dewitte and others 2012;
+      Espinoza-Morriberón and others 2017).
+    sources: [barber_chavez_1983, dewitte_2012, espinoza_morriberon_2017]
+    except: [el_nino_central]
 
   - id: el_nino_us_gulf_coast
     from: enso
@@ -132,8 +154,12 @@ links:
       reliably this shows up: when the PDO is in its negative (cool) phase,
       El Niño's winter pattern over North America comes through weakly and
       less consistently than when the PDO is positive, so the link is shown
-      one tier lower when a negative PDO is chosen alongside El Niño.
-    sources: [ropelewski_halpert_1986, noaa_cpc_north_america]
+      one tier lower when a negative PDO is chosen alongside El Niño. In a
+      central-Pacific El Niño the jet's core sits further south, over the
+      Gulf itself, and the wet signal on land is weaker and smaller (Yu and
+      Zou 2013), so that kind has a link of its own, one tier lower.
+    sources: [ropelewski_halpert_1986, noaa_cpc_north_america, yu_zou_2013]
+    except: [el_nino_central]
     weakened_by:
       - driver: pdo
         phase: negative
@@ -191,8 +217,10 @@ links:
       (cool) phase, El Niño's winter pattern over North America comes
       through weakly and less consistently than when the PDO is positive, so
       the link is shown one tier lower when a negative PDO is chosen
-      alongside El Niño.
-    sources: [halpert_ropelewski_1992, noaa_cpc_north_america]
+      alongside El Niño. Holds for both kinds of El Niño: the Northwest is,
+      if anything, the region a central-Pacific El Niño warms most reliably
+      (Yu and others 2012).
+    sources: [halpert_ropelewski_1992, noaa_cpc_north_america, yu_2012]
     weakened_by:
       - driver: pdo
         phase: negative
@@ -215,8 +243,15 @@ links:
       storm can still make a "quiet" season destructive.
     evidence_note: >
       One of the most robust ENSO effects known; used operationally in
-      seasonal hurricane outlooks since the 1980s.
-    sources: [gray_1984, bell_2014]
+      seasonal hurricane outlooks since the 1980s. It holds for the classic
+      kind. A central-Pacific El Niño, with its warming near the dateline,
+      does not reliably raise the shear over the Atlantic, so this link is
+      not drawn for that kind; whether that kind in fact makes the season
+      busier is disputed (Kim, Webster and Curry 2009 against Lee, Wang and
+      Enfield 2010 and Larson and others 2012) and drawn as a contested
+      link of its own.
+    sources: [gray_1984, bell_2014, kim_webster_curry_2009, lee_wang_enfield_2010, larson_2012]
+    except: [el_nino_central]
 
   - id: el_nino_east_pacific_hurricanes
     from: enso
@@ -1554,13 +1589,17 @@ links:
       Mexico.
     evidence_note: >
       The wet Southwest winter is clearest in strong eastern-Pacific El
-      Niños and weak or absent in weak and central-Pacific ones. The Pacific
+      Niños. Studies disagree about the central-Pacific kind: forecasters
+      have noted ordinary or dry winters in Arizona and New Mexico in weak
+      and central-Pacific events, while Yu and Zou (2013) find southern
+      Arizona and California the one region that a central-Pacific El Niño
+      makes wetter, so the link is drawn for both kinds. The Pacific
       Decadal Oscillation sets how reliably this shows up: when the PDO is
       in its negative (cool) phase, El Niño's winter pattern over North
       America comes through weakly and less consistently than when the PDO
       is positive, so the link is shown one tier lower when a negative PDO
       is chosen alongside El Niño.
-    sources: [ropelewski_halpert_1986, redmond_koch_1991, magana_2003]
+    sources: [ropelewski_halpert_1986, redmond_koch_1991, magana_2003, yu_zou_2013]
     weakened_by:
       - driver: pdo
         phase: negative
@@ -1628,8 +1667,12 @@ links:
     evidence_note: >
       Wang and Chan and Camargo and Sobel both find more long-lived, intense
       storms in El Niño years; the 2015 season, with an unusually large
-      number of very intense typhoons, fits the pattern.
-    sources: [wang_chan_2002, camargo_sobel_2005, chan_1985]
+      number of very intense typhoons, fits the pattern. This is the
+      classic kind's pattern: in a central-Pacific El Niño typhoons form
+      further west and north instead (Kim, Webster and Curry 2011), so that
+      kind has a link of its own.
+    sources: [wang_chan_2002, camargo_sobel_2005, chan_1985, kim_webster_curry_2011]
+    except: [el_nino_central]
 
   - id: el_nino_south_china
     from: enso
@@ -5183,6 +5226,154 @@ links:
       Snow Lab).
     sources: [cohen_fletcher_2007, cohen_entekhabi_1999, cohen_2012_snow, cohen_2010, peings_2013, douville_2017, furtado_2015, henderson_2018, brown_derksen_2013, lawrence_2020, rutgers_snow_lab]
 
+  # ================================================================ EL NIÑO, CENTRAL PACIFIC (M36)
+  # Links that hold only for the central-Pacific kind (docs/PLAN.md §4 rule
+  # 11). Each replaces a classic El Niño link that lists el_nino_central
+  # in `except`; everything not listed here is inherited from El Niño.
+  - id: el_nino_central_indian_monsoon
+    from: enso
+    when: el_nino_central
+    to: indian_summer_monsoon
+    effect: -1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9]
+    confidence: established
+    mechanism: >
+      With the warmest water near the dateline, the rising air of the
+      Pacific sits where its compensating sinking branch settles squarely
+      over India, cutting the moist inflow that feeds the monsoon. Model
+      experiments with idealised warmings place the drought-making
+      subsidence over India for a central warming and further east for an
+      eastern one.
+    caveat: >
+      The monsoon has weather of its own from week to week, and a warm
+      Indian Ocean or a positive dipole can hold the rains up in a
+      central-Pacific year.
+    evidence_note: >
+      Kumar and others (2006) found in the 132-year record that every
+      severe Indian drought came with an El Niño, but that the El Niños
+      that brought drought were the ones with their warmest water in the
+      central Pacific; 2002, 2004 and 2009, all central-Pacific events,
+      were drought years. This link replaces the classic El Niño link for
+      this kind.
+    sources: [kumar_2006, kumar_1999, francis_gadgil_2010]
+
+  - id: el_nino_central_atlantic_hurricanes
+    from: enso
+    when: el_nino_central
+    to: atlantic_hurricanes
+    effect: 1
+    lag_months: [0, 3]
+    season: [6, 7, 8, 9, 10, 11]
+    confidence: contested
+    mechanism: >
+      With the warming near the dateline rather than off South America, the
+      atmosphere's answer over the Atlantic changes: Kim, Webster and Curry
+      found weaker wind shear over the main hurricane region and more
+      storms, with more of them heading for the Gulf of Mexico and Central
+      America.
+    caveat: >
+      Contested: later studies found no consistent Atlantic signal from
+      central-Pacific warming, and the quiet 2009 season, in the strongest
+      such event on record, ran the other way.
+    evidence_note: >
+      Kim, Webster and Curry (2009) reported a busier Atlantic season in
+      central-Pacific warming years; Lee, Wang and Enfield (2010) found that
+      only three of their five years were busy and two were quiet, Larson
+      and others (2012) found no significant effect either way, and
+      Patricola and others (2016) find in models that the classic
+      suppression simply weakens. What the studies agree on is that the
+      classic suppression is missing; whether the season is actually busier
+      is the contested part, so this link is drawn dotted.
+    sources: [kim_webster_curry_2009, lee_wang_enfield_2010, larson_2012, patricola_2016]
+
+  - id: el_nino_central_us_gulf_coast
+    from: enso
+    when: el_nino_central
+    to: us_gulf_coast_winter
+    effect: 1
+    lag_months: [4, 7]
+    season: [11, 12, 1, 2, 3]
+    confidence: probable
+    mechanism: >
+      The strengthened subtropical jet still steers storms toward the Gulf,
+      but with the warming near the dateline its core sits further south,
+      over the Gulf itself, so only a smaller strip of the coast and Florida
+      is left wetter than usual.
+    caveat: >
+      Yu and Zou (2013) find the wet signal on the Southeast coast weaker
+      and smaller in area than in a classic El Niño; a dry winter is a real
+      possibility.
+    evidence_note: >
+      Larkin and Harrison (2005) first showed that "dateline" El Niño
+      winters have a different weather map over the United States from
+      classic ones; Yu and Zou (2013) find the wet anomalies of the
+      Southeast smaller and the dry ones of the Ohio valley larger. This
+      link replaces the classic El Niño link for this kind, one tier lower.
+      The Pacific Decadal Oscillation weakens it as it does the classic
+      link: the link is shown one tier lower again when a negative PDO is
+      chosen alongside.
+    sources: [yu_zou_2013, larkin_harrison_2005]
+    weakened_by:
+      - driver: pdo
+        phase: negative
+        sources: [gershunov_barnett_1998, mccabe_dettinger_1999, yu_zwiers_2007]
+
+  - id: el_nino_central_eastern_north_america
+    from: enso
+    when: el_nino_central
+    to: eastern_north_america_winter
+    effect: -1
+    lag_months: [5, 8]
+    season: [12, 1, 2, 3]
+    confidence: contested
+    mechanism: >
+      The wave train that a central-Pacific warming sets off across North
+      America arrives in a different place from the classic one: instead of
+      the warm north and cool south of a classic El Niño winter, it tends to
+      give a warm Northwest and a cold Southeast, with the cold reaching the
+      eastern seaboard.
+    caveat: >
+      Contested: the pattern rests on about a dozen events since 1950,
+      climate models reproduce it poorly, and the North Atlantic
+      Oscillation can overwhelm it, as it did in the winter of 2009–10.
+    evidence_note: >
+      Yu and others (2012) find the largest central-Pacific El Niño
+      temperature signal over the northwestern and southeastern United
+      States, a warm Northwest and a cold Southeast, where the classic kind
+      mostly affects the Great Lakes, the Northeast and the Southwest; Zou
+      and others (2014) find most climate models cannot reproduce it. The
+      map has no separate Southeast marker, so the cold is drawn on the
+      eastern North America marker.
+    sources: [yu_2012, zou_2014, larkin_harrison_2005, weng_2009]
+
+  - id: el_nino_central_west_pacific_typhoons
+    from: enso
+    when: el_nino_central
+    to: west_pacific_typhoons
+    effect: 1
+    lag_months: [0, 4]
+    season: [7, 8, 9, 10, 11]
+    confidence: probable
+    mechanism: >
+      Warming near the dateline pulls the monsoon trough and its westerly
+      winds into the northwestern part of the basin, so typhoons form
+      further west and north than in a classic El Niño, more of them form,
+      and more of them reach the coasts of China, Korea and Japan.
+    caveat: >
+      The events are few and the landfall statistics are not strong; the
+      Philippines and Japan can be hit hard in any year, whichever kind of
+      El Niño is under way.
+    evidence_note: >
+      Kim, Webster and Curry (2011) find typhoon activity shifted west and
+      extended through the northwestern Pacific in central-Pacific warming
+      years, with better conditions for landfall in East Asia; Chen and Tam
+      (2010) find typhoon numbers rise with the Modoki index where the
+      classic index shows no such signal; Wang and Wang (2013) split the
+      central-Pacific kind further by its typhoon tracks. This link
+      replaces the classic El Niño link for this kind.
+    sources: [kim_webster_curry_2011, chen_tam_2010, wang_wang_2013]
+
 sources:
   - key: ropelewski_halpert_1986
     citation: "Ropelewski, C. F., & Halpert, M. S. (1986). North American precipitation and temperature patterns associated with the El Niño/Southern Oscillation (ENSO). Monthly Weather Review, 114(12), 2352–2362."
@@ -6522,3 +6713,82 @@ sources:
   - key: sellitto_2022
     citation: "Sellitto, P., Podglajen, A., Belhadji, R., Boichu, M., Carboni, E., Cuesta, J., Duchamp, C., Kloss, C., Siddans, R., Bègue, N., Blarel, L., Jegou, F., Khaykin, S., Renard, J.-B., & Legras, B. (2022). The unexpected radiative impact of the Hunga Tonga eruption of 15th January 2022. Communications Earth & Environment, 3, 288."
     url: https://doi.org/10.1038/s43247-022-00618-z
+  # ---- M36: El Niño flavours
+  - key: ashok_2007
+    citation: "Ashok, K., Behera, S. K., Rao, S. A., Weng, H., & Yamagata, T. (2007). El Niño Modoki and its possible teleconnection. Journal of Geophysical Research: Oceans, 112, C11007."
+    url: https://doi.org/10.1029/2006JC003798
+  - key: kao_yu_2009
+    citation: "Kao, H.-Y., & Yu, J.-Y. (2009). Contrasting eastern-Pacific and central-Pacific types of ENSO. Journal of Climate, 22(3), 615–632."
+    url: https://doi.org/10.1175/2008JCLI2309.1
+  - key: kug_2009
+    citation: "Kug, J.-S., Jin, F.-F., & An, S.-I. (2009). Two types of El Niño events: Cold tongue El Niño and warm pool El Niño. Journal of Climate, 22(6), 1499–1515."
+    url: https://doi.org/10.1175/2008JCLI2624.1
+  - key: capotondi_2015
+    citation: "Capotondi, A., Wittenberg, A. T., Newman, M., Di Lorenzo, E., Yu, J.-Y., Braconnot, P., Cole, J., Dewitte, B., Giese, B., Guilyardi, E., Jin, F.-F., Karnauskas, K., Kirtman, B., Lee, T., Schneider, N., Xue, Y., & Yeh, S.-W. (2015). Understanding ENSO diversity. Bulletin of the American Meteorological Society, 96(6), 921–938."
+    url: https://doi.org/10.1175/BAMS-D-13-00117.1
+  - key: kumar_2006
+    citation: "Kumar, K. K., Rajagopalan, B., Hoerling, M., Bates, G., & Cane, M. (2006). Unraveling the mystery of Indian monsoon failure during El Niño. Science, 314(5796), 115–119."
+    url: https://doi.org/10.1126/science.1131152
+  - key: francis_gadgil_2010
+    citation: "Francis, P. A., & Gadgil, S. (2010). Towards understanding the unusual Indian monsoon in 2009. Journal of Earth System Science, 119(4), 397–415."
+    url: https://doi.org/10.1007/s12040-010-0033-6
+  - key: yu_2012
+    citation: "Yu, J.-Y., Zou, Y., Kim, S. T., & Lee, T. (2012). The changing impact of El Niño on US winter temperatures. Geophysical Research Letters, 39, L15702."
+    url: https://doi.org/10.1029/2012GL052483
+  - key: yu_zou_2013
+    citation: "Yu, J.-Y., & Zou, Y. (2013). The enhanced drying effect of Central-Pacific El Niño on US winter precipitation. Environmental Research Letters, 8, 014019."
+    url: https://doi.org/10.1088/1748-9326/8/1/014019
+  - key: zou_2014
+    citation: "Zou, Y., Yu, J.-Y., Lee, T., Lu, M.-M., & Kim, S. T. (2014). CMIP5 model simulations of the impacts of the two types of El Niño on the U.S. winter temperature. Journal of Geophysical Research: Atmospheres, 119(6), 3076–3092."
+    url: https://doi.org/10.1002/2013JD021064
+  - key: weng_2009
+    citation: "Weng, H., Behera, S. K., & Yamagata, T. (2009). Anomalous winter climate conditions in the Pacific rim during recent El Niño Modoki and El Niño events. Climate Dynamics, 32(5), 663–674."
+    url: https://doi.org/10.1007/s00382-008-0394-6
+  - key: larkin_harrison_2005
+    citation: "Larkin, N. K., & Harrison, D. E. (2005). On the definition of El Niño and associated seasonal average U.S. weather anomalies. Geophysical Research Letters, 32, L13705."
+    url: https://doi.org/10.1029/2005GL022738
+  - key: taschetto_england_2009
+    citation: "Taschetto, A. S., & England, M. H. (2009). El Niño Modoki impacts on Australian rainfall. Journal of Climate, 22(11), 3167–3174."
+    url: https://doi.org/10.1175/2008JCLI2589.1
+  - key: wang_hendon_2007
+    citation: "Wang, G., & Hendon, H. H. (2007). Sensitivity of Australian rainfall to inter–El Niño variations. Journal of Climate, 20(16), 4211–4226."
+    url: https://doi.org/10.1175/JCLI4228.1
+  - key: kim_webster_curry_2009
+    citation: "Kim, H.-M., Webster, P. J., & Curry, J. A. (2009). Impact of shifting patterns of Pacific Ocean warming on North Atlantic tropical cyclones. Science, 325(5936), 77–80."
+    url: https://doi.org/10.1126/science.1174062
+  - key: lee_wang_enfield_2010
+    citation: "Lee, S.-K., Wang, C., & Enfield, D. B. (2010). On the impact of central Pacific warming events on Atlantic tropical storm activity. Geophysical Research Letters, 37, L17702."
+    url: https://doi.org/10.1029/2010GL044459
+  - key: larson_2012
+    citation: "Larson, S., Lee, S.-K., Wang, C., Chung, E.-S., & Enfield, D. (2012). Impacts of non-canonical El Niño patterns on Atlantic hurricane activity. Geophysical Research Letters, 39, L14706."
+    url: https://doi.org/10.1029/2012GL052595
+  - key: patricola_2016
+    citation: "Patricola, C. M., Chang, P., & Saravanan, R. (2016). Degree of simulated suppression of Atlantic tropical cyclones modulated by flavour of El Niño. Nature Geoscience, 9(2), 155–160."
+    url: https://doi.org/10.1038/ngeo2624
+  - key: kim_webster_curry_2011
+    citation: "Kim, H.-M., Webster, P. J., & Curry, J. A. (2011). Modulation of North Pacific tropical cyclone activity by three phases of ENSO. Journal of Climate, 24(6), 1839–1849."
+    url: https://doi.org/10.1175/2010JCLI3939.1
+  - key: chen_tam_2010
+    citation: "Chen, G., & Tam, C.-Y. (2010). Different impacts of two kinds of Pacific Ocean warming on tropical cyclone frequency over the western North Pacific. Geophysical Research Letters, 37, L01803."
+    url: https://doi.org/10.1029/2009GL041708
+  - key: wang_wang_2013
+    citation: "Wang, C., & Wang, X. (2013). Classifying El Niño Modoki I and II by different impacts on rainfall in southern China and typhoon tracks. Journal of Climate, 26(4), 1322–1338."
+    url: https://doi.org/10.1175/JCLI-D-12-00107.1
+  - key: dewitte_2012
+    citation: "Dewitte, B., Vazquez-Cuervo, J., Goubanova, K., Illig, S., Takahashi, K., Cambon, G., Purca, S., Correa, D., Gutierrez, D., Sifeddine, A., & Ortlieb, L. (2012). Change in El Niño flavours over 1958–2008: Implications for the long-term trend of the upwelling off Peru. Deep Sea Research Part II, 77–80, 143–156."
+    url: https://doi.org/10.1016/j.dsr2.2012.04.011
+  - key: espinoza_morriberon_2017
+    citation: "Espinoza-Morriberón, D., Echevin, V., Colas, F., Tam, J., Ledesma, J., Vásquez, L., & Graco, M. (2017). Impacts of El Niño events on the Peruvian upwelling system productivity. Journal of Geophysical Research: Oceans, 122(7), 5423–5444."
+    url: https://doi.org/10.1002/2016JC012439
+  - key: takahashi_2011
+    citation: "Takahashi, K., Montecinos, A., Goubanova, K., & Dewitte, B. (2011). ENSO regimes: Reinterpreting the canonical and Modoki El Niño. Geophysical Research Letters, 38, L10704."
+    url: https://doi.org/10.1029/2011GL047364
+  - key: lee_mcphaden_2010
+    citation: "Lee, T., & McPhaden, M. J. (2010). Increasing intensity of El Niño in the central-equatorial Pacific. Geophysical Research Letters, 37, L14603."
+    url: https://doi.org/10.1029/2010GL044007
+  - key: kim_2011_fast_transition
+    citation: "Kim, W., Yeh, S.-W., Kim, J.-H., Kug, J.-S., & Kwon, M. (2011). The unique 2009–2010 El Niño event: A fast phase transition of warm pool El Niño to La Niña. Geophysical Research Letters, 38, L15809."
+    url: https://doi.org/10.1029/2011GL048521
+  - key: berg_avila_2011
+    citation: "Berg, R. J., & Avila, L. A. (2011). Atlantic hurricane season of 2009. Monthly Weather Review, 139(4), 1049–1069."
+    url: https://doi.org/10.1175/2010MWR3476.1

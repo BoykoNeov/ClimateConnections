@@ -93,14 +93,29 @@ describe('regionNodes', () => {
 describe('influencesOn on the shipped data', () => {
   const graph = graphJson as unknown as Graph;
 
-  it('the Indian summer monsoon is reached by six drivers along eight links, ENSO both ways', () => {
+  it('the Indian summer monsoon is reached by six drivers along nine links, ENSO both ways and, since M36, in its central-Pacific kind with a link of its own', () => {
     const groups = influencesOn(graph, 'indian_summer_monsoon');
     expect(groups).toHaveLength(6);
-    expect(countInfluences(groups)).toBe(8);
+    expect(countInfluences(groups)).toBe(9);
     const enso = groups.find((g) => g.driver.id === 'enso')!;
-    expect(enso.phases.map((p) => p.phase.id)).toEqual(['el_nino', 'la_nina']);
+    expect(enso.phases.map((p) => p.phase.id)).toEqual(['el_nino', 'el_nino_central', 'la_nina']);
     expect(enso.phases[0].links[0].link.effect).toBe(-1);
-    expect(enso.phases[1].links[0].link.effect).toBe(1);
+    expect(enso.phases[0].except).toEqual([]);
+    // The variant's own link, and the classic link it replaces (rule 11).
+    expect(enso.phases[1].links.map((l) => l.link.id)).toEqual(['el_nino_central_indian_monsoon']);
+    expect(enso.phases[1].except.map((l) => l.id)).toEqual(['el_nino_indian_monsoon']);
+    expect(enso.phases[2].links[0].link.effect).toBe(1);
+  });
+
+  it('the coast of Peru (M36): the central-Pacific kind has no link of its own there and is listed only for the classic link it excepts; the fishery likewise; the Sahel, reached by no variant-specific link, lists no variant at all', () => {
+    for (const place of ['peru_coast_rainfall', 'peru_fishery']) {
+      const enso = influencesOn(graph, place).find((g) => g.driver.id === 'enso')!;
+      const central = enso.phases.find((p) => p.phase.id === 'el_nino_central')!;
+      expect(central.links, place).toEqual([]);
+      expect(central.except.map((l) => l.id), place).toEqual([place === 'peru_coast_rainfall' ? 'el_nino_peru_coast' : 'el_nino_peru_fishery']);
+    }
+    const sahel = influencesOn(graph, 'sahel_rainfall').find((g) => g.driver.id === 'enso')!;
+    expect(sahel.phases.map((p) => p.phase.id)).toEqual(['el_nino', 'la_nina']);
   });
 
   it('the Sahel is reached by five drivers', () => {
