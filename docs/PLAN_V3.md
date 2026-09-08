@@ -762,7 +762,10 @@ all three. The loop guard, depth and downgrade rules are unchanged.
 
 **Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
 §6 under M34. As written below, with these readings: coverage is
-1950–2025 for ENSO and 1980–2025 for the seven index drivers, as decided;
+1950–2025 for ENSO and 1980–2025 for the seven index drivers, as decided,
+and, extended the same day (`docs/PLAN.md` §6 under M34), for the other
+seven from their own indices, the two meridional modes to 2024 where
+their index ends;
 the row entry carries `duration_months` (uncapped; the engine takes a hold
 from it) rather than a 1–12 `hold_months`, and `onset_year` when the phase
 began before the row's year; the first driver is not "the earliest

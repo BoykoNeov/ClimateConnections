@@ -22,13 +22,25 @@ const other = (ys: YearScenario, id: string) => {
   return o;
 };
 const SEVEN = ['enso', 'iod', 'nao', 'sam', 'pdo', 'amo', 'atlantic_nino'];
+const FOURTEEN = [...SEVEN, 'indian_ocean_basin', 'atlantic_meridional_mode', 'pacific_meridional_mode', 'tropical_eruption', 'qbo', 'barents_kara_ice', 'eurasian_october_snow'];
+/** the meridional-mode indices end in August 2024, so 2025 lacks both */
+const TWELVE_2025 = FOURTEEN.filter((d) => d !== 'atlantic_meridional_mode' && d !== 'pacific_meridional_mode');
 
 describe('the shipped table', () => {
-  it('covers 1950–2025: ENSO alone before 1980, the seven index drivers from 1980, in row order', () => {
+  it('covers 1950–2025: ENSO alone before 1980, all fourteen drivers from 1980 in row order, the two meridional modes ending with their index in 2024', () => {
     const years = yearRows(graph).map((r) => r.year);
     expect(years).toEqual(Array.from({ length: 76 }, (_, i) => 1950 + i));
     for (const r of yearRows(graph)) {
-      expect(r.drivers.map((d) => d.driver), String(r.year)).toEqual(r.year < 1980 ? ['enso'] : SEVEN);
+      expect(r.drivers.map((d) => d.driver), String(r.year)).toEqual(r.year < 1980 ? ['enso'] : r.year === 2025 ? TWELVE_2025 : FOURTEEN);
+    }
+    const drivers = graph.nodes.filter((n) => n.kind === 'driver').map((n) => n.id);
+    expect(FOURTEEN).toEqual(drivers);
+  });
+  it('every entry cites an index source whose citation states the rule it was read by', () => {
+    const sources = new Map(graph.sources.map((s) => [s.key, s]));
+    for (const r of yearRows(graph)) for (const d of r.drivers) {
+      const c = sources.get(d.source)?.citation ?? '';
+      expect(c, `${r.year} ${d.driver} ${d.source}`).toMatch(/Read for the years table|computed for the years table/);
     }
   });
   it('every dated story has a row to compare with', () => {
@@ -54,10 +66,12 @@ describe('the shipped table', () => {
     const approx = yearRows(graph).flatMap((r) => scenarioForYear(graph, r).approximations.map((p) => (p.placed ? `${r.year} ${p.driver.driver} record ${p.recordFade} shown ${p.engineFade}` : `${r.year} ${p.driver.driver} not placed, onset ${p.recordOnset}`)));
     expect(approx).toEqual([
       '1983 enso record 6 shown 4',
+      '1984 tropical_eruption record 7 shown 4',
       '1989 enso record 5 shown 4',
       '1992 enso record 6 shown 5',
-      '2024 iod record 5 shown 3',
-      '2024 nao not placed, onset 12',
+      '2018 pacific_meridional_mode record 10 shown 8',
+      '2024 iod record 4 shown 2',
+      '2024 indian_ocean_basin record 11 shown 10',
     ]);
   });
   it('month 0 is January whenever the engine allows it; otherwise the start that covers most of the year', () => {
@@ -68,16 +82,47 @@ describe('the shipped table', () => {
       if (ys.anchor === 'earlier') expect(ys.startYear).toBeLessThan(r.year);
     }
     const fallback = yearRows(graph).filter((r) => scenarioForYear(graph, r).anchor === 'earlier').map((r) => r.year);
-    expect(fallback).toEqual([1952, 1955, 1956, 1959, 1966, 1971, 1975, 1978, 2024]);
-    const onsets = yearRows(graph).filter((r) => r.year >= 1980 && scenarioForYear(graph, r).anchor === 'onset').map((r) => `${r.year} ${scenarioForYear(graph, r).scenario.driverId} ${scenarioForYear(graph, r).scenario.startMonth}`);
-    expect(onsets).toEqual(['1984 iod 7', '2023 iod 3']);
-    // 2024: nothing neutral, nothing from January, the first new phase in
-    // November; the SAM phase from December 2023 covers the year best.
+    expect(fallback).toEqual([1952, 1955, 1956, 1959, 1966, 1971, 1975, 1978]);
+    // With fourteen drivers recorded some entry is always neutral from
+    // 1980, so every row from 1980 anchors January.
+    const onsets = yearRows(graph).filter((r) => r.year >= 1980 && scenarioForYear(graph, r).anchor !== 'january').map((r) => r.year);
+    expect(onsets).toEqual([]);
+    // 2024: the neutral PMM anchors January; the El Niño since May 2023
+    // and the dipole since March 2023 are read a year back with capped
+    // holds, and the NAO winter that begins in December is placed.
     const y2024 = scenarioForYear(graph, row(2024));
-    expect(y2024.startYear).toBe(2023);
-    expect(y2024.scenario).toMatchObject({ driverId: 'sam', phaseId: 'positive', startMonth: 12, holdMonths: 4 });
+    expect(y2024.startYear).toBe(2024);
+    expect(y2024.scenario).toMatchObject({ driverId: 'pacific_meridional_mode', phaseId: 'neutral', startMonth: 1 });
     expect(other(y2024, 'enso')).toEqual({ driverId: 'enso', phaseId: 'el_nino', startMonth: 5, startsBefore: true, holdMonths: 12 });
-    expect(y2024.scenario.others!.some((o) => o.driverId === 'nao')).toBe(false);
+    expect(other(y2024, 'nao')).toEqual({ driverId: 'nao', phaseId: 'positive', startMonth: 12 });
+    expect(chosenOnset(y2024.scenario, 'nao')).toBe(11);
+  });
+  it('the seven drivers added to the table: 2012 low ice from October held six months, 2009 the easterly QBO from June outlasting the window, 1991 the Pinatubo haze from July, 1984 its end the engine cannot place, 2025 without the meridional modes', () => {
+    const y2012 = scenarioForYear(graph, row(2012));
+    expect(other(y2012, 'barents_kara_ice')).toEqual({ driverId: 'barents_kara_ice', phaseId: 'low', startMonth: 10 });
+    expect(chosenOnset(y2012.scenario, 'barents_kara_ice')).toBe(9);
+    // held six months from October: the fade falls at month 15, beyond
+    // the months shown, so no hold is written
+    expect(chosenFade(y2012.scenario, 'barents_kara_ice')).toBeNull();
+    const ice = y2012.drivers.find((p) => p.driver.driver === 'barents_kara_ice')!;
+    expect(ice).toMatchObject({ recordOnset: 9, engineOnset: 9, recordFade: 15, engineFade: null });
+    const y2013 = scenarioForYear(graph, row(2013));
+    expect(other(y2013, 'barents_kara_ice')).toEqual({ driverId: 'barents_kara_ice', phaseId: 'low', startMonth: 10, startsBefore: true, holdMonths: 6 });
+    expect(chosenFade(y2013.scenario, 'barents_kara_ice')).toBe(3);
+    const y2009 = scenarioForYear(graph, row(2009));
+    expect(other(y2009, 'qbo')).toEqual({ driverId: 'qbo', phaseId: 'easterly', startMonth: 6 });
+    expect(other(y2009, 'eurasian_october_snow')).toEqual({ driverId: 'eurasian_october_snow', phaseId: 'low', startMonth: 10, startsBefore: true, holdMonths: 6 });
+    const y1991 = scenarioForYear(graph, row(1991));
+    expect(other(y1991, 'tropical_eruption')).toEqual({ driverId: 'tropical_eruption', phaseId: 'eruption', startMonth: 7 });
+    expect(row(1991).drivers.find((d) => d.driver === 'tropical_eruption')!.duration_months).toBe(31);
+    const y1984 = scenarioForYear(graph, row(1984));
+    expect(other(y1984, 'tropical_eruption')).toEqual({ driverId: 'tropical_eruption', phaseId: 'eruption', startMonth: 5, startsBefore: true, holdMonths: 12 });
+    expect(y1984.approximations.map((p) => p.driver.driver)).toEqual(['tropical_eruption']);
+    const tl = propagate(graph, { ...y1984.scenario, maxDepth: 3 });
+    expect(tl.months[3].nodes.tropical_eruption.value).toBe(-1);
+    expect(tl.months[4].nodes.tropical_eruption.value).toBe(0);
+    expect(row(2025).drivers.some((d) => d.driver === 'atlantic_meridional_mode' || d.driver === 'pacific_meridional_mode')).toBe(false);
+    expect(row(2025).note).toContain('not recorded');
   });
 });
 

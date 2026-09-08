@@ -1,8 +1,9 @@
 # Real years: which phase each driver held, read from the index datasets
 # named in `source` with the threshold rule written in that source's citation
 # (data/links.yaml). One row per driver per year; a driver absent from a
-# year is "not recorded". Coverage: ENSO 1950–2025; the Indian Ocean Dipole,
-# the NAO, the SAM, the PDO, the AMO and the Atlantic Niño 1980–2025. The
+# year is "not recorded". Coverage: ENSO 1950–2025; the other thirteen
+# drivers 1980–2025, except the Atlantic and Pacific Meridional Modes, whose
+# index ends in August 2024. The
 # reading is the same for every driver: the entry is the event that began
 # earliest in the year, else the one already under way when the year began
 # (onset_year says when), else neutral. Other events of the year are named
@@ -380,7 +381,7 @@ years:
     note: >
       A quiet Pacific and a busy Indian Ocean: ENSO stayed neutral, a negative
       dipole held from June to December, and the NAO winter was mildly
-      positive. The first year with all seven drivers recorded.
+      positive. The first year with every driver recorded.
     sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index]
     drivers:
       - driver: enso
@@ -419,6 +420,41 @@ years:
         duration_months: 2
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.6 °C in February 1980; beyond ±0.5 for 2 overlapping seasons, February 1980 to March 1980. Also a cool event from November 1980 (6 seasons, peak -0.8): the table takes the first event of the year."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.18 in May."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 2
+        duration_months: 5
+        index_note: "AMM index (three-month mean) peaked at +4.3 in May 1980; beyond ±2.5 for 5 overlapping seasons, February 1980 to June 1980."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 12
+        onset_year: 1979
+        duration_months: 5
+        index_note: "Already under way: PMM index (three-month mean) peaked at +5.8 in February 1980; beyond ±3 for 5 overlapping seasons, December 1979 to April 1980."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in October."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 4
+        duration_months: 14
+        index_note: "The 30 hPa equatorial wind turned westerly in April 1980 and stayed so for 14 months, to May 1981, strongest +13 m/s in October 1980. The easterly phase that began in April 1979 ended in March 1980."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 1.18 million km², -0.00 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 7.2 million km², -1.0 against the 1980–2025 trend line (the threshold is ±1.5; -3.5 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1981
     note: >
       ENSO neutral again, with another negative dipole in the late summer. The
@@ -463,13 +499,47 @@ years:
         duration_months: 6
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at -0.8 °C in January 1981; beyond ±0.5 for 6 overlapping seasons, November 1980 to April 1981."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.11 in September."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 2
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at +4.3 in April 1981; beyond ±2.5 for 4 overlapping seasons, February 1981 to May 1981."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean +2.9 in February."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in July."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned easterly in June 1981 and stayed so for 15 months, to August 1982, strongest -17 m/s in March 1982. The westerly phase that began in April 1980 ended in May 1981."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.98 million km², -0.18 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 8.6 million km², +0.4 against the 1980–2025 trend line (the threshold is ±1.5; -2.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1982
     note: >
       The great El Niño of 1982–83 began in May and had reached +2.2 °C by
       December, then the strongest on record and largely unforeseen; El
       Chichón erupted in Mexico the same spring. A weak positive dipole
-      followed in the autumn and the equatorial Atlantic was cool.
-    sources: [noaa_oni_index, barber_chavez_1983, glynn_1984, robock_2000, psl_dmi_hadisst_index]
+      followed in the autumn and the equatorial Atlantic was cool. The haze
+      from El Chichón shows in the aerosol index from May, and the Indian
+      Ocean basin warmed from October in the El Niño's wake.
+    sources: [noaa_oni_index, barber_chavez_1983, glynn_1984, robock_2000, psl_dmi_hadisst_index, giss_glossac_aod_index, ersst_iobm_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -512,13 +582,55 @@ years:
         duration_months: 7
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.9 °C in July 1982; beyond ±0.5 for 7 overlapping seasons, June 1982 to December 1982."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 10
+        duration_months: 12
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.47 °C in July 1983; beyond ±0.25 for 12 overlapping seasons, October 1982 to September 1983."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 10
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -5.3 in December 1982; beyond ±2.5 for 4 overlapping seasons, October 1982 to January 1983."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 10
+        duration_months: 12
+        index_note: "PMM index (three-month mean) peaked at -7.9 in January 1983; beyond ±3 for 12 overlapping seasons, October 1982 to September 1983."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 5
+        duration_months: 27
+        index_note: "Global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in May 1982 and peaked at 0.05 in January 1983; above 0.02 for 27 months, to July 1984."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 9
+        duration_months: 10
+        index_note: "The 30 hPa equatorial wind turned westerly in September 1982 and stayed so for 10 months, to June 1983, strongest +14 m/s in April 1983. The easterly phase that began in June 1981 ended in August 1982."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 1.31 million km², +0.16 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 10.0 million km², +1.7 against the 1980–2025 trend line (the threshold is ±1.5; -0.7 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 1983
     note: >
       The 1982–83 El Niño held until June, bringing floods to the coast of
       Peru and Ecuador and coral death across the eastern Pacific, with
       drought in Australia and Indonesia. The North Pacific entered a warm
-      year and the Atlantic stayed cool.
-    sources: [noaa_oni_index, glynn_1984, barber_chavez_1983, bom_enso_australia, ncei_pdo_index]
+      year and the Atlantic stayed cool. The basin stayed warm to September,
+      the Pacific Meridional Mode was deeply negative, and the El Chichón haze
+      was at its thickest in January.
+    sources: [noaa_oni_index, glynn_1984, barber_chavez_1983, bom_enso_australia, ncei_pdo_index, ersst_iobm_index, psl_pmm_index, giss_glossac_aod_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -562,13 +674,59 @@ years:
         duration_months: 4
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.8 °C in May 1983; beyond ±0.5 for 4 overlapping seasons, April 1983 to July 1983. Also a cool event from September 1983 (1 season, peak -0.5): the table takes the first event of the year."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 10
+        onset_year: 1982
+        duration_months: 12
+        index_note: "Already under way: Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.47 °C in July 1983; beyond ±0.25 for 12 overlapping seasons, October 1982 to September 1983."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 10
+        onset_year: 1982
+        duration_months: 4
+        index_note: "Already under way: AMM index (three-month mean) peaked at -5.3 in December 1982; beyond ±2.5 for 4 overlapping seasons, October 1982 to January 1983."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 10
+        onset_year: 1982
+        duration_months: 12
+        index_note: "Already under way: PMM index (three-month mean) peaked at -7.9 in January 1983; beyond ±3 for 12 overlapping seasons, October 1982 to September 1983."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 5
+        onset_year: 1982
+        duration_months: 27
+        index_note: "Already under way: global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in May 1982 and peaked at 0.05 in January 1983; above 0.02 for 27 months, to July 1984."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 7
+        duration_months: 19
+        index_note: "The 30 hPa equatorial wind turned easterly in July 1983 and stayed so for 19 months, to January 1985, strongest -28 m/s in August 1984. The westerly phase that began in September 1982 ended in June 1983."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.95 million km², -0.18 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        onset_year: 1982
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 1983. Eurasian snow cover in October 9.1 million km², +0.7 against the 1980–2025 trend line (the threshold is ±1.5; -1.6 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 1984
     note: >
       A weak La Niña from October, a long negative dipole from July, and a
       negative NAO winter. In this dataset the Atlantic's warm event of 1984
       registers only in August, weaker than the older analyses the 1984 story
-      draws on.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, philander_1986, horel_1986, ersst_atl3_index]
+      draws on. The El Chichón haze thinned below the threshold in July; the
+      autumn ice of the Barents and Kara seas was low.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, philander_1986, horel_1986, ersst_atl3_index, giss_glossac_aod_index, nsidc_barents_kara_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -614,12 +772,52 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.5 °C in August 1984; beyond ±0.5 for 1 overlapping season, August 1984 to August 1984."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 6
+        duration_months: 4
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.35 °C in July 1984; beyond ±0.25 for 4 overlapping seasons, June 1984 to September 1984."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at -3.1 in March 1984; beyond ±2.5 for 3 overlapping seasons, February 1984 to April 1984. Also a negative AMM from June 1984 (12 overlapping seasons, peak -4.3): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.3 in May."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 5
+        onset_year: 1982
+        duration_months: 27
+        index_note: "Already under way: global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in May 1982 and peaked at 0.05 in January 1983; above 0.02 for 27 months, to July 1984."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 7
+        onset_year: 1983
+        duration_months: 19
+        index_note: "Already under way: the 30 hPa equatorial wind turned easterly in July 1983 and stayed so for 19 months, to January 1985, strongest -28 m/s in August 1984."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.82 million km², -0.29 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 9.5 million km², +1.0 against the 1980–2025 trend line (the threshold is ±1.5; -1.2 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1985
     note: >
       The La Niña ended in June and the Pacific was neutral by the autumn; a
       negative dipole held through the northern summer. A quiet year in the
-      Atlantic.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index]
+      Atlantic. A second low-ice autumn in the Barents and Kara seas.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, nsidc_barents_kara_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -659,6 +857,45 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.3 in December."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 9
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.26 °C in October 1985; beyond ±0.25 for 2 overlapping seasons, September 1985 to October 1985."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 6
+        onset_year: 1984
+        duration_months: 12
+        index_note: "Already under way: AMM index (three-month mean) peaked at -4.3 in April 1985; beyond ±2.5 for 12 overlapping seasons, June 1984 to May 1985."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 12
+        index_note: "PMM index (three-month mean) peaked at +5.0 in January 1986; beyond ±3 for 12 overlapping seasons, October 1985 to September 1986."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.014 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 2
+        duration_months: 16
+        index_note: "The 30 hPa equatorial wind turned westerly in February 1985 and stayed so for 16 months, to May 1986, strongest +14 m/s in June 1985. The easterly phase that began in July 1983 ended in January 1985."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.77 million km², -0.32 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe. The low reading of the previous October held to March 1985."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 9.5 million km², +0.9 against the 1980–2025 trend line (the threshold is ±1.5; -1.2 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1986
     note: >
       The long El Niño of 1986–88 began in September, a weak-to-moderate event
@@ -707,6 +944,44 @@ years:
         duration_months: 4
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 1986; beyond ±0.5 for 4 overlapping seasons, October 1986 to January 1987."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.29 in February."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 1
+        duration_months: 7
+        index_note: "AMM index (three-month mean) peaked at -4.7 in April 1986; beyond ±2.5 for 7 overlapping seasons, January 1986 to July 1986. Also a negative AMM from November 1986 (3 overlapping seasons, peak -4.3): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 10
+        onset_year: 1985
+        duration_months: 12
+        index_note: "Already under way: PMM index (three-month mean) peaked at +5.0 in January 1986; beyond ±3 for 12 overlapping seasons, October 1985 to September 1986."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.014 in February."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned easterly in June 1986 and stayed so for 15 months, to August 1987, strongest -21 m/s in June 1987. The westerly phase that began in February 1985 ended in May 1986."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        onset_year: 1985
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 1986. October–November extent of the Barents and Kara seas 1.03 million km², -0.05 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 8.7 million km², +0.1 against the 1980–2025 trend line (the threshold is ±1.5; -2.0 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1987
     note: >
       El Niño all year, peaking in August, with a positive NAO winter to
@@ -752,12 +1027,52 @@ years:
         duration_months: 2
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.7 °C in August 1987; beyond ±0.5 for 2 overlapping seasons, July 1987 to August 1987. The cool event that began in October 1986 ended in January 1987."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 4
+        duration_months: 13
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.54 °C in February 1988; beyond ±0.25 for 13 overlapping seasons, April 1987 to April 1988."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 11
+        onset_year: 1986
+        duration_months: 3
+        index_note: "Already under way: AMM index (three-month mean) peaked at -4.3 in December 1986; beyond ±2.5 for 3 overlapping seasons, November 1986 to January 1987."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.6 in August."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.010 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 9
+        duration_months: 10
+        index_note: "The 30 hPa equatorial wind turned westerly in September 1987 and stayed so for 10 months, to June 1988, strongest +9 m/s in October 1987. The easterly phase that began in June 1986 ended in August 1987."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 1.10 million km², +0.04 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 7.0 million km², -1.8 against the 1980–2025 trend line (the threshold is ±1.5; -3.7 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 1988
     note: >
       A strong La Niña from May, reaching −1.9 °C in December, the year of the
       North American drought; a positive NAO winter, the record negative SAM
-      of September–October, and a warm Atlantic Niño from April.
-    sources: [noaa_oni_index, trenberth_1988, marshall_sam_index, ersst_atl3_index]
+      of September–October, and a warm Atlantic Niño from April. The Indian
+      Ocean basin, warm since April 1987, held to April; the autumn brought
+      high ice in the Barents and Kara seas and the lowest Eurasian October
+      snow in this record.
+    sources: [noaa_oni_index, trenberth_1988, marshall_sam_index, ersst_atl3_index, ersst_iobm_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -797,6 +1112,44 @@ years:
         duration_months: 5
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.9 °C in July 1988; beyond ±0.5 for 5 overlapping seasons, April 1988 to August 1988."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 8
+        duration_months: 3
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.36 °C in September 1988; beyond ±0.25 for 3 overlapping seasons, August 1988 to October 1988. The warm basin that began in April 1987 ended in April 1988."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean -1.5 in February."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 6
+        duration_months: 2
+        index_note: "PMM index (three-month mean) peaked at +3.7 in June 1988; beyond ±3 for 2 overlapping seasons, June 1988 to July 1988."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 7
+        duration_months: 20
+        index_note: "The 30 hPa equatorial wind turned easterly in July 1988 and stayed so for 20 months, to February 1990, strongest -21 m/s in October 1989. The westerly phase that began in September 1987 ended in June 1988."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.30 million km², +0.25 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 5.6 million km², -3.3 against the 1980–2025 trend line (the threshold is ±1.5; -5.1 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe. The low reading of the previous October held to March 1988."
+        source: rutgers_eurasia_snow_index
   - year: 1989
     note: >
       The La Niña ended in May and the year finished neutral. The NAO turned
@@ -844,6 +1197,47 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in December."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 5
+        duration_months: 3
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.32 °C in May 1989; beyond ±0.25 for 3 overlapping seasons, May 1989 to July 1989."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -5.0 in April 1989; beyond ±2.5 for 4 overlapping seasons, February 1989 to May 1989."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.6 in February."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 7
+        onset_year: 1988
+        duration_months: 20
+        index_note: "Already under way: the 30 hPa equatorial wind turned easterly in July 1988 and stayed so for 20 months, to February 1990, strongest -21 m/s in October 1989."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        onset_year: 1988
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 1989. October–November extent of the Barents and Kara seas 1.02 million km², -0.00 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        onset_year: 1988
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 1989. Eurasian snow cover in October 9.1 million km², +0.1 against the 1980–2025 trend line (the threshold is ±1.5; -1.6 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 1990
     note: >
       Neutral in the Pacific, with the index warming slowly through the year,
@@ -889,12 +1283,46 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.6 °C in January 1990; beyond ±0.5 for 1 overlapping season, January 1990 to January 1990."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.17 in March."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean +1.8 in September."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 8
+        duration_months: 7
+        index_note: "PMM index (three-month mean) peaked at +3.7 in January 1991; beyond ±3 for 7 overlapping seasons, August 1990 to February 1991."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in March."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 3
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned westerly in March 1990 and stayed so for 15 months, to May 1991, strongest +13 m/s in September 1990. The easterly phase that began in July 1988 ended in February 1990."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 1.04 million km², +0.03 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 7.6 million km², -1.4 against the 1980–2025 trend line (the threshold is ±1.5; -3.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1991
     note: >
       An El Niño from June 1991 that peaked in January 1992; Pinatubo erupted
       in the same month it began, and its haze would cool the world for two
-      years. The Atlantic returned to a cool phase.
-    sources: [noaa_oni_index, self_1996, mccormick_1995, psl_amo_kaplan_index]
+      years. The Atlantic returned to a cool phase. The aerosol index crosses
+      its threshold in July and peaks in November; the QBO turned easterly in
+      June.
+    sources: [noaa_oni_index, self_1996, mccormick_1995, psl_amo_kaplan_index, giss_glossac_aod_index, psl_qbo30_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -933,12 +1361,52 @@ years:
         duration_months: 4
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 1991; beyond ±0.5 for 4 overlapping seasons, October 1991 to January 1992."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.23 in April."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 4
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -4.5 in June 1991; beyond ±2.5 for 4 overlapping seasons, April 1991 to July 1991."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 8
+        onset_year: 1990
+        duration_months: 7
+        index_note: "Already under way: PMM index (three-month mean) peaked at +3.7 in January 1991; beyond ±3 for 7 overlapping seasons, August 1990 to February 1991."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 7
+        duration_months: 31
+        index_note: "Global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in July 1991 and peaked at 0.11 in November 1991; above 0.02 for 31 months, to January 1994."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned easterly in June 1991 and stayed so for 15 months, to August 1992, strongest -18 m/s in April 1992. The westerly phase that began in March 1990 ended in May 1991."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 1.03 million km², +0.04 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 7.2 million km², -1.9 against the 1980–2025 trend line (the threshold is ±1.5; -3.5 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 1992
     note: >
       The El Niño held until June, and the world was at its coolest after
       Pinatubo. A long negative dipole ran from February to November and the
-      equatorial Atlantic stayed cool for a year.
-    sources: [noaa_oni_index, robock_2000, psl_dmi_hadisst_index, ersst_atl3_index]
+      equatorial Atlantic stayed cool for a year. The Pinatubo haze held above
+      the threshold all year.
+    sources: [noaa_oni_index, robock_2000, psl_dmi_hadisst_index, ersst_atl3_index, giss_glossac_aod_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -984,12 +1452,55 @@ years:
         duration_months: 12
         index_note: "ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 1992; beyond ±0.5 for 12 overlapping seasons, April 1992 to March 1993. The cool event that began in October 1991 ended in January 1992."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 11
+        duration_months: 3
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.27 °C in January 1993; beyond ±0.25 for 3 overlapping seasons, November 1992 to January 1993."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean -1.6 in January."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 6
+        duration_months: 9
+        index_note: "PMM index (three-month mean) peaked at +5.2 in October 1992; beyond ±3 for 9 overlapping seasons, June 1992 to February 1993."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 7
+        onset_year: 1991
+        duration_months: 31
+        index_note: "Already under way: global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in July 1991 and peaked at 0.11 in November 1991; above 0.02 for 31 months, to January 1994."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 9
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned westerly in September 1992 and stayed so for 11 months, to July 1993, strongest +14 m/s in May 1993. The easterly phase that began in June 1991 ended in August 1992."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.20 million km², +0.23 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        onset_year: 1991
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 1992. Eurasian snow cover in October 8.4 million km², -0.8 against the 1980–2025 trend line (the threshold is ±1.5; -2.3 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 1993
     note: >
       A warm spell in the spring that did not last the five seasons needed for
       an El Niño; a positive NAO winter and a positive SAM through the
-      southern winter.
-    sources: [noaa_oni_index, cpc_nao_index, marshall_sam_index]
+      southern winter. The Pinatubo haze stayed above the threshold until
+      January 1994.
+    sources: [noaa_oni_index, cpc_nao_index, marshall_sam_index, giss_glossac_aod_index]
     drivers:
       - driver: enso
         phase: neutral
@@ -1032,12 +1543,56 @@ years:
         duration_months: 12
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 1992; beyond ±0.5 for 12 overlapping seasons, April 1992 to March 1993."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 11
+        onset_year: 1992
+        duration_months: 3
+        index_note: "Already under way: Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.27 °C in January 1993; beyond ±0.25 for 3 overlapping seasons, November 1992 to January 1993."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at -3.0 in March 1993; beyond ±2.5 for 3 overlapping seasons, February 1993 to April 1993. Also a negative AMM from August 1993 (12 overlapping seasons, peak -5.9): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 11
+        duration_months: 6
+        index_note: "PMM index (three-month mean) peaked at +3.8 in March 1994; beyond ±3 for 6 overlapping seasons, November 1993 to April 1994. The positive PMM that began in June 1992 ended in February 1993."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 7
+        onset_year: 1991
+        duration_months: 31
+        index_note: "Already under way: global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in July 1991 and peaked at 0.11 in November 1991; above 0.02 for 31 months, to January 1994."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 8
+        duration_months: 16
+        index_note: "The 30 hPa equatorial wind turned easterly in August 1993 and stayed so for 16 months, to November 1994, strongest -29 m/s in July 1994. The westerly phase that began in September 1992 ended in July 1993."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        onset_year: 1992
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 1993. October–November extent of the Barents and Kara seas 1.14 million km², +0.19 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.4 million km², +1.1 against the 1980–2025 trend line (the threshold is ±1.5; -0.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1994
     note: >
       A strong positive dipole from April to November, the case that first
       drew attention to the Indian Ocean's own see-saw, with a moderate El
-      Niño from September and a strongly positive NAO winter.
-    sources: [psl_dmi_hadisst_index, saji_1999, noaa_oni_index, cpc_nao_index]
+      Niño from September and a strongly positive NAO winter. The Pinatubo
+      haze finally thinned below the threshold in January.
+    sources: [psl_dmi_hadisst_index, saji_1999, noaa_oni_index, cpc_nao_index, giss_glossac_aod_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -1080,6 +1635,48 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.5 °C in August 1994; beyond ±0.5 for 1 overlapping season, August 1994 to August 1994."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 7
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.30 °C in August 1994; beyond ±0.25 for 2 overlapping seasons, July 1994 to August 1994."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 8
+        onset_year: 1993
+        duration_months: 12
+        index_note: "Already under way: AMM index (three-month mean) peaked at -5.9 in January 1994; beyond ±2.5 for 12 overlapping seasons, August 1993 to July 1994."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 6
+        duration_months: 4
+        index_note: "PMM index (three-month mean) peaked at +4.9 in August 1994; beyond ±3 for 4 overlapping seasons, June 1994 to September 1994. The positive PMM that began in November 1993 ended in April 1994."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: eruption
+        onset_month: 7
+        onset_year: 1991
+        duration_months: 31
+        index_note: "Already under way: global stratospheric aerosol optical depth (GloSSAC, 550 nm) rose above 0.02 in July 1991 and peaked at 0.11 in November 1991; above 0.02 for 31 months, to January 1994."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 12
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned westerly in December 1994 and stayed so for 11 months, to October 1995, strongest +16 m/s in June 1995. The easterly phase that began in August 1993 ended in November 1994."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.99 million km², +0.06 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 7.3 million km², -2.1 against the 1980–2025 trend line (the threshold is ±1.5; -3.4 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 1995
     note: >
       A weak La Niña from August, a negative NAO winter, and the year the
@@ -1123,6 +1720,43 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.5 °C in June 1995; beyond ±0.5 for 1 overlapping season, June 1995 to June 1995."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.17 in December."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 8
+        duration_months: 7
+        index_note: "AMM index (three-month mean) peaked at +4.9 in December 1995; beyond ±2.5 for 7 overlapping seasons, August 1995 to February 1996."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 4
+        duration_months: 3
+        index_note: "PMM index (three-month mean) peaked at +4.4 in April 1995; beyond ±3 for 3 overlapping seasons, April 1995 to June 1995. Also a positive PMM from November 1995 (3 overlapping seasons, peak +3.4): the table takes the first event of the year."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.009 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 11
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned easterly in November 1995 and stayed so for 15 months, to January 1997, strongest -26 m/s in September 1996. The westerly phase that began in December 1994 ended in October 1995."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.86 million km², -0.06 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        onset_year: 1994
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 1995. Eurasian snow cover in October 9.7 million km², +0.2 against the 1980–2025 trend line (the threshold is ±1.5; -1.0 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 1996
     note: >
       The La Niña ended in March. A strong negative dipole ran from June to
@@ -1167,6 +1801,43 @@ years:
         duration_months: 2
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.7 °C in June 1996; beyond ±0.5 for 2 overlapping seasons, May 1996 to June 1996. Also a cool event from October 1996 (10 seasons, peak -0.9): the table takes the first event of the year."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 9
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.30 °C in September 1996; beyond ±0.25 for 2 overlapping seasons, September 1996 to October 1996."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 12
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at +3.4 in February 1997; beyond ±2.5 for 4 overlapping seasons, December 1996 to March 1997. The positive AMM that began in August 1995 ended in February 1996."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 11
+        duration_months: 4
+        index_note: "PMM index (three-month mean) peaked at +4.2 in January 1997; beyond ±3 for 4 overlapping seasons, November 1996 to February 1997. The positive PMM that began in November 1995 ended in January 1996."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 11
+        onset_year: 1995
+        duration_months: 15
+        index_note: "Already under way: the 30 hPa equatorial wind turned easterly in November 1995 and stayed so for 15 months, to January 1997, strongest -26 m/s in September 1996."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.92 million km², +0.02 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.0 million km², +0.5 against the 1980–2025 trend line (the threshold is ±1.5; -0.7 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1997
     note: >
       The El Niño of the century began in May and had reached +2.4 °C by
@@ -1213,12 +1884,51 @@ years:
         duration_months: 10
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at -0.9 °C in May 1997; beyond ±0.5 for 10 overlapping seasons, October 1996 to July 1997."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 12
+        duration_months: 7
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.67 °C in March 1998; beyond ±0.25 for 7 overlapping seasons, December 1997 to June 1998."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 12
+        onset_year: 1996
+        duration_months: 4
+        index_note: "Already under way: AMM index (three-month mean) peaked at +3.4 in February 1997; beyond ±2.5 for 4 overlapping seasons, December 1996 to March 1997."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 7
+        duration_months: 12
+        index_note: "PMM index (three-month mean) peaked at -7.9 in January 1998; beyond ±3 for 12 overlapping seasons, July 1997 to June 1998. The positive PMM that began in November 1996 ended in February 1997."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 2
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned westerly in February 1997 and stayed so for 11 months, to December 1997, strongest +15 m/s in July 1997. The easterly phase that began in November 1995 ended in January 1997."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.89 million km², +0.01 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 9.1 million km², -0.6 against the 1980–2025 trend line (the threshold is ±1.5; -1.6 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 1998
     note: >
       The El Niño ended in April and the long La Niña of 1998–2001 began in
       July; a negative dipole followed in the autumn, and the Yangtze flooded
-      in the summer.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, zong_chen_2000, psl_amo_kaplan_index]
+      in the summer. The Indian Ocean basin was at its warmest in this record
+      in March, and the autumn brought high ice in the Barents and Kara seas
+      and a high Eurasian October snow.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, zong_chen_2000, psl_amo_kaplan_index, ersst_iobm_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -1260,6 +1970,47 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.5 °C in January 1998; beyond ±0.5 for 1 overlapping season, January 1998 to January 1998. Also a warm event from July 1998 (1 season, peak +0.5): the table takes the first event of the year."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 12
+        onset_year: 1997
+        duration_months: 7
+        index_note: "Already under way: Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.67 °C in March 1998; beyond ±0.25 for 7 overlapping seasons, December 1997 to June 1998."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at +4.2 in November 1998; beyond ±2.5 for 3 overlapping seasons, October 1998 to December 1998."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 11
+        duration_months: 10
+        index_note: "PMM index (three-month mean) peaked at -6.8 in April 1999; beyond ±3 for 10 overlapping seasons, November 1998 to August 1999. The negative PMM that began in July 1997 ended in June 1998."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.003 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 1
+        duration_months: 12
+        index_note: "The 30 hPa equatorial wind turned easterly in January 1998 and stayed so for 12 months, to December 1998, strongest -25 m/s in August 1998."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.31 million km², +0.44 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 11.7 million km², +2.0 against the 1980–2025 trend line (the threshold is ±1.5; +1.0 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 1999
     note: >
       La Niña all year, a strongly positive SAM from September, and the North
@@ -1306,6 +2057,46 @@ years:
         duration_months: 2
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.6 °C in June 1999; beyond ±0.5 for 2 overlapping seasons, June 1999 to July 1999."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 5
+        duration_months: 3
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.32 °C in May 1999; beyond ±0.25 for 3 overlapping seasons, May 1999 to July 1999."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean +2.7 in November."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 11
+        onset_year: 1998
+        duration_months: 10
+        index_note: "Already under way: PMM index (three-month mean) peaked at -6.8 in April 1999; beyond ±3 for 10 overlapping seasons, November 1998 to August 1999."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.003 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 1
+        duration_months: 16
+        index_note: "The 30 hPa equatorial wind turned westerly in January 1999 and stayed so for 16 months, to April 2000, strongest +16 m/s in May 1999."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.06 million km², +0.21 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe. The high reading of the previous October held to March 1999."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        onset_year: 1998
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 1999. Eurasian snow cover in October 9.8 million km², -0.1 against the 1980–2025 trend line (the threshold is ±1.5; -0.9 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 2000
     note: >
       La Niña still, peaking near −1.7 °C in January, with a neutral NAO
@@ -1351,6 +2142,43 @@ years:
         duration_months: 4
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.5 °C in October 2000; beyond ±0.5 for 4 overlapping seasons, July 2000 to October 2000."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 3
+        duration_months: 4
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.36 °C in May 2000; beyond ±0.25 for 4 overlapping seasons, March 2000 to June 2000."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean -1.9 in May."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 4
+        index_note: "PMM index (three-month mean) peaked at -5.8 in April 2000; beyond ±3 for 4 overlapping seasons, February 2000 to May 2000."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.003 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 5
+        duration_months: 19
+        index_note: "The 30 hPa equatorial wind turned easterly in May 2000 and stayed so for 19 months, to November 2001, strongest -24 m/s in July 2001. The westerly phase that began in January 1999 ended in April 2000."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        onset_year: 1999
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2000. October–November extent of the Barents and Kara seas 0.73 million km², -0.10 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.2 million km², +0.3 against the 1980–2025 trend line (the threshold is ±1.5; -0.4 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2001
     note: >
       The 1998–2001 La Niña finally ended in February, and the year was
@@ -1396,12 +2224,47 @@ years:
         duration_months: 3
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 2001; beyond ±0.5 for 3 overlapping seasons, November 2001 to January 2002."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.25 in January."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 5
+        index_note: "AMM index (three-month mean) peaked at +5.5 in December 2001; beyond ±2.5 for 5 overlapping seasons, October 2001 to February 2002."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 5
+        index_note: "PMM index (three-month mean) peaked at -5.7 in April 2001; beyond ±3 for 5 overlapping seasons, February 2001 to June 2001."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in August."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 12
+        duration_months: 12
+        index_note: "The 30 hPa equatorial wind turned westerly in December 2001 and stayed so for 12 months, to November 2002, strongest +14 m/s in May 2002. The easterly phase that began in May 2000 ended in November 2001."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.78 million km², -0.03 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 11.0 million km², +1.0 against the 1980–2025 trend line (the threshold is ±1.5; +0.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2002
     note: >
       A moderate El Niño from June, peaking at +1.3 °C in November, with
       drought across eastern Australia and a sharply negative SAM in
-      September–October.
-    sources: [noaa_oni_index, bom_enso_australia, marshall_sam_index]
+      September–October. The Eurasian October snow was the highest in this
+      record and the Barents–Kara ice was high.
+    sources: [noaa_oni_index, bom_enso_australia, marshall_sam_index, rutgers_eurasia_snow_index, nsidc_barents_kara_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -1438,6 +2301,42 @@ years:
         duration_months: 3
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 2001; beyond ±0.5 for 3 overlapping seasons, November 2001 to January 2002."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.24 in December."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 5
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at -4.1 in June 2002; beyond ±2.5 for 3 overlapping seasons, May 2002 to July 2002. The positive AMM that began in October 2001 ended in February 2002."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.1 in July."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in December."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 12
+        duration_months: 14
+        index_note: "The 30 hPa equatorial wind turned easterly in December 2002 and stayed so for 14 months, to January 2004, strongest -25 m/s in August 2003. The westerly phase that began in December 2001 ended in November 2002."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.09 million km², +0.30 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 13.5 million km², +3.4 against the 1980–2025 trend line (the threshold is ±1.5; +2.8 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 2003
     note: >
       The El Niño ended in February and the year was neutral in both oceans.
@@ -1479,6 +2378,46 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.4 in August."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 1
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.32 °C in January 2003; beyond ±0.25 for 2 overlapping seasons, January 2003 to February 2003."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at +2.9 in October 2003; beyond ±2.5 for 3 overlapping seasons, September 2003 to November 2003."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean +2.1 in May."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 12
+        onset_year: 2002
+        duration_months: 14
+        index_note: "Already under way: the 30 hPa equatorial wind turned easterly in December 2002 and stayed so for 14 months, to January 2004, strongest -25 m/s in August 2003."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 1.01 million km², +0.24 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe. The high reading of the previous October held to March 2003."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        onset_year: 2002
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2003. Eurasian snow cover in October 10.4 million km², +0.2 against the 1980–2025 trend line (the threshold is ±1.5; -0.2 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 2004
     note: >
       A weak, central-Pacific El Niño from August to February, a positive NAO
@@ -1522,12 +2461,50 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.5 °C in May 2004; beyond ±0.5 for 1 overlapping season, May 2004 to May 2004."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 6
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.32 °C in June 2004; beyond ±0.25 for 2 overlapping seasons, June 2004 to July 2004."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 1
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at +2.7 in February 2004; beyond ±2.5 for 3 overlapping seasons, January 2004 to March 2004. Also a positive AMM from August 2004 (6 overlapping seasons, peak +4.3): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean +2.7 in June."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in December."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 2
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned westerly in February 2004 and stayed so for 11 months, to December 2004, strongest +13 m/s in May 2004. The easterly phase that began in December 2002 ended in January 2004."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        onset_year: 2003
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2004. October–November extent of the Barents and Kara seas 0.88 million km², +0.12 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.9 million km², +0.7 against the 1980–2025 trend line (the threshold is ±1.5; +0.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2005
     note: >
       A weak La Niña from November, but the year belongs to the Atlantic: its
       warmest year of the run on the index, a strong Atlantic Niña in the
-      summer, and the drought in the Amazon.
-    sources: [noaa_oni_index, psl_amo_kaplan_index, ersst_atl3_index, marengo_2008]
+      summer, and the drought in the Amazon. The Atlantic Meridional Mode was
+      positive from March to January, the phase of the 2005 story.
+    sources: [noaa_oni_index, psl_amo_kaplan_index, ersst_atl3_index, marengo_2008, psl_amm_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -1566,6 +2543,38 @@ years:
         duration_months: 3
         index_note: "ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 2005; beyond ±0.5 for 3 overlapping seasons, May 2005 to July 2005."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.28 in December."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 3
+        duration_months: 11
+        index_note: "AMM index (three-month mean) peaked at +4.7 in June 2005; beyond ±2.5 for 11 overlapping seasons, March 2005 to January 2006. The positive AMM that began in August 2004 ended in January 2005."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean +3.3 in February."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in July."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 1
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned easterly in January 2005 and stayed so for 15 months, to March 2006, strongest -30 m/s in November 2005."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.73 million km², -0.02 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 9.4 million km², -0.9 against the 1980–2025 trend line (the threshold is ±1.5; -1.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2006
     note: >
       A weak El Niño from September and a positive dipole in the autumn, the
@@ -1607,6 +2616,38 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.1 in June."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.24 in January."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at +3.6 in November 2006; beyond ±2.5 for 4 overlapping seasons, October 2006 to January 2007. The positive AMM that began in March 2005 ended in January 2006."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -1.9 in December."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in November."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 4
+        duration_months: 12
+        index_note: "The 30 hPa equatorial wind turned westerly in April 2006 and stayed so for 12 months, to March 2007, strongest +11 m/s in June 2006. The easterly phase that began in January 2005 ended in March 2006."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.83 million km², +0.11 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 11.8 million km², +1.3 against the 1980–2025 trend line (the threshold is ±1.5; +1.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2007
     note: >
       A La Niña from July that peaked near −1.6 °C in January 2008, the start
@@ -1653,12 +2694,47 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in August."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.19 in November."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 11
+        duration_months: 2
+        index_note: "AMM index (three-month mean) peaked at +2.8 in November 2007; beyond ±2.5 for 2 overlapping seasons, November 2007 to December 2007. The positive AMM that began in October 2006 ended in January 2007."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.6 in January."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 4
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned easterly in April 2007 and stayed so for 11 months, to February 2008, strongest -29 m/s in October 2007. The westerly phase that began in April 2006 ended in March 2007."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.54 million km², -0.17 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 8.3 million km², -2.2 against the 1980–2025 trend line (the threshold is ±1.5; -2.4 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 2008
     note: >
       The La Niña broke in June and a second, weak one began in November. A
       warm Atlantic Niño registered in July, and the Atlantic's warm phase
-      continued.
-    sources: [noaa_oni_index, ersst_atl3_index, psl_amo_kaplan_index]
+      continued. The Indian Ocean basin was at its coolest in this record in
+      March, after the 2007–08 La Niña.
+    sources: [noaa_oni_index, ersst_atl3_index, psl_amo_kaplan_index, ersst_iobm_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -1701,12 +2777,52 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.5 °C in July 2008; beyond ±0.5 for 1 overlapping season, July 2008 to July 2008."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 1
+        duration_months: 6
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.55 °C in March 2008; beyond ±0.25 for 6 overlapping seasons, January 2008 to June 2008."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean +2.2 in October."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 2
+        duration_months: 9
+        index_note: "PMM index (three-month mean) peaked at -7.2 in May 2008; beyond ±3 for 9 overlapping seasons, February 2008 to October 2008."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.006 in October."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 3
+        duration_months: 15
+        index_note: "The 30 hPa equatorial wind turned westerly in March 2008 and stayed so for 15 months, to May 2009, strongest +13 m/s in June 2008. The easterly phase that began in April 2007 ended in February 2008."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.71 million km², +0.02 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 8.7 million km², -1.9 against the 1980–2025 trend line (the threshold is ±1.5; -2.0 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe. The low reading of the previous October held to March 2008."
+        source: rutgers_eurasia_snow_index
   - year: 2009
     note: >
       An El Niño from August, peaking at +1.6 °C in December, and the record
       negative NAO winter of 2009–10: the coldest December in decades across
-      northern Europe and the eastern United States.
-    sources: [noaa_oni_index, cpc_nao_index, osborn_2011, cohen_2010, cattiaux_2010]
+      northern Europe and the eastern United States. The QBO turned easterly
+      in June, the phase of the 2009–10 story, and the Barents–Kara ice was
+      low that autumn; the October snow extent was only a little above normal,
+      because the story reads the speed of the snow's advance, which this
+      table does not.
+    sources: [noaa_oni_index, cpc_nao_index, osborn_2011, cohen_2010, cattiaux_2010, psl_qbo30_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -1743,13 +2859,52 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in August."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.16 in December."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 3
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -4.3 in April 2009; beyond ±2.5 for 4 overlapping seasons, March 2009 to June 2009."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.4 in April."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in August."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 14
+        index_note: "The 30 hPa equatorial wind turned easterly in June 2009 and stayed so for 14 months, to July 2010, strongest -26 m/s in May 2010. The westerly phase that began in March 2008 ended in May 2009."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.41 million km², -0.26 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: low
+        onset_month: 10
+        onset_year: 2008
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 2009. Eurasian snow cover in October 11.6 million km², +0.8 against the 1980–2025 trend line (the threshold is ±1.5; +0.9 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 2010
     note: >
       The El Niño ended in March and a strong La Niña set in from June, with a
       negative dipole in the autumn and a second negative NAO winter: floods
       in Queensland, the Russian heat wave and the Pakistan floods, drought in
-      the Amazon.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, bom_scs24, blunden_2011, marengo_2011]
+      the Amazon. The Indian Ocean basin was warm from January, and the
+      Atlantic Meridional Mode reached +7.0 in December, its highest in this
+      record.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, bom_scs24, blunden_2011, marengo_2011, ersst_iobm_index, psl_amm_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -1794,6 +2949,43 @@ years:
         duration_months: 1
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.5 °C in October 2010; beyond ±0.5 for 1 overlapping season, October 2010 to October 2010."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 1
+        duration_months: 5
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.45 °C in March 2010; beyond ±0.25 for 5 overlapping seasons, January 2010 to May 2010."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 2
+        duration_months: 13
+        index_note: "AMM index (three-month mean) peaked at +7.0 in December 2010; beyond ±2.5 for 13 overlapping seasons, February 2010 to February 2011."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -1.9 in May."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 8
+        duration_months: 12
+        index_note: "The 30 hPa equatorial wind turned westerly in August 2010 and stayed so for 12 months, to July 2011, strongest +12 m/s in November 2010. The easterly phase that began in June 2009 ended in July 2010."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        onset_year: 2009
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 2010. October–November extent of the Barents and Kara seas 0.63 million km², -0.02 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.8 million km², +0.0 against the 1980–2025 trend line (the threshold is ±1.5; +0.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2011
     note: >
       The La Niña broke in April and returned in August for a second winter;
@@ -1838,12 +3030,51 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in December."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 1
+        duration_months: 5
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.35 °C in March 2011; beyond ±0.25 for 5 overlapping seasons, January 2011 to May 2011."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at +3.7 in November 2011; beyond ±2.5 for 4 overlapping seasons, October 2011 to January 2012. The positive AMM that began in February 2010 ended in February 2011."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 4
+        duration_months: 6
+        index_note: "PMM index (three-month mean) peaked at -6.5 in July 2011; beyond ±3 for 6 overlapping seasons, April 2011 to September 2011."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.008 in August."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 8
+        duration_months: 19
+        index_note: "The 30 hPa equatorial wind turned easterly in August 2011 and stayed so for 19 months, to February 2013, strongest -28 m/s in August 2012. The westerly phase that began in August 2010 ended in July 2011."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.48 million km², -0.16 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 9.5 million km², -1.4 against the 1980–2025 trend line (the threshold is ±1.5; -1.2 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2012
     note: >
       The La Niña ended in February; a positive dipole in late summer, the
       record-low Arctic sea ice of September, drought across the United
-      States, and a cold wave over Eurasia in December.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, nsidc_2012_minimum, blunden_2013, jma_2012_cold_wave]
+      States, and a cold wave over Eurasia in December. The Barents–Kara
+      autumn ice was the lowest in this record, the phase of the 2012–13
+      story, and the Pacific Meridional Mode was strongly negative through the
+      summer.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, nsidc_2012_minimum, blunden_2013, jma_2012_cold_wave, nsidc_barents_kara_index, psl_pmm_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -1887,6 +3118,43 @@ years:
         duration_months: 5
         index_note: "ATL3 anomaly (three-month mean) peaked at -0.7 °C in January 2012; beyond ±0.5 for 5 overlapping seasons, January 2012 to May 2012."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.19 in March."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 8
+        index_note: "AMM index (three-month mean) peaked at +4.7 in November 2012; beyond ±2.5 for 8 overlapping seasons, September 2012 to April 2013. The positive AMM that began in October 2011 ended in January 2012."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 1
+        duration_months: 9
+        index_note: "PMM index (three-month mean) peaked at -7.7 in July 2012; beyond ±3 for 9 overlapping seasons, January 2012 to September 2012."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 8
+        onset_year: 2011
+        duration_months: 19
+        index_note: "Already under way: the 30 hPa equatorial wind turned easterly in August 2011 and stayed so for 19 months, to February 2013, strongest -28 m/s in August 2012."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.27 million km², -0.35 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 11.4 million km², +0.4 against the 1980–2025 trend line (the threshold is ±1.5; +0.7 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2013
     note: >
       Neutral in the Pacific all year, a weak negative dipole in late spring,
@@ -1933,13 +3201,54 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.4 in October."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 6
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.32 °C in July 2013; beyond ±0.25 for 2 overlapping seasons, June 2013 to July 2013."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at +3.5 in October 2013; beyond ±2.5 for 3 overlapping seasons, September 2013 to November 2013. The positive AMM that began in September 2012 ended in April 2013."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.6 in March."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.004 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 3
+        duration_months: 14
+        index_note: "The 30 hPa equatorial wind turned westerly in March 2013 and stayed so for 14 months, to April 2014, strongest +15 m/s in August 2013. The easterly phase that began in August 2011 ended in February 2013."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        onset_year: 2012
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 2013. October–November extent of the Barents and Kara seas 0.59 million km², -0.01 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 12.8 million km², +1.8 against the 1980–2025 trend line (the threshold is ±1.5; +2.2 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 2014
     note: >
       The El Niño that stalled in the spring finally qualified from October
       and grew into the 2015–16 event; the North Pacific flipped warm, with
       the Blob off the American coast, and the NAO winter was the most
-      positive in this record.
-    sources: [noaa_oni_index, mcphaden_2015, hu_fedorov_2016, ncei_pdo_index, bond_2015, cpc_nao_index]
+      positive in this record. The Pacific Meridional Mode turned positive in
+      December; the ice of the Barents and Kara seas and the October snow were
+      both high.
+    sources: [noaa_oni_index, mcphaden_2015, hu_fedorov_2016, ncei_pdo_index, bond_2015, cpc_nao_index, psl_pmm_index, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -1975,12 +3284,52 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.4 in November."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.16 in February."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 3
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -4.0 in April 2014; beyond ±2.5 for 4 overlapping seasons, March 2014 to June 2014. Also a positive AMM from October 2014 (2 overlapping seasons, peak +2.7): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 2
+        duration_months: 2
+        index_note: "PMM index (three-month mean) peaked at +3.6 in March 2014; beyond ±3 for 2 overlapping seasons, February 2014 to March 2014. Also a positive PMM from December 2014 (6 overlapping seasons, peak +7.5): the table takes the first event of the year."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in April."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 5
+        duration_months: 13
+        index_note: "The 30 hPa equatorial wind turned easterly in May 2014 and stayed so for 13 months, to May 2015, strongest -29 m/s in February 2015. The westerly phase that began in March 2013 ended in April 2014."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.93 million km², +0.34 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 14.1 million km², +3.0 against the 1980–2025 trend line (the threshold is ±1.5; +3.5 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe. The high reading of the previous October held to March 2014."
+        source: rutgers_eurasia_snow_index
   - year: 2015
     note: >
       El Niño all year, peaking at +2.75 °C in December, among the three
       strongest on record, with a modest positive dipole, record heat and
-      drought in the Amazon and coral bleaching worldwide.
-    sources: [noaa_oni_index, levine_mcphaden_2016, psl_dmi_hadisst_index, jimenez_munoz_2016, eakin_2019]
+      drought in the Amazon and coral bleaching worldwide. The Pacific
+      Meridional Mode peaked at +7.5 in March, the phase of the 2014–15 story,
+      and the Indian Ocean basin warmed from July.
+    sources: [noaa_oni_index, levine_mcphaden_2016, psl_dmi_hadisst_index, jimenez_munoz_2016, eakin_2019, psl_pmm_index, ersst_iobm_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -2022,14 +3371,60 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in December."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 7
+        duration_months: 11
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.62 °C in February 2016; beyond ±0.25 for 11 overlapping seasons, July 2015 to May 2016."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 3
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at -4.7 in April 2015; beyond ±2.5 for 4 overlapping seasons, March 2015 to June 2015."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 12
+        onset_year: 2014
+        duration_months: 6
+        index_note: "Already under way: PMM index (three-month mean) peaked at +7.5 in March 2015; beyond ±3 for 6 overlapping seasons, December 2014 to May 2015."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in July."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 6
+        duration_months: 24
+        index_note: "The 30 hPa equatorial wind turned westerly in June 2015 and stayed so for 24 months, to May 2017, strongest +15 m/s in December 2016. The easterly phase that began in May 2014 ended in May 2015."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: high
+        onset_month: 10
+        onset_year: 2014
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2015. October–November extent of the Barents and Kara seas 0.48 million km², -0.09 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        onset_year: 2014
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2015. Eurasian snow cover in October 12.7 million km², +1.4 against the 1980–2025 trend line (the threshold is ±1.5; +2.0 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 2016
     note: >
       The El Niño ended in April; the index then dipped to −0.6 °C for four
       seasons, one short of a La Niña by the five-season rule (the 2016 story
       calls it a weak La Niña, as the earlier version of the index did). A
       negative dipole held from June to November and the equatorial Atlantic
-      was warm.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, lim_hendon_2017, ersst_atl3_index]
+      was warm. The QBO's westerly phase ran two years at 30 hPa, the
+      disruption of February 2016 having cut through it one level lower; the
+      autumn's ice was low and the October snow high, the pairing behind the
+      snow story's missed forecast for 2016–17.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, lim_hendon_2017, ersst_atl3_index, psl_qbo30_index, osprey_2016, nsidc_barents_kara_index, rutgers_eurasia_snow_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -2075,6 +3470,48 @@ years:
         duration_months: 6
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.7 °C in August 2016; beyond ±0.5 for 6 overlapping seasons, July 2016 to December 2016."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 7
+        onset_year: 2015
+        duration_months: 11
+        index_note: "Already under way: Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.62 °C in February 2016; beyond ±0.25 for 11 overlapping seasons, July 2015 to May 2016."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at +3.0 in November 2016; beyond ±2.5 for 3 overlapping seasons, October 2016 to December 2016."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 5
+        duration_months: 5
+        index_note: "PMM index (three-month mean) peaked at +4.9 in July 2016; beyond ±3 for 5 overlapping seasons, May 2016 to September 2016."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.006 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 6
+        onset_year: 2015
+        duration_months: 24
+        index_note: "Already under way: the 30 hPa equatorial wind turned westerly in June 2015 and stayed so for 24 months, to May 2017, strongest +15 m/s in December 2016."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.20 million km², -0.35 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        duration_months: 6
+        index_note: "Eurasian snow cover in October 13.5 million km², +2.1 against the 1980–2025 trend line (the threshold is ±1.5; +2.8 against the 1991–2020 October mean of 10.7). Held six months, to March, the winter the links describe."
+        source: rutgers_eurasia_snow_index
   - year: 2017
     note: >
       A weak La Niña from October, an out-of-season positive dipole in the
@@ -2121,6 +3558,46 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.5 in September."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.24 in March."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 5
+        index_note: "AMM index (three-month mean) peaked at +4.5 in November 2017; beyond ±2.5 for 5 overlapping seasons, September 2017 to January 2018."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 14
+        index_note: "PMM index (three-month mean) peaked at +7.0 in January 2018; beyond ±3 for 14 overlapping seasons, September 2017 to October 2018."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.005 in September."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 17
+        index_note: "The 30 hPa equatorial wind turned easterly in June 2017 and stayed so for 17 months, to October 2018, strongest -29 m/s in July 2018. The westerly phase that began in June 2015 ended in May 2017."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        onset_year: 2016
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 2017. October–November extent of the Barents and Kara seas 0.55 million km², +0.01 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: high
+        onset_month: 10
+        onset_year: 2016
+        duration_months: 6
+        index_note: "Carried over: the previous October's high reading held to March 2017. Eurasian snow cover in October 12.1 million km², +0.6 against the 1980–2025 trend line (the threshold is ±1.5; +1.4 against the 1991–2020 October mean of 10.7). Near normal, so nothing new began."
+        source: rutgers_eurasia_snow_index
   - year: 2018
     note: >
       A weak El Niño from September and a positive dipole from the same month;
@@ -2166,6 +3643,43 @@ years:
         duration_months: 10
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.7 °C in October 2018; beyond ±0.5 for 10 overlapping seasons, July 2018 to April 2019."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 1
+        duration_months: 2
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.29 °C in January 2018; beyond ±0.25 for 2 overlapping seasons, January 2018 to February 2018."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 5
+        duration_months: 3
+        index_note: "AMM index (three-month mean) peaked at -5.3 in June 2018; beyond ±2.5 for 3 overlapping seasons, May 2018 to July 2018. The positive AMM that began in September 2017 ended in January 2018."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 9
+        onset_year: 2017
+        duration_months: 14
+        index_note: "Already under way: PMM index (three-month mean) peaked at +7.0 in January 2018; beyond ±3 for 14 overlapping seasons, September 2017 to October 2018."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.007 in September."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 11
+        duration_months: 14
+        index_note: "The 30 hPa equatorial wind turned westerly in November 2018 and stayed so for 14 months, to December 2019, strongest +15 m/s in May 2019. The easterly phase that began in June 2017 ended in October 2018."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.43 million km², -0.09 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.4 million km², -1.1 against the 1980–2025 trend line (the threshold is ±1.5; -0.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2019
     note: >
       The strongest positive dipole since 1997 from May, the stratospheric
@@ -2213,12 +3727,47 @@ years:
         duration_months: 6
         index_note: "ATL3 anomaly (three-month mean) peaked at +1.1 °C in December 2019; beyond ±0.5 for 6 overlapping seasons, October 2019 to March 2020. The warm event that began in July 2018 ended in April 2019."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.24 in July."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: neutral
+        index_note: "AMM index stayed within ±2.5, or beyond it for one season only; largest three-month mean -2.9 in April."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 6
+        duration_months: 8
+        index_note: "PMM index (three-month mean) peaked at +5.5 in November 2019; beyond ±3 for 8 overlapping seasons, June 2019 to January 2020."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.010 in September."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 11
+        onset_year: 2018
+        duration_months: 14
+        index_note: "Already under way: the 30 hPa equatorial wind turned westerly in November 2018 and stayed so for 14 months, to December 2019, strongest +15 m/s in May 2019."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.59 million km², +0.09 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 12.8 million km², +1.1 against the 1980–2025 trend line (the threshold is ±1.5; +2.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2020
     note: >
       The first of three La Niña winters, from August; the North Pacific
       dropped back into its cool phase, and the Atlantic warm event of the
-      winter faded in March.
-    sources: [noaa_oni_index, ncei_pdo_index, ersst_atl3_index]
+      winter faded in March. The QBO's easterly phase of the first half was
+      weak and brief, a second break in its rhythm; the Barents–Kara ice was
+      low again in the autumn.
+    sources: [noaa_oni_index, ncei_pdo_index, ersst_atl3_index, psl_qbo30_index, anstey_2022, nsidc_barents_kara_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -2258,6 +3807,44 @@ years:
         duration_months: 6
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at +1.1 °C in December 2019; beyond ±0.5 for 6 overlapping seasons, October 2019 to March 2020."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 2
+        duration_months: 5
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.28 °C in April 2020; beyond ±0.25 for 5 overlapping seasons, February 2020 to June 2020."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 10
+        duration_months: 4
+        index_note: "AMM index (three-month mean) peaked at +3.4 in November 2020; beyond ±2.5 for 4 overlapping seasons, October 2020 to January 2021."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 9
+        duration_months: 3
+        index_note: "PMM index (three-month mean) peaked at +4.7 in October 2020; beyond ±3 for 3 overlapping seasons, September 2020 to November 2020. The positive PMM that began in June 2019 ended in January 2020."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.011 in February."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 1
+        duration_months: 6
+        index_note: "The 30 hPa equatorial wind turned easterly in January 2020 and stayed so for 6 months, to June 2020, strongest -5 m/s in April 2020. Then the westerly phase from July 2020 (11 months, strongest +11 m/s): the table takes the first phase of the year."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        duration_months: 6
+        index_note: "October–November extent of the Barents and Kara seas 0.27 million km², -0.21 against the 1979–2025 trend line (the threshold is ±0.2). Held six months, to March, the winter the links describe."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 11.0 million km², -0.8 against the 1980–2025 trend line (the threshold is ±1.5; +0.3 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2021
     note: >
       The La Niña broke in April and returned in September for seventeen
@@ -2306,12 +3893,50 @@ years:
         duration_months: 5
         index_note: "ATL3 anomaly (three-month mean) peaked at +1.2 °C in July 2021; beyond ±0.5 for 5 overlapping seasons, June 2021 to October 2021."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean -0.23 in February."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: negative
+        onset_month: 6
+        duration_months: 2
+        index_note: "AMM index (three-month mean) peaked at -3.5 in June 2021; beyond ±2.5 for 2 overlapping seasons, June 2021 to July 2021. The positive AMM that began in October 2020 ended in January 2021. Also a positive AMM from November 2021 (3 overlapping seasons, peak +2.9): the table takes the first event of the year."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.5 in March."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.008 in June."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 6
+        duration_months: 13
+        index_note: "The 30 hPa equatorial wind turned easterly in June 2021 and stayed so for 13 months, to June 2022, strongest -26 m/s in March 2022. The westerly phase that began in July 2020 ended in May 2021."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: low
+        onset_month: 10
+        onset_year: 2020
+        duration_months: 6
+        index_note: "Carried over: the previous October's low reading held to March 2021. October–November extent of the Barents and Kara seas 0.62 million km², +0.16 against the 1979–2025 trend line (the threshold is ±0.2). Near normal, so nothing new began."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.7 million km², -1.1 against the 1980–2025 trend line (the threshold is ±1.5; -0.0 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2022
     note: >
       La Niña's third year, a weak negative dipole in the autumn, and the most
       positive SAM in this record in December. The dipole index runs weaker
-      here than the Bureau's, which called the event strong.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, marshall_sam_index]
+      here than the Bureau's, which called the event strong. The Hunga Tonga
+      eruption of January put water rather than sulphur into the stratosphere:
+      the aerosol index rose only to 0.015, under this table's threshold, and
+      no eruption is called.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, marshall_sam_index, sellitto_2022, giss_glossac_aod_index]
     drivers:
       - driver: enso
         phase: la_nina
@@ -2354,12 +3979,51 @@ years:
         phase: neutral
         index_note: "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in December."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: cool
+        onset_month: 7
+        duration_months: 9
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at -0.40 °C in January 2023; beyond ±0.25 for 9 overlapping seasons, July 2022 to March 2023."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 11
+        onset_year: 2021
+        duration_months: 3
+        index_note: "Already under way: AMM index (three-month mean) peaked at +2.9 in December 2021; beyond ±2.5 for 3 overlapping seasons, November 2021 to January 2022."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: positive
+        onset_month: 1
+        duration_months: 2
+        index_note: "PMM index (three-month mean) peaked at +3.6 in January 2022; beyond ±3 for 2 overlapping seasons, January 2022 to February 2022."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.015 in April."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 7
+        duration_months: 12
+        index_note: "The 30 hPa equatorial wind turned westerly in July 2022 and stayed so for 12 months, to June 2023, strongest +13 m/s in April 2023. The easterly phase that began in June 2021 ended in June 2022."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.45 million km², +0.01 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.8 million km², -1.1 against the 1980–2025 trend line (the threshold is ±1.5; +0.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2023
     note: >
       An El Niño from May, reaching +2.1 °C in December, with a long positive
       dipole from March; the North Atlantic index leapt far above anything in
-      the earlier record and the North Pacific was deeply cool.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, ncei_amo_ersst_index, ncei_pdo_index]
+      the earlier record and the North Pacific was deeply cool. The Indian
+      Ocean basin was cool to March and warm again from November; the Atlantic
+      Meridional Mode was positive from June for a year.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, ncei_amo_ersst_index, ncei_pdo_index, ersst_iobm_index, psl_amm_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -2403,13 +4067,50 @@ years:
         duration_months: 8
         index_note: "ATL3 anomaly (three-month mean) peaked at +1.2 °C in March 2024; beyond ±0.5 for 8 overlapping seasons, October 2023 to May 2024."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 11
+        duration_months: 13
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.55 °C in January 2024; beyond ±0.25 for 13 overlapping seasons, November 2023 to November 2024. The cool basin that began in July 2022 ended in March 2023."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 6
+        duration_months: 12
+        index_note: "AMM index (three-month mean) peaked at +5.1 in October 2023; beyond ±2.5 for 12 overlapping seasons, June 2023 to May 2024."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: negative
+        onset_month: 3
+        duration_months: 10
+        index_note: "PMM index (three-month mean) peaked at -6.5 in July 2023; beyond ±3 for 10 overlapping seasons, March 2023 to December 2023."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.012 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 7
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned easterly in July 2023 and stayed so for 11 months, to May 2024, strongest -29 m/s in March 2024. The westerly phase that began in July 2022 ended in June 2023."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.59 million km², +0.17 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.6 million km², -1.4 against the 1980–2025 trend line (the threshold is ±1.5; -0.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2024
     note: >
       The El Niño ended in April and the dipole with it; the widely expected
       La Niña stayed short of the five seasons the definition needs. The North
       Pacific index posted its most negative calendar year since records began
-      in 1854, and the North Atlantic its warmest.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, ncei_pdo_index]
+      in 1854, and the North Atlantic its warmest. The meridional-mode indices
+      end in August 2024.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, ncei_pdo_index, psl_amm_index]
     drivers:
       - driver: enso
         phase: el_nino
@@ -2456,13 +4157,50 @@ years:
         duration_months: 5
         index_note: "ATL3 anomaly (three-month mean) peaked at +0.7 °C in January 2025; beyond ±0.5 for 5 overlapping seasons, November 2024 to March 2025. The warm event that began in October 2023 ended in May 2024."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: warm
+        onset_month: 11
+        onset_year: 2023
+        duration_months: 13
+        index_note: "Already under way: Tropical Indian Ocean anomaly (ERSST, trend removed, three-month mean) peaked at +0.55 °C in January 2024; beyond ±0.25 for 13 overlapping seasons, November 2023 to November 2024."
+        source: ersst_iobm_index
+      - driver: atlantic_meridional_mode
+        phase: positive
+        onset_month: 6
+        onset_year: 2023
+        duration_months: 12
+        index_note: "Already under way: AMM index (three-month mean) peaked at +5.1 in October 2023; beyond ±2.5 for 12 overlapping seasons, June 2023 to May 2024. The index ends in August 2024."
+        source: psl_amm_index
+      - driver: pacific_meridional_mode
+        phase: neutral
+        index_note: "PMM index stayed within ±3, or beyond it for one season only; largest three-month mean -2.9 in January. The index ends in August 2024."
+        source: psl_pmm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.012 in August."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: westerly
+        onset_month: 6
+        duration_months: 11
+        index_note: "The 30 hPa equatorial wind turned westerly in June 2024 and stayed so for 11 months, to April 2025, strongest +14 m/s in November 2024. The easterly phase that began in July 2023 ended in May 2024."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.43 million km², +0.02 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 11.3 million km², -0.8 against the 1980–2025 trend line (the threshold is ±1.5; +0.6 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index
   - year: 2025
     note: >
       A cool lean from the autumn that, like the previous winter's, fell one
       season short of a La Niña; a weak negative dipole, a neutral NAO winter
       and a positive SAM in the southern autumn. Provisional: the year's
-      indices were read in mid-2026.
-    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, marshall_sam_index]
+      indices were read in mid-2026. The Atlantic and Pacific Meridional Modes
+      are not recorded: their index ends in August 2024.
+    sources: [noaa_oni_index, psl_dmi_hadisst_index, cpc_nao_index, marshall_sam_index, psl_amm_index, psl_pmm_index]
     drivers:
       - driver: enso
         phase: neutral
@@ -2503,3 +4241,24 @@ years:
         duration_months: 5
         index_note: "Already under way: ATL3 anomaly (three-month mean) peaked at +0.7 °C in January 2025; beyond ±0.5 for 5 overlapping seasons, November 2024 to March 2025."
         source: ersst_atl3_index
+      - driver: indian_ocean_basin
+        phase: neutral
+        index_note: "Tropical Indian Ocean anomaly (ERSST, trend removed) stayed within ±0.25 °C, or beyond it for one season only; largest three-month mean +0.12 in April."
+        source: ersst_iobm_index
+      - driver: tropical_eruption
+        phase: neutral
+        index_note: "No eruption: global stratospheric aerosol optical depth stayed below 0.02 all year; largest monthly value 0.010 in January."
+        source: giss_glossac_aod_index
+      - driver: qbo
+        phase: easterly
+        onset_month: 5
+        index_note: "The 30 hPa equatorial wind turned easterly in May 2025 and was still so in February 2026, where the index ends, strongest -27 m/s in December 2025. The westerly phase that began in June 2024 ended in April 2025."
+        source: psl_qbo30_index
+      - driver: barents_kara_ice
+        phase: neutral
+        index_note: "October–November extent of the Barents and Kara seas 0.25 million km², -0.14 against the 1979–2025 trend line (the threshold is ±0.2). Near normal."
+        source: nsidc_barents_kara_index
+      - driver: eurasian_october_snow
+        phase: neutral
+        index_note: "Eurasian snow cover in October 10.8 million km², -1.3 against the 1980–2025 trend line (the threshold is ±1.5; +0.1 against the 1991–2020 October mean of 10.7). Near normal."
+        source: rutgers_eurasia_snow_index

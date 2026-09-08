@@ -2170,20 +2170,25 @@ drivers stays in one place.
   taken, a fade at the last month shown is held through, and an entry that
   begins as the months shown end is left out; `YearScenario.approximations`
   lists them and the panel says so. On the shipped table that is the
-  1982–83 El Niño in 1983 (ends two months early), the La Niña of 1988–89
-  in 1989 and the El Niño of 1991–92 in 1992 (one month each), and in 2024
-  (window from December 2023) the dipole two months early and the NAO
-  winter that begins in its last month left out. Drivers absent from a
-  row are not chosen: "not recorded", free to be pushed by a chain. 23
-  tests in `src/engine/years.test.ts`: the table's coverage and order,
-  every dated story has a row, every row through the engine with each
-  entry at its engine onset and fade, the approximations pinned, the
-  anchors (January for every row from 1980 but 1984 and 2023, from an
-  onset in the year, and 2024, from the year before; eight ENSO-alone
-  years from the year before), 1997 in detail and through the engine (the
+  1982–83 El Niño in 1983 (ends two months early), the El Chichón haze in
+  1984 (three months early), the La Niña of 1988–89 in 1989 and the El
+  Niño of 1991–92 in 1992 (one month each), the positive PMM of 2017–18
+  in 2018 (two months early) and, in 2024, the dipole of 2023 (two months
+  early) and the warm basin since November 2023 (one month early). Drivers absent from a
+  row are not chosen: "not recorded", free to be pushed by a chain. 25
+  tests in `src/engine/years.test.ts`: the table's coverage and order
+  (all fourteen drivers from 1980, the meridional modes to 2024), every
+  entry's source stating its rule, every dated story has a row, every row
+  through the engine with each entry at its engine onset and fade, the
+  approximations pinned, the anchors (January for every row from 1980,
+  one of fourteen entries being always neutral; eight ENSO-alone years
+  from the year before), 1997 in detail and through the engine (the
   neutral NAO pinned against El Niño's push), 1972, 1999, 2001, 1955 and
-  1959, 1983, an all-neutral row's empty map, the tie rule, an entry left
-  out, the function's refusals and the validator's.
+  1959, 1983, the seven added drivers (2012's ice held six months and
+  read a year back in 2013, 2009's QBO and snow, the Pinatubo haze from
+  July 1991 and its end in 1984 that the engine cannot place, 2025
+  without the meridional modes), an all-neutral row's empty map, the tie
+  rule, an entry left out, the function's refusals and the validator's.
 - UI as §5.6 above: the "Real year" picker (`data-role="year"`), the
   locked scenario controls (`ControlsView.setLocked`), the year panel
   (`src/ui/year.ts`, `YearView`, `#year` above `#card`), the dated month
@@ -2208,10 +2213,59 @@ drivers stays in one place.
   links; 2010's lines; region mode, Escape and a story leaving the year;
   compare off throughout; print. Screenshots `m34-01-1997-september.png`,
   `m34-02-year-panel.png`, `m34-03-2024-april.png`.
+- The other seven drivers, added the same day (2026-09-08) from their
+  own indices so that every row from 1980 records all fourteen: seven
+  more index sources, each with its rule in the citation, and the same
+  reading (the first event of the year, else the one under way, else
+  neutral). `ersst_iobm_index`: the tropical Indian Ocean mean
+  (20°S–20°N, 40–110°E) from the ERSST v5 grid, anomalies vs 1991–2020
+  with the 1980–2025 linear trend removed (the mode is the swing on top
+  of the warming), ±0.25 °C for two overlapping seasons. `psl_amm_index`
+  and `psl_pmm_index`: the PSL meridional-mode SST indices, ±2.5 and ±3
+  (about one standard deviation) for two seasons; both series end in
+  August 2024, so 2025 has neither entry ("not recorded", the row note
+  says why). `giss_glossac_aod_index`: the global mean of the GISS
+  stratospheric aerosol optical depth by latitude (GloSSAC v2.24,
+  1979–2025), an eruption in force while the monthly value is above 0.02
+  (four times the quiet background): El Chichón May 1982 to July 1984
+  and Pinatubo July 1991 to January 1994, nothing else; Hunga Tonga
+  (January 2022) reached 0.015 and is not called, the 2022 note and a
+  new source (`sellitto_2022`) saying why. `psl_qbo30_index`: the 30 hPa
+  equatorial wind from the NCEP/NCAR reanalysis, the phase its sign,
+  reversals under three months ignored, checked against the Singapore
+  balloons at the same level for 1990–2021 (every change within three
+  months; the balloons show the weak easterly of early 2020 as two
+  months only, and the 2016 disruption cut through at 40 hPa, one level
+  lower). `nsidc_barents_kara_index`: the Sea Ice Index v4 regional
+  extent, Barents plus Kara, October–November mean, the 1979–2025 trend
+  removed (the links describe the year-to-year swing, not the decline),
+  ±0.2 million km²; `rutgers_eurasia_snow_index`: the Rutgers Eurasia
+  October extent against the 1991–2020 mean, the 1980–2025 trend removed
+  (a rise disputed as an artefact by Brown and Derksen 2013), ±1.5
+  million km². Both autumn readings are dated from October and held six
+  months, to March, the winter the links describe (the driver's typical
+  duration; a two-month or one-month record would fade them before their
+  lag-2 links fire, which is not what the record means), and a neutral
+  October after a called one carries the previous autumn's phase as
+  "already under way" to March, the note giving the new reading too.
+  Scripts `derive2.py` and `rows2.py` beside the M34 ones, the year
+  notes extended in `notes.py` (`EXTRA`) with a sentence per notable
+  year and the new sources. Consequences: with fourteen entries some
+  driver is always neutral, so every row from 1980 anchors January (2024
+  now runs from January, its NAO winter placed); the approximations are
+  the seven listed above; the 2009 row records the October snow extent
+  as near normal while the 2009–10 story tells of a fast advance, and
+  says so (the story reads Cohen's advance index, the table the month's
+  extent). Browser check `cdp-m34b.mjs` (31 checks): 1997 with fourteen
+  lines and no not-recorded list, "One of fourteen drivers", the QBO
+  card from the record; 2012's ice line and tick; 1991's eruption line
+  and card; 1984's approximation; 2009's QBO and snow lines; 2024 from
+  January with its two approximations; 2025's not-recorded modes; the
+  M34 flows (edit, 1955, 1983, 2001, stories, region, Escape, print)
+  again. 769 tests.
 - Not in M34: fetching anything at run time (the series were read once
-  and the rows committed); monthly index values; years before 1950; the
-  other seven drivers (no index was chosen for them: "not recorded" in
-  every row, and the panel says so); a year in the URL hash; removing
+  and the rows committed); monthly index values; years before 1950; a
+  year in the URL hash; removing
   `Scenario.secondary` and the pre-M33 story fields (still accepted, one
   more milestone). Next in `docs/PLAN_V3.md`: the UI items M29–M31, or
   M35 (modulation), each with its own sign-off; M38 (quiz) can now draw

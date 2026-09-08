@@ -191,7 +191,9 @@ The table of real years (M34): which phase each driver held in each year,
 read from an index dataset by a threshold rule that is written into that
 dataset's citation in `links.yaml`. One row per year, one entry per driver
 per year. A driver absent from a row is "not recorded" that year, which is
-not the same as neutral: the map may still push it along a chain.
+not the same as neutral: the map may still push it along a chain. Coverage:
+ENSO from 1950, every other driver from 1980, the Atlantic and Pacific
+Meridional Modes to 2024, where their index ends.
 
 ```yaml
 years:

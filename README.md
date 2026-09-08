@@ -217,8 +217,8 @@ any static file server.
   month by hand leaves the story.
 - **Real year** (under Stories) sets every recorded driver to the phase
   the index datasets show for a year from 1950 to 2025: ENSO alone before
-  1980, and from 1980 the dipole, the NAO, the SAM, the PDO, the AMO and
-  the Atlantic Niño too, each from the month the index says it began, for
+  1980, and from 1980 every driver on the map (the two meridional modes to
+  2024, where their index ends), each from the month the index says it began, for
   as long as it held, and pinned neutral where the index stayed quiet. The
   controls show the result and are locked until **Edit this scenario** in
   the panel on the right, or **Leave the year**, frees them with the
@@ -409,7 +409,11 @@ phase with an onset, a real phase without one, a driver listed twice, an
 onset year that is not earlier than the row, or a source that does not
 resolve. A driver left out of a row is "not recorded" for that year,
 which the panel says; it is not the same as neutral. The app fetches
-nothing: the series were read once, and the rows are committed.
+nothing: the series were read once, and the rows are committed. Three of
+the indices (the Indian Ocean basin, the Barents–Kara ice, the Eurasian
+October snow) are read against their own linear trend, and the autumn
+readings of the ice and the snow are held six months, to March; each
+citation says so and why.
 
 ## License
 

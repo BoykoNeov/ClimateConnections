@@ -115,7 +115,9 @@ one.
   `drivers:` list in stories, the "More drivers" section) on 2026-09-08,
   and the table of real years (M34, the first item to read the record:
   `data/years.yaml`, `scripts/years-schema.mjs`, `src/engine/years.ts`,
-  the "Real year" picker and panel) on 2026-09-08.
+  the "Real year" picker and panel; extended the same day from seven
+  index drivers to all fourteen, the meridional modes to 2024) on
+  2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its
