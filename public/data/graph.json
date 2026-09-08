@@ -2,7 +2,8 @@
   "generatedFrom": [
     "data/nodes.yaml",
     "data/links.yaml",
-    "data/stories.yaml"
+    "data/stories.yaml",
+    "data/years.yaml"
   ],
   "nodes": [
     {
@@ -10839,6 +10840,46 @@
       "key": "weather_channel_2016",
       "citation": "Belles, J. (2016). Siberia is being clobbered with snow already, and that could mean a harsher U.S. winter ahead. The Weather Channel, 4 November 2016 (the forecast made from the October 2016 snow advance, quoted as it was made).",
       "url": "https://weather.com/news/weather/news/snow-siberia-russia-united-states-cold"
+    },
+    {
+      "key": "noaa_oni_index",
+      "citation": "NOAA Climate Prediction Center. Oceanic Niño Index (ONI), ERSST version 6: the three-month running mean of the Niño-3.4 sea-surface temperature anomaly, 1950 to date. Read for the years table in August 2026 with NOAA's own rule: an El Niño or La Niña is called when the index stays at or beyond +0.5 °C or −0.5 °C for at least five overlapping seasons; the onset is the centre month of the first such season and the duration counts the seasons.",
+      "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php"
+    },
+    {
+      "key": "psl_dmi_hadisst_index",
+      "citation": "NOAA Physical Sciences Laboratory. Dipole Mode Index from HadISST 1.1 (the Saji et al. 1999 boxes, 10°S–10°N, 50–70°E minus 10°S–0°, 90–110°E), monthly, 1870 to date. Read for the years table in August 2026: a positive or negative dipole is called when the three-month running mean stays at or beyond +0.35 °C or −0.35 °C for at least two overlapping seasons touching June–November, the dipole's own season. The threshold sits a little under the Bureau of Meteorology's ±0.4 because this monthly HadISST index runs smaller than the Bureau's weekly one; with it the Bureau's list of dipole years since 1980 is reproduced except the weak negative events of 2014 and 2021.",
+      "url": "https://psl.noaa.gov/gcos_wgsp/Timeseries/DMI/"
+    },
+    {
+      "key": "cpc_nao_index",
+      "citation": "NOAA Climate Prediction Center. North Atlantic Oscillation (NAO) index, monthly, standardised, 1950 to date. Read for the years table in August 2026: a winter is positive when its December–February mean is at or above +0.5 and negative at or below −0.5, in standardised units; the phase is dated from December and held three months.",
+      "url": "https://www.cpc.ncep.noaa.gov/products/precip/CWlink/pna/nao.shtml"
+    },
+    {
+      "key": "marshall_sam_index",
+      "citation": "British Antarctic Survey. Station-based Southern Annular Mode index (Marshall 2003), monthly, 1957 to date. Read for the years table in August 2026: a positive or negative SAM is called when the three-month running mean stays at or beyond +1.5 or −1.5 (the index's standard deviation is about 1.2) for at least two overlapping seasons; the year's entry is the first such run to begin in the year, and the others are named in its note.",
+      "url": "https://legacy.bas.ac.uk/met/gjma/sam.html"
+    },
+    {
+      "key": "ncei_pdo_index",
+      "citation": "NOAA National Centers for Environmental Information. Pacific Decadal Oscillation index from ERSST version 5, monthly, 1854 to date. Read for the years table in August 2026: a year is positive when its calendar-year mean is at or above +0.5 and negative at or below −0.5; a run of same-phase years is one phase, dated from January of its first year.",
+      "url": "https://www.ncei.noaa.gov/access/monitoring/pdo/"
+    },
+    {
+      "key": "psl_amo_kaplan_index",
+      "citation": "NOAA Physical Sciences Laboratory. Atlantic Multidecadal Oscillation index, unsmoothed and detrended, from the Kaplan SST version 2 North Atlantic mean, monthly, 1856 to January 2023. Read for the years table in August 2026, for 1980–2022: a year is positive when its calendar-year mean is at or above +0.1 °C and negative at or below −0.1 °C; a run of same-phase years is one phase, dated from January of its first year.",
+      "url": "https://psl.noaa.gov/data/timeseries/AMO/"
+    },
+    {
+      "key": "ncei_amo_ersst_index",
+      "citation": "NOAA National Centers for Environmental Information. North Atlantic (0–60°N) sea-surface temperature anomaly from ERSST version 5, monthly, 1854 to date, offered as an AMO index. Read for the years table in August 2026, for 2023 onwards, where the Kaplan series ends: its calendar-year means were linearly detrended over 1854–2025 for this table and read with the same ±0.1 °C rule. Over 1980–2022 the two series give the same phase in most years and differ in eight, all with the Kaplan value within 0.07 °C of the threshold.",
+      "url": "https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/"
+    },
+    {
+      "key": "ersst_atl3_index",
+      "citation": "NOAA ERSST version 5, Atlantic Niño (ATL3) index computed for the years table in August 2026. Sea-surface temperature averaged over 3°S–3°N, 20°W–0° from the monthly ERSST v5 grid (Huang and others, 2017), as anomalies from the 1991–2020 monthly means; a warm or cool event is called when the three-month running mean is at or beyond +0.5 °C or −0.5 °C, about one standard deviation, for at least one season, the rule the Atlantic Niño literature uses; the year's entry is the first such event to begin in the year.",
+      "url": "https://psl.noaa.gov/data/gridded/data.noaa.ersst.v5.html"
     }
   ],
   "stories": [
@@ -12228,6 +12269,3504 @@
             "brown_derksen_2013",
             "henderson_2018"
           ]
+        }
+      ]
+    }
+  ],
+  "years": [
+    {
+      "year": 1950,
+      "note": "The record opens inside the La Niña of 1949–50, which faded by July; the rest of the year was neutral. Only ENSO is recorded before 1980, so the map shows one driver.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 1,
+          "duration_months": 7,
+          "index_note": "The index begins in January 1950 with this La Niña already under way (it had begun in 1949); ONI was −1.5 in January and the event ended in July.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1951,
+      "note": "A moderate El Niño developed from June and peaked in the autumn at just over +1 °C, ending in January 1952.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "duration_months": 8,
+          "index_note": "ONI peaked at +1.1 °C in September–November 1951; at or beyond ±0.5 for 8 overlapping seasons, May–July 1951 to December 1951–February 1952.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1952,
+      "note": "The El Niño of 1951 ended in January and the Pacific stayed neutral for the rest of 1952. Nothing new began, so the map runs from that event's onset in June 1951.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "onset_year": 1951,
+          "duration_months": 8,
+          "index_note": "Already under way: ONI peaked at +1.1 °C in September–November 1951; at or beyond ±0.5 for 8 overlapping seasons, May–July 1951 to December 1951–February 1952.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1953,
+      "note": "A weak but long El Niño: the index stayed just above the threshold from February to the following January without ever reaching +1 °C.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 2,
+          "duration_months": 12,
+          "index_note": "ONI peaked at +0.8 °C in September–November 1953; at or beyond ±0.5 for 12 overlapping seasons, January–March 1953 to December 1953–February 1954.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1954,
+      "note": "The long La Niña of the mid-1950s began in May and held for more than two years, to August 1956, peaking near −1.7 °C in late 1955.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "duration_months": 28,
+          "index_note": "ONI peaked at -1.7 °C in October–December 1955; at or beyond ±0.5 for 28 overlapping seasons, April–June 1954 to July–September 1956. The El Niño that began in February 1953 ended in December 1953–February 1954.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1955,
+      "note": "La Niña all year, the middle of the 1954–56 event and its coldest stretch. Nothing new began, so the map runs from the onset in May 1954.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "onset_year": 1954,
+          "duration_months": 28,
+          "index_note": "Already under way: ONI peaked at -1.7 °C in October–December 1955; at or beyond ±0.5 for 28 overlapping seasons, April–June 1954 to July–September 1956.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1956,
+      "note": "The 1954–56 La Niña finally ended in August 1956; the Pacific was neutral by the autumn. Nothing new began, so the map still runs from May 1954 and does not reach this year.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "onset_year": 1954,
+          "duration_months": 28,
+          "index_note": "Already under way: ONI peaked at -1.7 °C in October–December 1955; at or beyond ±0.5 for 28 overlapping seasons, April–June 1954 to July–September 1956.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1957,
+      "note": "A strong El Niño developed from April 1957, peaked at about +1.8 °C in January 1958 and lasted sixteen months, one of the larger events of the century's middle decades.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 4,
+          "duration_months": 16,
+          "index_note": "ONI peaked at +1.8 °C in December 1957–February 1958; at or beyond ±0.5 for 16 overlapping seasons, March–May 1957 to June–August 1958.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1958,
+      "note": "The 1957–58 El Niño ended in July, and a second, weak warm spell qualified from November 1958 to March 1959. The table takes the event that began this year.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 11,
+          "duration_months": 5,
+          "index_note": "ONI peaked at +0.6 °C in January–March 1959; at or beyond ±0.5 for 5 overlapping seasons, October–December 1958 to February–April 1959. The El Niño that began in April 1957 ended in June–August 1958.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1959,
+      "note": "The weak El Niño of the winter faded by March; the rest of 1959 was neutral. Nothing new began, so the map runs from November 1958.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 11,
+          "onset_year": 1958,
+          "duration_months": 5,
+          "index_note": "Already under way: ONI peaked at +0.6 °C in January–March 1959; at or beyond ±0.5 for 5 overlapping seasons, October–December 1958 to February–April 1959.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1960,
+      "note": "Neutral all year: the index never left the −0.5 to +0.5 °C band for long enough to count.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean +0.3 in August–October 1960.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1961,
+      "note": "Neutral all year by the index. The Bureau of Meteorology lists a positive Indian Ocean Dipole for 1961, but the dipole is not recorded on this table before 1980.\n",
+      "sources": [
+        "noaa_oni_index",
+        "bom_iod"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.3 in August–October 1961.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1962,
+      "note": "A neutral year with a slight cool lean through the second half, short of a La Niña.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.4 in November 1962–January 1963.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1963,
+      "note": "A moderate El Niño from June, peaking near +1.4 °C in November and ending in February 1964.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "duration_months": 9,
+          "index_note": "ONI peaked at +1.4 °C in October–December 1963; at or beyond ±0.5 for 9 overlapping seasons, May–July 1963 to January–March 1964.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1964,
+      "note": "A weak La Niña from May to January 1965, following straight on from the 1963–64 El Niño.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "duration_months": 9,
+          "index_note": "ONI peaked at -0.8 °C in October–December 1964; at or beyond ±0.5 for 9 overlapping seasons, April–June 1964 to December 1964–February 1965. The El Niño that began in June 1963 ended in January–March 1964.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1965,
+      "note": "A strong El Niño from June 1965, peaking at about +2 °C in October, one of the major events before the satellite era.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "duration_months": 11,
+          "index_note": "ONI peaked at +2.0 °C in September–November 1965; at or beyond ±0.5 for 11 overlapping seasons, May–July 1965 to March–May 1966. The La Niña that began in May 1964 ended in December 1964–February 1965.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1966,
+      "note": "The 1965–66 El Niño faded by April; the rest of 1966 was neutral. Nothing new began, so the map runs from June 1965.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "onset_year": 1965,
+          "duration_months": 11,
+          "index_note": "Already under way: ONI peaked at +2.0 °C in September–November 1965; at or beyond ±0.5 for 11 overlapping seasons, May–July 1965 to March–May 1966.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1967,
+      "note": "Neutral all year, with a cool lean in the second half that did not reach the threshold.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.5 in February–April 1967.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1968,
+      "note": "A weak El Niño from October 1968 to May 1969, the first of two back-to-back warm events.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 10,
+          "duration_months": 8,
+          "index_note": "ONI peaked at +1.1 °C in December 1968–February 1969; at or beyond ±0.5 for 8 overlapping seasons, September–November 1968 to April–June 1969.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1969,
+      "note": "After the winter's El Niño faded in May, a second weak one qualified from August to January 1970. The table takes the event that began this year.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 8,
+          "duration_months": 6,
+          "index_note": "ONI peaked at +0.9 °C in September–November 1969; at or beyond ±0.5 for 6 overlapping seasons, July–September 1969 to December 1969–February 1970. The El Niño that began in October 1968 ended in April–June 1969.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1970,
+      "note": "A long La Niña from July 1970 to January 1972, peaking near −1.4 °C in early 1971.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "duration_months": 19,
+          "index_note": "ONI peaked at -1.4 °C in January–March 1971; at or beyond ±0.5 for 19 overlapping seasons, June–August 1970 to December 1971–February 1972. The El Niño that began in August 1969 ended in December 1969–February 1970.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1971,
+      "note": "La Niña all year, the middle of the 1970–72 event. Nothing new began, so the map runs from July 1970.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "onset_year": 1970,
+          "duration_months": 19,
+          "index_note": "Already under way: ONI peaked at -1.4 °C in January–March 1971; at or beyond ±0.5 for 19 overlapping seasons, June–August 1970 to December 1971–February 1972.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1972,
+      "note": "A strong El Niño from May 1972, peaking above +2 °C in December, one of the three largest events before 1982.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "duration_months": 11,
+          "index_note": "ONI peaked at +2.1 °C in November 1972–January 1973; at or beyond ±0.5 for 11 overlapping seasons, April–June 1972 to February–April 1973. The La Niña that began in July 1970 ended in December 1971–February 1972.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1973,
+      "note": "The 1972–73 El Niño ended in March and a strong La Niña set in from May, reaching −2 °C by December.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "duration_months": 15,
+          "index_note": "ONI peaked at -2.0 °C in November 1973–January 1974; at or beyond ±0.5 for 15 overlapping seasons, April–June 1973 to June–August 1974. The El Niño that began in May 1972 ended in February–April 1973.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1974,
+      "note": "The La Niña of 1973 broke in July, and a second one began in October 1974 that would last to March 1976. The table takes the event that began this year.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 10,
+          "duration_months": 18,
+          "index_note": "ONI peaked at -1.6 °C in November 1975–January 1976; at or beyond ±0.5 for 18 overlapping seasons, September–November 1974 to February–April 1976. The La Niña that began in May 1973 ended in June–August 1974.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1975,
+      "note": "La Niña all year, the middle of the 1974–76 event, peaking near −1.7 °C in December. Nothing new began, so the map runs from October 1974.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 10,
+          "onset_year": 1974,
+          "duration_months": 18,
+          "index_note": "Already under way: ONI peaked at -1.6 °C in November 1975–January 1976; at or beyond ±0.5 for 18 overlapping seasons, September–November 1974 to February–April 1976.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1976,
+      "note": "A weak El Niño from September 1976 to February 1977, in the year the North Pacific flipped to the warm phase of the Pacific Decadal Oscillation that would hold until the late 1990s.\n",
+      "sources": [
+        "noaa_oni_index",
+        "mantua_1997"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 6,
+          "index_note": "ONI peaked at +0.9 °C in October–December 1976; at or beyond ±0.5 for 6 overlapping seasons, August–October 1976 to January–March 1977. The La Niña that began in October 1974 ended in February–April 1976.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1977,
+      "note": "A second weak El Niño from September 1977 to January 1978, following the one of the previous winter.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 5,
+          "index_note": "ONI peaked at +0.8 °C in October–December 1977; at or beyond ±0.5 for 5 overlapping seasons, August–October 1977 to December 1977–February 1978. The El Niño that began in September 1976 ended in January–March 1977.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1978,
+      "note": "The winter's weak El Niño faded in January; the rest of 1978 was neutral. Nothing new began, so the map runs from September 1977.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "onset_year": 1977,
+          "duration_months": 5,
+          "index_note": "Already under way: ONI peaked at +0.8 °C in October–December 1977; at or beyond ±0.5 for 5 overlapping seasons, August–October 1977 to December 1977–February 1978.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1979,
+      "note": "Neutral by the five-season rule: the index rose to about +0.6 °C in the winter of 1979–80 but held above the threshold for only three seasons.\n",
+      "sources": [
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean +0.6 in November 1979–January 1980.",
+          "source": "noaa_oni_index"
+        }
+      ]
+    },
+    {
+      "year": 1980,
+      "note": "A quiet Pacific and a busy Indian Ocean: ENSO stayed neutral, a negative dipole held from June to December, and the NAO winter was mildly positive. The first year with all seven drivers recorded.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean +0.6 in December 1979–February 1980.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 6,
+          "duration_months": 7,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.7 °C in August 1980; beyond ±0.35 for 7 overlapping seasons, June 1980 to December 1980.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1980–February 1981 mean of the CPC index +0.69 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 3,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -2.0 in March 1980; beyond ±1.5 for 2 overlapping seasons, March 1980 to April 1980.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.31 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.05 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 2,
+          "duration_months": 2,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.6 °C in February 1980; beyond ±0.5 for 2 overlapping seasons, February 1980 to March 1980. Also a cool event from November 1980 (6 seasons, peak -0.8): the table takes the first event of the year.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1981,
+      "note": "ENSO neutral again, with another negative dipole in the late summer. The Atlantic settled into the cool phase of its multidecadal swing that the index holds until 1986.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.5 in January–March 1981.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 7,
+          "duration_months": 4,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.7 °C in September 1981; beyond ±0.35 for 4 overlapping seasons, July 1981 to October 1981.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1981–February 1982 mean of the CPC index +0.08 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -1.7 in April.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 12,
+          "index_note": "Calendar-year mean +0.84 °C; the same phase in every year 1981.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.11 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 11,
+          "onset_year": 1980,
+          "duration_months": 6,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at -0.8 °C in January 1981; beyond ±0.5 for 6 overlapping seasons, November 1980 to April 1981.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1982,
+      "note": "The great El Niño of 1982–83 began in May and had reached +2.2 °C by December, then the strongest on record and largely unforeseen; El Chichón erupted in Mexico the same spring. A weak positive dipole followed in the autumn and the equatorial Atlantic was cool.\n",
+      "sources": [
+        "noaa_oni_index",
+        "barber_chavez_1983",
+        "glynn_1984",
+        "robock_2000",
+        "psl_dmi_hadisst_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "duration_months": 14,
+          "index_note": "ONI peaked at +2.2 °C in November 1982–January 1983; at or beyond ±0.5 for 14 overlapping seasons, April–June 1982 to May–July 1983.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 9,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.4 °C in October 1982; beyond ±0.35 for 2 overlapping seasons, September 1982 to October 1982.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1982–February 1983 mean of the CPC index +0.95 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 3,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.6 in March 1982; beyond ±1.5 for 3 overlapping seasons, March 1982 to May 1982. Also negative SAM from November 1982 (2 seasons, peak -2.3): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.26 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1981,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.24 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 6,
+          "duration_months": 7,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.9 °C in July 1982; beyond ±0.5 for 7 overlapping seasons, June 1982 to December 1982.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1983,
+      "note": "The 1982–83 El Niño held until June, bringing floods to the coast of Peru and Ecuador and coral death across the eastern Pacific, with drought in Australia and Indonesia. The North Pacific entered a warm year and the Atlantic stayed cool.\n",
+      "sources": [
+        "noaa_oni_index",
+        "glynn_1984",
+        "barber_chavez_1983",
+        "bom_enso_australia",
+        "ncei_pdo_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "onset_year": 1982,
+          "duration_months": 14,
+          "index_note": "Already under way: ONI peaked at +2.2 °C in November 1982–January 1983; at or beyond ±0.5 for 14 overlapping seasons, April–June 1982 to May–July 1983.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.41 in July.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1983–February 1984 mean of the CPC index +0.89 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 10,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +2.5 in November 1983; beyond ±1.5 for 2 overlapping seasons, October 1983 to November 1983.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +1.25 °C; the same phase in every year 1983–1984.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1981,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.10 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 4,
+          "duration_months": 4,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.8 °C in May 1983; beyond ±0.5 for 4 overlapping seasons, April 1983 to July 1983. Also a cool event from September 1983 (1 season, peak -0.5): the table takes the first event of the year.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1984,
+      "note": "A weak La Niña from October, a long negative dipole from July, and a negative NAO winter. In this dataset the Atlantic's warm event of 1984 registers only in August, weaker than the older analyses the 1984 story draws on.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "philander_1986",
+        "horel_1986",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 10,
+          "duration_months": 9,
+          "index_note": "ONI peaked at -1.1 °C in November 1984–January 1985; at or beyond ±0.5 for 9 overlapping seasons, September–November 1984 to May–July 1985.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 7,
+          "duration_months": 9,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.6 °C in September 1984; beyond ±0.35 for 9 overlapping seasons, July 1984 to March 1985.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "negative",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1984–February 1985 mean of the CPC index -0.70 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 12,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -1.9 in January 1985; beyond ±1.5 for 2 overlapping seasons, December 1984 to January 1985.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 1983,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.60 °C; the same phase in every year 1983–1984.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1981,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.24 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 8,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.5 °C in August 1984; beyond ±0.5 for 1 overlapping season, August 1984 to August 1984.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1985,
+      "note": "The La Niña ended in June and the Pacific was neutral by the autumn; a negative dipole held through the northern summer. A quiet year in the Atlantic.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 10,
+          "onset_year": 1984,
+          "duration_months": 9,
+          "index_note": "Already under way: ONI peaked at -1.1 °C in November 1984–January 1985; at or beyond ±0.5 for 9 overlapping seasons, September–November 1984 to May–July 1985.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 5,
+          "duration_months": 5,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.5 °C in July 1985; beyond ±0.35 for 5 overlapping seasons, May 1985 to September 1985. The negative dipole that began in July 1984 ended in March 1985.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1985–February 1986 mean of the CPC index +0.11 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 11,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +1.6 in November 1985; beyond ±1.5 for 2 overlapping seasons, November 1985 to December 1985. The negative SAM that began in December 1984 ended in January 1985.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.03 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1981,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.30 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.3 in December.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1986,
+      "note": "The long El Niño of 1986–88 began in September, a weak-to-moderate event that would last eighteen months. The Atlantic cool phase reached its last year.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 18,
+          "index_note": "ONI peaked at +1.7 °C in July–September 1987; at or beyond ±0.5 for 18 overlapping seasons, August–October 1986 to January–March 1988.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 7,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in July 1986; beyond ±0.35 for 2 overlapping seasons, July 1986 to August 1986.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1986–February 1987 mean of the CPC index -0.30 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 2,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -2.2 in March 1986; beyond ±1.5 for 2 overlapping seasons, February 1986 to March 1986.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +1.01 °C; the same phase in every year 1986–1987.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1981,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean -0.30 °C (detrended); the same phase in every year 1981–1986.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 10,
+          "duration_months": 4,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 1986; beyond ±0.5 for 4 overlapping seasons, October 1986 to January 1987.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1987,
+      "note": "El Niño all year, peaking in August, with a positive NAO winter to follow and a warm equatorial Atlantic in July–August. The North Pacific was in its second warm year.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "ersst_atl3_index",
+        "ncei_pdo_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "onset_year": 1986,
+          "duration_months": 18,
+          "index_note": "Already under way: ONI peaked at +1.7 °C in July–September 1987; at or beyond ±0.5 for 18 overlapping seasons, August–October 1986 to January–March 1988.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.31 in September.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1987–February 1988 mean of the CPC index +0.70 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -2.0 in February.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 1986,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +1.14 °C; the same phase in every year 1986–1987.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.04 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 7,
+          "duration_months": 2,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.7 °C in August 1987; beyond ±0.5 for 2 overlapping seasons, July 1987 to August 1987. The cool event that began in October 1986 ended in January 1987.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1988,
+      "note": "A strong La Niña from May, reaching −1.9 °C in December, the year of the North American drought; a positive NAO winter, the record negative SAM of September–October, and a warm Atlantic Niño from April.\n",
+      "sources": [
+        "noaa_oni_index",
+        "trenberth_1988",
+        "marshall_sam_index",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "duration_months": 13,
+          "index_note": "ONI peaked at -1.9 °C in November 1988–January 1989; at or beyond ±0.5 for 13 overlapping seasons, April–June 1988 to April–June 1989. The El Niño that began in September 1986 ended in January–March 1988.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 9,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in September 1988; beyond ±0.35 for 2 overlapping seasons, September 1988 to October 1988.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1988–February 1989 mean of the CPC index +1.26 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 9,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -3.6 in September 1988; beyond ±1.5 for 2 overlapping seasons, September 1988 to October 1988.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.04 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.04 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 4,
+          "duration_months": 5,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.9 °C in July 1988; beyond ±0.5 for 5 overlapping seasons, April 1988 to August 1988.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1989,
+      "note": "The La Niña ended in May and the year finished neutral. The NAO turned strongly positive in January–February 1990 after a negative December, so the winter mean falls just short of the threshold; the North Pacific began three cool years.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "ncei_pdo_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 5,
+          "onset_year": 1988,
+          "duration_months": 13,
+          "index_note": "Already under way: ONI peaked at -1.9 °C in November 1988–January 1989; at or beyond ±0.5 for 13 overlapping seasons, April–June 1988 to April–June 1989.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 4,
+          "duration_months": 4,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.6 °C in May 1989; beyond ±0.35 for 4 overlapping seasons, April 1989 to July 1989.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1989–February 1990 mean of the CPC index +0.43 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 5,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +2.5 in June 1989; beyond ±1.5 for 2 overlapping seasons, May 1989 to June 1989.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -0.50 °C; the same phase in every year 1989–1991.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 12,
+          "index_note": "Calendar-year mean -0.11 °C (detrended); the same phase in every year 1989.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in December.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1990,
+      "note": "Neutral in the Pacific, with the index warming slowly through the year, a weak negative dipole in late spring and a positive NAO winter.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean +0.4 in November 1990–January 1991.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 5,
+          "duration_months": 3,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in May 1990; beyond ±0.35 for 3 overlapping seasons, May 1990 to July 1990.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1990–February 1991 mean of the CPC index +0.71 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 4,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at -2.3 in May 1990; beyond ±1.5 for 3 overlapping seasons, April 1990 to June 1990.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1989,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -0.83 °C; the same phase in every year 1989–1991.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.07 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 1,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.6 °C in January 1990; beyond ±0.5 for 1 overlapping season, January 1990 to January 1990.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1991,
+      "note": "An El Niño from June 1991 that peaked in January 1992; Pinatubo erupted in the same month it began, and its haze would cool the world for two years. The Atlantic returned to a cool phase.\n",
+      "sources": [
+        "noaa_oni_index",
+        "self_1996",
+        "mccormick_1995",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "duration_months": 13,
+          "index_note": "ONI peaked at +1.7 °C in December 1991–February 1992; at or beyond ±0.5 for 13 overlapping seasons, May–July 1991 to May–July 1992.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.30 in June.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1991–February 1992 mean of the CPC index +0.47 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -1.6 in August.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1989,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -0.88 °C; the same phase in every year 1989–1991.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 48,
+          "index_note": "Calendar-year mean -0.16 °C (detrended); the same phase in every year 1991–1994.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 10,
+          "duration_months": 4,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 1991; beyond ±0.5 for 4 overlapping seasons, October 1991 to January 1992.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1992,
+      "note": "The El Niño held until June, and the world was at its coolest after Pinatubo. A long negative dipole ran from February to November and the equatorial Atlantic stayed cool for a year.\n",
+      "sources": [
+        "noaa_oni_index",
+        "robock_2000",
+        "psl_dmi_hadisst_index",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "onset_year": 1991,
+          "duration_months": 13,
+          "index_note": "Already under way: ONI peaked at +1.7 °C in December 1991–February 1992; at or beyond ±0.5 for 13 overlapping seasons, May–July 1991 to May–July 1992.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 2,
+          "duration_months": 10,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.7 °C in September 1992; beyond ±0.35 for 10 overlapping seasons, February 1992 to November 1992.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1992–February 1993 mean of the CPC index +0.86 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 5,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -2.0 in June 1992; beyond ±1.5 for 2 overlapping seasons, May 1992 to June 1992.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.76 °C; the same phase in every year 1992–1993.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1991,
+          "duration_months": 48,
+          "index_note": "Calendar-year mean -0.25 °C (detrended); the same phase in every year 1991–1994.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 4,
+          "duration_months": 12,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 1992; beyond ±0.5 for 12 overlapping seasons, April 1992 to March 1993. The cool event that began in October 1991 ended in January 1992.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1993,
+      "note": "A warm spell in the spring that did not last the five seasons needed for an El Niño; a positive NAO winter and a positive SAM through the southern winter.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "marshall_sam_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean +0.7 in April–June 1993.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.21 in August.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1993–February 1994 mean of the CPC index +1.02 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 6,
+          "duration_months": 4,
+          "index_note": "Marshall index (three-month mean) peaked at +2.2 in August 1993; beyond ±1.5 for 4 overlapping seasons, June 1993 to September 1993.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 1992,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +1.04 °C; the same phase in every year 1992–1993.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1991,
+          "duration_months": 48,
+          "index_note": "Calendar-year mean -0.24 °C (detrended); the same phase in every year 1991–1994.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 4,
+          "onset_year": 1992,
+          "duration_months": 12,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 1992; beyond ±0.5 for 12 overlapping seasons, April 1992 to March 1993.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1994,
+      "note": "A strong positive dipole from April to November, the case that first drew attention to the Indian Ocean's own see-saw, with a moderate El Niño from September and a strongly positive NAO winter.\n",
+      "sources": [
+        "psl_dmi_hadisst_index",
+        "saji_1999",
+        "noaa_oni_index",
+        "cpc_nao_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 7,
+          "index_note": "ONI peaked at +1.1 °C in November 1994–January 1995; at or beyond ±0.5 for 7 overlapping seasons, August–October 1994 to February–April 1995.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 4,
+          "duration_months": 8,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.7 °C in September 1994; beyond ±0.35 for 8 overlapping seasons, April 1994 to November 1994.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1994–February 1995 mean of the CPC index +1.36 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +1.6 in February 1994; beyond ±1.5 for 2 overlapping seasons, January 1994 to February 1994.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.49 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1991,
+          "duration_months": 48,
+          "index_note": "Calendar-year mean -0.21 °C (detrended); the same phase in every year 1991–1994.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 8,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.5 °C in August 1994; beyond ±0.5 for 1 overlapping season, August 1994 to August 1994.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1995,
+      "note": "A weak La Niña from August, a negative NAO winter, and the year the Atlantic turned warm: the multidecadal index went positive and the hurricane season was the most active in decades.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "psl_amo_kaplan_index",
+        "goldenberg_2001"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 8,
+          "duration_months": 8,
+          "index_note": "ONI peaked at -1.0 °C in October–December 1995; at or beyond ±0.5 for 8 overlapping seasons, July–September 1995 to February–April 1996. The El Niño that began in September 1994 ended in February–April 1995.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.28 in October.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "negative",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1995–February 1996 mean of the CPC index -0.62 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -1.9 in July.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.44 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 12,
+          "index_note": "Calendar-year mean +0.10 °C (detrended); the same phase in every year 1995.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 6,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.5 °C in June 1995; beyond ±0.5 for 1 overlapping season, June 1995 to June 1995.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1996,
+      "note": "The La Niña ended in March. A strong negative dipole ran from June to December, the clearest negative event in this record, and a cool Atlantic Niña set in from October.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "saji_1999",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 8,
+          "onset_year": 1995,
+          "duration_months": 8,
+          "index_note": "Already under way: ONI peaked at -1.0 °C in October–December 1995; at or beyond ±0.5 for 8 overlapping seasons, July–September 1995 to February–April 1996.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 6,
+          "duration_months": 7,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.9 °C in October 1996; beyond ±0.35 for 7 overlapping seasons, June 1996 to December 1996.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1996–February 1997 mean of the CPC index -0.07 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -1.9 in August.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.68 °C; the same phase in every year 1996–1997.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.09 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 5,
+          "duration_months": 2,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.7 °C in June 1996; beyond ±0.5 for 2 overlapping seasons, May 1996 to June 1996. Also a cool event from October 1996 (10 seasons, peak -0.9): the table takes the first event of the year.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1997,
+      "note": "The El Niño of the century began in May and had reached +2.4 °C by November, with a strong positive dipole from July: fires in Indonesia, floods in East Africa, and an Indian monsoon that came through near normal despite the forecasts.\n",
+      "sources": [
+        "noaa_oni_index",
+        "mcphaden_1999",
+        "psl_dmi_hadisst_index",
+        "saji_1999",
+        "webster_1999"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "duration_months": 12,
+          "index_note": "ONI peaked at +2.4 °C in October–December 1997; at or beyond ±0.5 for 12 overlapping seasons, April–June 1997 to March–May 1998.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 7,
+          "duration_months": 7,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +1.0 °C in November 1997; beyond ±0.35 for 7 overlapping seasons, July 1997 to January 1998.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 1997–February 1998 mean of the CPC index -0.23 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean -1.9 in November.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 1996,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +1.32 °C; the same phase in every year 1996–1997.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.02 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 10,
+          "onset_year": 1996,
+          "duration_months": 10,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at -0.9 °C in May 1997; beyond ±0.5 for 10 overlapping seasons, October 1996 to July 1997.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1998,
+      "note": "The El Niño ended in April and the long La Niña of 1998–2001 began in July; a negative dipole followed in the autumn, and the Yangtze flooded in the summer.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "zong_chen_2000",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "duration_months": 32,
+          "index_note": "ONI peaked at -1.7 °C in December 1999–February 2000; at or beyond ±0.5 for 32 overlapping seasons, June–August 1998 to January–March 2001. The El Niño that began in May 1997 ended in March–May 1998.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 8,
+          "duration_months": 5,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.6 °C in October 1998; beyond ±0.35 for 5 overlapping seasons, August 1998 to December 1998. The positive dipole that began in July 1997 ended in January 1998.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1998–February 1999 mean of the CPC index +0.64 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 5,
+          "duration_months": 4,
+          "index_note": "Marshall index (three-month mean) peaked at +2.0 in July 1998; beyond ±1.5 for 4 overlapping seasons, May 1998 to August 1998. Also positive SAM from November 1998 (3 seasons, peak +2.6): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.48 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 12,
+          "index_note": "Calendar-year mean +0.34 °C (detrended); the same phase in every year 1998.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 1,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.5 °C in January 1998; beyond ±0.5 for 1 overlapping season, January 1998 to January 1998. Also a warm event from July 1998 (1 season, peak +0.5): the table takes the first event of the year.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 1999,
+      "note": "La Niña all year, a strongly positive SAM from September, and the North Pacific's shift into the cool phase that would hold, with gaps, into 2013.\n",
+      "sources": [
+        "noaa_oni_index",
+        "marshall_sam_index",
+        "ncei_pdo_index",
+        "mantua_hare_2002"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "onset_year": 1998,
+          "duration_months": 32,
+          "index_note": "Already under way: ONI peaked at -1.7 °C in December 1999–February 2000; at or beyond ±0.5 for 32 overlapping seasons, June–August 1998 to January–March 2001.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.15 in November.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 1999–February 2000 mean of the CPC index +1.30 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 9,
+          "duration_months": 6,
+          "index_note": "Marshall index (three-month mean) peaked at +3.0 in January 2000; beyond ±1.5 for 6 overlapping seasons, September 1999 to February 2000. The positive SAM that began in November 1998 ended in January 1999.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -1.84 °C; the same phase in every year 1999–2001.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.09 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 6,
+          "duration_months": 2,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.6 °C in June 1999; beyond ±0.5 for 2 overlapping seasons, June 1999 to July 1999.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2000,
+      "note": "La Niña still, peaking near −1.7 °C in January, with a neutral NAO winter and a cool equatorial Atlantic in the second half.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "onset_year": 1998,
+          "duration_months": 32,
+          "index_note": "Already under way: ONI peaked at -1.7 °C in December 1999–February 2000; at or beyond ±0.5 for 32 overlapping seasons, June–August 1998 to January–March 2001.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.23 in November.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2000–February 2001 mean of the CPC index +0.04 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 9,
+          "onset_year": 1999,
+          "duration_months": 6,
+          "index_note": "Already under way: Marshall index (three-month mean) peaked at +3.0 in January 2000; beyond ±1.5 for 6 overlapping seasons, September 1999 to February 2000.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1999,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -1.13 °C; the same phase in every year 1999–2001.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.01 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 7,
+          "duration_months": 4,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.5 °C in October 2000; beyond ±0.5 for 4 overlapping seasons, July 2000 to October 2000.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2001,
+      "note": "The 1998–2001 La Niña finally ended in February, and the year was neutral almost everywhere: no dipole, an ordinary NAO winter, a positive SAM in the spring.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "marshall_sam_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "onset_year": 1998,
+          "duration_months": 32,
+          "index_note": "Already under way: ONI peaked at -1.7 °C in December 1999–February 2000; at or beyond ±0.5 for 32 overlapping seasons, June–August 1998 to January–March 2001.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.33 in September.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2001–February 2002 mean of the CPC index +0.24 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 10,
+          "duration_months": 4,
+          "index_note": "Marshall index (three-month mean) peaked at +2.1 in January 2002; beyond ±1.5 for 4 overlapping seasons, October 2001 to January 2002.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 1999,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean -1.13 °C; the same phase in every year 1999–2001.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.09 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 11,
+          "duration_months": 3,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 2001; beyond ±0.5 for 3 overlapping seasons, November 2001 to January 2002.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2002,
+      "note": "A moderate El Niño from June, peaking at +1.3 °C in November, with drought across eastern Australia and a sharply negative SAM in September–October.\n",
+      "sources": [
+        "noaa_oni_index",
+        "bom_enso_australia",
+        "marshall_sam_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "duration_months": 9,
+          "index_note": "ONI peaked at +1.3 °C in October–December 2002; at or beyond ±0.5 for 9 overlapping seasons, May–July 2002 to January–March 2003.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.26 in June.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2002–February 2003 mean of the CPC index -0.05 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 9,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -2.6 in October 2002; beyond ±1.5 for 2 overlapping seasons, September 2002 to October 2002. The positive SAM that began in October 2001 ended in January 2002.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.44 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.03 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 11,
+          "onset_year": 2001,
+          "duration_months": 3,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at -0.8 °C in December 2001; beyond ±0.5 for 3 overlapping seasons, November 2001 to January 2002.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2003,
+      "note": "The El Niño ended in February and the year was neutral in both oceans. The Atlantic index turned positive and, with interruptions, has stayed so; a warm North Atlantic tends to go with hot, dry summers in western Europe.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_amo_kaplan_index",
+        "sutton_hodson_2005"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 6,
+          "onset_year": 2002,
+          "duration_months": 9,
+          "index_note": "Already under way: ONI peaked at +1.3 °C in October–December 2002; at or beyond ±0.5 for 9 overlapping seasons, May–July 2002 to January–March 2003.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.15 in October.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2003–February 2004 mean of the CPC index +0.07 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +1.1 in April.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.38 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.20 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.4 in August.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2004,
+      "note": "A weak, central-Pacific El Niño from August to February, a positive NAO winter, and a warm Atlantic.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 8,
+          "duration_months": 7,
+          "index_note": "ONI peaked at +0.7 °C in August–October 2004; at or beyond ±0.5 for 7 overlapping seasons, July–September 2004 to January–March 2005.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.42 in June.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2004–February 2005 mean of the CPC index +0.89 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +1.4 in August.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.22 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2003,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.17 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 5,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.5 °C in May 2004; beyond ±0.5 for 1 overlapping season, May 2004 to May 2004.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2005,
+      "note": "A weak La Niña from November, but the year belongs to the Atlantic: its warmest year of the run on the index, a strong Atlantic Niña in the summer, and the drought in the Amazon.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_amo_kaplan_index",
+        "ersst_atl3_index",
+        "marengo_2008"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 11,
+          "duration_months": 5,
+          "index_note": "ONI peaked at -0.8 °C in December 2005–February 2006; at or beyond ±0.5 for 5 overlapping seasons, October–December 2005 to February–April 2006. The El Niño that began in August 2004 ended in January–March 2005.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 8,
+          "duration_months": 3,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in September 2005; beyond ±0.35 for 3 overlapping seasons, August 2005 to October 2005.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2005–February 2006 mean of the CPC index +0.11 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +1.6 in March.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.19 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2003,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.26 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 5,
+          "duration_months": 3,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -1.0 °C in June 2005; beyond ±0.5 for 3 overlapping seasons, May 2005 to July 2005.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2006,
+      "note": "A weak El Niño from September and a positive dipole in the autumn, the pairing behind the worst year of south-eastern Australia's long drought.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "ummenhofer_2009",
+        "cai_2011"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 5,
+          "index_note": "ONI peaked at +0.9 °C in October–December 2006; at or beyond ±0.5 for 5 overlapping seasons, August–October 2006 to December 2006–February 2007. The La Niña that began in November 2005 ended in February–April 2006.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 9,
+          "duration_months": 3,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.5 °C in October 2006; beyond ±0.35 for 3 overlapping seasons, September 2006 to November 2006.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2006–February 2007 mean of the CPC index +0.36 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +2.0 in June.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.35 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2003,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.23 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.1 in June.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2007,
+      "note": "A La Niña from July that peaked near −1.6 °C in January 2008, the start of seven cool years in the North Pacific. The dipole stayed under the threshold here, though some records call 2007 weakly positive.\n",
+      "sources": [
+        "noaa_oni_index",
+        "ncei_pdo_index",
+        "psl_dmi_hadisst_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 7,
+          "duration_months": 12,
+          "index_note": "ONI peaked at -1.6 °C in December 2007–February 2008; at or beyond ±0.5 for 12 overlapping seasons, June–August 2007 to May–July 2008. The El Niño that began in September 2006 ended in December 2006–February 2007.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.18 in September.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2007–February 2008 mean of the CPC index +0.65 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +2.1 in January 2008; beyond ±1.5 for 2 overlapping seasons, December 2007 to January 2008.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -0.70 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2003,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.11 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in August.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2008,
+      "note": "The La Niña broke in June and a second, weak one began in November. A warm Atlantic Niño registered in July, and the Atlantic's warm phase continued.\n",
+      "sources": [
+        "noaa_oni_index",
+        "ersst_atl3_index",
+        "psl_amo_kaplan_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 11,
+          "duration_months": 5,
+          "index_note": "ONI peaked at -0.8 °C in December 2008–February 2009; at or beyond ±0.5 for 5 overlapping seasons, October–December 2008 to February–April 2009. The La Niña that began in July 2007 ended in May–July 2008.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.21 in June.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2008–February 2009 mean of the CPC index -0.08 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "onset_year": 2007,
+          "duration_months": 2,
+          "index_note": "Already under way: Marshall index (three-month mean) peaked at +2.1 in January 2008; beyond ±1.5 for 2 overlapping seasons, December 2007 to January 2008.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.66 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2003,
+          "duration_months": 72,
+          "index_note": "Calendar-year mean +0.10 °C (detrended); the same phase in every year 2003–2008.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 7,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.5 °C in July 2008; beyond ±0.5 for 1 overlapping season, July 2008 to July 2008.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2009,
+      "note": "An El Niño from August, peaking at +1.6 °C in December, and the record negative NAO winter of 2009–10: the coldest December in decades across northern Europe and the eastern United States.\n",
+      "sources": [
+        "noaa_oni_index",
+        "cpc_nao_index",
+        "osborn_2011",
+        "cohen_2010",
+        "cattiaux_2010"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 8,
+          "duration_months": 8,
+          "index_note": "ONI peaked at +1.6 °C in November 2009–January 2010; at or beyond ±0.5 for 8 overlapping seasons, July–September 2009 to February–April 2010. The La Niña that began in November 2008 ended in February–April 2009.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.13 in August.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "negative",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2009–February 2010 mean of the CPC index -1.67 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +1.3 in January.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.03 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.01 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in August.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "note": "The El Niño ended in March and a strong La Niña set in from June, with a negative dipole in the autumn and a second negative NAO winter: floods in Queensland, the Russian heat wave and the Pakistan floods, drought in the Amazon.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "bom_scs24",
+        "blunden_2011",
+        "marengo_2011"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 6,
+          "duration_months": 11,
+          "index_note": "ONI peaked at -1.6 °C in September–November 2010; at or beyond ±0.5 for 11 overlapping seasons, May–July 2010 to March–May 2011. The El Niño that began in August 2009 ended in February–April 2010.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 10,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in October 2010; beyond ±0.35 for 2 overlapping seasons, October 2010 to November 2010.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "negative",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2010–February 2011 mean of the CPC index -0.68 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 5,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.7 in June 2010; beyond ±1.5 for 3 overlapping seasons, May 2010 to July 2010. Also positive SAM from October 2010 (3 seasons, peak +2.4): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.06 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 12,
+          "index_note": "Calendar-year mean +0.32 °C (detrended); the same phase in every year 2010.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 10,
+          "duration_months": 1,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.5 °C in October 2010; beyond ±0.5 for 1 overlapping season, October 2010 to October 2010.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "note": "The La Niña broke in April and returned in August for a second winter; so much rain fell on land that global sea level dipped. The Horn of Africa's rains failed for a second season.\n",
+      "sources": [
+        "noaa_oni_index",
+        "boening_2012",
+        "dutra_2013"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 8,
+          "duration_months": 7,
+          "index_note": "ONI peaked at -1.0 °C in October–December 2011; at or beyond ±0.5 for 7 overlapping seasons, July–September 2011 to January–March 2012. The La Niña that began in June 2010 ended in March–May 2011.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.30 in September.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2011–February 2012 mean of the CPC index +1.37 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +1.7 in December 2011; beyond ±1.5 for 2 overlapping seasons, December 2011 to January 2012.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.81 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.07 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.5 in December.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "note": "The La Niña ended in February; a positive dipole in late summer, the record-low Arctic sea ice of September, drought across the United States, and a cold wave over Eurasia in December.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "nsidc_2012_minimum",
+        "blunden_2013",
+        "jma_2012_cold_wave"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 8,
+          "onset_year": 2011,
+          "duration_months": 7,
+          "index_note": "Already under way: ONI peaked at -1.0 °C in October–December 2011; at or beyond ±0.5 for 7 overlapping seasons, July–September 2011 to January–March 2012.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 7,
+          "duration_months": 3,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.6 °C in August 2012; beyond ±0.35 for 3 overlapping seasons, July 2012 to September 2012.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2012–February 2013 mean of the CPC index +0.02 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 6,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.0 in July 2012; beyond ±1.5 for 3 overlapping seasons, June 2012 to August 2012. The positive SAM that began in December 2011 ended in January 2012.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.73 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.18 °C (detrended); the same phase in every year 2012–2013.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "cool",
+          "onset_month": 1,
+          "duration_months": 5,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at -0.7 °C in January 2012; beyond ±0.5 for 5 overlapping seasons, January 2012 to May 2012.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "note": "Neutral in the Pacific all year, a weak negative dipole in late spring, and a positive NAO winter of repeated storms over north-western Europe.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "blunden_2014"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.3 in June–August 2013.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 5,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in May 2013; beyond ±0.35 for 2 overlapping seasons, May 2013 to June 2013.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2013–February 2014 mean of the CPC index +0.86 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 2,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +2.0 in February 2013; beyond ±1.5 for 2 overlapping seasons, February 2013 to March 2013. Also negative SAM from August 2013 (2 seasons, peak -2.5): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2007,
+          "duration_months": 84,
+          "index_note": "Calendar-year mean -1.17 °C; the same phase in every year 2007–2013.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2012,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.13 °C (detrended); the same phase in every year 2012–2013.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.4 in October.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "note": "The El Niño that stalled in the spring finally qualified from October and grew into the 2015–16 event; the North Pacific flipped warm, with the Blob off the American coast, and the NAO winter was the most positive in this record.\n",
+      "sources": [
+        "noaa_oni_index",
+        "mcphaden_2015",
+        "hu_fedorov_2016",
+        "ncei_pdo_index",
+        "bond_2015",
+        "cpc_nao_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 10,
+          "duration_months": 19,
+          "index_note": "ONI peaked at +2.8 °C in November 2015–January 2016; at or beyond ±0.5 for 19 overlapping seasons, September–November 2014 to March–May 2016.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.29 in August.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2014–February 2015 mean of the CPC index +1.66 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "neutral",
+          "index_note": "No run of two overlapping seasons beyond ±1.5 in the Marshall index; strongest three-month mean +1.4 in December.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean +0.55 °C; the same phase in every year 2014–2016.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.07 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean -0.4 in November.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "note": "El Niño all year, peaking at +2.75 °C in December, among the three strongest on record, with a modest positive dipole, record heat and drought in the Amazon and coral bleaching worldwide.\n",
+      "sources": [
+        "noaa_oni_index",
+        "levine_mcphaden_2016",
+        "psl_dmi_hadisst_index",
+        "jimenez_munoz_2016",
+        "eakin_2019"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 10,
+          "onset_year": 2014,
+          "duration_months": 19,
+          "index_note": "Already under way: ONI peaked at +2.8 °C in November 2015–January 2016; at or beyond ±0.5 for 19 overlapping seasons, September–November 2014 to March–May 2016.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 7,
+          "duration_months": 5,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.4 °C in September 2015; beyond ±0.35 for 5 overlapping seasons, July 2015 to November 2015.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2015–February 2016 mean of the CPC index +1.31 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.9 in January 2015; beyond ±1.5 for 3 overlapping seasons, January 2015 to March 2015. Also positive SAM from May 2015 (4 seasons, peak +2.1): the table takes the first event of the year. Also positive SAM from December 2015 (5 seasons, peak +2.9): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2014,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean +0.92 °C; the same phase in every year 2014–2016.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.08 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in December.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "note": "The El Niño ended in April; the index then dipped to −0.6 °C for four seasons, one short of a La Niña by the five-season rule (the 2016 story calls it a weak La Niña, as the earlier version of the index did). A negative dipole held from June to November and the equatorial Atlantic was warm.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "lim_hendon_2017",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 10,
+          "onset_year": 2014,
+          "duration_months": 19,
+          "index_note": "Already under way: ONI peaked at +2.8 °C in November 2015–January 2016; at or beyond ±0.5 for 19 overlapping seasons, September–November 2014 to March–May 2016.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 6,
+          "duration_months": 6,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.5 °C in July 2016; beyond ±0.35 for 6 overlapping seasons, June 2016 to November 2016.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2016–February 2017 mean of the CPC index +0.65 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 11,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at -1.9 in December 2016; beyond ±1.5 for 2 overlapping seasons, November 2016 to December 2016. The positive SAM that began in December 2015 ended in April 2016.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2014,
+          "duration_months": 36,
+          "index_note": "Calendar-year mean +0.67 °C; the same phase in every year 2014–2016.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.31 °C (detrended); the same phase in every year 2016–2017.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 7,
+          "duration_months": 6,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.7 °C in August 2016; beyond ±0.5 for 6 overlapping seasons, July 2016 to December 2016.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "note": "A weak La Niña from October, an out-of-season positive dipole in the northern spring, and a positive NAO winter after the second-warmest February in the United States record.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "ncei_winter_2017"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 10,
+          "duration_months": 6,
+          "index_note": "ONI peaked at -0.9 °C in November 2017–January 2018; at or beyond ±0.5 for 6 overlapping seasons, September–November 2017 to February–April 2018.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 4,
+          "duration_months": 4,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.5 °C in June 2017; beyond ±0.35 for 4 overlapping seasons, April 2017 to July 2017.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2017–February 2018 mean of the CPC index +1.30 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 2,
+          "index_note": "Marshall index (three-month mean) peaked at +2.4 in December 2017; beyond ±1.5 for 2 overlapping seasons, December 2017 to January 2018.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.10 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2016,
+          "duration_months": 24,
+          "index_note": "Calendar-year mean +0.28 °C (detrended); the same phase in every year 2016–2017.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.5 in September.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "note": "A weak El Niño from September and a positive dipole from the same month; the equatorial Atlantic stayed warm for ten months, and the NAO winter sat exactly at the threshold.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "ersst_atl3_index",
+        "cpc_nao_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 9,
+          "duration_months": 10,
+          "index_note": "ONI peaked at +1.0 °C in October–December 2018; at or beyond ±0.5 for 10 overlapping seasons, August–October 2018 to May–July 2019. The La Niña that began in October 2017 ended in February–April 2018.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 9,
+          "duration_months": 5,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.6 °C in October 2018; beyond ±0.35 for 5 overlapping seasons, September 2018 to January 2019.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2018–February 2019 mean of the CPC index +0.50 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 10,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.5 in October 2018; beyond ±1.5 for 3 overlapping seasons, October 2018 to December 2018. The positive SAM that began in December 2017 ended in January 2018.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.37 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean +0.03 °C (detrended), inside ±0.1.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 7,
+          "duration_months": 10,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.7 °C in October 2018; beyond ±0.5 for 10 overlapping seasons, July 2018 to April 2019.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "note": "The strongest positive dipole since 1997 from May, the stratospheric warming that turned the SAM sharply negative from October, and Australia's Black Summer; a weak El Niño qualified in the winter under the current index.\n",
+      "sources": [
+        "psl_dmi_hadisst_index",
+        "doi_2020",
+        "marshall_sam_index",
+        "lim_2021",
+        "wang_cai_2020",
+        "noaa_oni_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 11,
+          "duration_months": 5,
+          "index_note": "ONI peaked at +0.7 °C in November 2019–January 2020; at or beyond ±0.5 for 5 overlapping seasons, October–December 2019 to February–April 2020. The El Niño that began in September 2018 ended in May–July 2019.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 5,
+          "duration_months": 8,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.9 °C in October 2019; beyond ±0.35 for 8 overlapping seasons, May 2019 to December 2019. The positive dipole that began in September 2018 ended in January 2019.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2019–February 2020 mean of the CPC index +1.27 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "negative",
+          "onset_month": 10,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at -2.7 in November 2019; beyond ±1.5 for 3 overlapping seasons, October 2019 to December 2019.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "neutral",
+          "index_note": "Calendar-year mean -0.16 °C, inside ±0.5.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "index_note": "Calendar-year mean +0.14 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 10,
+          "duration_months": 6,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +1.1 °C in December 2019; beyond ±0.5 for 6 overlapping seasons, October 2019 to March 2020. The warm event that began in July 2018 ended in April 2019.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "note": "The first of three La Niña winters, from August; the North Pacific dropped back into its cool phase, and the Atlantic warm event of the winter faded in March.\n",
+      "sources": [
+        "noaa_oni_index",
+        "ncei_pdo_index",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 8,
+          "duration_months": 9,
+          "index_note": "ONI peaked at -1.2 °C in October–December 2020; at or beyond ±0.5 for 9 overlapping seasons, July–September 2020 to March–May 2021. The El Niño that began in November 2019 ended in February–April 2020.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean +0.36 in June.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2020–February 2021 mean of the CPC index -0.42 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 11,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.1 in January 2021; beyond ±1.5 for 3 overlapping seasons, November 2020 to January 2021.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "index_note": "Calendar-year mean -1.14 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.27 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 10,
+          "onset_year": 2019,
+          "duration_months": 6,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at +1.1 °C in December 2019; beyond ±0.5 for 6 overlapping seasons, October 2019 to March 2020.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "note": "The La Niña broke in April and returned in September for seventeen months. The dipole index barely moved here, though the Bureau of Meteorology called a negative dipole; the equatorial Atlantic had its strongest warm event in this record in the summer.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "ersst_atl3_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 9,
+          "duration_months": 17,
+          "index_note": "ONI peaked at -1.0 °C in August–October 2022; at or beyond ±0.5 for 17 overlapping seasons, August–October 2021 to December 2022–February 2023. The La Niña that began in August 2020 ended in March–May 2021.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "neutral",
+          "index_note": "Dipole Mode Index (HadISST) stayed within ±0.35 °C in June–November, or beyond it for one season only; largest three-month mean -0.13 in August.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2021–February 2022 mean of the CPC index +1.02 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 10,
+          "duration_months": 6,
+          "index_note": "Marshall index (three-month mean) peaked at +2.5 in December 2021; beyond ±1.5 for 6 overlapping seasons, October 2021 to March 2022. The positive SAM that began in November 2020 ended in January 2021.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2020,
+          "index_note": "Calendar-year mean -1.88 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.22 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 6,
+          "duration_months": 5,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +1.2 °C in July 2021; beyond ±0.5 for 5 overlapping seasons, June 2021 to October 2021.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "note": "La Niña's third year, a weak negative dipole in the autumn, and the most positive SAM in this record in December. The dipole index runs weaker here than the Bureau's, which called the event strong.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "marshall_sam_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "la_nina",
+          "onset_month": 9,
+          "onset_year": 2021,
+          "duration_months": 17,
+          "index_note": "Already under way: ONI peaked at -1.0 °C in August–October 2022; at or beyond ±0.5 for 17 overlapping seasons, August–October 2021 to December 2022–February 2023.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 9,
+          "duration_months": 3,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in October 2022; beyond ±0.35 for 3 overlapping seasons, September 2022 to November 2022.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2022–February 2023 mean of the CPC index +0.67 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 9,
+          "duration_months": 6,
+          "index_note": "Marshall index (three-month mean) peaked at +3.7 in December 2022; beyond ±1.5 for 6 overlapping seasons, September 2022 to February 2023. The positive SAM that began in October 2021 ended in March 2022.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2020,
+          "index_note": "Calendar-year mean -2.11 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.25 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "psl_amo_kaplan_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "neutral",
+          "index_note": "ATL3 anomaly stayed within ±0.5 °C all year; largest three-month mean +0.3 in December.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "note": "An El Niño from May, reaching +2.1 °C in December, with a long positive dipole from March; the North Atlantic index leapt far above anything in the earlier record and the North Pacific was deeply cool.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "ncei_amo_ersst_index",
+        "ncei_pdo_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "duration_months": 12,
+          "index_note": "ONI peaked at +2.1 °C in November 2023–January 2024; at or beyond ±0.5 for 12 overlapping seasons, April–June 2023 to March–May 2024. The La Niña that began in September 2021 ended in December 2022–February 2023.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 3,
+          "duration_months": 14,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at +0.9 °C in October 2023; beyond ±0.35 for 14 overlapping seasons, March 2023 to April 2024.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2023–February 2024 mean of the CPC index +1.08 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 4,
+          "index_note": "Marshall index (three-month mean) peaked at +2.6 in January 2024; beyond ±1.5 for 4 overlapping seasons, December 2023 to March 2024. The positive SAM that began in September 2022 ended in February 2023.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2020,
+          "index_note": "Calendar-year mean -2.26 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.81 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "ncei_amo_ersst_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 10,
+          "duration_months": 8,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +1.2 °C in March 2024; beyond ±0.5 for 8 overlapping seasons, October 2023 to May 2024.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "note": "The El Niño ended in April and the dipole with it; the widely expected La Niña stayed short of the five seasons the definition needs. The North Pacific index posted its most negative calendar year since records began in 1854, and the North Atlantic its warmest.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "ncei_pdo_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "el_nino",
+          "onset_month": 5,
+          "onset_year": 2023,
+          "duration_months": 12,
+          "index_note": "Already under way: ONI peaked at +2.1 °C in November 2023–January 2024; at or beyond ±0.5 for 12 overlapping seasons, April–June 2023 to March–May 2024.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "positive",
+          "onset_month": 3,
+          "onset_year": 2023,
+          "duration_months": 14,
+          "index_note": "Already under way: Dipole Mode Index (HadISST, three-month mean) peaked at +0.9 °C in October 2023; beyond ±0.35 for 14 overlapping seasons, March 2023 to April 2024.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "positive",
+          "onset_month": 12,
+          "duration_months": 3,
+          "index_note": "December 2024–February 2025 mean of the CPC index +0.76 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 12,
+          "onset_year": 2023,
+          "duration_months": 4,
+          "index_note": "Already under way: Marshall index (three-month mean) peaked at +2.6 in January 2024; beyond ±1.5 for 4 overlapping seasons, December 2023 to March 2024.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2020,
+          "index_note": "Calendar-year mean -2.59 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.91 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "ncei_amo_ersst_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 11,
+          "duration_months": 5,
+          "index_note": "ATL3 anomaly (three-month mean) peaked at +0.7 °C in January 2025; beyond ±0.5 for 5 overlapping seasons, November 2024 to March 2025. The warm event that began in October 2023 ended in May 2024.",
+          "source": "ersst_atl3_index"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "note": "A cool lean from the autumn that, like the previous winter's, fell one season short of a La Niña; a weak negative dipole, a neutral NAO winter and a positive SAM in the southern autumn. Provisional: the year's indices were read in mid-2026.\n",
+      "sources": [
+        "noaa_oni_index",
+        "psl_dmi_hadisst_index",
+        "cpc_nao_index",
+        "marshall_sam_index"
+      ],
+      "drivers": [
+        {
+          "driver": "enso",
+          "phase": "neutral",
+          "index_note": "ONI stayed between −0.5 and +0.5 °C, or beyond it for fewer than five seasons in a row; largest three-month mean -0.6 in October–December 2025.",
+          "source": "noaa_oni_index"
+        },
+        {
+          "driver": "iod",
+          "phase": "negative",
+          "onset_month": 9,
+          "duration_months": 2,
+          "index_note": "Dipole Mode Index (HadISST, three-month mean) peaked at -0.4 °C in September 2025; beyond ±0.35 for 2 overlapping seasons, September 2025 to October 2025.",
+          "source": "psl_dmi_hadisst_index"
+        },
+        {
+          "driver": "nao",
+          "phase": "neutral",
+          "index_note": "December 2025–February 2026 mean of the CPC index -0.11 (standardised units).",
+          "source": "cpc_nao_index"
+        },
+        {
+          "driver": "sam",
+          "phase": "positive",
+          "onset_month": 2,
+          "duration_months": 3,
+          "index_note": "Marshall index (three-month mean) peaked at +2.3 in April 2025; beyond ±1.5 for 3 overlapping seasons, February 2025 to April 2025. Also negative SAM from October 2025 (2 seasons, peak -2.2): the table takes the first event of the year.",
+          "source": "marshall_sam_index"
+        },
+        {
+          "driver": "pdo",
+          "phase": "negative",
+          "onset_month": 1,
+          "onset_year": 2020,
+          "index_note": "Calendar-year mean -1.99 °C; the same phase in every year 2020–2025.",
+          "source": "ncei_pdo_index"
+        },
+        {
+          "driver": "amo",
+          "phase": "positive",
+          "onset_month": 1,
+          "onset_year": 2019,
+          "index_note": "Calendar-year mean +0.52 °C (detrended); the same phase in every year 2019–2025.",
+          "source": "ncei_amo_ersst_index"
+        },
+        {
+          "driver": "atlantic_nino",
+          "phase": "warm",
+          "onset_month": 11,
+          "onset_year": 2024,
+          "duration_months": 5,
+          "index_note": "Already under way: ATL3 anomaly (three-month mean) peaked at +0.7 °C in January 2025; beyond ±0.5 for 5 overlapping seasons, November 2024 to March 2025.",
+          "source": "ersst_atl3_index"
         }
       ]
     }

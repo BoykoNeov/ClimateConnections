@@ -121,15 +121,19 @@ ClimateConnections/
   data/nodes.yaml              all phenomena and outcomes
   data/links.yaml              all causal links + sources list
   data/stories.yaml            guided walkthroughs (milestone 6)
+  data/years.yaml              the table of real years (M34): which phase each driver held, from the index datasets
   scripts/build-data.mjs       validate YAML, emit public/data/graph.json
+  scripts/years-schema.mjs     schema and checks for years.yaml, shared with the tests (M34)
   public/data/graph.json       generated; do not edit by hand; committed so the site builds without the script
   src/
     types.ts                   TypeScript types mirroring the schema
     engine/propagate.ts        scenario -> per-month states
     engine/propagate.test.ts
+    engine/years.ts            one row of the years table as a scenario (M34)
     ui/map.ts                  projection, base map, node markers, arrows
     ui/timeline.ts             scrubber + play button
     ui/card.ts                 node info panel
+    ui/year.ts                 real-year panel (M34)
     ui/controls.ts             driver phase selector, start month
     ui/legend.ts               confidence legend
     main.ts                    wires everything together
@@ -497,6 +501,35 @@ are listed under "Not yet / out of season". For the driver node show the
 phase description and the timescale.
 
 ### 5.6 Controls (top-left)
+- Real year (M34), under Stories: a dropdown of the years in
+  `data/years.yaml` (1950–2025). Picking one runs `scenarioForYear`
+  (`src/engine/years.ts`) on the row and sets the scenario from it: month
+  0 is January of the year when a recorded driver allows it (a neutral
+  phase, or one that began that January, is the first driver), otherwise
+  the onset, in the year or the year before, whose twelve months cover
+  most of the year; every other recorded driver is a chosen driver in its
+  recorded phase from its own month, read backwards when it began earlier,
+  with a hold where the record ends the phase inside the months shown. The
+  scenario controls show the result and are locked (greyed and inert, as
+  in region mode) until "Edit this scenario" in the year panel or "Leave
+  the year" frees them; the story, year and region pickers stay live, and
+  a story, region mode or Escape leaves the year. The year panel above the
+  card gives the year's note, the window sentence ("The twelve months
+  shown run from January 1997", or why not), a line per recorded driver
+  with its phase, dates, duration and index note, the drivers not
+  recorded, any phase the engine cannot place exactly, the honesty
+  sentence ("The map shows the tendencies for the phases that were
+  observed. It does not show what happened that year; where a story
+  exists for this year it tells you where the real weather broke the
+  pattern."), the stories about the year and the sources. The month
+  display is dated ("September 1997"), the cards say "from the record"
+  and "set from the record for 1997" instead of "chosen by hand" / "you
+  chose", an unrecorded driver's card says so (a chain may still push it,
+  a tendency), and a chosen driver's card adds what the record says where
+  the engine reads it differently (a start read a year back, a hold it
+  cannot place). A dated story offers "Compare with the record: every
+  driver recorded for 1997". The print caption names the year, every
+  phase, the drivers not recorded, the window and the index sources.
 - Driver phase selector: three buttons (El Niño / Neutral / La Niña).
 - Second driver (M11): a dropdown ("None" or any other driver) with its own
   phase buttons, and (M12) its own "Second driver begins in" month picker,
@@ -2079,6 +2112,111 @@ drivers stays in one place.
   `docs/PLAN_V3.md`: M34 (a table of real years, whose rows are M33
   scenarios), or the UI items M29–M31, each with its own sign-off.
 
+### M34 — A table of real years (version 3, signed off 2026-09-08)
+- The first item to read the record rather than the literature, taken at
+  the user's "work on M34" and done the way rule 16 of `docs/PLAN_V3.md`
+  allows: a hand-curated, committed table, not a data feed.
+  `data/years.yaml`: 76 rows, 1950–2025, 353 entries; ENSO alone before
+  1980, the seven index drivers (ENSO, the Indian Ocean Dipole, the NAO,
+  the SAM, the PDO, the AMO, the Atlantic Niño) from 1980, as decided on
+  2026-09-08. Each entry is a driver, a phase, an `onset_month`, an
+  `onset_year` when the phase began before the row's year,
+  `duration_months` (uncapped: the 1998–2001 La Niña holds thirty-two), an
+  `index_note` and a `source`; a neutral phase has no onset. Every phase
+  was called from the index dataset named in its source by a threshold
+  rule written into that source's citation, eight new sources:
+  `noaa_oni_index` (NOAA's five-season ±0.5 °C rule on the ONI, ERSST v6),
+  `psl_dmi_hadisst_index` (±0.35 °C for two overlapping seasons touching
+  June–November on the HadISST dipole index; a little under the Bureau's
+  ±0.4 because that index runs smaller than the Bureau's weekly one, and
+  with it the Bureau's list since 1980 is reproduced except the weak
+  negatives of 2014 and 2021), `cpc_nao_index` (December–February mean
+  beyond ±0.5), `marshall_sam_index` (±1.5 for two overlapping seasons on
+  the Marshall index, the first such run of the year), `ncei_pdo_index`
+  and `psl_amo_kaplan_index` (calendar-year means beyond ±0.5 and ±0.1 °C,
+  a run of same-phase years one phase), `ncei_amo_ersst_index` (the NCEI
+  series, detrended, from 2023 where Kaplan ends) and `ersst_atl3_index`
+  (±0.5 °C for one season on an ATL3 index computed from the ERSST v5
+  grid, the literature's one-standard-deviation rule). The series were
+  downloaded once (August 2026) and the rules applied by scripts under
+  `W:\temp\claude\ClimateConnections\m34\` (`derive.py`, `assemble.py`,
+  `notes.py`); the index notes are generated from the numbers, the year
+  notes written by hand and kept to what the indices show plus events with
+  a source in `links.yaml`. The reading is the same for every driver: the
+  entry is the event that began earliest in the year, else the one already
+  under way when the year began, else neutral; other events of the year
+  are named in the index note (the second La Niña of 2011, say). The
+  ERSST v6 ONI drops the 2016–17 La Niña the 2016 story tells of (four
+  seasons, one short) and adds a weak El Niño in the winter of 2019–20;
+  the 2016 and 2019 notes say so.
+- Validator: `scripts/years-schema.mjs` (the schema and `checkYears`,
+  shared with the tests): every driver and phase exists, a neutral phase
+  has no onset or duration and any other phase has an onset month, an
+  `onset_year` is earlier than the row's year, no driver twice, years
+  unique and ascending, every source resolves. `graph.json` gains `years`.
+- Engine: nothing new. `src/engine/years.ts` `scenarioForYear(graph, row)`
+  turns a row into a rule-8 scenario: month 0 is January of the year when
+  a recorded driver allows it (the first neutral or January-onset entry in
+  row order is the first driver), otherwise the onset, in the year or the
+  year before, whose twelve months cover most of the year (a tie goes to
+  an onset in the year, then to row order; before 1980 an ENSO phase that
+  simply continued gives the earlier year's window); every other entry is
+  a chosen driver from its own month, `startsBefore` when it began before
+  month 0 (an earlier start is read as at most a year back, rule 8), a
+  neutral phase pinned from month 0, a duration a rule-9 hold when the
+  phase ends within the months shown. Where rule 9 cannot place a fade (a
+  phase over a year old at month 0 that ends later than twelve months
+  after its read-back start) the closer of a capped hold and no hold is
+  taken, a fade at the last month shown is held through, and an entry that
+  begins as the months shown end is left out; `YearScenario.approximations`
+  lists them and the panel says so. On the shipped table that is the
+  1982–83 El Niño in 1983 (ends two months early), the La Niña of 1988–89
+  in 1989 and the El Niño of 1991–92 in 1992 (one month each), and in 2024
+  (window from December 2023) the dipole two months early and the NAO
+  winter that begins in its last month left out. Drivers absent from a
+  row are not chosen: "not recorded", free to be pushed by a chain. 23
+  tests in `src/engine/years.test.ts`: the table's coverage and order,
+  every dated story has a row, every row through the engine with each
+  entry at its engine onset and fade, the approximations pinned, the
+  anchors (January for every row from 1980 but 1984 and 2023, from an
+  onset in the year, and 2024, from the year before; eight ENSO-alone
+  years from the year before), 1997 in detail and through the engine (the
+  neutral NAO pinned against El Niño's push), 1972, 1999, 2001, 1955 and
+  1959, 1983, an all-neutral row's empty map, the tie rule, an entry left
+  out, the function's refusals and the validator's.
+- UI as §5.6 above: the "Real year" picker (`data-role="year"`), the
+  locked scenario controls (`ControlsView.setLocked`), the year panel
+  (`src/ui/year.ts`, `YearView`, `#year` above `#card`), the dated month
+  display, `ChosenPhase.record` and `renderCard(..., year)` for the card
+  wording, the story panel's "Compare with the record" button, the year
+  caption. The `#controls select` order is now 0 story, 1 year, 2 region,
+  3 driver, then the other-driver rows, month, hold, filter.
+- Browser check `W:\temp\claude\ClimateConnections\cdp-m34.mjs` (36
+  checks): the picker and its hint; 1997 (the panel with the note, the
+  window sentence, seven lines with their index notes, the seven not
+  recorded, the honesty sentence, two stories and the sources; the locked
+  controls showing the NAO first with six rows, El Niño from May, the
+  Atlantic Niña since October held ten months, the PDO since January; the
+  dated month display, the named ticks and the fade mark; the caption;
+  the map at month 0 and in September, with the cards for ENSO, the NAO,
+  the faded Atlantic Niña, the basin mode pushed warm by the chain and
+  the unrecorded QBO); "Edit this scenario" freeing the controls with the
+  scenario kept; 1955 from May 1954; 2024 from December 2023 with its two
+  approximations; 1983's El Niño ending early with the record on the
+  card, and 2001's La Niña read a year back with its record start on the
+  card; the 1997 story's "Compare with the record" and the year's story
+  links; 2010's lines; region mode, Escape and a story leaving the year;
+  compare off throughout; print. Screenshots `m34-01-1997-september.png`,
+  `m34-02-year-panel.png`, `m34-03-2024-april.png`.
+- Not in M34: fetching anything at run time (the series were read once
+  and the rows committed); monthly index values; years before 1950; the
+  other seven drivers (no index was chosen for them: "not recorded" in
+  every row, and the panel says so); a year in the URL hash; removing
+  `Scenario.secondary` and the pre-M33 story fields (still accepted, one
+  more milestone). Next in `docs/PLAN_V3.md`: the UI items M29–M31, or
+  M35 (modulation), each with its own sign-off; M38 (quiz) can now draw
+  on the years.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -2276,7 +2414,9 @@ writing mechanism text):
   M28: "By region", every driver that reaches a place); phase duration
   (done, M32: "Event lasts", the first engine extension of version 3);
   any number of chosen drivers (done, M33: "More drivers", rule 8 in the
-  plural); spreadsheet-to-YAML importer if outside contributors join.
+  plural); the historical index overlay as a table of real years (done,
+  M34: "Real year", 1950–2025 read from the index datasets as M33
+  scenarios); spreadsheet-to-YAML importer if outside contributors join.
 - **v3:** specified milestone by milestone in `docs/PLAN_V3.md`
   (M20–M40): seven more drivers that fit the current design (Indian Ocean
   Basin Mode, Atlantic and Pacific Meridional Modes, the QBO, two

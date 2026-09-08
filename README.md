@@ -17,7 +17,8 @@ months. Click any region to read what tends to happen, why, how sure the
 science is, and where that comes from.
 
 The map currently holds fourteen drivers, 62 outcome regions, 208 cited links
-(twenty-nine of them between the drivers) and eighteen guided stories. A scenario is
+(twenty-nine of them between the drivers), eighteen guided stories and a
+table of real years, 1950–2025, read from the index datasets. A scenario is
 one driver in one phase, optionally with any number of other drivers each
 in a phase of its own; a driver can also push another driver into a phase, and the map then
 follows that driver's links too. Where two influences push a place
@@ -214,6 +215,22 @@ any static file server.
   sets the scenario, steps through the year, highlights one region at a
   time and explains what happened in that event. Changing the phase or start
   month by hand leaves the story.
+- **Real year** (under Stories) sets every recorded driver to the phase
+  the index datasets show for a year from 1950 to 2025: ENSO alone before
+  1980, and from 1980 the dipole, the NAO, the SAM, the PDO, the AMO and
+  the Atlantic Niño too, each from the month the index says it began, for
+  as long as it held, and pinned neutral where the index stayed quiet. The
+  controls show the result and are locked until **Edit this scenario** in
+  the panel on the right, or **Leave the year**, frees them with the
+  scenario kept. The panel gives the year in a few sentences, which months
+  the map shows (January of the year when the record allows it), a line
+  per driver with its dates and what the index did, the drivers the table
+  has no index for, any phase the map cannot hold exactly, the stories
+  about the year, and the datasets with the threshold rule that called
+  each phase. The map then shows the tendencies for the phases that were
+  observed; it does not show what happened that year, and the panel says
+  so. A dated story offers **Compare with the record**, which opens its
+  year.
 - **By region** (under Stories) turns the map round: pick the place you
   live in from "Where I live…" and the map shows every driver known to
   reach it, each incoming arrow in its own confidence style and coloured
@@ -275,9 +292,11 @@ and whichever card is open. The interactive controls are dropped.
 data/nodes.yaml      the phenomena on the map (drivers and outcomes)
 data/links.yaml      the causal edges, each with a source, confidence and caveat
 data/stories.yaml    guided walkthroughs
+data/years.yaml      the table of real years: which phase each driver held, 1950–2025, from the index datasets
 scripts/build-data.mjs   validates the YAML and writes public/data/graph.json
-src/engine/          pure propagation engine: scenario in, month-by-month states out; season-dial and compare helpers
-src/ui/              map (one per side), timeline, season dial, controls, legend, card, story panel
+scripts/years-schema.mjs the years table's schema and checks, shared with the tests
+src/engine/          pure propagation engine: scenario in, month-by-month states out; season-dial and compare helpers; a real year read as a scenario
+src/ui/              map (one per side), timeline, season dial, controls, legend, card, story panel, year panel
 docs/PLAN.md         the plan: scope, schema, engine semantics, milestones
 docs/DATA_FORMAT.md  field-by-field schema for the three data files
 ```
@@ -375,6 +394,22 @@ list of steps, each with a month index, a node to focus, a short text and
 sources. The validator refuses a step that points at a node the scenario
 does not affect at that month, so a story cannot claim more than the links
 support.
+
+## Correct a year
+
+The table of real years is `data/years.yaml`: one row per year, one entry
+per driver per year, each with the phase, the month it began (and the
+year, when it was already under way), how many months it held, a sentence
+on what the index did, and the index dataset as a source key. The
+citation of that source in `links.yaml` states the threshold rule that
+called the phase, so a reader can check any call against the dataset. To
+correct one, edit the entry (and the citation, if the rule or the dataset
+changed) and run `npm run build:data`; the validator refuses a neutral
+phase with an onset, a real phase without one, a driver listed twice, an
+onset year that is not earlier than the row, or a source that does not
+resolve. A driver left out of a row is "not recorded" for that year,
+which the panel says; it is not the same as neutral. The app fetches
+nothing: the series were read once, and the rows are committed.
 
 ## License
 

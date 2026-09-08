@@ -28,7 +28,9 @@ snow across Siberia as a fourteenth, its matched pair, since M28 a
 since M32 an "Event lasts" control that ends a chosen driver's phase after
 a set number of months, the first engine extension, and since M33 any
 number of drivers chosen at once behind a "More drivers" section, the
-second) on a
+second, and since M34 a "Real year" picker that sets every recorded
+driver from a hand-curated table of index readings, 1950–2025, the
+first item to read the record) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -67,6 +69,17 @@ one.
   hidden ocean memory: the chain is the honest way to show it, and the
   card and hint say so); no hold is the old timeline exactly. Do not
   relax it into a fade into the opposite phase; that is a push.
+- The table of real years (M34) is data: `data/years.yaml` holds one
+  entry per driver per year, each called from the index dataset named in
+  its `source` by the threshold rule written into that source's citation;
+  the app fetches nothing. `src/engine/years.ts` only turns a row into a
+  rule-8 / rule-9 scenario (month 0 January when a recorded driver allows
+  it, else the start that covers most of the year; every other entry a
+  chosen driver from its own month; a neutral entry pinned; a duration a
+  hold) and reports what the engine cannot place; it invents no state and
+  computes no climate fact. A driver absent from a row is "not recorded",
+  not neutral. Do not add a year entry without an index source, and do not
+  soften the year panel's honesty sentence.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -99,7 +112,10 @@ one.
   required on every driver, `hold_months` in stories, the "Event lasts"
   control) on 2026-09-08, and any number of chosen drivers (M33, the
   second engine extension: `Scenario.others`, rule 8 in the plural, the
-  `drivers:` list in stories, the "More drivers" section) on 2026-09-08.
+  `drivers:` list in stories, the "More drivers" section) on 2026-09-08,
+  and the table of real years (M34, the first item to read the record:
+  `data/years.yaml`, `scripts/years-schema.mjs`, `src/engine/years.ts`,
+  the "Real year" picker and panel) on 2026-09-08.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its
@@ -128,8 +144,8 @@ npm run build          # static site to dist/
 ```
 
 ## Layout (see docs/PLAN.md §2 for the full tree)
-- `data/` — nodes.yaml, links.yaml, stories.yaml
-- `scripts/build-data.mjs` — validator + converter
-- `src/engine/` — propagate.ts and tests
-- `src/ui/` — map, timeline, card, controls, legend
+- `data/` — nodes.yaml, links.yaml, stories.yaml, years.yaml
+- `scripts/build-data.mjs` — validator + converter; `scripts/years-schema.mjs` — the years table's checks
+- `src/engine/` — propagate.ts, years.ts and tests
+- `src/ui/` — map, timeline, card, controls, legend, story and year panels
 - `docs/` — PLAN.md, DATA_FORMAT.md

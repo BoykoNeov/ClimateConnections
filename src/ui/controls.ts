@@ -1,4 +1,4 @@
-// Left panel: stories, the region picker (M28), compare switch (M14), driver
+// Left panel: stories, the real-year picker (M34), the region picker (M28), compare switch (M14), driver
 // picker, phase buttons, the other chosen drivers (M11; a list since M33),
 // start month, a slot for the season dial (M13), confidence filter, legend.
 
@@ -323,6 +323,9 @@ export class ControlsView {
   private monthHeading: HTMLHeadingElement;
   private monthSelect: HTMLSelectElement;
   private storySelect: HTMLSelectElement;
+  /** real years (M34): the picker, and the lock it puts on the scenario controls */
+  private yearSelect: HTMLSelectElement;
+  private locked = false;
   /** region mode (M28): the place picker and the box of scenario controls it greys out */
   private regionSelect: HTMLSelectElement;
   private scenarioBox: HTMLDivElement;
@@ -339,8 +342,10 @@ export class ControlsView {
   onChange: (s: ControlState) => void = () => {};
   /** a story was picked from the dropdown (null = "none") */
   onStory: (storyId: string | null) => void = () => {};
+  /** a real year was picked from the dropdown (null = "none") (M34) */
+  onYear: (year: number | null) => void = () => {};
 
-  constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], regions: OutcomeNode[], private state: ControlState) {
+  constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], years: number[], regions: OutcomeNode[], private state: ControlState) {
     container.innerHTML = '';
 
     const hs = document.createElement('h2');
@@ -365,6 +370,32 @@ export class ControlsView {
     hintS.className = 'hint';
     hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
     container.append(hintS);
+
+    // Real years (M34): every recorded driver set to the phase the index
+    // datasets show for that year, the scenario controls locked until "Edit
+    // this scenario" in the year panel frees them.
+    const hy = document.createElement('h2');
+    hy.textContent = 'Real year';
+    container.append(hy);
+    this.yearSelect = document.createElement('select');
+    this.yearSelect.dataset.role = 'year';
+    this.yearSelect.setAttribute('aria-label', 'Show a real year from the record');
+    const noYear = document.createElement('option');
+    noYear.value = '';
+    noYear.textContent = 'Pick a year from the record…';
+    this.yearSelect.append(noYear);
+    for (const y of years) {
+      const o = document.createElement('option');
+      o.value = String(y);
+      o.textContent = String(y);
+      this.yearSelect.append(o);
+    }
+    this.yearSelect.addEventListener('change', () => this.onYear(this.yearSelect.value ? Number(this.yearSelect.value) : null));
+    container.append(this.yearSelect);
+    const hintY = document.createElement('p');
+    hintY.className = 'hint';
+    hintY.textContent = 'Sets every recorded driver to the phase the index datasets show for that year, with its own start and length, and locks the controls below; "Edit this scenario" in the panel on the right frees them. The map then shows the tendencies for those phases, not what happened that year.';
+    container.append(hintY);
 
     // Region mode (M28): pick a place and see every driver that reaches it.
     // No scenario runs; the controls below are greyed out until "None".
@@ -734,6 +765,18 @@ export class ControlsView {
     this.storySelect.value = storyId ?? '';
   }
 
+  /** Reflect which real year is on show (null = none) without firing onYear (M34). */
+  setYear(year: number | null): void {
+    this.yearSelect.value = year === null ? '' : String(year);
+  }
+
+  /** Lock (grey out, inert) the scenario controls while a real year is on
+   *  show (M34); the story, year and region pickers stay live. */
+  setLocked(locked: boolean): void {
+    this.locked = locked;
+    this.reflect();
+  }
+
   /** One row per other chosen driver, at least one (the optional second
    *  driver), the second and later rows behind "More drivers". */
   private reflectOthers(s: ScenarioSettings): void {
@@ -780,11 +823,13 @@ export class ControlsView {
   }
 
   private reflect(): void {
-    // Region mode (M28): the picker, and the scenario controls greyed out.
+    // Region mode (M28) and a real year (M34): the picker, and the scenario
+    // controls greyed out.
     this.regionSelect.value = this.state.region ?? '';
-    this.scenarioBox.classList.toggle('off', !!this.state.region);
-    this.scenarioBox.toggleAttribute('inert', !!this.state.region);
-    this.scenarioBox.setAttribute('aria-hidden', String(!!this.state.region));
+    const off = !!this.state.region || this.locked;
+    this.scenarioBox.classList.toggle('off', off);
+    this.scenarioBox.toggleAttribute('inert', off);
+    this.scenarioBox.setAttribute('aria-hidden', String(off));
 
     // Compare switch and side buttons (M14).
     const compare = this.state.compare;

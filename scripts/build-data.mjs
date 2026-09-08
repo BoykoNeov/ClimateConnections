@@ -1,4 +1,4 @@
-// Validates data/nodes.yaml, data/links.yaml and data/stories.yaml and writes public/data/graph.json.
+// Validates data/nodes.yaml, data/links.yaml, data/stories.yaml and data/years.yaml and writes public/data/graph.json.
 // Fails loudly on any schema error, unknown id, or missing source.
 // Run: npm run build:data
 
@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { z } from 'zod';
+import { YearsFile, checkYears } from './years-schema.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => yaml.load(readFileSync(join(root, p), 'utf8'));
@@ -174,8 +175,9 @@ function parse(schema, data, label) {
 const nodesFile = parse(NodesFile, read('data/nodes.yaml'), 'nodes.yaml');
 const linksFile = parse(LinksFile, read('data/links.yaml'), 'links.yaml');
 const storiesFile = parse(StoriesFile, read('data/stories.yaml'), 'stories.yaml');
+const yearsFile = parse(YearsFile, read('data/years.yaml'), 'years.yaml');
 
-if (nodesFile && linksFile && storiesFile) {
+if (nodesFile && linksFile && storiesFile && yearsFile) {
   const nodes = new Map();
   for (const n of nodesFile.nodes) {
     if (nodes.has(n.id)) fail(`nodes.yaml: duplicate node id "${n.id}"`);
@@ -320,19 +322,26 @@ if (nodesFile && linksFile && storiesFile) {
     });
   }
 
+  // ---- years (M34): the table of real years. Every driver and phase must
+  // exist, a neutral phase has no onset, every other phase has one, no driver
+  // twice, every source resolves. scripts/years-schema.mjs holds the rules so
+  // src/engine/years.test.ts can run them too.
+  for (const e of checkYears(yearsFile, nodes, sources, usedSources)) fail(e);
+
   for (const k of sources.keys()) if (!usedSources.has(k)) warnings.push(`source "${k}" is never cited`);
 
   if (errors.length === 0) {
     const graph = {
-      generatedFrom: ['data/nodes.yaml', 'data/links.yaml', 'data/stories.yaml'],
+      generatedFrom: ['data/nodes.yaml', 'data/links.yaml', 'data/stories.yaml', 'data/years.yaml'],
       nodes: nodesFile.nodes,
       links: linksFile.links,
       sources: linksFile.sources,
       stories: storiesFile.stories,
+      years: yearsFile.years,
     };
     mkdirSync(join(root, 'public/data'), { recursive: true });
     writeFileSync(join(root, 'public/data/graph.json'), JSON.stringify(graph, null, 2) + '\n');
-    console.log(`graph.json: ${graph.nodes.length} nodes, ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories`);
+    console.log(`graph.json: ${graph.nodes.length} nodes, ${graph.links.length} links, ${graph.sources.length} sources, ${graph.stories.length} stories, ${graph.years.length} years`);
   }
 }
 

@@ -11,6 +11,8 @@ import { TimelineView } from './ui/timeline';
 import { ControlsView, editedSide, lastsControl, scenarioSettings, sideSettings, type ConfidenceFilter, type ControlState, type OtherDriver, type ScenarioSettings, type Side } from './ui/controls';
 import { renderCard, renderRegionCard, type CardCompare, type ChosenPhase } from './ui/card';
 import { StoryView } from './ui/story';
+import { YearView } from './ui/year';
+import { calendarAt, scenarioForYear, yearRow, yearRows, type YearScenario } from './engine/years';
 
 const HORIZON = 12;
 const FILTER_MIN: Record<ConfidenceFilter, Confidence> = { all: 'contested', probable: 'probable', established: 'established' };
@@ -66,6 +68,11 @@ function esc(s: string): string {
   return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 }
 
+/** "a month", "4 months". */
+function monthsWord(n: number): string {
+  return n === 1 ? 'a month' : `${n} months`;
+}
+
 async function main(): Promise<void> {
   const res = await fetch(`${import.meta.env.BASE_URL}data/graph.json`);
   if (!res.ok) throw new Error(`Could not load graph.json (${res.status}). Run: npm run build:data`);
@@ -100,8 +107,13 @@ async function main(): Promise<void> {
 
   const tlEl = document.getElementById('timeline')!;
   const tl = new TimelineView(tlEl, HORIZON, controls.startMonth);
-  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, regions, controls);
-  const story = new StoryView(document.getElementById('story')!, new Map(graph.sources.map((s) => [s.key, s])));
+  const years = yearRows(graph);
+  const ctl = new ControlsView(document.getElementById('controls')!, drivers, graph.stories, years.map((r) => r.year), regions, controls);
+  const sources = new Map(graph.sources.map((s) => [s.key, s]));
+  const story = new StoryView(document.getElementById('story')!, sources, new Set(years.map((r) => r.year)));
+  const yearView = new YearView(document.getElementById('year')!, graph);
+  /** the real year on show (M34), or null: its drivers fill the controls, which are locked */
+  let yearActive: YearScenario | null = null;
   const dial = new SeasonDialView(ctl.dialHost);
 
   const panes = new Map<Side, Pane>();
@@ -164,6 +176,25 @@ async function main(): Promise<void> {
     tl.setFades(fades);
   }
 
+  /** In year mode (M34): what the record says about a chosen driver where
+   *  the engine reads it differently, for the card: a start more than a
+   *  year before month 0 (read as at most a year back), or a hold the
+   *  engine cannot place exactly. */
+  function recordNote(id: string): string | undefined {
+    if (!yearActive) return undefined;
+    const ys = yearActive;
+    const p = ys.drivers.find((x) => x.driver.driver === id);
+    if (!p || !p.placed || p.neutral || !p.onset) return undefined;
+    const at = (i: number) => { const c = calendarAt(ys.startYear, ys.scenario.startMonth, i); return `${MONTH_NAMES[c.month - 1]} ${c.year}`; };
+    const parts: string[] = [];
+    if (p.recordOnset < p.engineOnset) parts.push(`In the record this phase began in ${MONTH_NAMES[p.onset.month - 1]} ${p.onset.year}, ${monthsWord(-p.recordOnset)} before month 0; the map reads an earlier start as at most a year before, which changes nothing here, since every lag had run.`);
+    if (p.recordFade !== null && p.engineFade !== p.recordFade && (p.recordFade > 0 || (p.engineFade ?? 0) > 0)) {
+      if (p.recordFade > HORIZON) parts.push(`In the record it held to ${at(p.recordFade - 1)}, beyond the months shown.`);
+      else parts.push(`The record has it ending in ${at(p.recordFade)} (month ${p.recordFade}); the map can hold a phase for at most twelve months from a start it reads as at most a year back, so here it ${p.engineFade === null ? 'holds to the end of the months shown' : `ends in ${at(p.engineFade)} (month ${p.engineFade})`}.`);
+    }
+    return parts.length > 0 ? parts.join(' ') : undefined;
+  }
+
   /** The drivers chosen by hand on one side: id -> phase colour for the map
    *  (only while the driver is in its phase: a chosen driver with a later
    *  start month is drawn grey until then; one that began before the first,
@@ -177,14 +208,14 @@ async function main(): Promise<void> {
     const phases = new Map<string, ChosenPhase>();
     const fade = chosenFade(timeline.scenario, driver.id);
     if (fade === null || month.index < fade) colors.set(driver.id, phase.color);
-    phases.set(driver.id, { phaseId: phase.id, onset: 0, startMonth: s.startMonth, hold: s.hold, fade, control: lastsControl(1, total) });
+    phases.set(driver.id, { phaseId: phase.id, onset: 0, startMonth: s.startMonth, hold: s.hold, fade, control: lastsControl(1, total), record: recordNote(driver.id) });
     const others: ChosenOther[] = s.others.map((settings, i) => {
       const other = driverById(settings.driverId);
       const otherPhase = other.phases.find((p) => p.id === settings.phaseId)!;
       const onset = chosenOnset(timeline.scenario, other.id);
       const fadeO = chosenFade(timeline.scenario, other.id);
       if (month.index >= onset && (fadeO === null || month.index < fadeO)) colors.set(other.id, otherPhase.color);
-      phases.set(other.id, { phaseId: otherPhase.id, onset, startMonth: settings.startMonth, hold: settings.hold, fade: fadeO, control: lastsControl(i + 2, total) });
+      phases.set(other.id, { phaseId: otherPhase.id, onset, startMonth: settings.startMonth, hold: settings.hold, fade: fadeO, control: lastsControl(i + 2, total), record: recordNote(other.id) });
       return { driver: other, phase: otherPhase, settings };
     });
     return { driver, phase, others, colors, phases };
@@ -324,10 +355,13 @@ async function main(): Promise<void> {
     const other = compare ? months.get(edited === 'a' ? 'b' : 'a')! : null;
     if (other && other.calendarMonth !== month.calendarMonth) {
       monthEl.innerHTML = `Month ${month.index}<small>A: ${MONTH_NAMES[months.get('a')!.calendarMonth - 1]} · B: ${MONTH_NAMES[months.get('b')!.calendarMonth - 1]}, month ${month.index} after onset</small>`;
+    } else if (yearActive) {
+      const cal = calendarAt(yearActive.startYear, yearActive.scenario.startMonth, month.index);
+      monthEl.innerHTML = `${MONTH_NAMES[cal.month - 1]} ${cal.year}<small>real year ${yearActive.row.year}, month ${month.index}</small>`;
     } else {
       monthEl.innerHTML = `${MONTH_NAMES[month.calendarMonth - 1]}<small>month ${month.index} after onset</small>`;
     }
-    captionEl.textContent = printCaption(months, chosenBySide);
+    captionEl.textContent = yearActive ? yearCaption(yearActive, month, sideSettings(controls, edited)) : printCaption(months, chosenBySide);
     if (differs) ctl.compareNote.textContent = differs.size === 0 ? 'The two maps agree this month.' : differs.size === 1 ? 'One marker differs this month (dark ring).' : `${differs.size} markers differ this month (dark rings).`;
 
     const node = selectedNodeId ? graph.nodes.find((n) => n.id === selectedNodeId) ?? null : null;
@@ -336,7 +370,7 @@ async function main(): Promise<void> {
       a: { month: months.get('a')!, title: titles.get('a')! },
       b: { month: months.get('b')!, title: titles.get('b')! },
     } : undefined;
-    renderCard(cardEl, graph, node, month, chosenBySide.get(edited)!.phases, cardCompare);
+    renderCard(cardEl, graph, node, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year);
 
     const s = sideSettings(controls, edited);
     const c = chosenBySide.get(edited)!;
@@ -359,7 +393,10 @@ async function main(): Promise<void> {
     const wasCompare = !!controls.compare;
     Object.assign(controls, s);
     const scenarioChanged = keyA !== JSON.stringify(scenarioSettings(controls)) || keyB !== JSON.stringify(controls.compare?.b ?? null) || wasCompare !== !!controls.compare;
-    // Region mode is one place, not a scenario: entering it ends a story too.
+    // Region mode is one place, not a scenario: entering it ends a story too,
+    // and a real year (M34); the year's controls are locked, so a scenario
+    // change here comes from a story or from region mode's "watch".
+    if ((scenarioChanged || controls.region) && yearActive) yearView.exit();
     if ((scenarioChanged || controls.region) && story.active) story.exit();
     if (controls.region) tl.pause();
     syncHash();
@@ -394,6 +431,7 @@ async function main(): Promise<void> {
   ctl.onStory = (id) => {
     const s = id ? graph.stories.find((x) => x.id === id) : undefined;
     if (!s) { story.exit(); return; }
+    if (yearActive) yearView.exit();
     // Set the scenario the story needs, silently, then let the first step
     // draw. A story is one scenario, so compare mode goes off.
     controls.driverId = s.driver;
@@ -423,6 +461,50 @@ async function main(): Promise<void> {
     draw();
   };
 
+  /** A real year from the table (M34): its row becomes the scenario (the
+   *  engine reads it through `scenarioForYear`; nothing new is computed),
+   *  the controls show it and are locked, the year panel opens above the
+   *  card, and the timeline sits at month 0, paused. A story and compare
+   *  mode go off: a year is one scenario. */
+  function openYear(year: number): void {
+    const row = yearRow(graph, year);
+    if (!row) return;
+    const ys = scenarioForYear(graph, row, HORIZON);
+    if (story.active) story.exit();
+    const sc = ys.scenario;
+    const next: Partial<ControlState> = {
+      driverId: sc.driverId, phaseId: sc.phaseId, startMonth: sc.startMonth, hold: sc.holdMonths ?? null,
+      others: (sc.others ?? []).map((o) => ({ driverId: o.driverId, phaseId: o.phaseId, startMonth: o.startMonth ?? sc.startMonth, startsBefore: !!o.startsBefore, hold: o.holdMonths ?? null })),
+      compare: null, region: null,
+    };
+    Object.assign(controls, next);
+    ctl.setState(next);
+    ctl.setYear(year);
+    ctl.setLocked(true);
+    yearActive = ys;
+    selectedNodeId = null;
+    focusNodeId = null;
+    monthIndex = 0;
+    tl.setIndex(0);
+    tl.pause();
+    syncHash();
+    recompute();
+    yearView.show(ys);
+    draw();
+  }
+  ctl.onYear = (year) => { if (year === null) yearView.exit(); else openYear(year); };
+  // Leaving the year, or "Edit this scenario", frees the controls; the
+  // scenario stays as the year set it.
+  yearView.onExit = () => {
+    yearActive = null;
+    ctl.setLocked(false);
+    ctl.setYear(null);
+    draw();
+  };
+  yearView.onEdit = () => yearView.exit();
+  yearView.onStory = (id) => { ctl.setStory(id); ctl.onStory(id); };
+  story.onYear = (year) => openYear(year);
+
   // Keyboard: arrows and Space drive the scrubber; while a story plays the
   // arrows step the story instead and Escape leaves it. Form fields keep
   // their own keys.
@@ -436,6 +518,7 @@ async function main(): Promise<void> {
       if (e.key === 'Escape') { ctl.setState({ region: null }); applyControls({ ...controls, region: null }); e.preventDefault(); }
       return;
     }
+    if (yearActive && e.key === 'Escape') { yearView.exit(); used = true; }
     if (story.active) {
       if (e.key === 'ArrowRight') { story.next(); used = true; }
       else if (e.key === 'ArrowLeft') { story.prev(); used = true; }
@@ -472,6 +555,27 @@ async function main(): Promise<void> {
     return who +
       `Shown: ${MONTH_NAMES[month.calendarMonth - 1]}, month ${month.index} after onset. Showing ${filterText}` +
       `${s.chain ? ', following links through other drivers' : ', direct links only'}. `;
+  }
+
+  /** The printed caption in year mode (M34): the year, every recorded
+   *  phase with its start, the drivers not recorded, the month shown, the
+   *  honesty sentence and the index sources. */
+  function yearCaption(ys: YearScenario, month: MonthState, s: ScenarioSettings): string {
+    const row = ys.row;
+    const cal = calendarAt(ys.startYear, ys.scenario.startMonth, month.index);
+    const parts = ys.drivers.map((p) => {
+      const d = driverById(p.driver.driver);
+      const label = d.phases.find((x) => x.id === p.driver.phase)?.label ?? p.driver.phase;
+      return p.onset ? `${label} from ${MONTH_NAMES[p.onset.month - 1]} ${p.onset.year}` : `${shortName(d)} neutral`;
+    });
+    const notRecorded = drivers.filter((d) => !row.drivers.some((x) => x.driver === d.id)).map(shortName);
+    const keys = [...new Set(row.drivers.map((d) => d.source))];
+    const names = keys.map((k) => sources.get(k)?.citation.split('. ')[0] ?? k);
+    const filterText = { all: 'all connections, including contested ones', probable: 'probable and established connections', established: 'established connections only' }[s.filter];
+    return `Real year ${row.year}, from the record: ${listWords(parts)}${notRecorded.length > 0 ? `; not recorded: ${listWords(notRecorded)}` : ''}. ` +
+      `Shown: ${MONTH_NAMES[cal.month - 1]} ${cal.year}, month ${month.index}; the twelve months run from ${MONTH_NAMES[ys.scenario.startMonth - 1]} ${ys.startYear}. ` +
+      `The map shows the tendencies for the phases that were observed, not what happened that year. Index sources: ${names.join('; ')}. ` +
+      `Showing ${filterText}${s.chain ? ', following links through other drivers' : ', direct links only'}. Printed from Climate Connections, ${location.origin}${location.pathname}`;
   }
 
   function printCaption(months: Map<Side, MonthState>, chosen: Map<Side, Chosen>): string {

@@ -1,6 +1,6 @@
 # Data format
 
-The knowledge base is three YAML files. `npm run build:data` validates them and
+The knowledge base is four YAML files. `npm run build:data` validates them and
 writes `public/data/graph.json`, which the app loads. The validator is
 `scripts/build-data.mjs`; if this document and the validator disagree, the
 validator wins and this document needs fixing.
@@ -184,6 +184,70 @@ Rules enforced by the validator:
 Historical facts in a story are illustrations of the map's tendencies. Where
 a real event broke the pattern (the near-normal Indian monsoon of 1997, say),
 say so in the text: that is the teaching point, not a problem to hide.
+
+## `data/years.yaml`
+
+The table of real years (M34): which phase each driver held in each year,
+read from an index dataset by a threshold rule that is written into that
+dataset's citation in `links.yaml`. One row per year, one entry per driver
+per year. A driver absent from a row is "not recorded" that year, which is
+not the same as neutral: the map may still push it along a chain.
+
+```yaml
+years:
+  - year: 1997
+    note: >                         # one to three plain sentences on what the year was like,
+      ...                           #   kept to what the indices show and events with a source
+    sources: [noaa_oni_index, mcphaden_1999]   # at least one key from links.yaml
+    drivers:
+      - driver: enso                # a driver node id, never twice in a row
+        phase: el_nino              # a phase id of that driver
+        onset_month: 5              # calendar month the phase began; required unless the
+                                    #   phase is neutral, and forbidden when it is
+        onset_year: 1996            # optional: the year it began, only when that is before
+                                    #   this row's year (the phase was already under way)
+        duration_months: 12         # optional, at least 1, uncapped: how many months the
+                                    #   phase held from its onset; omitted = at least to the
+                                    #   end of the twelve months shown
+        index_note: "ONI peaked at +2.4 °C in October–December 1997; ..."   # optional
+        source: noaa_oni_index      # the index dataset: a source key whose citation
+                                    #   states the rule that called the phase
+```
+
+Rules enforced by the validator (`scripts/years-schema.mjs`, run by the
+data build and again by `src/engine/years.test.ts`):
+- `driver` must be a driver and `phase` one of its phases; no driver
+  twice in a row. A neutral phase (value 0) has no `onset_month`,
+  `onset_year` or `duration_months`; any other phase needs an
+  `onset_month`. An `onset_year` must be earlier than the row's year.
+- Years are unique and ascending. Every source key, on the row and on
+  each entry, resolves in `links.yaml`.
+
+How the app reads a row (`src/engine/years.ts`, `scenarioForYear`; the
+engine itself is unchanged): month 0 is January of the year when a
+recorded driver allows it, the first entry in row order that is neutral
+or began that January being the first driver; otherwise month 0 is the
+onset, in the year or the year before, whose twelve months cover most of
+the year. Every other entry is a chosen driver in its phase from its own
+month, read backwards (`startsBefore`) when it began before month 0, an
+earlier start being read as at most twelve months before; a neutral entry
+is pinned from month 0; a duration becomes a hold where the phase ends
+within the months shown. Where the hold cannot be placed exactly (a phase
+over a year old at month 0 that ends later than twelve months after its
+read-back start) the closer of a capped hold and no hold is taken, and
+the year panel and the driver's card say what the record has; an entry
+that begins as the months shown end is left out and reported.
+
+Coverage, decided 2026-09-08: ENSO 1950–2025; the Indian Ocean Dipole,
+the NAO, the SAM, the PDO, the AMO and the Atlantic Niño 1980–2025; the
+other drivers have no index in the table. The reading is the same for
+every driver: the entry is the event that began earliest in the year,
+else the one already under way when the year began, else neutral, with
+other events of the year named in `index_note`. The thresholds are in the
+index sources' citations (NOAA's five-season ±0.5 °C rule on the ONI, and
+so on). The series were read once, in August 2026; the app fetches
+nothing. To correct a call, edit the entry and, if the rule or the dataset
+changed, the citation; the build refuses anything the rules above forbid.
 
 ## Confidence tiers
 

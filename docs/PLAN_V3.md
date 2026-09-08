@@ -760,6 +760,27 @@ all three. The loop guard, depth and downgrade rules are unchanged.
 
 ### M34 — A table of real years
 
+**Shipped 2026-09-08.** The record of what was built is in `docs/PLAN.md`
+§6 under M34. As written below, with these readings: coverage is
+1950–2025 for ENSO and 1980–2025 for the seven index drivers, as decided;
+the row entry carries `duration_months` (uncapped; the engine takes a hold
+from it) rather than a 1–12 `hold_months`, and `onset_year` when the phase
+began before the row's year; the first driver is not "the earliest
+onset": month 0 is January of the year whenever a recorded driver allows
+it (a neutral phase, or one that began that January), because with the
+earliest onset the flagship years lost their winter (1997 from May) or
+started at a late minor event (2001 from October), and otherwise the
+onset, in the year or the year before, whose twelve months cover most of
+the year (an ENSO-only year in which the phase simply continued has no
+onset of its own and shows the earlier event's window; the panel says
+so); the card line reads "ENSO: El Niño from May 1997, to April 1998 (12
+months)" with the index note under it; the lock is real (the scenario
+controls are inert, as in region mode) and "Edit this scenario" or "Leave
+the year" frees them with the scenario kept; where rule 9 cannot place a
+fade the closer reading is taken and the panel and the card say what the
+record has. Every phase call comes from a downloaded index series by a
+threshold rule written into the source's citation, not from memory.
+
 The version-2 roadmap's "historical index overlay from NOAA", done in the
 way rule 16 allows: a hand-curated, committed table, not a data feed.
 

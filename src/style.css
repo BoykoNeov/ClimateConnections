@@ -218,6 +218,23 @@ html, body { margin: 0; height: 100%; }
 }
 .story-nav button[data-act="next"] { background: var(--ink); color: #ffffff; }
 .story-nav button:disabled { opacity: 0.4; cursor: default; }
+.story-year { margin: 8px 0 0; font-size: 12px; }
+.story-year button, .year-stories button { font: inherit; font-size: 12px; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
+/* Real-year panel (M34): the record for one year, above the card like a story. */
+#year {
+  padding: 12px 16px 14px;
+  background: #f5f1e6;
+  border-bottom: 3px solid #8a6d1f;
+}
+#year h3 { margin: 4px 0 2px; font-size: 16px; }
+#year .story-kicker { color: #8a6d1f; }
+.year-window { margin: 6px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); }
+.year-drivers { list-style: none; padding: 0; margin: 8px 0; }
+.year-drivers li { margin: 5px 0; font-size: 12.5px; }
+.year-drivers .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.year-drivers .idx { display: block; color: var(--muted); font-size: 11px; }
+.year-honesty { font-size: 12px; font-style: italic; margin: 8px 0; border-left: 3px solid #8a6d1f; padding-left: 8px; }
+.year-stories { font-size: 12px; margin: 6px 0; }
 #card h3 { margin: 0 0 2px; font-size: 17px; }
 #card .region { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
 #card p { margin: 6px 0; }
@@ -343,7 +360,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
   .sure { background: #fff8e6; }
   .sources a { color: #000; text-decoration: none; }
   .sources a::after { content: " (" attr(href) ")"; font-size: 7.5pt; color: #444; word-break: break-all; }
-  #story { border-bottom: 1px solid #000; padding: 0 0 3mm; margin-bottom: 3mm; background: #ffffff; }
+  #story, #year { border-bottom: 1px solid #000; padding: 0 0 3mm; margin-bottom: 3mm; background: #ffffff; }
   .story-nav, .story-exit, .story-kicker { display: none; }
   .watch { display: none; }
 

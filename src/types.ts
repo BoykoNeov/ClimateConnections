@@ -122,11 +122,41 @@ export interface StoryDriver {
   hold_months?: number;
 }
 
+/** One driver's phase in one real year (M34), read from an index dataset. */
+export interface YearDriver {
+  driver: string;
+  phase: string;
+  /** calendar month (1–12) the phase began; absent for a neutral phase */
+  onset_month?: number;
+  /** the year it began, only when that is before the row's year (the phase
+   *  was already under way when the year began) */
+  onset_year?: number;
+  /** how many months the phase held from its onset, uncapped (a La Niña can
+   *  hold thirty); omitted = at least to the end of the twelve months shown */
+  duration_months?: number;
+  /** what the index did, in one sentence */
+  index_note?: string;
+  /** the index dataset: a source key whose citation states the threshold rule */
+  source: string;
+}
+
+/** One row of the table of real years (M34). A driver absent from the row
+ *  is "not recorded" that year, which is not the same as neutral. */
+export interface YearRow {
+  year: number;
+  /** one to three plain sentences on what the year was like */
+  note: string;
+  sources: string[];
+  drivers: YearDriver[];
+}
+
 export interface Graph {
   nodes: GraphNode[];
   links: Link[];
   sources: Source[];
   stories: Story[];
+  /** the table of real years (M34); absent in a graph.json built before it */
+  years?: YearRow[];
 }
 
 // ---------------------------------------------------------------- engine

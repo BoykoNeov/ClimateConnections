@@ -24,8 +24,12 @@ export class StoryView {
   private stepIndex = 0;
   onStep: (story: Story, step: StoryStep, stepIndex: number) => void = () => {};
   onExit: () => void = () => {};
+  /** "Compare with the record" (M34): open the table's row for the story's year */
+  onYear: (year: number) => void = () => {};
 
-  constructor(private container: HTMLElement, private sources: Map<string, Source>) {
+  /** `years`: the years the table of real years (M34) covers, for the
+   *  "Compare with the record" button on a dated story */
+  constructor(private container: HTMLElement, private sources: Map<string, Source>, private years: Set<number> = new Set()) {
     container.hidden = true;
     container.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-act]');
@@ -33,6 +37,7 @@ export class StoryView {
       if (btn.dataset.act === 'next') this.next();
       else if (btn.dataset.act === 'prev') this.prev();
       else if (btn.dataset.act === 'exit') this.exit();
+      else if (btn.dataset.act === 'year') this.onYear(Number(btn.dataset.year));
     });
   }
 
@@ -91,6 +96,7 @@ export class StoryView {
       <p class="story-when">${esc(stepWhen(story, step))}</p>
       <p class="story-text">${esc(step.text.trim())}</p>
       <ul class="sources">${sources.join('')}</ul>
+      ${story.start_year !== undefined && this.years.has(story.start_year) ? `<p class="story-year"><button type="button" data-act="year" data-year="${story.start_year}">Compare with the record: every driver recorded for ${story.start_year}</button></p>` : ''}
       <div class="story-nav">
         <button type="button" data-act="prev" ${this.stepIndex === 0 ? 'disabled' : ''}>◀ Back</button>
         <button type="button" data-act="next" ${this.stepIndex === n - 1 ? 'disabled' : ''}>${this.stepIndex === n - 1 ? 'The end' : 'Next ▶'}</button>

@@ -65,6 +65,9 @@ export interface ChosenPhase {
   fade: number | null;
   /** the control that sets its hold, to name it: "Event lasts", "Second driver lasts", ... */
   control: string;
+  /** in year mode (M34): what the record says where the engine reads the
+   *  phase differently (a start more than a year back, a hold it cannot place) */
+  record?: string;
 }
 
 /** "two", "three", ... for small counts, digits beyond. */
@@ -83,6 +86,13 @@ interface Ctx {
   linkById: Map<string, Link>;
   /** drivers chosen by hand: id -> phase and onset (one; two since M11; any number since M33) */
   chosen: Map<string, ChosenPhase>;
+  /** the real year on show (M34): the chosen drivers come from the record, not the controls */
+  year?: number;
+}
+
+/** "you chose" or, in year mode, "set from the record for 1997". */
+function whoChose(ctx: Ctx): string {
+  return ctx.year === undefined ? 'you chose' : `set from the record for ${ctx.year}`;
 }
 
 function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded', ls: LinkState | null): string {
@@ -134,7 +144,7 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
     if (!from || from.kind !== 'driver') continue;
     const fromPhase = from.phases.find((p) => p.id === l.when);
     const toPhase = phaseForValue(node, l.effect);
-    const alsoChosen = ctx.chosen.has(from.id) ? `<p class="hint">${esc(shortName(from))} is also chosen by hand in this scenario, so this link is skipped: you have set both phases.</p>` : '';
+    const alsoChosen = ctx.chosen.has(from.id) ? `<p class="hint">${esc(shortName(from))} is also ${ctx.year === undefined ? 'chosen by hand in this scenario, so this link is skipped: you have set both phases' : `recorded for ${ctx.year}, so this link is skipped: both phases come from the record`}.</p>` : '';
     html += `<div class="link-block">
       <h4>${esc(fromPhase?.label ?? l.when)} tends to push toward ${esc(toPhase?.label ?? String(l.effect))} <span class="badge ${l.confidence}">${l.confidence}</span></h4>
       ${alsoChosen}
@@ -157,7 +167,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     if (month.index < info.onset) {
       // Chosen by hand, but its own start month has not come yet (M12).
       html += `<div class="state-line zero" style="background:#f0f2f5">Not yet in play: enters ${label} in ${MONTH_NAMES[info.startMonth - 1]}, month ${info.onset}</div>`;
-      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers you chose, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
+      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers ${whoChose(ctx)}, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
       html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
       html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
       html += feedbackBlock(node, graph, ctx);
@@ -170,13 +180,13 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         ? `Over before the year shown began: entered ${label} in ${MONTH_NAMES[info.startMonth - 1]}, held it ${monthsWord(info.hold)}, and ended in ${monthAt(info.startMonth, info.hold)}`
         : `Faded: held ${label} from ${MONTH_NAMES[info.startMonth - 1]} for ${monthsWord(info.hold)}; no phase since ${monthAt(info.startMonth, info.hold)} (month ${info.fade})`;
       html += `<div class="state-line zero" style="background:#f0f2f5">${line}</div>`;
-      html += `<p class="hint">You set how long this event lasts under ${control}. Since it ended its arrows are drawn grey and faded and apply nothing: the effects that had arrived have stopped, and any whose lag had not run by then never arrives on this map, though in reality the ocean can carry an effect past the end of an event. It is still not pushed by any other driver: a driver you chose stays pinned.</p>`;
+      html += `<p class="hint">${ctx.year === undefined ? `You set how long this event lasts under ${control}.` : `The record for ${ctx.year} has this event ending here.${info.record ? ` ${esc(info.record)}` : ''}`} Since it ended its arrows are drawn grey and faded and apply nothing: the effects that had arrived have stopped, and any whose lag had not run by then never arrives on this map, though in reality the ocean can carry an effect past the end of an event. It is still not pushed by any other driver: a ${ctx.year === undefined ? 'driver you chose' : 'recorded driver'} stays pinned.</p>`;
       html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
       html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
       html += feedbackBlock(node, graph, ctx);
       return html;
     }
-    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
+    html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.year !== undefined ? ' · from the record' : ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
     // Set to end (M32): say when.
     const lasts = info.fade !== null && info.hold !== null ? ` Set to last ${monthsWord(info.hold)}: it fades in ${monthAt(info.startMonth, info.hold)} (month ${info.fade}), and from then its arrows apply nothing.` : '';
     if (ctx.chosen.size > 1) {
@@ -188,9 +198,9 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]}, ${monthsWord(-info.onset)} before the year shown begins, and has held it since: ${monthsWord(held)} so far. Its links count their lag from then, so some of its effects were already being felt at month 0.`;
         if (held > 12) when += ` That is more than a year in one phase, longer than most real events last: treat the later months as a teaching convenience.`;
       }
-      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers you chose. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}</p>`;
-    } else if (lasts) {
-      html += `<p class="hint">${lasts.trim()}</p>`;
+      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers ${whoChose(ctx)}. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
+    } else if (lasts || info.record) {
+      html += `<p class="hint">${lasts.trim()}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
     }
     html += `<p>${esc(phase?.summary.trim() ?? '')}</p><h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
@@ -236,8 +246,10 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
     return html;
   }
-  html += `<div class="state-line zero" style="background:#f0f2f5">Not part of the current scenario</div>`;
-  html += `<p class="empty">Pick it under "Driver", "Second driver" or "More drivers" in the left panel to see its phases and connections.</p>`;
+  html += `<div class="state-line zero" style="background:#f0f2f5">${ctx.year === undefined ? 'Not part of the current scenario' : `Not recorded for ${ctx.year}`}</div>`;
+  html += ctx.year === undefined
+    ? `<p class="empty">Pick it under "Driver", "Second driver" or "More drivers" in the left panel to see its phases and connections.</p>`
+    : `<p class="empty">The table of real years has no index for this driver. The map may still push it into a phase along a chain from a recorded driver; that is a tendency, not a record.</p>`;
   html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
   html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
   return html;
@@ -299,8 +311,10 @@ function compareBlock(node: GraphNode, cmp: CardCompare): string {
 }
 
 /** `chosen` maps each driver chosen by hand to its phase and onset (one, or two since M11).
- *  `compare` (M14) adds the other scenario's month for a side-by-side block on top. */
-export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare): void {
+ *  `compare` (M14) adds the other scenario's month for a side-by-side block on top.
+ *  `year` (M34) says the chosen drivers come from the table of real years, so
+ *  the wording says "from the record" instead of "you chose". */
+export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number): void {
   if (!node) {
     container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
     return;
@@ -311,6 +325,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
     linkById: new Map(graph.links.map((l) => [l.id, l])),
     chosen,
   };
+  if (year !== undefined) ctx.year = year;
   let html = `<h3>${esc(node.name)}</h3><p class="region">${esc(node.region)} · ${esc(node.timescale)}</p>`;
   if (compare) html += compareBlock(node, compare);
 

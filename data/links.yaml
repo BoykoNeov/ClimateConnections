@@ -6357,3 +6357,27 @@ sources:
   - key: weather_channel_2016
     citation: "Belles, J. (2016). Siberia is being clobbered with snow already, and that could mean a harsher U.S. winter ahead. The Weather Channel, 4 November 2016 (the forecast made from the October 2016 snow advance, quoted as it was made)."
     url: https://weather.com/news/weather/news/snow-siberia-russia-united-states-cold
+  - key: noaa_oni_index
+    citation: "NOAA Climate Prediction Center. Oceanic Niño Index (ONI), ERSST version 6: the three-month running mean of the Niño-3.4 sea-surface temperature anomaly, 1950 to date. Read for the years table in August 2026 with NOAA's own rule: an El Niño or La Niña is called when the index stays at or beyond +0.5 °C or −0.5 °C for at least five overlapping seasons; the onset is the centre month of the first such season and the duration counts the seasons."
+    url: https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php
+  - key: psl_dmi_hadisst_index
+    citation: "NOAA Physical Sciences Laboratory. Dipole Mode Index from HadISST 1.1 (the Saji et al. 1999 boxes, 10°S–10°N, 50–70°E minus 10°S–0°, 90–110°E), monthly, 1870 to date. Read for the years table in August 2026: a positive or negative dipole is called when the three-month running mean stays at or beyond +0.35 °C or −0.35 °C for at least two overlapping seasons touching June–November, the dipole's own season. The threshold sits a little under the Bureau of Meteorology's ±0.4 because this monthly HadISST index runs smaller than the Bureau's weekly one; with it the Bureau's list of dipole years since 1980 is reproduced except the weak negative events of 2014 and 2021."
+    url: https://psl.noaa.gov/gcos_wgsp/Timeseries/DMI/
+  - key: cpc_nao_index
+    citation: "NOAA Climate Prediction Center. North Atlantic Oscillation (NAO) index, monthly, standardised, 1950 to date. Read for the years table in August 2026: a winter is positive when its December–February mean is at or above +0.5 and negative at or below −0.5, in standardised units; the phase is dated from December and held three months."
+    url: https://www.cpc.ncep.noaa.gov/products/precip/CWlink/pna/nao.shtml
+  - key: marshall_sam_index
+    citation: "British Antarctic Survey. Station-based Southern Annular Mode index (Marshall 2003), monthly, 1957 to date. Read for the years table in August 2026: a positive or negative SAM is called when the three-month running mean stays at or beyond +1.5 or −1.5 (the index's standard deviation is about 1.2) for at least two overlapping seasons; the year's entry is the first such run to begin in the year, and the others are named in its note."
+    url: https://legacy.bas.ac.uk/met/gjma/sam.html
+  - key: ncei_pdo_index
+    citation: "NOAA National Centers for Environmental Information. Pacific Decadal Oscillation index from ERSST version 5, monthly, 1854 to date. Read for the years table in August 2026: a year is positive when its calendar-year mean is at or above +0.5 and negative at or below −0.5; a run of same-phase years is one phase, dated from January of its first year."
+    url: https://www.ncei.noaa.gov/access/monitoring/pdo/
+  - key: psl_amo_kaplan_index
+    citation: "NOAA Physical Sciences Laboratory. Atlantic Multidecadal Oscillation index, unsmoothed and detrended, from the Kaplan SST version 2 North Atlantic mean, monthly, 1856 to January 2023. Read for the years table in August 2026, for 1980–2022: a year is positive when its calendar-year mean is at or above +0.1 °C and negative at or below −0.1 °C; a run of same-phase years is one phase, dated from January of its first year."
+    url: https://psl.noaa.gov/data/timeseries/AMO/
+  - key: ncei_amo_ersst_index
+    citation: "NOAA National Centers for Environmental Information. North Atlantic (0–60°N) sea-surface temperature anomaly from ERSST version 5, monthly, 1854 to date, offered as an AMO index. Read for the years table in August 2026, for 2023 onwards, where the Kaplan series ends: its calendar-year means were linearly detrended over 1854–2025 for this table and read with the same ±0.1 °C rule. Over 1980–2022 the two series give the same phase in most years and differ in eight, all with the Kaplan value within 0.07 °C of the threshold."
+    url: https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/
+  - key: ersst_atl3_index
+    citation: "NOAA ERSST version 5, Atlantic Niño (ATL3) index computed for the years table in August 2026. Sea-surface temperature averaged over 3°S–3°N, 20°W–0° from the monthly ERSST v5 grid (Huang and others, 2017), as anomalies from the 1991–2020 monthly means; a warm or cool event is called when the three-month running mean is at or beyond +0.5 °C or −0.5 °C, about one standard deviation, for at least one season, the rule the Atlantic Niño literature uses; the year's entry is the first such event to begin in the year."
+    url: https://psl.noaa.gov/data/gridded/data.noaa.ersst.v5.html
