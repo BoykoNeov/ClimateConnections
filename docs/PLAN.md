@@ -3210,9 +3210,12 @@ drivers stays in one place.
   map's own sense of "reached", the same test the marker labels use, so
   the layer hides exactly the markers "Label every region" leaves unnamed.
   A first pass counted every reported arrow (pending, faded and ghost
-  too); measured on El Niño from June with the chain on, that hid 13 of
-  the 62 places in December against 30 for the rule shipped, and a pending
-  arrow does not mean "currently affected", so it was dropped.
+  too). Measured in the engine on El Niño from June with the chain on, it
+  hid 13 of the 62 places in December against 30 for the rule shipped, and
+  a pending arrow does not mean "currently affected", so it was dropped.
+  (The browser check counts markers on the page in its default state,
+  drivers included: 76 with the layer off, 43 with it on. The two numbers
+  are of different things.)
 - UI: `ControlState.hideUnaffected` and the "Hide unaffected regions"
   checkbox, the eighth, under the Legend heading after "Seasonal features"
   (data-role `hide`, off by default, rule 15), its hint saying which
@@ -3255,7 +3258,11 @@ drivers stays in one place.
   all 76.
 - Not in M42: hiding for the whole year; hiding drivers, features or an
   arrow into a place that is drawn; a count of what is hidden; a fade-out
-  animation; region mode. Next in `docs/PLAN_V3.md`: M29, M31 and the
+  animation; region mode. The seasonal features layer is deliberately
+  untouched: it reads what the month reports, not what is drawn, so a
+  feature can be faintly filled by a pending link whose arrow the layer no
+  longer draws; its card still lists that link as expected but out of
+  season. Next in `docs/PLAN_V3.md`: M29, M31 and the
   roadmap items M38–M40, each with its own sign-off.
 
 ---

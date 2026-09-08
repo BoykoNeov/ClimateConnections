@@ -879,7 +879,10 @@ with the toggle off — one click brings it all back.
 **Not in M42.** Hiding a place for the whole year (the reading the user
 did not choose: it would need a pass over all twelve months and would
 leave a place drawn and empty for eleven of them); hiding drivers, the
-seasonal features, or an arrow into a place that is drawn; a count of what
+seasonal features, or an arrow into a place that is drawn — the features
+layer reads what the month reports rather than what is drawn, so a feature
+may be faintly filled by a pending link whose arrow is not on the map, and
+its card still says that link is expected but out of season; a count of what
 is hidden, or a way to bring one hidden place back other than clicking it
 in the card or turning the layer off; a fade-out animation on the markers
 that go; region mode; any change to what the engine computes or the cards
