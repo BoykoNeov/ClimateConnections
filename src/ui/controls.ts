@@ -28,6 +28,9 @@ export type Side = 'a' | 'b';
  *  shared by both maps and, in compare mode, scenario B. */
 export interface ControlState extends ScenarioSettings {
   showAreas: boolean;
+  /** name every marker; off, only the markers the scenario reaches this
+   *  month (or the selected one) carry their name */
+  showAllLabels: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -342,6 +345,18 @@ export class ControlsView {
     hint4.className = 'hint';
     hint4.textContent = 'When this driver pushes another driver into a phase, keep following that driver’s own links. Each extra step lowers the confidence one tier. Off: direct links only.';
     container.append(hint4);
+    const labelsLabel = document.createElement('label');
+    labelsLabel.className = 'check';
+    const labelsBox = document.createElement('input');
+    labelsBox.type = 'checkbox';
+    labelsBox.checked = state.showAllLabels;
+    labelsBox.addEventListener('change', () => this.update({ showAllLabels: labelsBox.checked }));
+    labelsLabel.append(labelsBox, document.createTextNode(' Label every region'));
+    container.append(labelsLabel);
+    const hint5 = document.createElement('p');
+    hint5.className = 'hint';
+    hint5.textContent = 'Off: only the places this scenario reaches in the month shown keep their name, plus the one you have clicked; the rest stay as circles you can still click.';
+    container.append(hint5);
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';

@@ -170,6 +170,10 @@ any static file server.
   off. Printing gives both maps with a caption naming both scenarios.
 - **Show affected areas** toggles the rough regional outlines under the
   arrows.
+- **Label every region** (off by default) names every circle on the map.
+  Off, only the places the scenario reaches in the month shown keep their
+  names, plus the one you have clicked; the rest stay as unlabelled
+  circles you can still click.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and

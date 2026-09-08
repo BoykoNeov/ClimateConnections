@@ -41,6 +41,11 @@ export interface RenderOptions {
   focusNodeId: string | null;
   /** draw each node's rough affected area under the arrows */
   showAreas: boolean;
+  /** name every marker; off, only markers the scenario affects this month
+   *  (applied: filled or hatched, not merely expected), chosen or pushed
+   *  drivers, the selected node, the story's focus and compare-mode
+   *  differences carry their name */
+  showAllLabels: boolean;
   /** compare mode (M14): nodes the other scenario treats differently this
    *  month; each gets a dark outer ring */
   differs?: Set<string>;
@@ -317,6 +322,9 @@ export class MapView {
         if (opts.selectedNodeId === d.id) cls.push('selected');
         if (opts.focusNodeId === d.id) cls.push('focus');
         if (opts.differs?.has(d.id)) cls.push('differs');
+        const reached = st.viaLinkIds.length > 0 || (d.kind === 'driver' && opts.chosen.has(d.id));
+        const labelled = opts.showAllLabels || reached || opts.selectedNodeId === d.id || opts.focusNodeId === d.id || !!opts.differs?.has(d.id);
+        if (!labelled) cls.push('unlabelled');
         return cls.join(' ');
       })
       .attr('transform', (d) => {

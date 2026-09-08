@@ -384,6 +384,15 @@ and lowest-confidence selection.
 - Conflicting nodes get a dashed ring, and the card says "conflicting
   influences". When the pushes cancel to 0 the fill is a grey hatch (M11),
   so a tie is not read as "near normal".
+- Labels (added 2026-09-08, after M27): a marker carries its name only
+  while the scenario affects it in the month shown (applied: filled or
+  hatched; a marker whose arrow is expected but out of season stays
+  unnamed, its faint ring is the hint), it is a chosen or pushed driver,
+  it is selected, it is the story's focus, or it differs between
+  compared scenarios. A "Label every
+  region" checkbox (off by default) names them all; it is the fourth
+  checkbox in the controls, after the chain box, so the browser scripts'
+  indices still hold.
 
 ### 5.3 Arrows
 - One arrow per active link, from driver to target, drawn as a great-circle
@@ -1453,6 +1462,9 @@ drivers stays in one place.
   "established only" ghosts, the NAO in both phases, the dipole on
   Tibet, the basin on India, the print caption; eleven screenshots under
   `W:\temp\claude\ClimateConnections\m27\`.
+- Follow-up the same day, at the user's request, not a milestone: the
+  map names only the markers the scenario reaches (§5.2), with a
+  "Label every region" checkbox, off by default, to name them all.
 - Not in M27: the five dropped candidates; Mongolia returns with M24.
   Next in `docs/PLAN_V3.md`: M23, the Quasi-Biennial Oscillation.
 

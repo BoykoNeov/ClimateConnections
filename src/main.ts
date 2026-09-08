@@ -61,7 +61,7 @@ async function main(): Promise<void> {
     return d;
   };
 
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, chain: true, second: null, compare: null };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, filter: 'all', showAreas: true, showAllLabels: false, chain: true, second: null, compare: null };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
@@ -203,7 +203,7 @@ async function main(): Promise<void> {
       const c = chosenFor(s, p.timeline, month);
       chosenBySide.set(side, c);
       titles.set(side, scenarioTitle(s, c));
-      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, differs });
+      p.map.render(month, { chosen: c.colors, arrivals, selectedNodeId, focusNodeId, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, differs });
       if (compare) setHead(p.head, side, titles.get(side)!, month);
     }
 
