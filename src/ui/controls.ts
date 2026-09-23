@@ -140,6 +140,10 @@ export interface ControlState extends ScenarioSettings {
    *  union of the two, so the maps keep the same markers). Off by
    *  default; a way of looking, like the areas layer. */
   hideUnaffected: boolean;
+  /** globe view (M39): draw the maps as a globe the student can turn, on
+   *  both sides and in region mode; printing always uses the flat map. Off
+   *  by default; a way of looking, like the areas layer. */
+  globe: boolean;
   /** compare mode (M14): a second scenario ("B") drawn beside this one ("A"),
    *  and which of the two the scenario controls edit; null = one map */
   compare: { side: Side; b: ScenarioSettings } | null;
@@ -476,6 +480,9 @@ export class ControlsView {
   private featuresBox: HTMLInputElement;
   /** hide the places the month says nothing about (M42) */
   private hideBox: HTMLInputElement;
+  /** globe view (M39) and its "Back to the Pacific" button */
+  private globeBox: HTMLInputElement;
+  private globeReset: HTMLButtonElement;
   /** the legend: the rows for an optional layer show only while it is on */
   private legend: HTMLElement | null = null;
   /** how many map options were away from their defaults at the last reflect */
@@ -491,6 +498,8 @@ export class ControlsView {
   onStory: (storyId: string | null) => void = () => {};
   /** a real year was picked from the dropdown (null = "none") (M34) */
   onYear: (year: number | null) => void = () => {};
+  /** "Back to the Pacific" (M39): the page turns the globe back */
+  onGlobeReset: () => void = () => {};
 
   /** `featureNames`: the seasonal features in the data (M41), named in the layer's hint */
   constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], years: number[], regions: OutcomeNode[], private state: ControlState, featureNames: string[] = []) {
@@ -850,6 +859,28 @@ export class ControlsView {
       'Only the places a connection has reached in the month shown are drawn. A place is hidden because nothing on this map is acting on it in this month, not because nothing happens there.',
       'A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay.',
     ));
+    // Globe view (M39): the ninth checkbox, after the eighth so the browser
+    // scripts' indices still hold; off by default (rule 15).
+    const globeLabel = document.createElement('label');
+    globeLabel.className = 'check';
+    this.globeBox = document.createElement('input');
+    this.globeBox.type = 'checkbox';
+    this.globeBox.dataset.role = 'globe';
+    this.globeBox.checked = state.globe;
+    this.globeBox.addEventListener('change', () => this.update({ globe: this.globeBox.checked }));
+    globeLabel.append(this.globeBox, document.createTextNode(' Globe view'));
+    this.optionsSection.append(globeLabel);
+    this.globeReset = document.createElement('button');
+    this.globeReset.type = 'button';
+    this.globeReset.className = 'globe-reset';
+    this.globeReset.textContent = 'Back to the Pacific';
+    this.globeReset.hidden = !state.globe;
+    this.globeReset.addEventListener('click', () => this.onGlobeReset());
+    this.optionsSection.append(this.globeReset);
+    this.optionsSection.append(hint(
+      'The Earth as a globe you can drag to turn; it starts on the Pacific. Places on the far side are not drawn until you turn them into view.',
+      'With the map selected, the arrow keys turn it too. Names near the edge are left off so the rim stays readable. A story, or a place picked under "By region", turns the globe to its place when that place is out of sight. Printing always uses the flat map.',
+    ));
 
     const h4 = document.createElement('h2');
     h4.textContent = 'Legend';
@@ -1072,10 +1103,12 @@ export class ControlsView {
     this.windowBox.checked = this.state.showWindow;
     this.featuresBox.checked = this.state.showFeatures;
     this.hideBox.checked = this.state.hideUnaffected;
+    this.globeBox.checked = this.state.globe;
+    this.globeReset.hidden = !this.state.globe;
     // "Map options" says how many options are away from their defaults, and
     // opens when one is (a story can turn a layer on), so nothing that is
     // changing the map sits folded out of sight.
-    const changed = [s.filter !== 'all', !s.chain, !this.state.showAreas, this.state.showAllLabels, this.state.showImpacts, this.state.showWindow, this.state.showFeatures, this.state.hideUnaffected].filter(Boolean).length;
+    const changed = [s.filter !== 'all', !s.chain, !this.state.showAreas, this.state.showAllLabels, this.state.showImpacts, this.state.showWindow, this.state.showFeatures, this.state.hideUnaffected, this.state.globe].filter(Boolean).length;
     this.optionsSummary.textContent = changed === 0 ? 'Map options' : `Map options (${changed} changed)`;
     if (changed > this.optionsChanged) this.optionsSection.open = true;
     this.optionsChanged = changed;

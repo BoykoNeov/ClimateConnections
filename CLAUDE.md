@@ -48,7 +48,9 @@ drawn in their months behind a "Seasonal features" toggle that is off by
 default, filled while an arrow works through them, never computed
 from, and since M42 a "Hide unaffected regions" toggle, also off by
 default, that draws only the places a connection has reached in the month
-shown) on a
+shown, and
+since M39 a "Globe view" toggle, also off by default, that draws the map as
+a globe the student can turn, never printed) on a
 Pacific-centered world map and
 animates their arrival over a twelve-month timeline. It is a hand-curated,
 cited causal graph. It is **not** a simulator and must never be presented as
@@ -179,6 +181,18 @@ one.
   faded or ghost arrow as reaching a place (it hides almost nothing and a
   pending arrow is not "currently affected"), do not hide a driver, and
   do not turn the toggle on by default.
+- Globe view (M39) is drawing only, and adds no rule: `src/ui/globe.ts`
+  holds the pure arithmetic of the turn and of the far side. With the
+  "Globe view" checkbox on (the ninth, off by default) the maps are an
+  orthographic globe, opening on the dateline (`PACIFIC`); a marker behind
+  it is not drawn at all, a place (never a driver) past 70° loses its name,
+  an arrow is the great circle clipped at the rim and has no head when its
+  target is behind. One turn for both compared maps; a story's focus or the
+  region's place is turned into view once per place; printing is always
+  flat. With it off the map is the flat one byte for byte (the eleven-state
+  snapshot in `W:\temp\claude\ClimateConnections\m39` proves it). Do not
+  draw anything behind the globe, turn it on by default, print it, or let
+  an arrow key both turn it and step the month.
 - Pacific-centered projection. Never ship a map that splits the Pacific.
 - Version 1 (`docs/PLAN.md` section 6–7) is complete. Version 2 items
   (`docs/PLAN.md` section 10) are taken one at a time, each with explicit
@@ -239,7 +253,10 @@ one.
   2026-09-08, and hiding unaffected regions (M42, the fourth UI item,
   drawing only, no engine or data change: `src/engine/reached.ts`, the
   "Hide unaffected regions" checkbox, `RenderOptions.visibleNodeIds`, the
-  arrows into a hidden place dropped with it) on 2026-09-08.
+  arrows into a hidden place dropped with it) on 2026-09-08, and the globe
+  view (M39, the first version 3 roadmap item, drawing only, no engine or
+  data change: `src/ui/globe.ts`, `MapView.setView` / `turn`, the "Globe
+  view" checkbox and "Back to the Pacific", flat in print) on 2026-09-23.
   A new driver
   is data only (a driver node, its outcome
   nodes, links, sources and a story, and since M32 its

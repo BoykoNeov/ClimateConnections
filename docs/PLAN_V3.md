@@ -1318,14 +1318,82 @@ lag and season fields.
 
 ### M39 — Globe view
 
-- A toggle between the flat Pacific-centred map and an orthographic globe
-  (`d3-geoOrthographic`) with drag to rotate, default rotation
-  Pacific-centred, arrows as great-circle arcs (already the arrow
-  geometry), the areas layer clipped to the visible hemisphere. Compare
-  mode locks both globes to one rotation. Print always uses the flat map.
-  Label overlap on the globe is handled by hiding labels beyond 70° from
-  the centre. Rule 8 (§0) is satisfied by the default rotation.
-- **Not in M39:** 3D terrain, animation of rotation on play.
+**Signed off and shipped 2026-09-23** (the user picked it from the list of
+remaining items). The record of what was built is in `docs/PLAN.md` §6
+under M39. Two departures from the first draft of this section, each
+measured in the browser before it was changed: the globe opens on the
+dateline, not on the flat map's own centre (160°E put ENSO's marker 75°
+from the middle, on the rim, where its name would go); and it sits in a
+box as wide as the flat map's and three quarters as tall, not in the flat
+box itself (that left the globe under half the height of the map area,
+while the taller box keeps every marker the same size on any screen where
+the map is limited by its width). Driver names are never taken off at the
+rim: the drivers are the map's anchors, as in M42. The plan text below and in `docs/PLAN.md` §5.1, §5.3, §5.6, §5.8,
+§5.9 and §5.10 was written before the code, as rule 14 asks; the decisions
+the first sketch left open are settled here.
+
+The flat map shows the whole world at once but stretches the high
+latitudes and cuts the Atlantic in two; a great circle from the Pacific to
+Africa has to be bent to stay on it (§5.3's seam rule). A globe shows the
+shapes and the arrows as they are, at the price of hiding half the world.
+It is a second way of looking, never the default.
+
+- **Data, schema, engine.** None. Every timeline is the one M42 shipped;
+  the toggle changes the drawing only.
+- **Toggle.** "Globe view", a checkbox under "Map options", the ninth in
+  the controls (after "Hide unaffected regions", so the browser scripts'
+  indices still hold; data-role `globe`), **off by default** (rule 15).
+  A way of looking, like the areas layer: switching it ends no story,
+  leaves no year and changes no card. A "Back to the Pacific" button
+  beside it, shown while it is on, puts the globe back to its default turn.
+- **Projection.** `geoOrthographic` from `d3-geo` (already a dependency),
+  turned by default to the dateline on the equator (`rotate([180, 0])`,
+  the Pacific at the middle, ENSO and Indonesia both well inside the rim),
+  so rule 8 (§0) holds on load. The globe is drawn centred in a box as wide
+  as the flat map's and three quarters as tall (960 by 720 units, the
+  globe 704 across), so on any screen where the map is limited by its
+  width the markers and labels keep their size when it is switched.
+- **Turning.** Drag with the mouse or a finger to turn it; the point under
+  the pointer roughly follows it; the tilt stops at 90° north and south.
+  With the map focused (it takes the keyboard focus while the globe is
+  on), the arrow keys turn it 10° a press. A drag that ends on a marker is
+  not a click on it. Turning redraws the map only, never the card, the
+  dial or the timeline, and interrupts an arrival animation in progress.
+- **The far side.** A marker (driver, place, impact square, seasonal
+  feature) more than 90° from the centre is behind the globe and is **not
+  drawn at all**, so it can be neither seen, clicked nor reached with the
+  Tab key; a place (not a driver) more than 70° from the centre keeps its
+  circle but loses its name, so the crowded rim stays readable. Areas and the land are clipped
+  at the rim by the projection.
+- **Arrows.** Always the great circle, clipped at the rim; the seam rule,
+  the short-hop exception and the bowed curve are flat-map rules and do not
+  apply. An arrow whose target is behind the globe runs to the rim and
+  **has no arrowhead** there, so no head ever points at the rim or at
+  nothing; an arrow whose driver is behind the globe comes over the rim
+  with its head on the target. An arrow with both ends behind is not drawn.
+- **Keeping the story in view.** When a playing story points at a place, or
+  region mode shows one, and that place is more than 70° from the centre,
+  the globe turns to put it in the middle, so a student is never told to
+  look at something the globe is hiding. Nothing else turns it.
+- **Compare mode.** One turn for both maps: dragging either turns both.
+- **Region mode.** Works on the globe as on the flat map, with the same
+  far-side and arrow rules; the sideways spread of its arrows is kept.
+- **Print.** Always the flat map: the page switches the maps to flat before
+  printing and back after, so a printed figure never loses half the world.
+  The caption says nothing about the globe.
+- **Tests.** The far-side and rim arithmetic and the turn that brings a
+  place to the middle are pure functions in `src/ui/globe.ts` with their
+  own tests. The browser check `cdp-m39.mjs`: the toggle off on load and
+  the flat map byte for byte the one M42 shipped, in eleven states (load,
+  month 6, labels, no areas, features, hidden places, the arrival window,
+  a selected place, compare, region mode, 1997); on, a round globe, no
+  drawn marker on the far side, no name beyond 70°, no arrowhead into a
+  hidden target, a drag and the arrow keys turning it, a drag ending on a
+  marker selecting nothing, both compared globes turned together, "Back to
+  the Pacific", a story step and region mode turning to their place, and
+  printing giving the flat map.
+- **Not in M39:** 3D terrain; turning the globe while the timeline plays;
+  zoom; keeping the turn in the link or between visits; a globe in print.
 
 ### M40 — Spreadsheet-to-YAML importer
 
@@ -1365,12 +1433,13 @@ lag and season fields.
 Data only (no src/ change):   M20 → M21 → M22 → M26 → M27 → M23 → M24 → M25
 UI only:                      M28 (shipped 2026-09-08), M30 (shipped 2026-09-08), M41 (shipped 2026-09-08),
                               M42 (shipped 2026-09-08), M29 (any time)
+                              M39 (globe, shipped 2026-09-23)
 Engine, in dependency order:  M32 (duration) → M33 (N drivers) → M34 (years)
                               M35 (modulation) after M23 if the QBO case is wanted
                               M36 (flavours) independent (shipped 2026-09-08)
                               M37 (impacts) last of the engine set
 Roadmap:                      M38 (quiz) after M34 if years are to be quizzed
-                              M39 (globe), M40 (importer), M31 (language) when wanted
+                              M40 (importer), M31 (language) when wanted
 ```
 
 Reasoning for the order:

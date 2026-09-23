@@ -7,6 +7,7 @@ import { differing } from './engine/compare';
 import { influencesOn, regionNodes } from './engine/inverse';
 import { reachedThisMonth } from './engine/reached';
 import { MapView, stateColor } from './ui/map';
+import { PACIFIC, keepInView, type Rotation } from './ui/globe';
 import { SeasonDialView, seasonWords, type DialRing } from './ui/dial';
 import { TimelineView } from './ui/timeline';
 import { ControlsView, editedSide, lastsControl, scenarioSettings, sideSettings, type ConfidenceFilter, type ControlState, type OtherDriver, type ScenarioSettings, type Side } from './ui/controls';
@@ -94,10 +95,17 @@ async function main(): Promise<void> {
     const m = /^#region=([\w-]+)$/.exec(location.hash);
     return m && regionById(m[1]) ? m[1] : null;
   };
-  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, showFeatures: false, hideUnaffected: false, chain: true, others: [], compare: null, region: regionFromHash() };
+  const controls: ControlState = { driverId: drivers[0].id, phaseId: drivers[0].phases[0].id, startMonth: drivers[0].default_start_month, hold: null, filter: 'all', showAreas: true, showAllLabels: false, showImpacts: false, showWindow: false, showFeatures: false, hideUnaffected: false, globe: false, chain: true, others: [], compare: null, region: regionFromHash() };
   let monthIndex = 0;
   let selectedNodeId: string | null = null;
   let focusNodeId: string | null = null;
+  /** the globe's turn (M39), one for both maps */
+  let rotation: Rotation = PACIFIC;
+  /** the place the globe last turned to keep in view (a story's focus or
+   *  the region), so it turns once per place and not at every redraw */
+  let keptInView: string | null = null;
+  /** true between beforeprint and afterprint: the maps are drawn flat */
+  let printing = false;
   /** start month the timeline's ticks currently show (the edited side's) */
   let tlStart = controls.startMonth;
 
@@ -122,6 +130,8 @@ async function main(): Promise<void> {
     const el = mapEl.querySelector<HTMLElement>(`.pane[data-side="${side}"]`)!;
     const head = el.querySelector<HTMLButtonElement>('.pane-head')!;
     const map = new MapView(el.querySelector<HTMLElement>('.pane-map')!, graph, side === 'a' ? '' : 'b-');
+    // Turning either globe turns both (M39); nothing but the maps redraws.
+    map.onRotate = (r) => { rotation = r; for (const s of shown()) pane(s).map.turn(r); };
     map.onNodeClick = (id) => {
       if (controls.region) { regionClick(id); return; }
       selectedNodeId = selectedNodeId === id ? null : id;
@@ -322,8 +332,19 @@ async function main(): Promise<void> {
     tl.play();
   }
 
+  /** Globe view (M39): turn the globe to a story's focus or the region's
+   *  place when it is out of sight (once per place), and put every map in
+   *  the right projection; flat while printing. */
+  function setViews(placeId: string | null): void {
+    const place = placeId ? graph.nodes.find((n) => n.id === placeId) : undefined;
+    if (!controls.globe || !place) keptInView = null;
+    else if (place.id !== keptInView) { rotation = keepInView(rotation, place.lon, place.lat); keptInView = place.id; }
+    for (const side of SIDES) pane(side).map.setView(controls.globe && !printing, rotation);
+  }
+
   function draw(): void {
     const region = regionById(controls.region);
+    setViews(region ? region.id : focusNodeId);
     tlEl.hidden = !!region;
     if (region) { drawRegion(region); return; }
     const compare = !!controls.compare;
@@ -420,6 +441,11 @@ async function main(): Promise<void> {
     draw();
   }
   ctl.onChange = applyControls;
+  ctl.onGlobeReset = () => { rotation = PACIFIC; for (const s of shown()) pane(s).map.turn(PACIFIC); };
+  // A printed figure always shows the whole world (M39): flat before
+  // printing, back to the globe after.
+  window.addEventListener('beforeprint', () => { if (!controls.globe) return; printing = true; draw(); });
+  window.addEventListener('afterprint', () => { if (!printing) return; printing = false; draw(); });
   /** Keep "#region=<id>" in the address bar in step with region mode, and
    *  follow it when the address changes (back button, a pasted link). */
   function syncHash(): void {
@@ -530,6 +556,8 @@ async function main(): Promise<void> {
   // their own keys.
   document.addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    // The globe (M39) has already used an arrow key to turn itself.
+    if (e.defaultPrevented) return;
     const t = e.target;
     if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
     let used = false;

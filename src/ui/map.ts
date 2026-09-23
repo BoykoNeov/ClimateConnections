@@ -1,7 +1,7 @@
 // Map view: Pacific-centered projection, base map, node markers, link arrows.
 
-import { geoNaturalEarth1, geoPath, geoGraticule10, geoInterpolate, geoArea, geoDistance } from 'd3-geo';
-import type { GeoPermissibleObjects } from 'd3-geo';
+import { geoNaturalEarth1, geoOrthographic, geoPath, geoGraticule10, geoInterpolate, geoArea, geoDistance } from 'd3-geo';
+import type { GeoPermissibleObjects, GeoProjection } from 'd3-geo';
 import { select } from 'd3-selection';
 import type { Selection } from 'd3-selection';
 import 'd3-transition';
@@ -12,6 +12,7 @@ import type { FeatureNode, Graph, GraphNode, Link, LinkStatus, MonthState, Confi
 import { phaseForValue } from '../engine/propagate';
 import type { DriverInfluences } from '../engine/inverse';
 import { featureDrawn, featuresThisMonth } from '../engine/features';
+import { PACIFIC, dragTurn, globeSide, keyTurn, type GlobeSide, type Rotation } from './globe';
 
 export const AXIS_COLORS: Record<Axis, { plus: string; minus: string }> = {
   wet_dry: { plus: '#2166ac', minus: '#b35806' },
@@ -167,13 +168,27 @@ export class MapView {
   /** the outlines of the seasonal features that carry an `area` (M41) */
   private featureAreas: Map<string, GeoJSON.Polygon>;
   private gNodes: Selection<SVGGElement, unknown, null, undefined>;
-  private projection = geoNaturalEarth1().rotate([-160, 0]);
+  /** the flat, Pacific-centred map (§5.1) */
+  private flat = geoNaturalEarth1().rotate([-160, 0]);
+  /** the globe (M39): drawn in the flat map's box, clipped at the rim */
+  private globe = geoOrthographic().clipAngle(90).rotate(PACIFIC);
+  private projection: GeoProjection = this.flat;
   private path = geoPath(this.projection);
+  private mode: 'flat' | 'globe' = 'flat';
+  private rotation: Rotation = PACIFIC;
   private width = 0;
   private height = 0;
   private nodeById: Map<string, GraphNode>;
   private linkById: Map<string, Link>;
+  /** redraws the last scenario or region with no arrival animation, after
+   *  the globe is turned (M39) */
+  private replay: (() => void) | null = null;
+  /** the pointer moved far enough to be a drag, so the click it ends with
+   *  is not a click on a marker (M39) */
+  private dragged = false;
   onNodeClick: (id: string) => void = () => {};
+  /** the student turned the globe (M39); the page decides which maps turn */
+  onRotate: (r: Rotation) => void = (r) => this.turn(r);
 
   /** `idPrefix` keeps the SVG ids (arrowheads, the conflict hatch) apart
    *  when two maps share a page (M14). */
@@ -210,6 +225,113 @@ export class MapView {
     this.gNodes = this.svg.append('g').attr('class', 'nodes');
     this.drawBase();
     this.fit();
+    this.attachTurning();
+  }
+
+  /**
+   * Flat map or globe (M39, §5.1), and the globe's turn. Takes effect at
+   * the next `render` or `renderRegion`; the base map is redrawn at once.
+   * With `globe` false the map is the flat one exactly as before.
+   */
+  setView(globe: boolean, rotation: Rotation): void {
+    const mode = globe ? 'globe' : 'flat';
+    const turned = rotation[0] !== this.rotation[0] || rotation[1] !== this.rotation[1];
+    this.rotation = rotation;
+    this.globe.rotate(rotation);
+    // the turn, for the browser checks; only while the globe is shown
+    const el = this.svg.node()!;
+    if (globe) el.dataset.rotation = rotation.map((v) => +v.toFixed(3)).join(',');
+    else delete el.dataset.rotation;
+    if (mode === this.mode) {
+      if (globe && turned) this.drawBasePaths();
+      return;
+    }
+    this.mode = mode;
+    this.projection = globe ? this.globe : this.flat;
+    this.path = geoPath(this.projection);
+    el.classList.toggle('globe', globe);
+    if (globe) {
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-label', 'Globe of climate connections: drag it, or use the arrow keys, to turn it');
+    } else {
+      el.removeAttribute('tabindex');
+      el.setAttribute('aria-label', 'World map of climate connections');
+    }
+    this.fit();
+  }
+
+  /** Turn the globe and redraw what is on it, without the arrival animation
+   *  and without touching anything outside the map (M39). */
+  turn(rotation: Rotation): void {
+    if (this.mode !== 'globe') return;
+    this.setView(true, rotation);
+    this.gLinks.selectAll<SVGPathElement, ArrowDatum>('path.link').interrupt()
+      .attr('stroke-dasharray', null).attr('stroke-dashoffset', null).attr('opacity', null);
+    this.replay?.();
+  }
+
+  /** Where a point sits on the map: always 'near' on the flat map; on the
+   *  globe, 'far' behind it (not drawn) and 'rim' past 70° (no name). */
+  private sideOf(lon: number, lat: number): GlobeSide {
+    return this.mode === 'globe' ? globeSide(this.rotation, lon, lat) : 'near';
+  }
+
+  /**
+   * Drag, or the arrow keys while the map has the focus, turn the globe
+   * (M39). A drag starts after the pointer has moved a few pixels, and the
+   * click that ends it is swallowed so it does not select a marker. The
+   * turn goes through `onRotate`, once an animation frame.
+   */
+  private attachTurning(): void {
+    const el = this.svg.node()!;
+    let start: { x: number; y: number; rot: Rotation; id: number } | null = null;
+    let frame = 0;
+    let want: Rotation | null = null;
+    // drawing units per screen pixel (the SVG is fitted with "meet")
+    const units = (): number => {
+      const r = el.getBoundingClientRect();
+      return r.width && r.height ? Math.max(this.width / r.width, this.height / r.height) : 1;
+    };
+    el.addEventListener('pointerdown', (e) => {
+      this.dragged = false;
+      if (this.mode !== 'globe' || e.button !== 0) return;
+      start = { x: e.clientX, y: e.clientY, rot: this.rotation, id: e.pointerId };
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!start || e.pointerId !== start.id) return;
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (!this.dragged && Math.hypot(dx, dy) < 4) return;
+      if (!this.dragged) {
+        this.dragged = true;
+        el.setPointerCapture(e.pointerId);
+        el.classList.add('turning');
+      }
+      const u = units();
+      want = dragTurn(start.rot, dx * u, dy * u, this.globe.scale());
+      if (!frame) frame = requestAnimationFrame(() => { frame = 0; if (want) this.onRotate(want); });
+    });
+    const end = (e: PointerEvent): void => {
+      if (!start || e.pointerId !== start.id) return;
+      start = null;
+      el.classList.remove('turning');
+      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+    el.addEventListener('click', (e) => {
+      if (!this.dragged) return;
+      this.dragged = false;
+      e.stopPropagation();
+      e.preventDefault();
+    }, true);
+    el.addEventListener('keydown', (e) => {
+      if (this.mode !== 'globe') return;
+      const r = keyTurn(this.rotation, e.key);
+      if (!r) return;
+      e.preventDefault();
+      this.onRotate(r);
+    });
   }
 
   private markerColors(): Array<[string, string]> {
@@ -249,12 +371,26 @@ export class MapView {
   private fit(): void {
     const pad = 8;
     this.width = 960;
+    if (this.mode === 'globe') {
+      // The globe (M39) sits centred in a box as wide as the flat map's and
+      // three quarters as tall as it is wide. A map pane is limited by its
+      // width on any usual screen, so the markers and labels keep their size.
+      this.height = Math.round(this.width * 0.75);
+      this.globe.scale((this.height - 2 * pad) / 2).translate([this.width / 2, this.height / 2]);
+      this.svg.attr('viewBox', `0 0 ${this.width} ${this.height}`);
+      this.drawBasePaths();
+      return;
+    }
     this.projection.fitWidth(this.width - 2 * pad, { type: 'Sphere' });
     const [[x0, y0], [, y1]] = this.path.bounds({ type: 'Sphere' } as GeoPermissibleObjects);
     this.height = Math.ceil(y1 - y0 + 2 * pad);
     const [tx, ty] = this.projection.translate();
     this.projection.translate([tx + pad - x0, ty + pad - y0]);
     this.svg.attr('viewBox', `0 0 ${this.width} ${this.height}`).attr('preserveAspectRatio', 'xMidYMid meet');
+    this.drawBasePaths();
+  }
+
+  private drawBasePaths(): void {
     this.gBase.selectAll<SVGPathElement, GeoPermissibleObjects>('path').attr('d', (d) => this.path(d));
   }
 
@@ -281,6 +417,12 @@ export class MapView {
       if (p && prev && Math.hypot(p[0] - prev[0], p[1] - prev[1]) > this.width / 4) crossesSeam = true;
       if (p) prev = p;
       pts.push(p ?? null);
+    }
+    // On the globe (M39, §5.3) there is no seam: always the great circle,
+    // clipped at the rim; the spread path leaves out the points behind it.
+    if (this.mode === 'globe') {
+      if (spread === 0) return this.path({ type: 'LineString', coordinates: coords } as GeoPermissibleObjects) ?? '';
+      return this.offsetPath(pts.map((p, i) => (this.sideOf(coords[i][0], coords[i][1]) === 'far' ? null : p)), spread);
     }
     const shortHop = geoDistance([from.lon, from.lat], [to.lon, to.lat]) < Math.PI / 4;
     if (!crossesSeam || shortHop) {
@@ -341,6 +483,7 @@ export class MapView {
 
   render(month: MonthState, opts: RenderOptions): void {
     for (const id of opts.chosen.keys()) if (!this.nodeById.has(id)) return;
+    this.replay = () => this.render(month, { ...opts, arrivals: new Set() });
 
     // ---- hiding the places nothing has reached (M42, §5.2): a node
     // outside `visibleNodeIds` is not drawn at all — no marker, no label,
@@ -478,6 +621,7 @@ export class MapView {
   renderRegion(r: RegionRender): void {
     const target = this.nodeById.get(r.nodeId);
     if (!target) return;
+    this.replay = () => this.renderRegion(r);
     const reaching = new Set(r.groups.map((g) => g.driver.id));
 
     // ---- areas: only the place's own outline
@@ -530,13 +674,17 @@ export class MapView {
 
   /** Join the arrows onto the link layer; returns the merged selection. */
   private drawArrows(arrows: ArrowDatum[], extraClass: string): Selection<SVGPathElement, ArrowDatum, SVGGElement, unknown> {
+    // On the globe (M39, §5.3) an arrow with both ends behind it is not
+    // drawn, and one whose target is behind it has no head at the rim.
+    const behind = (n: GraphNode): boolean => this.sideOf(n.lon, n.lat) === 'far';
+    if (this.mode === 'globe') arrows = arrows.filter((a) => !(behind(a.from) && behind(a.target)));
     const sel = this.gLinks.selectAll<SVGPathElement, ArrowDatum>('path.link').data(arrows, (d) => d.link.id);
     sel.exit().remove();
     const enter = sel.enter().append('path');
     return enter.merge(sel)
       .attr('class', (d) => `link ${d.confidence} ${d.kind}${d.target.kind === 'driver' ? ' to-driver' : d.target.kind === 'impact' ? ' to-impact' : ''}${d.unsettled ? ' unsettled' : ''}${d.dimmed ? ' dimmed' : ''}${extraClass}`)
       .attr('stroke', (d) => d.color)
-      .attr('marker-end', (d) => `url(#${this.idPrefix}arrow-${d.marker}${d.unsettled ? '-open' : ''})`)
+      .attr('marker-end', (d) => (behind(d.target) ? null : `url(#${this.idPrefix}arrow-${d.marker}${d.unsettled ? '-open' : ''})`))
       .attr('d', (d) => this.arcPath(d.from, d.target, d.spread));
   }
 
@@ -545,6 +693,10 @@ export class MapView {
    *  removed from the map. Drivers and outcomes are circles, impacts
    *  squares; the shape carries the class `mark`. */
   private drawNodes(list: GraphNode[], style: { cls: (d: GraphNode) => string; fill: (d: GraphNode) => string; stroke: (d: GraphNode) => string; strokeOpacity: (d: GraphNode) => number }): void {
+    // On the globe (M39) a marker behind it is not drawn at all, so it can
+    // be neither seen, clicked nor tabbed to; past 70° a place loses its
+    // name, a driver never does (the drivers are the map's anchors).
+    list = list.filter((d) => this.sideOf(d.lon, d.lat) !== 'far');
     const nodes = this.gNodes.selectAll<SVGGElement, GraphNode>('g.node').data(list, (d) => d.id);
     nodes.exit().remove();
     const nEnter = nodes.enter().append('g')
@@ -565,7 +717,7 @@ export class MapView {
     nEnter.append('circle').attr('class', 'diff').attr('r', (d) => (d.kind === 'driver' ? 17 : 12));
     const nMerged = nEnter.merge(nodes);
     nMerged
-      .attr('class', style.cls)
+      .attr('class', (d) => (d.kind !== 'driver' && this.sideOf(d.lon, d.lat) === 'rim' ? `${style.cls(d)} rim` : style.cls(d)))
       .attr('transform', (d) => {
         const p = this.projection([d.lon, d.lat]);
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';
@@ -596,7 +748,8 @@ export class MapView {
     outlines.enter().append('path').merge(outlines)
       .attr('class', (d) => `feature-area${d.active ? ' active' : ''}`)
       .attr('d', (d) => this.path(this.featureAreas.get(d.node.id)!));
-    const marks = this.gFeatures.selectAll<SVGGElement, FeatureDatum>('g.feature').data(list, (d) => d.node.id);
+    // On the globe (M39) the marks follow the node rule; the outlines clip at the rim.
+    const marks = this.gFeatures.selectAll<SVGGElement, FeatureDatum>('g.feature').data(list.filter((d) => this.sideOf(d.node.lon, d.node.lat) !== 'far'), (d) => d.node.id);
     marks.exit().remove();
     const enter = marks.enter().append('g')
       .attr('tabindex', 0)
@@ -611,7 +764,7 @@ export class MapView {
     enter.append('text').attr('class', 'glyph').attr('dy', '0.36em').text((d) => (d.node.symbol === 'high' ? 'H' : d.node.symbol === 'low' ? 'L' : ''));
     enter.append('text').attr('class', 'name').attr('dy', '0.35em').text((d) => d.node.label);
     const merged = enter.merge(marks)
-      .attr('class', (d) => `feature ${d.node.symbol}${d.active ? ' active' : d.pending ? ' pending' : ' idle'}${d.present ? '' : ' offseason'}${selectedId === d.node.id ? ' selected' : ''}`)
+      .attr('class', (d) => `feature ${d.node.symbol}${d.active ? ' active' : d.pending ? ' pending' : ' idle'}${d.present ? '' : ' offseason'}${selectedId === d.node.id ? ' selected' : ''}${this.sideOf(d.node.lon, d.node.lat) === 'rim' ? ' rim' : ''}`)
       .attr('transform', (d) => {
         const p = this.projection([d.node.lon, d.node.lat]);
         return p ? `translate(${p[0]},${p[1]})` : 'translate(-100,-100)';

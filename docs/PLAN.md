@@ -678,6 +678,22 @@ and lowest-confidence selection.
   Neutral fill, thin borders, ocean slightly darker than land or vice versa;
   the map must never compete with the arrows for attention.
 - Sphere outline and graticule at low opacity.
+- Globe view (M39): with "Globe view" on, the map is an orthographic globe
+  (`d3.geoOrthographic()`) centred in a drawing box as wide as the flat
+  map's and three quarters as tall (960 by 720), turned by default to the
+  dateline on the equator (`rotate([180, 0])`), so the Pacific is in the
+  middle on load with ENSO and Indonesia well inside the rim. The student turns it by
+  dragging (or with the arrow keys, 10° a press, while the map has the
+  focus); the tilt stops at the poles; "Back to the Pacific" restores the
+  default turn. Turning redraws the map only. A marker (driver, place,
+  impact square or seasonal feature) more than 90° from the centre is
+  behind the globe and is not drawn at all, so it cannot be seen, clicked
+  or tabbed to; a place (never a driver, the map's anchors) more than 70°
+  from the centre keeps its circle but loses its name. The land, the areas and the arrows are clipped at the
+  rim by the projection. While a playing story points at a place, or region
+  mode shows one, more than 70° from the centre, the globe turns to put it
+  in the middle; nothing else turns it. Off, the page is the one M42
+  shipped, byte for byte.
 
 ### 5.2 Node markers
 - Driver: larger circle, filled with the current phase color.
@@ -770,6 +786,12 @@ and lowest-confidence selection.
   first month at or after `onset + lag_months[1]`. Pending, faded and
   ghost arrows are unchanged, and so is everything with the toggle off.
   Region mode draws no scenario and so no window.
+- On the globe (M39) every arrow is the plain great circle, clipped at the
+  rim: the seam rule, the short-hop exception and the bowed curve belong to
+  the flat map. An arrow whose target is behind the globe runs to the rim
+  with no arrowhead, so no head points at the rim; one whose driver is
+  behind comes over the rim with its head on the target; one with both
+  ends behind is not drawn. Region mode's sideways spread is kept.
 
 ### 5.4 Timeline
 - Horizontal scrubber, 0–12, labeled with calendar month names.
@@ -1014,6 +1036,15 @@ carries `via`, with a pointer to the layer while it is off.
   it ends no story, leaves no year and changes no card. Region mode
   ignores it. The legend gains a note, and the print caption says while it
   is on that the places with no connection this month are left off.
+- "Globe view" (M39): a checkbox under "Map options", the ninth in the
+  controls (after "Hide unaffected regions", so the browser scripts'
+  indices still hold; data-role `globe`), **off by default** (rule 15 of
+  `docs/PLAN_V3.md`), working in region mode and in a real year as the
+  other layers after the fifth do. Its hint says the globe starts on the
+  Pacific and turns by dragging, that the far side is not drawn until it
+  is turned into view, and that printing always uses the flat map. A
+  "Back to the Pacific" button beside it while it is on. A way of looking:
+  switching it ends no story, leaves no year and changes no card.
 - A permanent one-line disclaimer under the title: "Shows historical
   tendencies from published research. Not a forecast, not a simulation."
 
@@ -1034,6 +1065,11 @@ either, so the two layers never disagree.
 - All colors must also be distinguishable by line style or shape.
 - The page must survive `Ctrl+P` as a legible one-page figure (add a print
   stylesheet that hides controls).
+- The globe (M39) is never printed: the page switches the maps to the flat
+  projection before printing and back after, so a printed figure always
+  shows the whole world. On the globe the map takes the keyboard focus and
+  the arrow keys turn it, so a keyboard user can bring any place into view
+  and tab to it.
 
 ### 5.9 Compare mode (M14)
 - A "Compare" section at the top of the controls panel, under Stories: a
@@ -1077,6 +1113,8 @@ either, so the two layers never disagree.
   the two maps hide the same places: a place is drawn when *either* side
   has reached it this month, so the maps can always be read against each
   other and a dark ring is never left alone on one of them.
+- "Globe view" (M39) is shared, and the two globes share one turn: dragging
+  either turns both, so they always show the same half of the world.
 
 ### 5.10 Region mode (M28)
 - A "By region" section under Stories: a dropdown "Where I live…" of every
@@ -1117,6 +1155,9 @@ either, so the two layers never disagree.
 - "Hide unaffected regions" (M42) does not apply here: region mode has no
   month and no scenario, and draws every driver on purpose, the ones that
   reach the place with a ring and the rest in grey.
+- On the globe (M39) region mode draws as above with the far-side and
+  arrow rules of §5.1 and §5.3; entering it turns the globe to the place
+  when the place is more than 70° from the centre.
 
 ---
 
@@ -3276,6 +3317,80 @@ drivers stays in one place.
   season. Next in `docs/PLAN_V3.md`: M29, M31 and the
   roadmap items M38–M40, each with its own sign-off.
 
+### M39 — Globe view (version 3, signed off 2026-09-23)
+- The first version 3 roadmap item, picked by the user from the list of
+  remaining items on 2026-09-23. The plan text (§5.1, §5.3, §5.6, §5.8,
+  §5.9, §5.10 and the M39 section of `docs/PLAN_V3.md`) was written first
+  (rule 14 of `docs/PLAN_V3.md`), settling what the first sketch left open:
+  the far side, arrows into it, region mode, a way back to the Pacific,
+  printing.
+- Data, schema and engine: unchanged. Every timeline is the one M42
+  shipped; the toggle changes the drawing only.
+- `src/ui/globe.ts`: the pure arithmetic — `PACIFIC` (the default turn,
+  the dateline on the equator), `globeSide` (near, rim past 70°, far past
+  90°), `turnTo`, `dragTurn` (the point under the pointer follows it, the
+  tilt held at the poles), `keyTurn` (10° a press) and `keepInView`.
+- `MapView`: a second projection, `geoOrthographic().clipAngle(90)`;
+  `setView(globe, rotation)` switches it (the globe's box 960 by 720, the
+  flat box untouched) and `turn(rotation)` redraws the map alone from the
+  last render, with no arrival animation and any running one interrupted.
+  On the globe a marker, impact square or seasonal feature behind it is
+  not drawn at all; a place past 70° carries the class `rim` and no name
+  (a driver never does); every arrow is the plain great circle clipped at
+  the rim (the seam rule and the bowed curve are the flat map's), one
+  whose target is behind the globe has no arrowhead, one with both ends
+  behind is not drawn, and region mode's sideways spread leaves out the
+  points behind. Pointer drag (after 4 pixels, the click it ends with
+  swallowed so it selects nothing), the arrow keys while the map has the
+  focus (it takes `tabindex="0"` and a label saying how to turn it; the
+  page's own key handler leaves a key the globe used alone, so an arrow
+  turns the globe and does not also step the month or the story), and
+  `onRotate` so the page decides which maps turn. With the globe off the
+  map is the flat one exactly: the same elements and attributes on load,
+  in eleven states, byte for byte.
+- UI: `ControlState.globe` and the "Globe view" checkbox, the ninth, under
+  "Map options" after "Hide unaffected regions" (data-role `globe`, off by
+  default, rule 15), counted in "Map options (N changed)", with its hint
+  and a "Back to the Pacific" button shown while it is on. The page keeps
+  one turn for both maps, so compare mode's globes always show the same
+  half of the world; turns the globe to a story's focus or the region's
+  place when it is more than 70° from the middle, once per place; and
+  draws the maps flat between `beforeprint` and `afterprint`. A way of
+  looking: it ends no story and leaves no year.
+- Measured in the browser and changed from the first draft: the default
+  turn (160°E, the flat map's centre, put ENSO's marker on the rim, its
+  name gone) and the box (the flat map's own left the globe under half the
+  map area's height).
+- Tests: `src/ui/globe.test.ts` (10): the default turn and what it shows
+  (ENSO and Indonesia near, the NAO behind); the near, rim and far bands;
+  agreement with d3's own clipping on a grid of points; `normalise`,
+  `turnTo`, the drag's direction, size and pole stop, the arrow keys and a
+  full turn of them, `keepInView`. 993 tests.
+- Browser checks: `W:\temp\claude\ClimateConnections\m39\cdp-flat-snapshot.mjs`
+  records the flat map in eleven states before the change and after it
+  (identical), and `W:\temp\claude\ClimateConnections\m39\cdp-m39.mjs`
+  (26 checks; screenshots `m39-01-globe-pacific.png` …
+  `m39-08-off.png` in the same folder): nine checkboxes with the ninth off
+  on load; on, the 960 by 720 box and a round globe 704 across on the
+  dateline, focusable, 33 markers of 76, ENSO drawn and named, the NAO
+  not; off again at once, the flat map as on load; nothing behind the globe
+  drawn, no place named past 70°, no arrowhead into a place not drawn, and
+  every arrow into a drawn place with its head — on load, at month 6 with
+  every label on, after each drag, on both compared maps, in region mode,
+  in 1997 and at every step of all 21 stories (140 steps); a drag right
+  moving the middle west, down moving it north, the tilt stopping at the
+  pole; "Back to the Pacific"; a drag ending on ENSO selecting nothing and
+  a plain click selecting it; the arrow keys turning it 30° and 10° without
+  scrolling the page or stepping the month, and stepping the month again
+  once the focus is off the map; dragging map B turning both; region mode on the Sahel
+  turning to it; every story focus within 70° of the middle and named;
+  switching the globe keeping a story and a real year; `beforeprint`
+  giving the flat map with all 76 markers and `afterprint` the globe on
+  the same turn.
+- Not in M39: 3D terrain; turning while the timeline plays; zoom; keeping
+  the turn in the link or between visits; a globe in print. Next in
+  `docs/PLAN_V3.md`: M29, M31, M38 and M40, each with its own sign-off.
+
 ---
 
 ## 7. Version-1 acceptance checklist
@@ -3487,5 +3602,6 @@ writing mechanism text):
   M42); engine extensions for what does not fit today (phase
   duration, any number of chosen drivers, a hand-curated table of real
   years in place of the NOAA overlay, links that weaken other links, El
-  Niño flavours, impacts on people); then quiz mode, the globe view and
+  Niño flavours, impacts on people); then quiz mode, the globe view (done,
+  M39: a globe the student turns, off by default, never printed) and
   the importer. Each needs its own sign-off, as before.

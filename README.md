@@ -376,6 +376,15 @@ serve it (`npm run preview`) rather than double-clicking `dist/index.html`.
   read against each other. A place is left off because nothing on this map
   is acting on it in that month, never because nothing happens there; one
   click brings everything back.
+- **Globe view** (off by default, under "Map options") draws the map as a
+  globe you can drag to turn. It opens on the Pacific, centred on the
+  dateline; places on the far side are not drawn until you turn them into
+  view, and the names of places near the edge are left off so the rim
+  stays readable. With the map selected, the arrow keys turn it 10° a
+  press. "Back to the Pacific" puts it back. A story, or a place picked
+  under "By region", turns the globe to its place when that place is out
+  of sight; in the side-by-side view both globes turn together. Printing
+  always uses the flat map.
 - **Follow links through other drivers** (on by default) lets a driver that
   the scenario driver has pushed into a phase fire its own links. El Niño,
   for example, tends to push the Indian Ocean Dipole positive from June and
@@ -390,7 +399,7 @@ Keyboard:
 
 | key | does |
 |---|---|
-| ← → | previous / next month (or previous / next story step while a story plays) |
+| ← → | previous / next month (or previous / next story step while a story plays); with the globe selected, turn the globe (↑ ↓ too) |
 | Home / End | first / last month |
 | Space | play / pause |
 | Esc | leave the story |
