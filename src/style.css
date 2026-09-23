@@ -17,6 +17,10 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
+/* The hidden attribute always wins. Several controls set their own display
+   (flex rows, block buttons), which would otherwise beat the browser's own
+   [hidden] rule and leave, say, "Edit A / Edit B" on screen with compare off. */
+[hidden] { display: none !important; }
 
 #app {
   height: 100vh;
@@ -50,6 +54,9 @@ html, body { margin: 0; height: 100%; }
   border-right: 1px solid var(--line);
   background: var(--panel);
   overflow-y: auto;
+  /* keep the scrollbar's lane even when nothing scrolls, so the text does
+     not reflow sideways when a longer card or hint makes it appear */
+  scrollbar-gutter: stable;
   font-size: 13px;
 }
 #controls h2, #card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 0 6px; }
@@ -95,7 +102,7 @@ html, body { margin: 0; height: 100%; }
 .dial-ring path { stroke: var(--panel); stroke-width: 0.8; }
 .dial-count { font-size: 15px; font-weight: 600; fill: var(--ink); font-variant-numeric: tabular-nums; }
 .dial-note { font-size: 8px; fill: var(--muted); }
-.dial-caption { text-align: center; }
+.dial-caption { text-align: center; line-height: 1.4; min-height: calc(4 * 1.4em); }
 
 .legend { font-size: 12px; }
 .legend-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
@@ -118,7 +125,7 @@ html, body { margin: 0; height: 100%; }
 }
 .pane.editing .pane-head { border-bottom-color: var(--accent); color: var(--ink); }
 .pane-head .what { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pane-head .when { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.pane-head .when { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; min-width: 9.8em; text-align: right; }
 .side-tag { display: inline-block; min-width: 18px; text-align: center; border-radius: 4px; padding: 1px 5px; font-size: 11px; font-weight: 700; background: var(--muted); color: #ffffff; }
 .pane.editing .side-tag, .side-btn[aria-pressed="true"] .side-tag, .cmp-cell.editing .side-tag { background: var(--accent); }
 .side-switch { display: flex; gap: 6px; margin-top: 6px; }
@@ -228,6 +235,7 @@ html, body { margin: 0; height: 100%; }
   border-left: 1px solid var(--line);
   background: var(--panel);
   overflow-y: auto;
+  scrollbar-gutter: stable;
   font-size: 13.5px;
   line-height: 1.45;
 }
@@ -340,15 +348,20 @@ ul.impacts li.off { color: var(--muted); }
   padding: 10px 18px 12px;
   border-top: 1px solid var(--line);
   background: var(--panel);
+  /* the month labels are zero-width and centred on their tick: a bold edge
+     label with its mark must never spill past the page and add scrollbars */
+  overflow: hidden;
 }
 #timeline[hidden] { display: none; }
 #timeline button {
   font: inherit; padding: 6px 14px; border: 1px solid var(--ink); border-radius: 6px;
-  background: var(--ink); color: #ffffff; cursor: pointer; min-width: 78px;
+  background: var(--ink); color: #ffffff; cursor: pointer; width: 96px; white-space: nowrap;
 }
-.scrubber { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.scrubber { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .scrubber input[type="range"] { width: 100%; }
-.ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+/* inset by the slider thumb's half-width, so each month sits under the thumb
+   and the first and last labels stay inside the page */
+.ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); padding: 0 8px; }
 .ticks span { width: 0; text-align: center; white-space: nowrap; }
 .ticks span.second-onset { color: #1f2328; font-weight: 700; text-decoration: underline dotted; }
 /* the second driver was already under way when the year shown began (M15) */

@@ -1183,6 +1183,12 @@ Do them in order. Each has acceptance criteria; all must pass before moving on.
 ### M7 — Polish
 - Print stylesheet; disclaimer; keyboard support for the scrubber (arrow keys).
 - README complete: what it is, what it is not, how to run, how to add a link.
+- Nothing moves when only text changes: the Play / Pause button has one
+  width, both side panels keep their scrollbar lane, the season dial's
+  caption reserves four lines, a compared map's month has one width, the
+  timeline's edge labels never spill past the page (they added page
+  scrollbars in some real years and shifted the whole layout), and the
+  `hidden` attribute always wins over a control's own display.
 
 Version 1 is done when M1–M7 pass and the acceptance checklist in section 7
 is fully green.
