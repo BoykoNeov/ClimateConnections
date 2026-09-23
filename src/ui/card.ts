@@ -79,7 +79,7 @@ function throughHtml(link: Link, nodeById: Map<string, GraphNode>, featuresOn: b
   const names = (link.via ?? []).map((id) => nodeById.get(id)).filter((n): n is FeatureNode => !!n && n.kind === 'feature').map((n) => n.name);
   if (names.length === 0) return '';
   const list = names.map((n) => `the ${n}`).join(' and ');
-  return `<p class="hint through">Works through ${esc(list)}: the studies describe this effect as a change in ${names.length === 1 ? 'it' : 'them'}. ${featuresOn ? 'Click the symbol on the map to see every arrow that works through it.' : 'Turn on "Seasonal features" under the legend, on the left, to see it on the map.'}</p>`;
+  return `<p class="hint through">Works through ${esc(list)}: the studies describe this effect as a change in ${names.length === 1 ? 'it' : 'them'}. ${featuresOn ? 'Click the symbol on the map to see every arrow that works through it.' : 'Turn on "Seasonal features" under "Map options", on the left, to see it on the map.'}</p>`;
 }
 
 /** "How sure are we?" for a link as it acts this month. `ls` carries the
@@ -644,7 +644,18 @@ function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
  *  arrival window is shown, so the timing lines say it. */
 export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode | null, month: MonthState, chosen: Map<string, ChosenPhase>, compare?: CardCompare, year?: number, impacts = false, window = false, features = false): void {
   if (!node) {
-    container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>`;
+    // Nothing selected: the first thing a new reader sees here, so it says
+    // how to begin as well as what this panel is for.
+    container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>
+      <div class="getting-started">
+        <p class="gs-title">New here? Three ways to begin</p>
+        <ol>
+          <li><strong>Press ▶ Play</strong> at the bottom to watch the effects of the chosen driver arrive month by month.</li>
+          <li><strong>Click a circle</strong> on the map: this panel explains what tends to happen there and how sure the science is.</li>
+          <li><strong>Pick a story</strong> under "Start here" on the left for a guided walk through one year.</li>
+        </ol>
+        <p class="gs-read">Reading the arrows: a solid line is well established, a dashed line probable, a dotted line contested. The legend at the bottom left has the rest.</p>
+      </div>`;
     return;
   }
   const ctx: Ctx = {

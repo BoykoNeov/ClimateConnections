@@ -81,6 +81,22 @@ html, body { margin: 0; height: 100%; }
 .kinds-row .kind-btn .swatch { width: 11px; height: 11px; }
 #controls select { width: 100%; padding: 6px; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
 .hint { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+/* the "More" / "Less" toggle at the end of a hint whose rest is folded away */
+.hint-toggle { font: inherit; font-size: 11px; padding: 0; border: 0; background: none; color: var(--accent); text-decoration: underline; cursor: pointer; }
+/* The left panel's foldable groups: Start here, Your scenario, Compare two
+   scenarios, Season dial, Map options. The summary is the group's title. */
+.panel-section { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 4px; }
+.panel-section > summary {
+  display: flex; align-items: center; gap: 6px; list-style: none; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--ink); padding: 10px 0 2px;
+}
+.panel-section > summary::-webkit-details-marker { display: none; }
+.panel-section > summary::before { content: '▸'; font-size: 11px; color: var(--muted); width: 10px; }
+.panel-section[open] > summary::before { content: '▾'; }
+.panel-section > summary:hover { color: var(--accent); }
+#controls .panel-section:first-child > summary { padding-top: 0; }
+#controls .panel-section h2:first-of-type { margin-top: 8px; }
+.panel-section > .check, .scenario-controls .check { margin-top: 10px; }
 .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 /* Region mode (M28): the scenario controls stay in place but greyed and inert. */
 .scenario-controls.off { opacity: 0.4; }
@@ -108,6 +124,11 @@ html, body { margin: 0; height: 100%; }
 .legend-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .legend-row svg { flex: none; }
 .legend-note { font-size: 11px; color: var(--muted); margin: 2px 0 8px 0; }
+/* The rows for an optional layer (arrival window, impacts, seasonal
+   features, hidden places) show only while that layer is on, so the legend
+   explains what is on the map and nothing else. */
+.legend:not(.show-window) .window, .legend:not(.show-impacts) .impacts,
+.legend:not(.show-features) .features, .legend:not(.show-hide) .hide { display: none; }
 
 #map-container { grid-area: map; position: relative; background: var(--ocean); min-width: 0; min-height: 0; display: grid; grid-template-columns: 1fr; }
 #map-container svg { display: block; width: 100%; height: 100%; }
@@ -464,3 +485,11 @@ button:focus-visible, select:focus-visible, input:focus-visible, .node:focus-vis
   cursor: pointer; font: inherit; color: var(--ink); text-align: left;
 }
 .add-driver:hover { border-color: var(--ink); }
+
+/* Nothing selected: how to begin, in the details panel. */
+.getting-started { margin-top: 14px; padding: 10px 12px; border-radius: 6px; background: #f0f4f8; font-size: 12.5px; }
+.getting-started .gs-title { margin: 0 0 4px; font-weight: 600; }
+.getting-started ol { margin: 4px 0 6px; padding-left: 20px; }
+.getting-started li { margin: 4px 0; }
+.getting-started .gs-read { margin: 6px 0 0; color: var(--muted); }
+@media print { .getting-started { display: none; } }

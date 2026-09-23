@@ -1,4 +1,6 @@
-// Static legend: confidence line styles and state colours per axis.
+// Legend: confidence line styles and state colours per axis. The rows for an
+// optional layer carry its class (window, impacts, features, hide); the
+// controls show them only while that layer is on.
 
 import { CONFIDENCE_TEXT } from '../types';
 import { AXIS_COLORS } from './map';

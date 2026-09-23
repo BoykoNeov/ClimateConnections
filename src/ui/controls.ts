@@ -75,6 +75,45 @@ function calMonth(startMonth: number, index: number): number {
 /** The sentence every hold hint ends with: the honest limit of rule 9. */
 const MEMORY_NOTE = 'An effect that needs longer to arrive than the event lasts never arrives on this map; in reality the ocean can carry an effect past the end of an event.';
 
+/** A hint under a control: one short line always shown and, when there is
+ *  more to say, the rest behind a "More" toggle, so the panel reads as a
+ *  list of controls rather than a wall of text. Anything a student must not
+ *  miss (a limit of the map, an honesty sentence) goes in the short line. */
+function hint(short: string, rest = ''): HTMLParagraphElement {
+  const p = document.createElement('p');
+  p.className = 'hint';
+  p.append(short);
+  if (!rest) return p;
+  const more = document.createElement('span');
+  more.className = 'hint-rest';
+  more.hidden = true;
+  more.textContent = ` ${rest}`;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'hint-toggle';
+  btn.textContent = 'More';
+  btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', () => {
+    const open = more.hidden;
+    more.hidden = !open;
+    btn.textContent = open ? 'Less' : 'More';
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  p.append(more, ' ', btn);
+  return p;
+}
+
+/** A foldable group of the left panel, its title the summary. */
+function section(title: string, open: boolean): HTMLDetailsElement {
+  const d = document.createElement('details');
+  d.className = 'panel-section';
+  d.open = open;
+  const summary = document.createElement('summary');
+  summary.textContent = title;
+  d.append(summary);
+  return d;
+}
+
 export type Side = 'a' | 'b';
 
 /** Scenario A (the fields inherited from `ScenarioSettings`) plus the settings
@@ -284,10 +323,10 @@ class OtherRow {
     this.phases = new PhasePicker((phaseId) => this.owner.patchOther(this.index, { phaseId }));
     this.el.append(this.phases.box, this.phases.kinds);
     if (index === 0) {
-      const hint = document.createElement('p');
-      hint.className = 'hint';
-      hint.textContent = 'Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). Their effects add up: where they push a place opposite ways its marker is hatched and its card says "conflicting". A chosen driver is never pushed by another; choose its neutral phase to hold it out of play. "More drivers" below adds a third and more.';
-      this.el.append(hint);
+      this.el.append(hint(
+        'Its effects add to the first driver\'s; where they push a place opposite ways, the marker is hatched and its card says "conflicting".',
+        'Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). A chosen driver is never pushed by another; choose its neutral phase to hold it out of play. "More drivers" below adds a third and more.',
+      ));
     }
 
     // The driver's own start month, read within the twelve months shown (a
@@ -419,10 +458,16 @@ export class ControlsView {
   /** real years (M34): the picker, and the lock it puts on the scenario controls */
   private yearSelect: HTMLSelectElement;
   private locked = false;
-  /** region mode (M28): the place picker and the box of scenario controls it greys out */
+  /** region mode (M28): the place picker and the boxes of scenario controls it greys out */
   private regionSelect: HTMLSelectElement;
-  private scenarioBox: HTMLDivElement;
+  private scenarioBoxes: HTMLDivElement[] = [];
+  /** the foldable groups that open by themselves while in use */
+  private compareSection: HTMLDetailsElement;
+  private optionsSection: HTMLDetailsElement;
+  private optionsSummary: HTMLElement;
   private filterSelect: HTMLSelectElement;
+  private areaBox: HTMLInputElement;
+  private labelsBox: HTMLInputElement;
   private chainBox: HTMLInputElement;
   private impactsBox: HTMLInputElement;
   /** the arrival window (M30): the toggle under the Legend heading */
@@ -431,6 +476,10 @@ export class ControlsView {
   private featuresBox: HTMLInputElement;
   /** hide the places the month says nothing about (M42) */
   private hideBox: HTMLInputElement;
+  /** the legend: the rows for an optional layer show only while it is on */
+  private legend: HTMLElement | null = null;
+  /** how many map options were away from their defaults at the last reflect */
+  private optionsChanged = 0;
   /** compare mode (M14): the switch, and the A/B side buttons shown while it is on */
   private compareBox: HTMLInputElement;
   private sideBox: HTMLDivElement;
@@ -446,10 +495,14 @@ export class ControlsView {
   /** `featureNames`: the seasonal features in the data (M41), named in the layer's hint */
   constructor(container: HTMLElement, readonly drivers: DriverNode[], stories: Story[], years: number[], regions: OutcomeNode[], private state: ControlState, featureNames: string[] = []) {
     container.innerHTML = '';
+    const root = container;
 
+    // ---- Start here: the three ways in that need no setting up.
+    const start = section('Start here', true);
+    root.append(start);
     const hs = document.createElement('h2');
     hs.textContent = 'Stories';
-    container.append(hs);
+    start.append(hs);
     this.storySelect = document.createElement('select');
     this.storySelect.dataset.role = 'story';
     this.storySelect.setAttribute('aria-label', 'Play a story');
@@ -464,18 +517,15 @@ export class ControlsView {
       this.storySelect.append(o);
     }
     this.storySelect.addEventListener('change', () => this.onStory(this.storySelect.value || null));
-    container.append(this.storySelect);
-    const hintS = document.createElement('p');
-    hintS.className = 'hint';
-    hintS.textContent = 'A story sets the scenario and steps through the year, one place at a time.';
-    container.append(hintS);
+    start.append(this.storySelect);
+    start.append(hint('A story sets the scenario and steps through the year, one place at a time.'));
 
     // Real years (M34): every recorded driver set to the phase the index
     // datasets show for that year, the scenario controls locked until "Edit
     // this scenario" in the year panel frees them.
     const hy = document.createElement('h2');
     hy.textContent = 'Real year';
-    container.append(hy);
+    start.append(hy);
     this.yearSelect = document.createElement('select');
     this.yearSelect.dataset.role = 'year';
     this.yearSelect.setAttribute('aria-label', 'Show a real year from the record');
@@ -490,17 +540,17 @@ export class ControlsView {
       this.yearSelect.append(o);
     }
     this.yearSelect.addEventListener('change', () => this.onYear(this.yearSelect.value ? Number(this.yearSelect.value) : null));
-    container.append(this.yearSelect);
-    const hintY = document.createElement('p');
-    hintY.className = 'hint';
-    hintY.textContent = 'Sets every recorded driver to the phase the index datasets show for that year, with its own start and length, and locks the controls below; "Edit this scenario" in the panel on the right frees them. The map then shows the tendencies for those phases, not what happened that year.';
-    container.append(hintY);
+    start.append(this.yearSelect);
+    start.append(hint(
+      'Sets every recorded driver to its phase in that year. The map then shows the tendencies for those phases, not what happened that year.',
+      'Each driver keeps its own start and length, and the scenario controls are locked; "Edit this scenario" in the panel on the right frees them.',
+    ));
 
     // Region mode (M28): pick a place and see every driver that reaches it.
     // No scenario runs; the controls below are greyed out until "None".
     const hr = document.createElement('h2');
     hr.textContent = 'By region';
-    container.append(hr);
+    start.append(hr);
     this.regionSelect = document.createElement('select');
     this.regionSelect.dataset.role = 'region';
     this.regionSelect.setAttribute('aria-label', 'Pick a place to see every driver that reaches it');
@@ -515,60 +565,24 @@ export class ControlsView {
       this.regionSelect.append(o);
     }
     this.regionSelect.addEventListener('change', () => this.update({ region: this.regionSelect.value || null, compare: this.regionSelect.value ? null : this.state.compare }));
-    container.append(this.regionSelect);
-    const hintR = document.createElement('p');
-    hintR.className = 'hint';
-    hintR.textContent = 'Every driver known to reach that place, in which phase, in which months and how surely. Nothing is animated: pick "Where I live…" again, or click a driver on the map, to go back to a scenario.';
-    container.append(hintR);
+    start.append(this.regionSelect);
+    start.append(hint(
+      'Every driver known to reach one place: in which phase, in which months and how surely.',
+      'Nothing is animated: pick "Where I live…" again, or click a driver on the map, to go back to a scenario.',
+    ));
 
-    // Everything from here to the legend describes a scenario; region mode
-    // greys it out (inert: no clicks, no focus) rather than hiding it, so the
-    // panel keeps its shape.
-    this.scenarioBox = document.createElement('div');
-    this.scenarioBox.className = 'scenario-controls';
-    container.append(this.scenarioBox);
-    container = this.scenarioBox;
+    // Everything that describes a scenario sits in the scenario boxes; region
+    // mode and a real year grey them out (inert: no clicks, no focus) rather
+    // than hiding them, so the panel keeps its shape.
+    const scenarioBox = document.createElement('div');
+    scenarioBox.className = 'scenario-controls';
+    root.append(scenarioBox);
+    this.scenarioBoxes.push(scenarioBox);
 
-    // Compare mode (M14): two scenarios side by side on one timeline. The
-    // scenario controls below edit the side picked here.
-    const hc = document.createElement('h2');
-    hc.textContent = 'Compare';
-    container.append(hc);
-    const compareLabel = document.createElement('label');
-    compareLabel.className = 'check';
-    this.compareBox = document.createElement('input');
-    this.compareBox.type = 'checkbox';
-    this.compareBox.checked = !!state.compare;
-    this.compareBox.addEventListener('change', () => {
-      if (!this.compareBox.checked) { this.update({ compare: null }); return; }
-      // B starts as a copy of A with the opposite phase, so the maps differ from the start.
-      const a = scenarioSettings(this.state);
-      this.update({ compare: { side: 'a', b: { ...a, phaseId: oppositePhaseId(this.driverById(a.driverId), a.phaseId) } } });
-    });
-    compareLabel.append(this.compareBox, document.createTextNode(' Two scenarios side by side'));
-    container.append(compareLabel);
-    this.sideBox = document.createElement('div');
-    this.sideBox.className = 'side-switch';
-    this.sideBox.hidden = true;
-    for (const side of ['a', 'b'] as Side[]) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'side-btn';
-      b.dataset.side = side;
-      b.innerHTML = `<span class="side-tag">${side.toUpperCase()}</span><span>Edit ${side.toUpperCase()}</span>`;
-      b.addEventListener('click', () => { if (this.state.compare) this.update({ compare: { ...this.state.compare, side } }); });
-      this.sideBox.append(b);
-      this.sideButtons.set(side, b);
-    }
-    container.append(this.sideBox);
-    this.compareNote = document.createElement('p');
-    this.compareNote.className = 'hint compare-note';
-    this.compareNote.hidden = true;
-    container.append(this.compareNote);
-    const hintC = document.createElement('p');
-    hintC.className = 'hint';
-    hintC.textContent = 'Both maps follow the same timeline, month by month after onset. The controls below set the scenario you are editing; the other map keeps its own. B starts as a copy of A with the opposite phase. A dark ring marks a place where the two maps differ this month; click it to read both.';
-    container.append(hintC);
+    // ---- Your scenario: the driver, its phase, the others, when and how long.
+    const own = section('Your scenario', true);
+    scenarioBox.append(own);
+    container = own;
 
     // Driver: a dropdown when there is more than one, otherwise just a heading.
     this.driverHeading = document.createElement('h2');
@@ -620,10 +634,10 @@ export class ControlsView {
       this.addButton.textContent = '+ Add a driver';
       this.addButton.addEventListener('click', () => this.addOther());
       this.moreBox.append(this.addButton);
-      const hintMore = document.createElement('p');
-      hintMore.className = 'hint';
-      hintMore.textContent = 'Every driver you add is chosen by hand like the second: its own phase, start month and length, its links at full confidence, never pushed. Three or more pushes on one place still add up and clamp to one step; two against one is drawn as the majority, hatched, and the card lists all of them. There is no order among them beyond their start months.';
-      this.moreBox.append(hintMore);
+      this.moreBox.append(hint(
+        'Every driver you add works like the second: its own phase, start month and length.',
+        'Its links count at full confidence and it is never pushed. Three or more pushes on one place still add up and clamp to one step; two against one is drawn as the majority, hatched, and the card lists all of them. There is no order among them beyond their start months.',
+      ));
       container.append(this.moreBox);
     }
 
@@ -661,16 +675,67 @@ export class ControlsView {
     this.holdHint.className = 'hint';
     container.append(this.holdHint);
 
-    // Season dial (M13): the page draws it into this slot.
-    const hd = document.createElement('h2');
-    hd.textContent = 'Season dial';
-    container.append(hd);
+    // ---- Compare (M14): two scenarios side by side on one timeline. The
+    // scenario controls above edit the side picked here. Closed until used.
+    this.compareSection = section('Compare two scenarios', !!state.compare);
+    scenarioBox.append(this.compareSection);
+    container = this.compareSection;
+    const compareLabel = document.createElement('label');
+    compareLabel.className = 'check';
+    this.compareBox = document.createElement('input');
+    this.compareBox.type = 'checkbox';
+    this.compareBox.checked = !!state.compare;
+    this.compareBox.addEventListener('change', () => {
+      if (!this.compareBox.checked) { this.update({ compare: null }); return; }
+      // B starts as a copy of A with the opposite phase, so the maps differ from the start.
+      const a = scenarioSettings(this.state);
+      this.update({ compare: { side: 'a', b: { ...a, phaseId: oppositePhaseId(this.driverById(a.driverId), a.phaseId) } } });
+    });
+    compareLabel.append(this.compareBox, document.createTextNode(' Two scenarios side by side'));
+    container.append(compareLabel);
+    this.sideBox = document.createElement('div');
+    this.sideBox.className = 'side-switch';
+    this.sideBox.hidden = true;
+    for (const side of ['a', 'b'] as Side[]) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'side-btn';
+      b.dataset.side = side;
+      b.innerHTML = `<span class="side-tag">${side.toUpperCase()}</span><span>Edit ${side.toUpperCase()}</span>`;
+      b.addEventListener('click', () => { if (this.state.compare) this.update({ compare: { ...this.state.compare, side } }); });
+      this.sideBox.append(b);
+      this.sideButtons.set(side, b);
+    }
+    container.append(this.sideBox);
+    this.compareNote = document.createElement('p');
+    this.compareNote.className = 'hint compare-note';
+    this.compareNote.hidden = true;
+    container.append(this.compareNote);
+    container.append(hint(
+      'Two maps on the same month. "Your scenario" above edits the side you pick; a dark ring marks a place where the maps differ.',
+      'Both maps follow the same timeline, month by month after onset; the other map keeps its own settings. B starts as a copy of A with the opposite phase. Click a ringed place to read both.',
+    ));
+
+    // ---- Season dial (M13): the page draws it into this slot.
+    const dial = section('Season dial', false);
+    scenarioBox.append(dial);
     this.dialHost = document.createElement('div');
-    container.append(this.dialHost);
-    const hintD = document.createElement('p');
-    hintD.className = 'hint';
-    hintD.textContent = 'The year as a circle: the month shown is filled, the triangle marks where the year shown begins. A connection is only felt in its season, so a month can be in season and still empty while the lag runs. Click a month to jump to it; click a place on the map to see the season of each connection acting on it.';
-    container.append(hintD);
+    dial.append(this.dialHost);
+    dial.append(hint(
+      'The year as a circle: the month shown is filled. A connection is only felt in its season, so a month can be in season and still empty while the effect is on its way.',
+      'The triangle marks where the year shown begins. Click a month to jump to it; click a place on the map to see the season of each connection acting on it.',
+    ));
+
+    // ---- Map options: what the map shows. Closed by default (every option
+    // starts at its default); it opens by itself while one is changed.
+    this.optionsSection = section('Map options', false);
+    root.append(this.optionsSection);
+    this.optionsSummary = this.optionsSection.querySelector('summary')!;
+    const optBox = document.createElement('div');
+    optBox.className = 'scenario-controls';
+    this.optionsSection.append(optBox);
+    this.scenarioBoxes.push(optBox);
+    container = optBox;
 
     const h3 = document.createElement('h2');
     h3.textContent = 'Show connections';
@@ -687,26 +752,20 @@ export class ControlsView {
     filter.addEventListener('change', () => this.updateScenario({ filter: filter.value as ConfidenceFilter }));
     container.append(filter);
     this.filterSelect = filter;
-    const hint2 = document.createElement('p');
-    hint2.className = 'hint';
-    hint2.textContent = 'Hidden connections stay on the map as faint grey lines, so you can see what was left out.';
-    container.append(hint2);
+    container.append(hint('Hidden connections stay on the map as faint grey lines, so you can see what was left out.'));
 
     const h35 = document.createElement('h2');
-    h35.textContent = 'Map';
+    h35.textContent = 'Layers';
     container.append(h35);
     const areaLabel = document.createElement('label');
     areaLabel.className = 'check';
-    const areaBox = document.createElement('input');
-    areaBox.type = 'checkbox';
-    areaBox.checked = state.showAreas;
-    areaBox.addEventListener('change', () => this.update({ showAreas: areaBox.checked }));
-    areaLabel.append(areaBox, document.createTextNode(' Show affected areas'));
+    this.areaBox = document.createElement('input');
+    this.areaBox.type = 'checkbox';
+    this.areaBox.checked = state.showAreas;
+    this.areaBox.addEventListener('change', () => this.update({ showAreas: this.areaBox.checked }));
+    areaLabel.append(this.areaBox, document.createTextNode(' Show affected areas'));
     container.append(areaLabel);
-    const hint3 = document.createElement('p');
-    hint3.className = 'hint';
-    hint3.textContent = 'Rough outlines of the region each point stands for. Illustrative, not exact boundaries.';
-    container.append(hint3);
+    container.append(hint('Rough outlines of the region each point stands for. Illustrative, not exact boundaries.'));
     const chainLabel = document.createElement('label');
     chainLabel.className = 'check';
     this.chainBox = document.createElement('input');
@@ -715,22 +774,22 @@ export class ControlsView {
     this.chainBox.addEventListener('change', () => this.updateScenario({ chain: this.chainBox.checked }));
     chainLabel.append(this.chainBox, document.createTextNode(' Follow links through other drivers'));
     container.append(chainLabel);
-    const hint4 = document.createElement('p');
-    hint4.className = 'hint';
-    hint4.textContent = 'When this driver pushes another driver into a phase, keep following that driver’s own links. Each extra step lowers the confidence one tier. Off: direct links only.';
-    container.append(hint4);
+    container.append(hint(
+      'When this driver pushes another driver into a phase, keep following that driver’s own links, each step one level less sure.',
+      'Each extra step lowers the confidence one tier. Off: direct links only.',
+    ));
     const labelsLabel = document.createElement('label');
     labelsLabel.className = 'check';
-    const labelsBox = document.createElement('input');
-    labelsBox.type = 'checkbox';
-    labelsBox.checked = state.showAllLabels;
-    labelsBox.addEventListener('change', () => this.update({ showAllLabels: labelsBox.checked }));
-    labelsLabel.append(labelsBox, document.createTextNode(' Label every region'));
+    this.labelsBox = document.createElement('input');
+    this.labelsBox.type = 'checkbox';
+    this.labelsBox.checked = state.showAllLabels;
+    this.labelsBox.addEventListener('change', () => this.update({ showAllLabels: this.labelsBox.checked }));
+    labelsLabel.append(this.labelsBox, document.createTextNode(' Label every region'));
     container.append(labelsLabel);
-    const hint5 = document.createElement('p');
-    hint5.className = 'hint';
-    hint5.textContent = 'Off: only the places this scenario reaches in the month shown keep their name, plus the one you have clicked; the rest stay as circles you can still click.';
-    container.append(hint5);
+    container.append(hint(
+      'Off: only the places reached in the month shown keep their name.',
+      'The place you have clicked keeps its name too; the rest stay as circles you can still click.',
+    ));
     // Impacts on people (M37): the fifth checkbox, after the labels box so
     // the browser scripts' indices still hold. Off by default.
     const impactsLabel = document.createElement('label');
@@ -741,18 +800,16 @@ export class ControlsView {
     this.impactsBox.addEventListener('change', () => this.update({ showImpacts: this.impactsBox.checked }));
     impactsLabel.append(this.impactsBox, document.createTextNode(' Impacts on people'));
     container.append(impactsLabel);
-    const hint6 = document.createElement('p');
-    hint6.className = 'hint';
-    hint6.textContent = 'Squares beside some places: harvests, disease seasons, fires, rivers and catches that tend to follow from the weather shown, drawn one confidence tier lower and one step further from the driver. How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.';
-    container.append(hint6);
+    container.append(hint(
+      'Squares beside some places: harvests, disease seasons, fires, rivers and catches that tend to follow from the weather shown. How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.',
+      'Each is drawn one confidence tier lower and one step further from the driver than the weather it follows.',
+    ));
 
-    const h4 = document.createElement('h2');
-    h4.textContent = 'Legend';
-    h4.className = 'print-keep';
-    this.scenarioBox.parentElement!.append(h4);
-    // The arrival window (M30): the sixth checkbox, under the Legend
-    // heading, after "Impacts on people" so the browser scripts' indices
-    // still hold. Off by default (rule 15 of docs/PLAN_V3.md).
+    // The arrival window (M30), seasonal features (M41) and hiding
+    // unaffected regions (M42): the sixth, seventh and eighth checkboxes, in
+    // that order so the browser scripts' indices still hold, outside the
+    // scenario box so they work in region mode and a real year too. Off by
+    // default (rule 15 of docs/PLAN_V3.md).
     const windowLabel = document.createElement('label');
     windowLabel.className = 'check';
     this.windowBox = document.createElement('input');
@@ -761,14 +818,11 @@ export class ControlsView {
     this.windowBox.checked = state.showWindow;
     this.windowBox.addEventListener('change', () => this.update({ showWindow: this.windowBox.checked }));
     windowLabel.append(this.windowBox, document.createTextNode(' Show arrival window'));
-    this.scenarioBox.parentElement!.append(windowLabel);
-    const hintW = document.createElement('p');
-    hintW.className = 'hint';
-    hintW.textContent = 'The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, an arrow is drawn faint with an outlined head until the latest month has passed, so you can see where the timing is uncertain. The card gives the range either way.';
-    this.scenarioBox.parentElement!.append(hintW);
-    // Seasonal features (M41): the seventh checkbox, after "Show arrival
-    // window" so the browser scripts' indices still hold. Off by default
-    // (rule 15 of docs/PLAN_V3.md).
+    this.optionsSection.append(windowLabel);
+    this.optionsSection.append(hint(
+      'An arrow is drawn faint with an outlined head while its effect may still be arriving, so you can see where the timing is uncertain.',
+      'The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, the arrow stays faint until the latest month has passed. The card gives the range either way.',
+    ));
     const featuresLabel = document.createElement('label');
     featuresLabel.className = 'check';
     this.featuresBox = document.createElement('input');
@@ -777,15 +831,12 @@ export class ControlsView {
     this.featuresBox.checked = state.showFeatures;
     this.featuresBox.addEventListener('change', () => this.update({ showFeatures: this.featuresBox.checked }));
     featuresLabel.append(this.featuresBox, document.createTextNode(' Seasonal features'));
-    this.scenarioBox.parentElement!.append(featuresLabel);
-    const hintF = document.createElement('p');
-    hintF.className = 'hint';
+    this.optionsSection.append(featuresLabel);
     const named = featureNames.length === 0 ? '' : ` (${featureNames.slice(0, -1).join(', ')}${featureNames.length > 1 ? ' and ' : ''}${featureNames[featureNames.length - 1]})`;
-    hintF.textContent = `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring, in the months they are present. They are the machinery the arrows work through, not causes on the map: nothing is computed from them and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.`;
-    this.scenarioBox.parentElement!.append(hintF);
-    // Hide unaffected regions (M42): the eighth checkbox, after "Seasonal
-    // features" so the browser scripts' indices still hold. Off by default
-    // (rule 15 of docs/PLAN_V3.md).
+    this.optionsSection.append(hint(
+      `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring. They are the machinery the arrows work through: nothing is computed from them.`,
+      'They are drawn in the months they are present, and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.',
+    ));
     const hideLabel = document.createElement('label');
     hideLabel.className = 'check';
     this.hideBox = document.createElement('input');
@@ -794,14 +845,20 @@ export class ControlsView {
     this.hideBox.checked = state.hideUnaffected;
     this.hideBox.addEventListener('change', () => this.update({ hideUnaffected: this.hideBox.checked }));
     hideLabel.append(this.hideBox, document.createTextNode(' Hide unaffected regions'));
-    this.scenarioBox.parentElement!.append(hideLabel);
-    const hintH = document.createElement('p');
-    hintH.className = 'hint';
-    hintH.textContent = 'On: only the places a connection has reached in the month shown are drawn, the ones with a full arrow. A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay. A place is hidden because nothing on this map is acting on it in this month, not because nothing happens there.';
-    this.scenarioBox.parentElement!.append(hintH);
+    this.optionsSection.append(hideLabel);
+    this.optionsSection.append(hint(
+      'Only the places a connection has reached in the month shown are drawn. A place is hidden because nothing on this map is acting on it in this month, not because nothing happens there.',
+      'A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay.',
+    ));
+
+    const h4 = document.createElement('h2');
+    h4.textContent = 'Legend';
+    h4.className = 'print-keep';
+    root.append(h4);
     const legend = renderLegend();
     legend.classList.add('print-keep');
-    this.scenarioBox.parentElement!.append(legend);
+    root.append(legend);
+    this.legend = legend;
 
     this.reflect();
   }
@@ -935,6 +992,9 @@ export class ControlsView {
    *  show (M34); the story, year and region pickers stay live. */
   setLocked(locked: boolean): void {
     this.locked = locked;
+    // A real year chooses up to fourteen drivers, and the year panel on the
+    // right already lists every one: keep their locked rows folded away.
+    if (locked && this.moreBox) this.moreBox.open = false;
     this.reflect();
   }
 
@@ -979,13 +1039,16 @@ export class ControlsView {
     // controls greyed out.
     this.regionSelect.value = this.state.region ?? '';
     const off = !!this.state.region || this.locked;
-    this.scenarioBox.classList.toggle('off', off);
-    this.scenarioBox.toggleAttribute('inert', off);
-    this.scenarioBox.setAttribute('aria-hidden', String(off));
+    for (const box of this.scenarioBoxes) {
+      box.classList.toggle('off', off);
+      box.toggleAttribute('inert', off);
+      box.setAttribute('aria-hidden', String(off));
+    }
 
     // Compare switch and side buttons (M14).
     const compare = this.state.compare;
     this.compareBox.checked = !!compare;
+    if (compare) this.compareSection.open = true;
     this.sideBox.hidden = !compare;
     this.compareNote.hidden = !compare;
     for (const [side, b] of this.sideButtons) b.setAttribute('aria-pressed', String(!!compare && compare.side === side));
@@ -1003,9 +1066,24 @@ export class ControlsView {
     this.reflectHold(this.holdSelect, this.holdHint, driver, s.hold, s.startMonth, 0);
     this.filterSelect.value = s.filter;
     this.chainBox.checked = s.chain;
+    this.areaBox.checked = this.state.showAreas;
+    this.labelsBox.checked = this.state.showAllLabels;
     this.impactsBox.checked = this.state.showImpacts;
     this.windowBox.checked = this.state.showWindow;
     this.featuresBox.checked = this.state.showFeatures;
     this.hideBox.checked = this.state.hideUnaffected;
+    // "Map options" says how many options are away from their defaults, and
+    // opens when one is (a story can turn a layer on), so nothing that is
+    // changing the map sits folded out of sight.
+    const changed = [s.filter !== 'all', !s.chain, !this.state.showAreas, this.state.showAllLabels, this.state.showImpacts, this.state.showWindow, this.state.showFeatures, this.state.hideUnaffected].filter(Boolean).length;
+    this.optionsSummary.textContent = changed === 0 ? 'Map options' : `Map options (${changed} changed)`;
+    if (changed > this.optionsChanged) this.optionsSection.open = true;
+    this.optionsChanged = changed;
+    if (this.legend) {
+      this.legend.classList.toggle('show-window', this.state.showWindow);
+      this.legend.classList.toggle('show-impacts', this.state.showImpacts);
+      this.legend.classList.toggle('show-features', this.state.showFeatures);
+      this.legend.classList.toggle('show-hide', this.state.hideUnaffected);
+    }
   }
 }
