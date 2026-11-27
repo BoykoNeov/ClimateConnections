@@ -272,7 +272,8 @@ one.
   must pass, **and** the page must be checked in a browser against the
   milestone's acceptance criteria.
 - Regenerated `public/data/graph.json` is committed alongside the YAML that
-  produced it.
+  produced it, and so is `ClimateConnections.html` (`npm run build:single`),
+  the one-file copy that opens by double-click with no server.
 - Temp files go in `W:\temp\claude\ClimateConnections\`, never in the repo.
 
 ## Commands
@@ -282,6 +283,7 @@ npm run build:data     # validate YAML, write public/data/graph.json
 npm test               # vitest
 npm run dev            # Vite dev server
 npm run build          # static site to dist/
+npm run build:single   # build + ClimateConnections.html (one file, double-click)
 ```
 
 ## Layout (see docs/PLAN.md §2 for the full tree)

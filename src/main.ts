@@ -75,10 +75,19 @@ function monthsWord(n: number): string {
   return n === 1 ? 'a month' : `${n} months`;
 }
 
-async function main(): Promise<void> {
+/** The graph: embedded in the page by the single-file build
+ *  (`npm run build:single`, which opens by double-click with no server),
+ *  else fetched next to the page as before. */
+async function loadGraph(): Promise<Graph> {
+  const embedded = document.getElementById('graph-data');
+  if (embedded?.textContent) return JSON.parse(embedded.textContent) as Graph;
   const res = await fetch(`${import.meta.env.BASE_URL}data/graph.json`);
   if (!res.ok) throw new Error(`Could not load graph.json (${res.status}). Run: npm run build:data`);
-  const graph = (await res.json()) as Graph;
+  return (await res.json()) as Graph;
+}
+
+async function main(): Promise<void> {
+  const graph = await loadGraph();
   const drivers = graph.nodes.filter((n): n is DriverNode => n.kind === 'driver');
   if (drivers.length === 0) throw new Error('graph has no driver node');
   const driverById = (id: string): DriverNode => {

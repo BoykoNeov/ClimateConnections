@@ -38,5 +38,12 @@
     </div>
     <noscript><p class="noscript">Climate Connections needs JavaScript to draw the map. The data behind it is plain text in <code>data/</code>.</p></noscript>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Opened by double-click? This page is the developer source and needs a
+      // server; the double-click version is ClimateConnections.html beside it.
+      if (location.protocol === 'file:' && document.querySelector('script[type=module][src]')) {
+        document.getElementById('app').innerHTML = '<p class="noscript" style="padding:2rem;font:1.1rem/1.5 system-ui,sans-serif">This page needs a web server. To open Climate Connections by double-click, open <a href="ClimateConnections.html"><b>ClimateConnections.html</b></a> in this same folder instead.</p>';
+      }
+    </script>
   </body>
 </html>

@@ -97,6 +97,14 @@ The site is rebuilt and published automatically from `main` by
 `.github/workflows/pages.yml` every time the data or the code changes, so
 the link always shows the current map.
 
+**Offline, by double-click:** `ClimateConnections.html` at the top of the
+repository is the whole app in one file (the code, the styles and the data
+inlined). Download it, double-click it, and it opens in your browser with
+no server and no internet. It is generated, not edited by hand: rebuild it
+with `npm run build:single` after any change to the data or the code, and
+commit it with the change. (`index.html` beside it is the developer source
+and shows only a pointer to this file when double-clicked.)
+
 ## Build it yourself (for developers)
 
 Only needed if you want to change the data or the code. Requires Node 20 or
@@ -116,12 +124,14 @@ Other commands:
 npm test             # engine and story tests (vitest)
 npm run build        # data build + type check + static site in dist/
 npm run preview      # serve dist/ locally
+npm run build:single # build, then write ClimateConnections.html (one file, opens by double-click)
 ```
 
 `dist/` is a plain static site. Copy it to any web host or open it through
 any static file server. It cannot be opened straight off the disk: the page
 fetches `data/graph.json`, which browsers refuse for a `file://` page, so
-serve it (`npm run preview`) rather than double-clicking `dist/index.html`.
+serve it (`npm run preview`) rather than double-clicking `dist/index.html`,
+or use the single file above.
 
 ## Use it
 
