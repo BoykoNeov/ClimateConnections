@@ -8,8 +8,8 @@
   "scripts": {
     "build:data": "node scripts/build-data.mjs",
     "dev": "vite",
-    "build": "npm run build:data && tsc --noEmit && vite build",
-    "build:single": "npm run build && node scripts/build-single.mjs",
+    "build": "npm run build:data && tsc --noEmit && vite build && node scripts/build-single.mjs",
+    "build:single": "npm run build",
     "preview": "vite preview",
     "test": "vitest run"
   },

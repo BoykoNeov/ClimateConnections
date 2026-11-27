@@ -100,9 +100,9 @@ the link always shows the current map.
 **Offline, by double-click:** `ClimateConnections.html` at the top of the
 repository is the whole app in one file (the code, the styles and the data
 inlined). Download it, double-click it, and it opens in your browser with
-no server and no internet. It is generated, not edited by hand: rebuild it
-with `npm run build:single` after any change to the data or the code, and
-commit it with the change. (`index.html` beside it is the developer source
+no server and no internet. It is generated, not edited by hand, and is a
+snapshot: `npm run build` rewrites it every time, so after any change to the
+data or the code, build and commit it with the change. (`index.html` beside it is the developer source
 and shows only a pointer to this file when double-clicked.)
 
 ## Build it yourself (for developers)
@@ -122,9 +122,8 @@ Other commands:
 
 ```
 npm test             # engine and story tests (vitest)
-npm run build        # data build + type check + static site in dist/
+npm run build        # data build + type check + static site in dist/ + ClimateConnections.html
 npm run preview      # serve dist/ locally
-npm run build:single # build, then write ClimateConnections.html (one file, opens by double-click)
 ```
 
 `dist/` is a plain static site. Copy it to any web host or open it through

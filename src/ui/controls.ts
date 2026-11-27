@@ -328,8 +328,8 @@ class OtherRow {
     this.el.append(this.phases.box, this.phases.kinds);
     if (index === 0) {
       this.el.append(hint(
-        'Its effects add to the first driver\'s; where they push a place opposite ways, the marker is hatched and its card says "conflicting".',
-        'Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). A chosen driver is never pushed by another; choose its neutral phase to hold it out of play. "More drivers" below adds a third and more.',
+        'Its effects add to the first driver\'s.',
+        'Where they push a place opposite ways, the marker is hatched and its card says "conflicting". Each driver enters its phase in its own month, after or before the first, and holds it for as long as you set below (the whole year shown unless you say otherwise). A chosen driver is never pushed by another; choose its neutral phase to hold it out of play. "More drivers" below adds a third and more.',
       ));
     }
 
@@ -527,7 +527,7 @@ export class ControlsView {
     }
     this.storySelect.addEventListener('change', () => this.onStory(this.storySelect.value || null));
     start.append(this.storySelect);
-    start.append(hint('A story sets the scenario and steps through the year, one place at a time.'));
+    start.append(hint('A guided walk through one year.', 'A story sets the scenario and steps through the year, one place at a time.'));
 
     // Real years (M34): every recorded driver set to the phase the index
     // datasets show for that year, the scenario controls locked until "Edit
@@ -551,8 +551,8 @@ export class ControlsView {
     this.yearSelect.addEventListener('change', () => this.onYear(this.yearSelect.value ? Number(this.yearSelect.value) : null));
     start.append(this.yearSelect);
     start.append(hint(
-      'Sets every recorded driver to its phase in that year. The map then shows the tendencies for those phases, not what happened that year.',
-      'Each driver keeps its own start and length, and the scenario controls are locked; "Edit this scenario" in the panel on the right frees them.',
+      'Shows the usual tendencies for that year’s phases, not what actually happened.',
+      'Sets every recorded driver to its phase in that year. Each driver keeps its own start and length, and the scenario controls are locked; "Edit this scenario" in the panel on the right frees them.',
     ));
 
     // Region mode (M28): pick a place and see every driver that reaches it.
@@ -576,8 +576,8 @@ export class ControlsView {
     this.regionSelect.addEventListener('change', () => this.update({ region: this.regionSelect.value || null, compare: this.regionSelect.value ? null : this.state.compare }));
     start.append(this.regionSelect);
     start.append(hint(
-      'Every driver known to reach one place: in which phase, in which months and how surely.',
-      'Nothing is animated: pick "Where I live…" again, or click a driver on the map, to go back to a scenario.',
+      'Every driver known to reach one place.',
+      'In which phase, in which months and how surely. Nothing is animated: pick "Where I live…" again, or click a driver on the map, to go back to a scenario.',
     ));
 
     // Everything that describes a scenario sits in the scenario boxes; region
@@ -721,8 +721,8 @@ export class ControlsView {
     this.compareNote.hidden = true;
     container.append(this.compareNote);
     container.append(hint(
-      'Two maps on the same month. "Your scenario" above edits the side you pick; a dark ring marks a place where the maps differ.',
-      'Both maps follow the same timeline, month by month after onset; the other map keeps its own settings. B starts as a copy of A with the opposite phase. Click a ringed place to read both.',
+      'Two maps side by side, on the same month.',
+      '"Your scenario" above edits the side you pick; a dark ring marks a place where the maps differ. Both maps follow the same timeline, month by month after onset; the other map keeps its own settings. B starts as a copy of A with the opposite phase. Click a ringed place to read both.',
     ));
 
     // ---- Season dial (M13): the page draws it into this slot.
@@ -731,8 +731,8 @@ export class ControlsView {
     this.dialHost = document.createElement('div');
     dial.append(this.dialHost);
     dial.append(hint(
-      'The year as a circle: the month shown is filled. A connection is only felt in its season, so a month can be in season and still empty while the effect is on its way.',
-      'The triangle marks where the year shown begins. Click a month to jump to it; click a place on the map to see the season of each connection acting on it.',
+      'A month can be in season and still empty while the effect is on its way.',
+      'The year as a circle: the month shown is filled, and a connection is only felt in its season. The triangle marks where the year shown begins. Click a month to jump to it; click a place on the map to see the season of each connection acting on it.',
     ));
 
     // ---- Map options: what the map shows. Closed by default (every option
@@ -761,7 +761,7 @@ export class ControlsView {
     filter.addEventListener('change', () => this.updateScenario({ filter: filter.value as ConfidenceFilter }));
     container.append(filter);
     this.filterSelect = filter;
-    container.append(hint('Hidden connections stay on the map as faint grey lines, so you can see what was left out.'));
+    container.append(hint('Hidden connections stay as faint grey lines.', 'So you can see what was left out.'));
 
     const h35 = document.createElement('h2');
     h35.textContent = 'Layers';
@@ -774,7 +774,7 @@ export class ControlsView {
     this.areaBox.addEventListener('change', () => this.update({ showAreas: this.areaBox.checked }));
     areaLabel.append(this.areaBox, document.createTextNode(' Show affected areas'));
     container.append(areaLabel);
-    container.append(hint('Rough outlines of the region each point stands for. Illustrative, not exact boundaries.'));
+    container.append(hint('Rough outlines, not exact boundaries.', 'Each outline is the region a point stands for, drawn to illustrate.'));
     const chainLabel = document.createElement('label');
     chainLabel.className = 'check';
     this.chainBox = document.createElement('input');
@@ -784,8 +784,8 @@ export class ControlsView {
     chainLabel.append(this.chainBox, document.createTextNode(' Follow links through other drivers'));
     container.append(chainLabel);
     container.append(hint(
-      'When this driver pushes another driver into a phase, keep following that driver’s own links, each step one level less sure.',
-      'Each extra step lowers the confidence one tier. Off: direct links only.',
+      'Also follow the drivers this one pushes, each step less sure.',
+      'When this driver pushes another driver into a phase, keep following that driver’s own links. Each extra step lowers the confidence one tier. Off: direct links only.',
     ));
     const labelsLabel = document.createElement('label');
     labelsLabel.className = 'check';
@@ -810,8 +810,8 @@ export class ControlsView {
     impactsLabel.append(this.impactsBox, document.createTextNode(' Impacts on people'));
     container.append(impactsLabel);
     container.append(hint(
-      'Squares beside some places: harvests, disease seasons, fires, rivers and catches that tend to follow from the weather shown. How much of this reaches people depends on preparation, prices and policy; the map shows only the push from the weather.',
-      'Each is drawn one confidence tier lower and one step further from the driver than the weather it follows.',
+      'How much reaches people depends on preparation, prices and policy; the map shows only the push from the weather.',
+      'Squares beside some places: harvests, disease seasons, fires, rivers and catches that tend to follow from the weather shown. Each is drawn one confidence tier lower and one step further from the driver than the weather it follows.',
     ));
 
     // The arrival window (M30), seasonal features (M41) and hiding
@@ -829,8 +829,8 @@ export class ControlsView {
     windowLabel.append(this.windowBox, document.createTextNode(' Show arrival window'));
     this.optionsSection.append(windowLabel);
     this.optionsSection.append(hint(
-      'An arrow is drawn faint with an outlined head while its effect may still be arriving, so you can see where the timing is uncertain.',
-      'The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, the arrow stays faint until the latest month has passed. The card gives the range either way.',
+      'Faint arrows mark effects that may still be arriving.',
+      'An arrow is drawn faint with an outlined head while its effect may still be arriving, so you can see where the timing is uncertain. The studies give each connection a range of months for when its effect arrives. The map applies a connection from the earliest month of that range, whether this is on or off; on, the arrow stays faint until the latest month has passed. The card gives the range either way.',
     ));
     const featuresLabel = document.createElement('label');
     featuresLabel.className = 'check';
@@ -843,8 +843,8 @@ export class ControlsView {
     this.optionsSection.append(featuresLabel);
     const named = featureNames.length === 0 ? '' : ` (${featureNames.slice(0, -1).join(', ')}${featureNames.length > 1 ? ' and ' : ''}${featureNames[featureNames.length - 1]})`;
     this.optionsSection.append(hint(
-      `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring. They are the machinery the arrows work through: nothing is computed from them.`,
-      'They are drawn in the months they are present, and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.',
+      'The highs, lows and polar vortex the arrows work through; nothing is computed from them.',
+      `Fixtures of the year's weather${named}, drawn as an H or L as on a weather chart, or a ring. They are drawn in the months they are present, and no arrow starts or ends at one. A feature is filled in while an arrow drawn this month works through it; click it to see which arrows do.`,
     ));
     const hideLabel = document.createElement('label');
     hideLabel.className = 'check';
@@ -856,8 +856,8 @@ export class ControlsView {
     hideLabel.append(this.hideBox, document.createTextNode(' Hide unaffected regions'));
     this.optionsSection.append(hideLabel);
     this.optionsSection.append(hint(
-      'Only the places a connection has reached in the month shown are drawn. A place is hidden because nothing on this map is acting on it in this month, not because nothing happens there.',
-      'A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay.',
+      'Hidden means nothing on this map acts there this month, not that nothing happens there.',
+      'Only the places a connection has reached in the month shown are drawn. A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay.',
     ));
     // Globe view (M39): the ninth checkbox, after the eighth so the browser
     // scripts' indices still hold; off by default (rule 15).
@@ -878,8 +878,8 @@ export class ControlsView {
     this.globeReset.addEventListener('click', () => this.onGlobeReset());
     this.optionsSection.append(this.globeReset);
     this.optionsSection.append(hint(
-      'The Earth as a globe you can drag to turn; it starts on the Pacific. Places on the far side are not drawn until you turn them into view.',
-      'With the map selected, the arrow keys turn it too. Names near the edge are left off so the rim stays readable. A story, or a place picked under "By region", turns the globe to its place when that place is out of sight. Printing always uses the flat map.',
+      'Drag to turn; places on the far side are not drawn.',
+      'The Earth as a globe, starting on the Pacific. Turn a place into view to see it. With the map selected, the arrow keys turn it too. Names near the edge are left off so the rim stays readable. A story, or a place picked under "By region", turns the globe to its place when that place is out of sight. Printing always uses the flat map.',
     ));
 
     const h4 = document.createElement('h2');

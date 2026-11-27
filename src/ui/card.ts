@@ -82,11 +82,28 @@ function throughHtml(link: Link, nodeById: Map<string, GraphNode>, featuresOn: b
   return `<p class="hint through">Works through ${esc(list)}: the studies describe this effect as a change in ${names.length === 1 ? 'it' : 'them'}. ${featuresOn ? 'Click the symbol on the map to see every arrow that works through it.' : 'Turn on "Seasonal features" under "Map options", on the left, to see it on the map.'}</p>`;
 }
 
+/** The first sentence of a text and the rest, so a card can open short
+ *  and keep the rest behind "More". */
+function splitLead(text: string): [string, string] {
+  const parts = text.trim().split(/(?<=[.!?])\s+(?=[A-Z"“(])/);
+  return [parts[0] ?? '', parts.slice(1).join(' ')];
+}
+
+/** A fold: `label` shown, `body` behind it until clicked. Empty body, nothing. */
+function more(label: string, body: string): string {
+  return body.trim() ? `<details class="card-more"><summary>${label}</summary>${body}</details>` : '';
+}
+
+/** "What it is" and the sources of a driver, folded; `extra` goes in first. */
+function aboutBlock(node: DriverNode, ctx: Ctx, extra = '', tail = ''): string {
+  return more('More about this driver', `${extra}<h2>What it is</h2><p>${esc(node.summary.trim())}</p><h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}${tail}`);
+}
+
 /** "How sure are we?" for a link as it acts this month. `ls` carries the
  *  confidence after the per-hop downgrade and, M35, the modulation; when
  *  it differs from the link's own rating the block says why. An impact
  *  link (M37) is always shown below its rating, one hop beyond the weather. */
-function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, GraphNode>, sources: Map<string, Source>): string {
+function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, GraphNode>, sources: Map<string, Source>, rest = ''): string {
   const shown = ls?.confidence ?? link.confidence;
   const byHops = !!ls && ls.depth > 1 && shown !== link.confidence;
   const fromOutcome = nodeById.get(link.from)?.kind === 'outcome';
@@ -94,11 +111,11 @@ function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, Graph
     ? 'It is shown one tier lower because it is one step further from the driver than the weather it follows from, and never higher than that weather’s own tier.'
     : 'It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.';
   return `<div class="sure"><strong>How sure are we?</strong>
-    <span class="badge ${shown}">${shown}</span> ${esc(CONFIDENCE_TEXT[shown])}
-    ${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. ${why}</p>` : ''}
+    <span class="badge ${shown}">${shown}</span> ${esc(CONFIDENCE_TEXT[shown])}${ls?.weakenedBy?.length ? ' <span class="weaker-tag">Weaker this month.</span>' : ''}
+    ${more('More: why it might not happen, timing and sources', `${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. ${why}</p>` : ''}
     ${modulationHtml(link, ls, nodeById, sources)}
     <p><em>Why it might not happen:</em> ${esc(link.caveat.trim())}</p>
-    ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}
+    ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}${rest}`)}
   </div>`;
 }
 
@@ -230,9 +247,7 @@ function impactLinkBlock(link: Link, from: OutcomeNode, ctx: Ctx, status: 'appli
   return `<div class="link-block impact-link">
     <h4>${heading} <span class="via">from ${esc(shortName(from))}: ${esc(state.toLowerCase())}</span> <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
-    <p class="hint">${timing}</p>
-    ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
-    ${sourcesHtml(link.sources, ctx.sources)}
+    ${sureBlock(link, ls, ctx.nodeById, ctx.sources, `<p class="hint">${timing}</p>${sourcesHtml(link.sources, ctx.sources)}`)}
   </div>`;
 }
 
@@ -267,10 +282,7 @@ function linkBlock(link: Link, ctx: Ctx, status: 'applied' | 'pending' | 'faded'
   return `<div class="link-block${status === 'faded' ? ' faded' : ''}">
     <h4>${heading}${via} <span class="badge ${ls?.confidence ?? link.confidence}">${ls?.confidence ?? link.confidence}</span></h4>
     <p>${esc(link.mechanism.trim())}</p>
-    ${throughHtml(link, ctx.nodeById, !!ctx.features)}
-    <p class="hint">${timing}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>
-    ${sureBlock(link, ls, ctx.nodeById, ctx.sources)}
-    ${sourcesHtml(link.sources, ctx.sources)}
+    ${sureBlock(link, ls, ctx.nodeById, ctx.sources, `${throughHtml(link, ctx.nodeById, !!ctx.features)}<p class="hint">${timing}${onsetNote}${fadeNote}${kindNote(link, from, ctx)}</p>${sourcesHtml(link.sources, ctx.sources)}`)}
   </div>`;
 }
 
@@ -364,10 +376,7 @@ function feedbackBlock(node: DriverNode, graph: Graph, ctx: Ctx): string {
       <h4>${esc(fromPhase?.label ?? l.when)} tends to push toward ${esc(toPhase?.label ?? String(l.effect))} <span class="badge ${l.confidence}">${l.confidence}</span></h4>
       ${alsoChosen}
       <p>${esc(l.mechanism.trim())}</p>
-      ${throughHtml(l, ctx.nodeById, !!ctx.features)}
-      <p class="hint">Expected from month ${l.lag_months[0]}${l.lag_months[1] !== l.lag_months[0] ? `–${l.lag_months[1]}` : ''} after ${esc(shortName(from))} enters that phase; season: ${seasonText(l)}.</p>
-      ${sureBlock(l, null, ctx.nodeById, ctx.sources)}
-      ${sourcesHtml(l.sources, ctx.sources)}
+      ${sureBlock(l, null, ctx.nodeById, ctx.sources, `${throughHtml(l, ctx.nodeById, !!ctx.features)}<p class="hint">Expected from month ${l.lag_months[0]}${l.lag_months[1] !== l.lag_months[0] ? `–${l.lag_months[1]}` : ''} after ${esc(shortName(from))} enters that phase; season: ${seasonText(l)}.</p>${sourcesHtml(l.sources, ctx.sources)}`)}
     </div>`;
   }
   return html;
@@ -384,9 +393,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
       // Chosen by hand, but its own start month has not come yet (M12).
       html += `<div class="state-line zero" style="background:#f0f2f5">Not yet in play: enters ${label} in ${MONTH_NAMES[info.startMonth - 1]}, month ${info.onset}</div>`;
       html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers ${whoChose(ctx)}, with a start month of its own. Until then it is held out of play: it has no phase, its links do not fire, and no link is allowed to push it.</p>`;
-      html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-      html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
-      html += feedbackBlock(node, graph, ctx);
+      html += aboutBlock(node, ctx, '', feedbackBlock(node, graph, ctx));
       return html;
     }
     if (info.fade !== null && info.hold !== null && month.index >= info.fade) {
@@ -397,14 +404,14 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         : `Faded: held ${label} from ${MONTH_NAMES[info.startMonth - 1]} for ${monthsWord(info.hold)}; no phase since ${monthAt(info.startMonth, info.hold)} (month ${info.fade})`;
       html += `<div class="state-line zero" style="background:#f0f2f5">${line}</div>`;
       html += `<p class="hint">${ctx.year === undefined ? `You set how long this event lasts under ${control}.` : `The record for ${ctx.year} has this event ending here.${info.record ? ` ${esc(info.record)}` : ''}`} Since it ended its arrows are drawn grey and faded and apply nothing: the effects that had arrived have stopped, and any whose lag had not run by then never arrives on this map, though in reality the ocean can carry an effect past the end of an event. It is still not pushed by any other driver: a ${ctx.year === undefined ? 'driver you chose' : 'recorded driver'} stays pinned.</p>`;
-      html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-      html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
-      html += feedbackBlock(node, graph, ctx);
+      html += aboutBlock(node, ctx, '', feedbackBlock(node, graph, ctx));
       return html;
     }
     html += `<div class="state-line" style="background:${phase?.color ?? '#ccc'};color:#fff">Current phase: ${label}${ctx.year !== undefined ? ' · from the record' : ctx.chosen.size > 1 ? ' · chosen by hand' : ''}</div>`;
     // Set to end (M32): say when.
     const lasts = info.fade !== null && info.hold !== null ? ` Set to last ${monthsWord(info.hold)}: it fades in ${monthAt(info.startMonth, info.hold)} (month ${info.fade}), and from then its arrows apply nothing.` : '';
+    // How the driver is set, folded under "More" with the rest of the card.
+    let how = '';
     if (ctx.chosen.size > 1) {
       let when = '';
       if (info.onset > 0) when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]} (month ${info.onset} on the timeline); its links count their lag from then.`;
@@ -414,18 +421,16 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
         when = ` It entered this phase in ${MONTH_NAMES[info.startMonth - 1]}, ${monthsWord(-info.onset)} before the year shown begins, and has held it since: ${monthsWord(held)} so far. Its links count their lag from then, so some of its effects were already being felt at month 0.`;
         if (held > 12) when += ` That is more than a year in one phase, longer than most real events last: treat the later months as a teaching convenience.`;
       }
-      html += `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers ${whoChose(ctx)}. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
+      how = `<p class="hint">One of ${countWord(ctx.chosen.size)} drivers ${whoChose(ctx)}. Its links fire at full confidence, and no link is allowed to push it into another phase.${when}${lasts}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
     } else if (lasts || info.record) {
-      html += `<p class="hint">${lasts.trim()}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
+      how = `<p class="hint">${lasts.trim()}${info.record ? ` ${esc(info.record)}` : ''}</p>`;
     }
-    html += `<p>${esc(phase?.summary.trim() ?? '')}</p>`;
+    const [lead, rest] = splitLead(phase?.summary ?? '');
+    html += `<p>${esc(lead)}</p>`;
     // A kind of a phase (M36): what is different, before anything else.
     if (phase?.variant_of) html += variantBlock(node, phase, graph, ctx);
-    else if (phase) html += kindsHint(node, phase);
-    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-    html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
-    html += weakensBlock(node, graph, ctx);
-    html += feedbackBlock(node, graph, ctx);
+    const extra = `${rest ? `<p>${esc(rest)}</p>` : ''}${how}${phase && !phase.variant_of ? kindsHint(node, phase) : ''}`;
+    html += aboutBlock(node, ctx, extra, weakensBlock(node, graph, ctx) + feedbackBlock(node, graph, ctx));
     return html;
   }
   if (st.viaLinkIds.length > 0) {
@@ -433,17 +438,18 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     const phase = phaseForValue(node, st.value);
     const pushers = [...new Set(st.viaLinkIds.map((id) => ctx.linkById.get(id)?.from).filter((x): x is string => !!x))]
       .map((id) => shortName(ctx.nodeById.get(id)!));
+    let extra = '';
     if (phase) {
       html += `<div class="state-line" style="background:${phase.color};color:#fff">Current phase: ${esc(phase.label)} · pushed there by ${esc(pushers.join(' and '))}</div>`;
-      html += `<p>${esc(phase.summary.trim())}</p>`;
-      html += `<p class="hint">Its own links now fire from this marker, one confidence tier lower than on its own card.${node.phases.some((p) => p.variant_of === phase.id) ? ` A driver pushed along a chain is always drawn in the classic kind of ${esc(phase.label)}: the map cannot tell which kind it would be.` : ''}</p>`;
+      const [lead, rest] = splitLead(phase.summary);
+      html += `<p>${esc(lead)}</p>`;
+      extra = `${rest ? `<p>${esc(rest)}</p>` : ''}<p class="hint">Its own links now fire from this marker, one confidence tier lower than on its own card.${node.phases.some((p) => p.variant_of === phase.id) ? ` A driver pushed along a chain is always drawn in the classic kind of ${esc(phase.label)}: the map cannot tell which kind it would be.` : ''}</p>`;
     } else {
       html += `<div class="state-line zero" style="background:#f0f2f5">No phase: conflicting pushes from ${esc(pushers.join(' and '))} cancel out</div>`;
     }
     for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
     for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
-    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-    html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+    html += aboutBlock(node, ctx, extra);
     return html;
   }
   if (st.pendingLinkIds.length > 0) {
@@ -451,8 +457,7 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     const phase = phaseForValue(node, first.effect);
     html += `<div class="state-line zero" style="background:#f0f2f5">Expected to be pushed toward ${esc(phase?.label ?? 'a phase')}, but out of season right now</div>`;
     for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
-    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-    html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+    html += aboutBlock(node, ctx);
     return html;
   }
   if (st.fadedLinkIds.length > 0) {
@@ -463,17 +468,14 @@ function driverCard(node: DriverNode, graph: Graph, ctx: Ctx, month: MonthState)
     html += `<div class="state-line zero" style="background:#f0f2f5">No phase: the push toward ${esc(phase?.label ?? 'a phase')} from ${esc(pushers.join(' and '))} has faded</div>`;
     html += `<p class="hint">The event that pushed it has ended, so it holds no phase and its own links do not fire.</p>`;
     for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
-    html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-    html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
+    html += aboutBlock(node, ctx);
     return html;
   }
   html += `<div class="state-line zero" style="background:#f0f2f5">${ctx.year === undefined ? 'Not part of the current scenario' : `Not recorded for ${ctx.year}`}</div>`;
   html += ctx.year === undefined
     ? `<p class="empty">Pick it under "Driver", "Second driver" or "More drivers" in the left panel to see its phases and connections.</p>`
     : `<p class="empty">The table of real years has no index for this driver. The map may still push it into a phase along a chain from a recorded driver; that is a tendency, not a record.</p>`;
-  html += `<h2>What it is</h2><p>${esc(node.summary.trim())}</p>`;
-  html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
-  html += weakensBlock(node, graph, ctx);
+  html += aboutBlock(node, ctx, '', weakensBlock(node, graph, ctx));
   return html;
 }
 
@@ -629,7 +631,8 @@ function impactCard(node: ImpactNode, ctx: Ctx, month: MonthState): string {
     const from = [...new Set([...ctx.linkById.values()].filter((l) => l.to === node.id).map((l) => ctx.nodeById.get(l.from)).filter((n): n is GraphNode => !!n).map(shortName))];
     html += `<p class="empty">No push from the weather at this point in the timeline: ${from.length > 0 ? `${esc(from.join(' and '))} ${from.length > 1 ? 'do' : 'does'} not hold the state this follows from` : 'nothing reaches it'}.</p>`;
   }
-  html += `<p>${esc(node.summary.trim())}</p>`;
+  const [lead, rest] = splitLead(node.summary);
+  html += `<p>${esc(lead)}</p>${more('More about this impact', rest ? `<p>${esc(rest)}</p>` : '')}`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
   html += `<h2>Sources</h2>${sourcesHtml(node.sources, ctx.sources)}`;
@@ -646,16 +649,16 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
   if (!node) {
     // Nothing selected: the first thing a new reader sees here, so it says
     // how to begin as well as what this panel is for.
-    container.innerHTML = `<h2>Details</h2><p class="empty">Click any circle on ${compare ? 'either map' : 'the map'} to read what tends to happen there, why, and how sure the science is.</p>
-      <div class="getting-started">
-        <p class="gs-title">New here? Three ways to begin</p>
+    container.innerHTML = `<h2>Details</h2><p class="empty">Press ▶ Play to watch the effects arrive, or click any circle on ${compare ? 'either map' : 'the map'} to read about that place.</p>
+      <details class="getting-started">
+        <summary class="gs-title">New here? Three ways to begin</summary>
         <ol>
           <li><strong>Press ▶ Play</strong> at the bottom to watch the effects of the chosen driver arrive month by month.</li>
           <li><strong>Click a circle</strong> on the map: this panel explains what tends to happen there and how sure the science is.</li>
           <li><strong>Pick a story</strong> under "Start here" on the left for a guided walk through one year.</li>
         </ol>
         <p class="gs-read">Reading the arrows: a solid line is well established, a dashed line probable, a dotted line contested. The legend at the bottom left has the rest.</p>
-      </div>`;
+      </details>`;
     return;
   }
   const ctx: Ctx = {
@@ -703,7 +706,8 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
         ? `<p class="empty">Nothing acts here: the classic ${esc(excepted[0].parent.label)} link is not expected in ${esc(excepted[0].held.label)} (below).</p>`
         : `<p class="empty">No known effect from ${ctx.chosen.size > 1 ? 'either chosen driver phase' : 'the current driver phase'} at this point in the timeline.</p>`;
   }
-  html += `<p>${esc(node.summary.trim())}</p>`;
+  const [lead, rest] = splitLead(node.summary);
+  html += `<p>${esc(lead)}</p>${more('More about this place', rest ? `<p>${esc(rest)}</p>` : '')}`;
   for (const id of st.viaLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'applied', month.links[id] ?? null);
   for (const id of st.pendingLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'pending', month.links[id] ?? null);
   for (const id of st.fadedLinkIds) html += linkBlock(ctx.linkById.get(id)!, ctx, 'faded', month.links[id] ?? null);
@@ -778,8 +782,7 @@ export function renderRegionCard(container: HTMLElement, graph: Graph, node: Out
           <p class="hint">${esc(seasonRanges(l))}, ${esc(lagWords(l))}. ${stripHtml(inf, ph.phase.color)}${kind}</p>
           <p>${esc(l.mechanism.trim())}</p>
           ${throughHtml(l, nodeById, features)}
-          ${sureBlock(l, null, nodeById, sources)}
-          ${sourcesHtml(l.sources, sources)}
+          ${sureBlock(l, null, nodeById, sources, sourcesHtml(l.sources, sources))}
         </div>`;
       }
       // The classic links this kind does not fire here (M36, rule 11).

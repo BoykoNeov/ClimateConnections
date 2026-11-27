@@ -453,6 +453,8 @@ async function main(): Promise<void> {
   ctl.onGlobeReset = () => { rotation = PACIFIC; for (const s of shown()) pane(s).map.turn(PACIFIC); };
   // A printed figure always shows the whole world (M39): flat before
   // printing, back to the globe after.
+  // A printed card is the whole card: open every "More" fold first.
+  window.addEventListener('beforeprint', () => { for (const d of document.querySelectorAll<HTMLDetailsElement>('#card details.card-more')) d.open = true; });
   window.addEventListener('beforeprint', () => { if (!controls.globe) return; printing = true; draw(); });
   window.addEventListener('afterprint', () => { if (!printing) return; printing = false; draw(); });
   /** Keep "#region=<id>" in the address bar in step with region mode, and

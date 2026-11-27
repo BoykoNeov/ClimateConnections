@@ -1,7 +1,7 @@
 // Single-file build: turns dist/ (from `vite build`) into one HTML file at
 // the repo root, ClimateConnections.html, that opens by double-click with
 // no server. The script, the stylesheet, the favicon and the graph are all
-// inlined. Run after `npm run build` (npm run build:single does both).
+// inlined. The last step of `npm run build`, so it never goes stale.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
