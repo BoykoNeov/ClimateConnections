@@ -82,11 +82,13 @@ function throughHtml(link: Link, nodeById: Map<string, GraphNode>, featuresOn: b
   return `<p class="hint through">Works through ${esc(list)}: the studies describe this effect as a change in ${names.length === 1 ? 'it' : 'them'}. ${featuresOn ? 'Click the symbol on the map to see every arrow that works through it.' : 'Turn on "Seasonal features" under "Map options", on the left, to see it on the map.'}</p>`;
 }
 
-/** The first sentence of a text and the rest, so a card can open short
+/** The first sentence (two if the first is very short) of a text and the rest, so a card can open short
  *  and keep the rest behind "More". */
 function splitLead(text: string): [string, string] {
   const parts = text.trim().split(/(?<=[.!?])\s+(?=[A-Z"“(])/);
-  return [parts[0] ?? '', parts.slice(1).join(' ')];
+  // A very short first sentence ("The warm phase.") takes the second along.
+  const n = parts.length > 1 && parts[0].length < 60 ? 2 : 1;
+  return [parts.slice(0, n).join(' '), parts.slice(n).join(' ')];
 }
 
 /** A fold: `label` shown, `body` behind it until clicked. Empty body, nothing. */
@@ -112,9 +114,9 @@ function sureBlock(link: Link, ls: LinkState | null, nodeById: Map<string, Graph
     : 'It is shown one tier lower for each driver it passes through, and never higher than the link that set that driver off.';
   return `<div class="sure"><strong>How sure are we?</strong>
     <span class="badge ${shown}">${shown}</span> ${esc(CONFIDENCE_TEXT[shown])}${ls?.weakenedBy?.length ? ' <span class="weaker-tag">Weaker this month.</span>' : ''}
-    ${more('More: why it might not happen, timing and sources', `${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. ${why}</p>` : ''}
-    ${modulationHtml(link, ls, nodeById, sources)}
     <p><em>Why it might not happen:</em> ${esc(link.caveat.trim())}</p>
+    ${more('More: the evidence, timing and sources', `${byHops ? `<p class="hint">The source rates this link <em>${link.confidence}</em>. ${why}</p>` : ''}
+    ${modulationHtml(link, ls, nodeById, sources)}
     ${link.evidence_note ? `<p><em>What the evidence says:</em> ${esc(link.evidence_note.trim())}</p>` : ''}${rest}`)}
   </div>`;
 }

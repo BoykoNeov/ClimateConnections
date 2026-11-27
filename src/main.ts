@@ -113,6 +113,23 @@ async function main(): Promise<void> {
   /** the place the globe last turned to keep in view (a story's focus or
    *  the region), so it turns once per place and not at every redraw */
   let keptInView: string | null = null;
+  /** the card's "More" folds stay as the reader left them while the same
+   *  place stays selected (the card is redrawn every month); all open while
+   *  printing, so a printed card is the whole card */
+  let foldsFor: string | null = null;
+  let printingCard = false;
+  const keepFolds = (key: string, render: () => void): void => {
+    const keyOf = (ds: HTMLDetailsElement[]): string[] => {
+      const seen = new Map<string, number>();
+      return ds.map((d) => { const t = d.querySelector('summary')?.textContent ?? ''; const n = seen.get(t) ?? 0; seen.set(t, n + 1); return `${t}#${n}`; });
+    };
+    const before = [...cardEl.querySelectorAll('details')];
+    const open = new Set(key === foldsFor ? keyOf(before).filter((_, i) => before[i].open) : []);
+    render();
+    const after = [...cardEl.querySelectorAll('details')];
+    keyOf(after).forEach((k, i) => { if (printingCard ? after[i].classList.contains('card-more') : open.has(k)) after[i].open = true; });
+    foldsFor = key;
+  };
   /** true between beforeprint and afterprint: the maps are drawn flat */
   let printing = false;
   /** start month the timeline's ticks currently show (the edited side's) */
@@ -304,7 +321,7 @@ async function main(): Promise<void> {
     pane('a').map.renderRegion({ nodeId: node.id, groups, showAreas: controls.showAreas, showAllLabels: controls.showAllLabels, showFeatures: controls.showFeatures });
     monthEl.innerHTML = `By region<small>everything that reaches ${esc(shortName(node))}</small>`;
     captionEl.textContent = `Everything that is known to reach ${node.name} on this map: ${groups.length === 1 ? 'one driver' : `${groups.length} drivers`}, each connection in its own season and confidence tier, no month or scenario chosen. ${controls.showFeatures ? FEATURES_CAPTION : ''}Printed from Climate Connections, ${location.origin}${location.pathname}`;
-    renderRegionCard(cardEl, graph, node, groups, controls.showFeatures);
+    keepFolds(`region:${node.id}`, () => renderRegionCard(cardEl, graph, node, groups, controls.showFeatures));
   }
 
   /** A click on the map in region mode: a driver opens its own scenario
@@ -416,7 +433,7 @@ async function main(): Promise<void> {
     if (node?.kind === 'impact' && !controls.showImpacts) selectedNodeId = null;
     // Likewise a feature's card (M41) is only reachable with its layer on.
     if (node?.kind === 'feature' && !controls.showFeatures) selectedNodeId = null;
-    renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts, controls.showWindow, controls.showFeatures);
+    keepFolds(`node:${selectedNodeId ?? ''}`, () => renderCard(cardEl, graph, selectedNodeId ? node : null, month, chosenBySide.get(edited)!.phases, cardCompare, yearActive?.row.year, controls.showImpacts, controls.showWindow, controls.showFeatures));
 
     const s = sideSettings(controls, edited);
     const c = chosenBySide.get(edited)!;
@@ -454,7 +471,8 @@ async function main(): Promise<void> {
   // A printed figure always shows the whole world (M39): flat before
   // printing, back to the globe after.
   // A printed card is the whole card: open every "More" fold first.
-  window.addEventListener('beforeprint', () => { for (const d of document.querySelectorAll<HTMLDetailsElement>('#card details.card-more')) d.open = true; });
+  window.addEventListener('beforeprint', () => { printingCard = true; for (const d of document.querySelectorAll<HTMLDetailsElement>('#card details.card-more')) d.open = true; });
+  window.addEventListener('afterprint', () => { printingCard = false; });
   window.addEventListener('beforeprint', () => { if (!controls.globe) return; printing = true; draw(); });
   window.addEventListener('afterprint', () => { if (!printing) return; printing = false; draw(); });
   /** Keep "#region=<id>" in the address bar in step with region mode, and

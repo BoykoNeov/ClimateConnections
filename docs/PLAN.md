@@ -805,6 +805,14 @@ and lowest-confidence selection.
   the scrubber by calendar month.
 
 ### 5.5 Card panel (right side)
+Since the 2026-11-27 tidy-up a card opens short: the first sentence of a
+place's or phase's summary (two when the first is very short), each link's
+heading and mechanism, and "How sure are we?" with the tier, its legend text
+and the caveat always visible. The evidence note, the timing line (with the
+arrival window), the modulation and hop notes, "Works through" and the
+sources sit behind a "More" fold in that block, and a driver's "What it is",
+sources and lists behind "More about this driver". The folds stay as the
+reader left them while the same place is selected and all open for printing.
 On clicking a node show: name, region, current state in plain words, then for
 every link currently affecting it: the mechanism, and a "How sure are we?"
 block with the confidence badge and legend text, the caveat, the
