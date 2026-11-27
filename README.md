@@ -64,11 +64,12 @@ can be compared side by side on one timeline.
   the timing uncertainty is on the map and not only on the card.
 - Not a source of precise boundaries. The "affected areas" layer is a set of
   rough, illustrative outlines, and the control that turns it on says so.
-- Not a map of where nothing happens. With "Hide unaffected regions" on,
-  a place is left off because no connection on this map has reached it in
+- Not a map of where nothing happens. Unless "Show unaffected regions" is
+  ticked, a place is left off because no connection on this map has reached it in
   the month shown, which is a statement about what this map holds for that
-  month and not about the world. The layer is off by default and one click
-  brings every place back.
+  month and not about the world. Hiding is on by default (since
+  2026-11-27) and one click on "Show unaffected regions" brings every
+  place back.
 - Not a picture of the ordinary weather. The "Seasonal features" layer
   (off by default) draws five fixtures of the year, an H or L in a circle
   as on a weather chart, in the months they are present. They are the
@@ -373,8 +374,8 @@ or use the single file above.
   from a feature and no arrow starts or ends at one; the story "Winter's
   machinery: how El Niño reaches Alaska and Europe" turns the layer on and
   follows an El Niño through two of them.
-- **Hide unaffected regions** (off by default, under the legend) draws
-  only the places a connection has reached in the month shown. A place
+- **Show unaffected regions** (unticked by default, in Map options). By
+  default the map draws only the places a connection has reached in the month shown. A place
   whose connection is still out of season, whose event has ended, or which
   only the faint grey lines of the confidence filter touch is left off
   with its arrows until the month it is reached, so the map shows what the

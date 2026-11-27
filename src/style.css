@@ -83,8 +83,9 @@ html, body { margin: 0; height: 100%; }
 .hint { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
 /* the "More" / "Less" toggle at the end of a hint whose rest is folded away */
 .hint-toggle { font: inherit; font-size: 11px; padding: 0; border: 0; background: none; color: var(--accent); text-decoration: underline; cursor: pointer; }
-/* The left panel's foldable groups: Start here, Your scenario, Compare two
-   scenarios, Season dial, Map options. The summary is the group's title. */
+/* The left panel's foldable groups: Your scenario, Stories, real years and
+   places, Compare two scenarios, Season dial, Map options. The summary is the
+   group's title. */
 .panel-section { border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 4px; }
 .panel-section > summary {
   display: flex; align-items: center; gap: 6px; list-style: none; cursor: pointer;
@@ -94,7 +95,7 @@ html, body { margin: 0; height: 100%; }
 .panel-section > summary::before { content: '▸'; font-size: 11px; color: var(--muted); width: 10px; }
 .panel-section[open] > summary::before { content: '▾'; }
 .panel-section > summary:hover { color: var(--accent); }
-#controls .panel-section:first-child > summary { padding-top: 0; }
+#controls > :first-child > .panel-section:first-child > summary, #controls > .panel-section:first-child > summary { padding-top: 0; }
 #controls .panel-section h2:first-of-type { margin-top: 8px; }
 .panel-section > .check, .scenario-controls .check { margin-top: 10px; }
 .check { display: flex; align-items: center; gap: 6px; cursor: pointer; }

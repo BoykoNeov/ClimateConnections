@@ -657,7 +657,7 @@ export function renderCard(container: HTMLElement, graph: Graph, node: GraphNode
         <ol>
           <li><strong>Press ▶ Play</strong> at the bottom to watch the effects of the chosen driver arrive month by month.</li>
           <li><strong>Click a circle</strong> on the map: this panel explains what tends to happen there and how sure the science is.</li>
-          <li><strong>Pick a story</strong> under "Start here" on the left for a guided walk through one year.</li>
+          <li><strong>Pick a story</strong> under "Stories, real years and places" on the left for a guided walk through one year.</li>
         </ol>
         <p class="gs-read">Reading the arrows: a solid line is well established, a dashed line probable, a dotted line contested. The legend at the bottom left has the rest.</p>
       </details>`;

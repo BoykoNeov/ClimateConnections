@@ -46,9 +46,10 @@ year's weather the links work through, the Aleutian Low, the Icelandic
 Low, the Azores High, the Siberian High and the Arctic polar vortex,
 drawn in their months behind a "Seasonal features" toggle that is off by
 default, filled while an arrow works through them, never computed
-from, and since M42 a "Hide unaffected regions" toggle, also off by
-default, that draws only the places a connection has reached in the month
-shown, and
+from, and since M42 hiding unaffected regions, on by default since
+2026-11-27 (the user's call) with a "Show unaffected regions" checkbox to
+bring them back, drawing only the places a connection has reached in the
+month shown, and
 since M39 a "Globe view" toggle, also off by default, that draws the map as
 a globe the student can turn, never printed) on a
 Pacific-centered world map and
@@ -170,17 +171,17 @@ one.
 - Hiding unaffected regions (M42) is drawing only, and adds no rule:
   `src/engine/reached.ts` holds one pure reader, `reachedThisMonth`, the
   nodes an `applied` link ends at this month — the map's own sense of
-  "reached" (`viaLinkIds`), the same test the marker labels use. With the
-  "Hide unaffected regions" checkbox on (the eighth, off by default) a
-  place outside that set is not drawn at all and neither are the arrows
+  "reached" (`viaLinkIds`), the same test the marker labels use. While hiding
+  is on (the default since 2026-11-27, the user's call; the eighth
+  checkbox reads "Show unaffected regions" and ticking it draws every
+  place, data-role `hide` kept) a place outside that set is not drawn at all and neither are the arrows
   into it, so no arrowhead is left pointing at nothing; a place that has
   been reached keeps every arrow into it. Never hidden: the drivers, the
   selected place, a story's focus and a compare-mode difference. Compare
   mode passes the union of the two sides; region mode ignores the toggle;
   the seasonal features are their own layer. Do not count a pending,
   faded or ghost arrow as reaching a place (it hides almost nothing and a
-  pending arrow is not "currently affected"), do not hide a driver, and
-  do not turn the toggle on by default.
+  pending arrow is not "currently affected"), and do not hide a driver.
 - Globe view (M39) is drawing only, and adds no rule: `src/ui/globe.ts`
   holds the pure arithmetic of the turn and of the far side. With the
   "Globe view" checkbox on (the ninth, off by default) the maps are an

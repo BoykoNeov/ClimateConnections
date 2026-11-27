@@ -506,8 +506,17 @@ export class ControlsView {
     container.innerHTML = '';
     const root = container;
 
-    // ---- Start here: the three ways in that need no setting up.
-    const start = section('Start here', true);
+    // ---- Your scenario comes first (the driver and phase in general, e.g.
+    // El Niño as such); it is filled in further down, after the stories,
+    // real years and places, but sits at the top of the column. Its own scenario box, so a real
+    // year or region mode greys it out like the boxes below.
+    const ownBox = document.createElement('div');
+    ownBox.className = 'scenario-controls';
+    root.append(ownBox);
+    this.scenarioBoxes.push(ownBox);
+
+    // ---- Stories, real years and places: the ways in that need no setting up.
+    const start = section('Stories, real years and places', true);
     root.append(start);
     const hs = document.createElement('h2');
     hs.textContent = 'Stories';
@@ -589,8 +598,10 @@ export class ControlsView {
     this.scenarioBoxes.push(scenarioBox);
 
     // ---- Your scenario: the driver, its phase, the others, when and how long.
+    // Drawn at the top of the column (ownBox); Compare and the Season dial
+    // stay below the ready-made section, in scenarioBox.
     const own = section('Your scenario', true);
-    scenarioBox.append(own);
+    ownBox.append(own);
     container = own;
 
     // Driver: a dropdown when there is more than one, otherwise just a heading.
@@ -817,8 +828,11 @@ export class ControlsView {
     // The arrival window (M30), seasonal features (M41) and hiding
     // unaffected regions (M42): the sixth, seventh and eighth checkboxes, in
     // that order so the browser scripts' indices still hold, outside the
-    // scenario box so they work in region mode and a real year too. Off by
-    // default (rule 15 of docs/PLAN_V3.md).
+    // scenario box so they work in region mode and a real year too. The
+    // first two are off by default (rule 15 of docs/PLAN_V3.md). Unaffected
+    // regions are hidden by default since 2026-11-27 (the user's call), so
+    // the eighth box reads "Show unaffected regions" and is unticked while
+    // `hideUnaffected` is true.
     const windowLabel = document.createElement('label');
     windowLabel.className = 'check';
     this.windowBox = document.createElement('input');
@@ -851,13 +865,13 @@ export class ControlsView {
     this.hideBox = document.createElement('input');
     this.hideBox.type = 'checkbox';
     this.hideBox.dataset.role = 'hide';
-    this.hideBox.checked = state.hideUnaffected;
-    this.hideBox.addEventListener('change', () => this.update({ hideUnaffected: this.hideBox.checked }));
-    hideLabel.append(this.hideBox, document.createTextNode(' Hide unaffected regions'));
+    this.hideBox.checked = !state.hideUnaffected;
+    this.hideBox.addEventListener('change', () => this.update({ hideUnaffected: !this.hideBox.checked }));
+    hideLabel.append(this.hideBox, document.createTextNode(' Show unaffected regions'));
     this.optionsSection.append(hideLabel);
     this.optionsSection.append(hint(
-      'Hidden means nothing on this map acts there this month, not that nothing happens there.',
-      'Only the places a connection has reached in the month shown are drawn. A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. The drivers, the place you have clicked and the place a story is pointing at always stay.',
+      'Tick to draw every place, even ones nothing reaches this month.',
+      'Unticked, only the places a connection has reached in the month shown are drawn. A place whose connection is still out of season, whose event has ended, or which only the faint grey lines of the confidence filter touch is left off, with its arrows, until the month it is reached. Left off means nothing on this map acts there this month, not that nothing happens there. The drivers, the place you have clicked and the place a story is pointing at always stay.',
     ));
     // Globe view (M39): the ninth checkbox, after the eighth so the browser
     // scripts' indices still hold; off by default (rule 15).
@@ -1102,13 +1116,13 @@ export class ControlsView {
     this.impactsBox.checked = this.state.showImpacts;
     this.windowBox.checked = this.state.showWindow;
     this.featuresBox.checked = this.state.showFeatures;
-    this.hideBox.checked = this.state.hideUnaffected;
+    this.hideBox.checked = !this.state.hideUnaffected;
     this.globeBox.checked = this.state.globe;
     this.globeReset.hidden = !this.state.globe;
     // "Map options" says how many options are away from their defaults, and
     // opens when one is (a story can turn a layer on), so nothing that is
     // changing the map sits folded out of sight.
-    const changed = [s.filter !== 'all', !s.chain, !this.state.showAreas, this.state.showAllLabels, this.state.showImpacts, this.state.showWindow, this.state.showFeatures, this.state.hideUnaffected, this.state.globe].filter(Boolean).length;
+    const changed = [s.filter !== 'all', !s.chain, !this.state.showAreas, this.state.showAllLabels, this.state.showImpacts, this.state.showWindow, this.state.showFeatures, !this.state.hideUnaffected, this.state.globe].filter(Boolean).length;
     this.optionsSummary.textContent = changed === 0 ? 'Map options' : `Map options (${changed} changed)`;
     if (changed > this.optionsChanged) this.optionsSection.open = true;
     this.optionsChanged = changed;

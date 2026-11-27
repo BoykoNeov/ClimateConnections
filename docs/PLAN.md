@@ -1030,8 +1030,11 @@ carries `via`, with a pointer to the layer while it is off.
   gains a row with the symbol and a note.
 - "Hide unaffected regions" (M42): a checkbox under the Legend heading,
   the eighth in the controls (after "Seasonal features", so the browser
-  scripts' indices still hold), **off by default** (rule 15 of
-  `docs/PLAN_V3.md`). On, the map draws only the places a connection has
+  scripts' indices still hold), shipped **off by default** (rule 15 of
+  `docs/PLAN_V3.md`). On 2026-11-27 the user asked for hiding to be the
+  default: the checkbox now reads "Show unaffected regions", unticked
+  while hiding is on (`hideUnaffected: true` at load, data-role `hide`
+  kept), and "Map options" counts it as changed only when ticked. On, the map draws only the places a connection has
   reached in the month on screen (§5.2), on both sides in compare mode and
   by the union of the two, so a class sees the places a driver is acting
   on instead of every dot on the map. Its hint says that only a place with

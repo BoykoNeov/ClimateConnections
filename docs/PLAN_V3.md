@@ -825,7 +825,9 @@ is not what a pending arrow means.
 **UI.** `ControlState.hideUnaffected` and the "Hide unaffected regions"
 checkbox, the eighth in the controls, under the Legend heading after
 "Seasonal features" so the browser scripts' indices still hold, **off by
-default** (rule 15). `RenderOptions.visibleNodeIds`: null draws everything
+default** (rule 15). Changed on 2026-11-27 at the user's request, an
+explicit exception to rule 15: hiding is on by default and the checkbox
+reads "Show unaffected regions", ticked to draw every place. `RenderOptions.visibleNodeIds`: null draws everything
 as today, a set draws that set plus the four exemptions. The markers,
 their labels, their areas, the impact squares and the arrows into them
 follow it; the seasonal features (their own layer, read from what the
